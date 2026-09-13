@@ -8,28 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AddressesDAO {
-
+public class AddressesDAO implements DAOI<Addresses> {
 
     /**
-     * Metodo que busca todos os enderecos
-     *
+     * Metodo que busca todos os enderecos ativos
      * @return List<Addresses> Lista dos enderecos
      */
-    public List<Addresses> searchAll(){
+    @Override
+    public List<Addresses> searchAll() {
 
         List<Addresses> addresses = new ArrayList<>();
 
-        String sql = "select * from addresses";
-
         try (
                 Connection conn = ConnectionFactory.connect();
-                Statement stmt = conn.createStatement()
-        ){
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where is_active = true"
+                )
+        ) {
 
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()){
+            while (rs.next()) {
 
                 addresses.add(
                         new Addresses(
@@ -46,32 +45,33 @@ public class AddressesDAO {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-
-        finally {
+        } finally {
             return addresses;
         }
     }
 
     /**
-     * metodo para buscar por Id
+     * metodo para buscar por Id (somente ativos)
      * @param id Numero unico do endereco
      * @return Retorna o endereco encontrado
      */
-    public Addresses searchById(int id){
-        String sql = "select * from addresses where id = ?";
+    @Override
+    public Addresses searchById(int id) {
 
         Addresses address = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
-        ){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where id = ? and is_active = true"
+                )
+        ) {
 
             pstmt.setInt(1, id);
 
             ResultSet rs = pstmt.executeQuery();
 
-            if(rs.next()){
+            if (rs.next()) {
                 address = new Addresses(
                         rs.getInt("id"),
                         rs.getString("street"),
@@ -90,26 +90,27 @@ public class AddressesDAO {
         }
     }
 
-
     /**
-     * metodo para buscar enderecos pela cidade
+     * metodo para buscar enderecos pela cidade (somente ativos)
      * @param city A cidade do endereco
      * @return List<Addresses> com os enderecos encontrados
      */
-    public List<Addresses> searchByCity(String city){
-        String sql = "select * from addresses where city like ?";
+    public List<Addresses> searchByCity(String city) {
 
         List<Addresses> addresses = new ArrayList<>();
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
-        ){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where city ilike ? and is_active = true"
+                )
+        ) {
 
             pstmt.setString(1, city);
 
             ResultSet rs = pstmt.executeQuery();
 
-            while(rs.next()){
+            while (rs.next()) {
 
                 addresses.add(
                         new Addresses(
@@ -131,26 +132,27 @@ public class AddressesDAO {
         }
     }
 
-
     /**
-     * metodo para buscar enderecos pelo estado
+     * metodo para buscar enderecos pelo estado (somente ativos)
      * @param state O estado do endereco
      * @return List<Addresses> com os enderecos encontrados
      */
-    public List<Addresses> searchByState(String state){
-        String sql = "select * from addresses where state like ?";
+    public List<Addresses> searchByState(String state) {
 
         List<Addresses> addresses = new ArrayList<>();
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
-        ){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where state ilike ? and is_active = true"
+                )
+        ) {
 
             pstmt.setString(1, state);
 
             ResultSet rs = pstmt.executeQuery();
 
-            while(rs.next()){
+            while (rs.next()) {
 
                 addresses.add(
                         new Addresses(
@@ -172,26 +174,27 @@ public class AddressesDAO {
         }
     }
 
-
     /**
-     * metodo para buscar enderecos pelo pais
+     * metodo para buscar enderecos pelo pais (somente ativos)
      * @param country O pais do endereco
      * @return List<Addresses> com os enderecos encontrados
      */
-    public List<Addresses> searchByCountry(String country){
-        String sql = "select * from addresses where country like ?";
+    public List<Addresses> searchByCountry(String country) {
 
         List<Addresses> addresses = new ArrayList<>();
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
-        ){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where country ilike ? and is_active = true"
+                )
+        ) {
 
             pstmt.setString(1, country);
 
             ResultSet rs = pstmt.executeQuery();
 
-            while(rs.next()){
+            while (rs.next()) {
 
                 addresses.add(
                         new Addresses(
@@ -212,22 +215,22 @@ public class AddressesDAO {
             return addresses;
         }
     }
-
 
     /**
      * metodo para cadastrar novos enderecos no banco
      * @param address O endereco que sera cadastrado
      * @return true se foi registrado e false caso tenha dado erro
      */
-    public boolean register(Addresses address){
-
-        String sql = "insert into addresses (street, number, complement, city, state, country) " +
-                "values (?, ?, ?, ?, ?, ?)";
+    @Override
+    public boolean register(Addresses address) {
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ){
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into addresses (street, number, complement, city, state, country) " +
+                                "values (?, ?, ?, ?, ?, ?)"
+                )
+        ) {
 
             pstmt.setString(1, address.getStreet());
             pstmt.setString(2, address.getNumber());
@@ -242,20 +245,22 @@ public class AddressesDAO {
             e.printStackTrace();
             return false;
         }
-
     }
 
-
     /**
-     * metodo para deletar o endereco por id
+     * metodo para desativar o endereco por id (is_active = false)
      * @param id Valor unico de cada endereco
-     * @return true se foi deletado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
-    public boolean deleteById(int id){
-        String sql = "delete from addresses where id = ?";
+    @Override
+    public boolean delete(int id) {
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update addresses set is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
 
             pstmt.setInt(1, id);
 
@@ -267,25 +272,28 @@ public class AddressesDAO {
         }
     }
 
-
     /**
      * metodo que muda os values do endereco selecionado pelo id
      * @param address Os valores do endereco para ser atualizado
      * @param id O valor unico do endereco que quer atualizar
      * @return true se foi mudado e false caso tenha dado erro
      */
-    public boolean updateById(Addresses address, int id){
-        String sql = "update addresses set street = ?, " +
-                "number = ?, " +
-                "complement = ?, " +
-                "city = ?, " +
-                "state = ?, " +
-                "country = ?, " +
-                "updated_at = current_timestamp " +
-                "where id = ?";
+    @Override
+    public boolean update(Addresses address, int id) {
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update addresses set street = ?, " +
+                                "number = ?, " +
+                                "complement = ?, " +
+                                "city = ?, " +
+                                "state = ?, " +
+                                "country = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ) {
 
             pstmt.setString(1, address.getStreet());
             pstmt.setString(2, address.getNumber());
@@ -304,4 +312,3 @@ public class AddressesDAO {
     }
 
 }
-

@@ -7,26 +7,25 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PermissionGroupsDAO {
-
+public class PermissionGroupsDAO implements DAOI<PermissionGroups> {
 
     /**
-     * Metodo que busca todos os grupos de permissao
-     *
+     * Metodo que busca todos os grupos de permissao ativos
      * @return List<PermissionGroups> Lista dos grupos de permissao
      */
+    @Override
     public List<PermissionGroups> searchAll(){
 
         List<PermissionGroups> permissionGroups = new ArrayList<>();
 
-        String sql = "select * from permission_groups";
-
         try (
                 Connection conn = ConnectionFactory.connect();
-                Statement stmt = conn.createStatement()
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from permission_groups where is_active = true"
+                )
         ){
 
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
 
@@ -48,17 +47,20 @@ public class PermissionGroupsDAO {
     }
 
     /**
-     * metodo para buscar por Id
+     * metodo para buscar por Id (somente ativos)
      * @param id Numero unico do grupo de permissao
      * @return Retorna o grupo de permissao encontrado
      */
+    @Override
     public PermissionGroups searchById(int id){
-        String sql = "select * from permission_groups where id = ?";
 
         PermissionGroups permissionGroup = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from permission_groups where id = ? and is_active = true"
+                )
         ){
 
             pstmt.setInt(1, id);
@@ -79,19 +81,20 @@ public class PermissionGroupsDAO {
         }
     }
 
-
     /**
-     * metodo para buscar pelo nome do grupo de permissao
+     * metodo para buscar pelo nome do grupo de permissao (somente ativos)
      * @param name O nome do grupo de permissao
      * @return List<PermissionGroups> com os grupos encontrados
      */
     public List<PermissionGroups> searchByName(String name){
-        String sql = "select * from permission_groups where name like ?";
 
         List<PermissionGroups> permissionGroups = new ArrayList<>();
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from permission_groups where name ilike ? and is_active = true"
+                )
         ){
 
             pstmt.setString(1, name);
@@ -115,19 +118,19 @@ public class PermissionGroupsDAO {
         }
     }
 
-
     /**
      * metodo para cadastrar novos grupos de permissao no banco
      * @param permissionGroup O grupo de permissao que sera cadastrado
      * @return true se foi registrado e false caso tenha dado erro
      */
+    @Override
     public boolean register(PermissionGroups permissionGroup){
-
-        String sql = "insert into permission_groups (name) values (?)";
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into permission_groups (name) values (?)"
+                )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
@@ -138,7 +141,6 @@ public class PermissionGroupsDAO {
             e.printStackTrace();
             return false;
         }
-
     }
 
     /**
@@ -147,10 +149,13 @@ public class PermissionGroupsDAO {
      * @return true se foi registrado e false caso tenha dado erro
      */
     public boolean registerLot(List<PermissionGroups> permissionGroups){
-        String sql = "insert into permission_groups (name) values (?)";
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into permission_groups (name) values (?)"
+                )
+        ){
 
             for (int i = 0; i < permissionGroups.size(); i++) {
                 PermissionGroups permissionGroup = permissionGroups.get(i);
@@ -167,20 +172,22 @@ public class PermissionGroupsDAO {
             e.printStackTrace();
             return false;
         }
-
     }
 
-
     /**
-     * metodo para deletar o grupo de permissao por id
+     * metodo para desativar o grupo de permissao por id (is_active = false)
      * @param id Valor unico de cada grupo de permissao
-     * @return true se foi deletado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
-    public boolean deleteById(int id){
-        String sql = "delete from permission_groups where id = ?";
+    @Override
+    public boolean delete(int id){
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update permission_groups set is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
 
             pstmt.setInt(1, id);
 
@@ -192,17 +199,19 @@ public class PermissionGroupsDAO {
         }
     }
 
-
     /**
-     * metodo que deleta pelo nome
+     * metodo que desativa pelo nome
      * @param name O nome do grupo de permissao
-     * @return true se foi deletado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
     public boolean deleteByName(String name){
-        String sql = "delete from permission_groups where name like ?";
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update permission_groups set is_active = false, updated_at = current_timestamp where name ilike ?"
+                )
+        ) {
 
             pstmt.setString(1, name);
 
@@ -220,13 +229,17 @@ public class PermissionGroupsDAO {
      * @param id O valor unico do grupo de permissao que quer atualizar
      * @return true se foi mudado e false caso tenha dado erro
      */
-    public boolean updateById(PermissionGroups permissionGroup, int id){
-        String sql = "update permission_groups set name = ?, " +
-                "updated_at = current_timestamp " +
-                "where id = ?";
+    @Override
+    public boolean update(PermissionGroups permissionGroup, int id){
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update permission_groups set name = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ){
 
             pstmt.setString(1, permissionGroup.getName());
             pstmt.setInt(2, id);
@@ -239,7 +252,6 @@ public class PermissionGroupsDAO {
         }
     }
 
-
     /**
      * metodo que muda os values do grupo de permissao selecionado pelo nome
      * @param permissionGroup Os valores do grupo de permissao para ser atualizado
@@ -247,12 +259,15 @@ public class PermissionGroupsDAO {
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean updateByName(PermissionGroups permissionGroup, String name){
-        String sql = "update permission_groups set name = ?, " +
-                "updated_at = current_timestamp " +
-                "where name like ?";
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update permission_groups set name = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where name ilike ?"
+                )
+        ){
 
             pstmt.setString(1, permissionGroup.getName());
             pstmt.setString(2, name);

@@ -8,29 +8,30 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TelephoneCompaniesDAO {
+public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies> {
 
     /**
-     * Metodo que busca todos os telefones
-     *
+     * Metodo que busca todos os telefones ativos
      * @return List<TelephoneCompanies> Lista dos telefones
      */
+    @Override
     public List<TelephoneCompanies> searchAll(){
 
         List<TelephoneCompanies> telephones = new ArrayList<>();
         Companies company = null;
 
-        String sql = "select tc.*, tc.company_id as companyId, " +
-                "c.id as idCompany, c.name as companyName " +
-                "from telephone_companies tc " +
-                "join companies c on c.id = tc.company_id";
-
         try (
                 Connection conn = ConnectionFactory.connect();
-                Statement stmt = conn.createStatement()
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select tc.*, tc.company_id as companyId, " +
+                                "c.id as idCompany, c.name as companyName " +
+                                "from telephone_companies tc " +
+                                "join companies c on c.id = tc.company_id " +
+                                "where tc.is_active = true"
+                )
         ){
 
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
 
@@ -59,22 +60,25 @@ public class TelephoneCompaniesDAO {
     }
 
     /**
-     * Metodo que busca o telefone por id
+     * Metodo que busca o telefone por id (somente ativos)
      * @param id O identificador do telefone para o buscar
      * @return O telefone encontrado
      */
+    @Override
     public TelephoneCompanies searchById(int id){
-        String sql = "select tc.*, tc.company_id as companyId, " +
-                "c.id as idCompany, c.name as companyName " +
-                "from telephone_companies tc " +
-                "join companies c on c.id = tc.company_id " +
-                "where tc.id = ?";
 
         TelephoneCompanies telephoneCompany = null;
         Companies company = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select tc.*, tc.company_id as companyId, " +
+                                "c.id as idCompany, c.name as companyName " +
+                                "from telephone_companies tc " +
+                                "join companies c on c.id = tc.company_id " +
+                                "where tc.id = ? and tc.is_active = true"
+                )
         ){
 
             pstmt.setInt(1, id);
@@ -103,24 +107,25 @@ public class TelephoneCompaniesDAO {
         }
     }
 
-
     /**
-     * metodo para buscar os telefones vinculados a empresa
+     * metodo para buscar os telefones vinculados a empresa (somente ativos)
      * @param companyId O id unico da empresa a qual o telefone esta vinculado (pode retornar mais de um)
      * @return List<TelephoneCompanies> com os telefones encontrados
      */
     public List<TelephoneCompanies> searchByCompanyId(int companyId){
-        String sql = "select tc.*, tc.company_id as companyId, " +
-                "c.id as idCompany, c.name as companyName " +
-                "from telephone_companies tc " +
-                "join companies c on c.id = tc.company_id " +
-                "where tc.company_id = ?";
 
         List<TelephoneCompanies> telephones = new ArrayList<>();
         Companies company = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select tc.*, tc.company_id as companyId, " +
+                                "c.id as idCompany, c.name as companyName " +
+                                "from telephone_companies tc " +
+                                "join companies c on c.id = tc.company_id " +
+                                "where tc.company_id = ? and tc.is_active = true"
+                )
         ){
 
             pstmt.setInt(1, companyId);
@@ -151,24 +156,25 @@ public class TelephoneCompaniesDAO {
         }
     }
 
-
     /**
-     * metodo para buscar os telefones pelo nome da empresa
+     * metodo para buscar os telefones pelo nome da empresa (somente ativos)
      * @param name O nome da empresa
      * @return List<TelephoneCompanies> com os telefones encontrados
      */
     public List<TelephoneCompanies> searchByNameCompany(String name){
-        String sql = "select tc.*, tc.company_id as companyId, " +
-                "c.id as idCompany, c.name as companyName " +
-                "from telephone_companies tc " +
-                "join companies c on c.id = tc.company_id " +
-                "where c.name = ?";
 
         List<TelephoneCompanies> telephones = new ArrayList<>();
         Companies company = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select tc.*, tc.company_id as companyId, " +
+                                "c.id as idCompany, c.name as companyName " +
+                                "from telephone_companies tc " +
+                                "join companies c on c.id = tc.company_id " +
+                                "where c.name ilike ? and tc.is_active = true"
+                )
         ){
 
             pstmt.setString(1, name);
@@ -199,20 +205,20 @@ public class TelephoneCompaniesDAO {
         }
     }
 
-
     /**
      * metodo para cadastrar novos telefones no banco
      * @param telephoneCompany O telefone
      * @return true se foi cadastrado e false caso tenha dado erro
      */
+    @Override
     public boolean register(TelephoneCompanies telephoneCompany){
-
-        String sql = "insert into telephone_companies (telephone, company_id) " +
-                "values (?, ?)";
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into telephone_companies (telephone, company_id) " +
+                                "values (?, ?)"
+                )
         ){
 
             pstmt.setString(1, telephoneCompany.getTelephone());
@@ -224,20 +230,22 @@ public class TelephoneCompaniesDAO {
             e.printStackTrace();
             return false;
         }
-
     }
 
-
     /**
-     * metodo que deleta por id
+     * metodo que desativa o telefone por id (is_active = false)
      * @param id O id unico do telefone
-     * @return true se deu certo e false caso tenha algum erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
-    public boolean deleteById(int id){
-        String sql = "delete from telephone_companies where id = ?";
+    @Override
+    public boolean delete(int id){
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update telephone_companies set is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
 
             pstmt.setInt(1, id);
 
@@ -249,17 +257,19 @@ public class TelephoneCompaniesDAO {
         }
     }
 
-
     /**
-     * metodo que deleta por id da empresa (para quando uma empresa for deletada)
+     * metodo que desativa os telefones de uma empresa (para quando uma empresa for desativada)
      * @param companyId O id da empresa
-     * @return true se deu certo e false caso tenha algum erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
     public boolean deleteByCompanyId(int companyId){
-        String sql = "delete from telephone_companies where company_id = ?";
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update telephone_companies set is_active = false, updated_at = current_timestamp where company_id = ?"
+                )
+        ) {
 
             pstmt.setInt(1, companyId);
 
@@ -271,21 +281,24 @@ public class TelephoneCompaniesDAO {
         }
     }
 
-
     /**
      * metodo que muda os values do telefone selecionado pelo id
      * @param telephoneCompany O telefone com os novos valores
      * @param id O id para buscar o telefone
      * @return true se deu certo e false caso tenha algum erro
      */
-    public boolean updateById(TelephoneCompanies telephoneCompany, int id){
-        String sql = "update telephone_companies set telephone = ?, " +
-                "company_id = ?, " +
-                "updated_at = current_timestamp " +
-                "where id = ?";
+    @Override
+    public boolean update(TelephoneCompanies telephoneCompany, int id){
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update telephone_companies set telephone = ?, " +
+                                "company_id = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ){
 
             pstmt.setString(1, telephoneCompany.getTelephone());
             pstmt.setInt(2, telephoneCompany.getCompanyId());

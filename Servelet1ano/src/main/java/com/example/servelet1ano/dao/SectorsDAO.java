@@ -9,32 +9,33 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectorsDAO {
+public class SectorsDAO implements DAOI<Sectors> {
 
     /**
-     * Metodo que busca todos os setores
-     *
+     * Metodo que busca todos os setores ativos
      * @return List<Sectors> Lista dos setores
      */
+    @Override
     public List<Sectors> searchAll(){
 
         List<Sectors> sectors = new ArrayList<>();
         Companies company = null;
         Units unit = null;
 
-        String sql = "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                "c.id as idCompany, c.name as companyName, " +
-                "u.id as idUnit, u.name as unitName " +
-                "from sectors s " +
-                "join companies c on c.id = s.company_id " +
-                "join units u on u.id = s.unit_id";
-
         try (
                 Connection conn = ConnectionFactory.connect();
-                Statement stmt = conn.createStatement()
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where s.is_active = true"
+                )
         ){
 
-            ResultSet rs = stmt.executeQuery(sql);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
 
@@ -70,25 +71,28 @@ public class SectorsDAO {
     }
 
     /**
-     * metodo para buscar por Id
+     * metodo para buscar por Id (somente ativos)
      * @param id Numero unico do setor
      * @return Retorna o setor encontrado
      */
+    @Override
     public Sectors searchById(int id){
-        String sql = "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                "c.id as idCompany, c.name as companyName, " +
-                "u.id as idUnit, u.name as unitName " +
-                "from sectors s " +
-                "join companies c on c.id = s.company_id " +
-                "join units u on u.id = s.unit_id " +
-                "where s.id = ?";
 
         Sectors sector = null;
         Companies company = null;
         Units unit = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where s.id = ? and s.is_active = true"
+                )
         ){
 
             pstmt.setInt(1, id);
@@ -124,25 +128,27 @@ public class SectorsDAO {
     }
 
     /**
-     * metodo para buscar setores pela descricao
+     * metodo para buscar setores pela descricao (somente ativos)
      * @param description A descricao do setor
      * @return List<Sectors> com os setores encontrados
      */
     public List<Sectors> searchByDescription(String description){
-        String sql = "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                "c.id as idCompany, c.name as companyName, " +
-                "u.id as idUnit, u.name as unitName " +
-                "from sectors s " +
-                "join companies c on c.id = s.company_id " +
-                "join units u on u.id = s.unit_id " +
-                "where s.description like ?";
 
         List<Sectors> sectors = new ArrayList<>();
         Companies company = null;
         Units unit = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where s.description ilike ? and s.is_active = true"
+                )
         ){
 
             pstmt.setString(1, description);
@@ -181,25 +187,27 @@ public class SectorsDAO {
     }
 
     /**
-     * metodo para buscar setores pelo id da unidade
+     * metodo para buscar setores pelo id da unidade (somente ativos)
      * @param unitId O valor unico de cada unidade
      * @return List<Sectors> com os setores encontrados
      */
     public List<Sectors> searchByUnitId(int unitId){
-        String sql = "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                "c.id as idCompany, c.name as companyName, " +
-                "u.id as idUnit, u.name as unitName " +
-                "from sectors s " +
-                "join companies c on c.id = s.company_id " +
-                "join units u on u.id = s.unit_id " +
-                "where u.id = ?";
 
         List<Sectors> sectors = new ArrayList<>();
         Companies company = null;
         Units unit = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where u.id = ? and s.is_active = true"
+                )
         ){
 
             pstmt.setInt(1, unitId);
@@ -238,25 +246,27 @@ public class SectorsDAO {
     }
 
     /**
-     * metodo para buscar setores pelo id da empresa
+     * metodo para buscar setores pelo id da empresa (somente ativos)
      * @param companyId O valor unico de cada empresa
      * @return List<Sectors> com os setores encontrados
      */
     public List<Sectors> searchByCompanyId(int companyId){
-        String sql = "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                "c.id as idCompany, c.name as companyName, " +
-                "u.id as idUnit, u.name as unitName " +
-                "from sectors s " +
-                "join companies c on c.id = s.company_id " +
-                "join units u on u.id = s.unit_id " +
-                "where c.id = ?";
 
         List<Sectors> sectors = new ArrayList<>();
         Companies company = null;
         Units unit = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where c.id = ? and s.is_active = true"
+                )
         ){
 
             pstmt.setInt(1, companyId);
@@ -299,14 +309,15 @@ public class SectorsDAO {
      * @param sector O setor que sera cadastrado
      * @return true se foi registrado e false caso tenha dado erro
      */
+    @Override
     public boolean register(Sectors sector){
-
-        String sql = "insert into sectors (unit_id, company_id, description) " +
-                "values (?, ?, ?)";
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, description) " +
+                                "values (?, ?, ?)"
+                )
         ){
 
             pstmt.setInt(1, sector.getUnitId());
@@ -319,7 +330,6 @@ public class SectorsDAO {
             e.printStackTrace();
             return false;
         }
-
     }
 
     /**
@@ -328,11 +338,14 @@ public class SectorsDAO {
      * @return true se foi registrado e false caso tenha dado erro
      */
     public boolean registerLot(List<Sectors> sectors){
-        String sql = "insert into sectors (unit_id, company_id, description) " +
-                "values (?, ?, ?)";
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, description) " +
+                                "values (?, ?, ?)"
+                )
+        ){
 
             for (int i = 0; i < sectors.size(); i++) {
                 Sectors sector = sectors.get(i);
@@ -351,19 +364,22 @@ public class SectorsDAO {
             e.printStackTrace();
             return false;
         }
-
     }
 
     /**
-     * metodo para deletar o setor por id
+     * metodo para desativar o setor por id (is_active = false)
      * @param id Valor unico de cada setor
-     * @return true se foi deletado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
-    public boolean deleteById(int id){
-        String sql = "delete from sectors where id = ?";
+    @Override
+    public boolean delete(int id){
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
 
             pstmt.setInt(1, id);
 
@@ -376,15 +392,18 @@ public class SectorsDAO {
     }
 
     /**
-     * metodo que deleta pelo nome/descricao
+     * metodo que desativa pelo nome/descricao
      * @param description A descricao do setor
-     * @return true se foi deletado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
     public boolean deleteByDescription(String description){
-        String sql = "delete from sectors where description like ?";
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where description ilike ?"
+                )
+        ) {
 
             pstmt.setString(1, description);
 
@@ -402,15 +421,19 @@ public class SectorsDAO {
      * @param id O valor unico do setor que quer atualizar
      * @return true se foi mudado e false caso tenha dado erro
      */
-    public boolean updateById(Sectors sector, int id){
-        String sql = "update sectors set unit_id = ?, " +
-                "company_id = ?, " +
-                "description = ?, " +
-                "updated_at = current_timestamp " +
-                "where id = ?";
+    @Override
+    public boolean update(Sectors sector, int id){
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ){
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
@@ -432,14 +455,17 @@ public class SectorsDAO {
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean updateByDescription(Sectors sector, String description){
-        String sql = "update sectors set unit_id = ?, " +
-                "company_id = ?, " +
-                "description = ?, " +
-                "updated_at = current_timestamp " +
-                "where description like ?";
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where description ilike ?"
+                )
+        ){
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
@@ -457,8 +483,7 @@ public class SectorsDAO {
     //    ------------- Metodos específicos para admins das units --------------
 
     /**
-     * Metodo que busca todos os setores da unidade do usuario
-     *
+     * Metodo que busca todos os setores ativos da unidade do usuario
      * @param unitId id unico da unidade
      * @return List<Sectors> Lista dos setores
      */
@@ -468,17 +493,17 @@ public class SectorsDAO {
         Companies company = null;
         Units unit = null;
 
-        String sql = "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                "c.id as idCompany, c.name as companyName, " +
-                "u.id as idUnit, u.name as unitName " +
-                "from sectors s " +
-                "join companies c on c.id = s.company_id " +
-                "join units u on u.id = s.unit_id " +
-                "where u.id = ?";
-
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where u.id = ? and s.is_active = true"
+                )
         ){
 
             pstmt.setInt(1, unitId);
@@ -519,26 +544,28 @@ public class SectorsDAO {
     }
 
     /**
-     * metodo para buscar por Id se estiver na unidade
+     * metodo para buscar por Id se estiver na unidade (somente ativos)
      * @param id Numero unico do setor
      * @param unitId numero unico da unidade
      * @return Retorna o setor encontrado
      */
     public Sectors searchByIdPerUnit(int id, int unitId){
-        String sql = "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                "c.id as idCompany, c.name as companyName, " +
-                "u.id as idUnit, u.name as unitName " +
-                "from sectors s " +
-                "join companies c on c.id = s.company_id " +
-                "join units u on u.id = s.unit_id " +
-                "where s.id = ? and u.id = ?";
 
         Sectors sector = null;
         Companies company = null;
         Units unit = null;
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where s.id = ? and u.id = ? and s.is_active = true"
+                )
         ){
 
             pstmt.setInt(1, id);
@@ -582,12 +609,12 @@ public class SectorsDAO {
      */
     public boolean registerPerUnit(Sectors sector, int unitId){
 
-        String sql = "insert into sectors (unit_id, company_id, description) " +
-                "values (?, ?, ?)";
-
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, description) " +
+                                "values (?, ?, ?)"
+                )
         ){
             if(unitId != sector.getUnitId()){
                 return false;
@@ -603,7 +630,6 @@ public class SectorsDAO {
             e.printStackTrace();
             return false;
         }
-
     }
 
     /**
@@ -613,11 +639,14 @@ public class SectorsDAO {
      * @return true se foi registrado e false caso tenha dado erro
      */
     public boolean registerLotPerUnit(List<Sectors> sectors, int unitId){
-        String sql = "insert into sectors (unit_id, company_id, description) " +
-                "values (?, ?, ?)";
 
-        try (Connection conn = ConnectionFactory.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, description) " +
+                                "values (?, ?, ?)"
+                )
+        ){
 
             for (int i = 0; i < sectors.size(); i++) {
                 Sectors sector = sectors.get(i);
@@ -643,16 +672,19 @@ public class SectorsDAO {
     }
 
     /**
-     * metodo para deletar o setor por id que esta na unidade
+     * metodo para desativar o setor por id que esta na unidade
      * @param id Valor unico de cada setor
      * @param unitId Id da unidade para validacao
-     * @return true se foi deletado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro
      */
     public boolean deleteByIdPerUnit(int id, int unitId){
-        String sql = "delete from sectors where id = ?";
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
 
             Sectors sector = searchById(id);
 
@@ -684,14 +716,16 @@ public class SectorsDAO {
             return false;
         }
 
-        String sql = "update sectors set unit_id = ?, " +
-                "company_id = ?, " +
-                "description = ?, " +
-                "updated_at = current_timestamp " +
-                "where id = ?";
-
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ){
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
@@ -714,14 +748,17 @@ public class SectorsDAO {
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean updateByDescriptionPerUnit(Sectors sector, String description, int unitId){
-        String sql = "update sectors set unit_id = ?, " +
-                "company_id = ?, " +
-                "description = ?, " +
-                "updated_at = current_timestamp " +
-                "where description like ? and unit_id = ?";
 
-        try(Connection conn = ConnectionFactory.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)){
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where description ilike ? and unit_id = ?"
+                )
+        ){
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
