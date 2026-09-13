@@ -1,6 +1,7 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.UnitsFilter;
 import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Units;
@@ -9,43 +10,81 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UnitsDAO implements DAOI<Units> {
+public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
-     * Metodo que busca todas as units ativas
-     * @return List<Units> Lista das units
+     * Metodo que busca as units ativas aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Units> com as units encontradas
      */
     @Override
-    public List<Units> searchAll() {
+    public List<Units> searchAll(UnitsFilter filter) {
 
         List<Units> units = new ArrayList<>();
-        Companies company = null;
-        Addresses address = null;
+
+        StringBuilder sql = new StringBuilder(
+                "select u.*, u.company_id as companyId, u.address_id as addressId, " +
+                        "c.name as companyName, c.id as idCompany, " +
+                        "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
+                        "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
+                        "from units u " +
+                        "join companies c on u.company_id = c.id " +
+                        "join addresses a on a.id = u.address_id " +
+                        "where u.is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and u.id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getCompanyId() != null) {
+            sql.append(" and u.company_id = ?");
+            parametros.add(filter.getCompanyId());
+        }
+
+        if (filter.getCompanyName() != null && !filter.getCompanyName().isBlank()) {
+            sql.append(" and c.name ilike ?");
+            parametros.add("%" + filter.getCompanyName() + "%");
+        }
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            sql.append(" and u.name ilike ?");
+            parametros.add("%" + filter.getName() + "%");
+        }
+
+        if (filter.getCnpj() != null && !filter.getCnpj().isBlank()) {
+            sql.append(" and u.cnpj = ?");
+            parametros.add(filter.getCnpj());
+        }
+
+        if (filter.getCnae() != null && !filter.getCnae().isBlank()) {
+            sql.append(" and u.cnae = ?");
+            parametros.add(filter.getCnae());
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                                "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from units u " +
-                                "join companies c on u.company_id = c.id " +
-                                "join addresses a on a.id = u.address_id " +
-                                "where u.is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
 
-                company = new Companies(
+                Companies company = new Companies(
                         rs.getInt("idCompany"),
                         rs.getString("companyName")
                 );
 
-                address = new Addresses(
+                Addresses address = new Addresses(
                         rs.getInt("idAddress"),
                         rs.getString("addressStreet"),
                         rs.getString("addressNumber"),
@@ -72,9 +111,9 @@ public class UnitsDAO implements DAOI<Units> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return units;
         }
+
+        return units;
     }
 
     /**
@@ -86,8 +125,6 @@ public class UnitsDAO implements DAOI<Units> {
     public Units searchById(int id) {
 
         Units unit = null;
-        Companies company = null;
-        Addresses address = null;
 
         try (
                 Connection conn = ConnectionFactory.connect();
@@ -109,12 +146,12 @@ public class UnitsDAO implements DAOI<Units> {
 
             if (rs.next()) {
 
-                company = new Companies(
+                Companies company = new Companies(
                         rs.getInt("idCompany"),
                         rs.getString("companyName")
                 );
 
-                address = new Addresses(
+                Addresses address = new Addresses(
                         rs.getInt("idAddress"),
                         rs.getString("addressStreet"),
                         rs.getString("addressNumber"),
@@ -139,347 +176,9 @@ public class UnitsDAO implements DAOI<Units> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return unit;
         }
-    }
 
-    /**
-     * metodo para buscar por Id da empresa (somente ativas)
-     * @param companyId O valor unico de cada empresa
-     * @return List<Units> com as units encontradas
-     */
-    public List<Units> searchByCompanyId(int companyId) {
-
-        List<Units> units = new ArrayList<>();
-        Companies company = null;
-        Addresses address = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                                "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from units u " +
-                                "join companies c on u.company_id = c.id " +
-                                "join addresses a on a.id = u.address_id " +
-                                "where u.company_id = ? and u.is_active = true"
-                )
-        ) {
-
-            pstmt.setInt(1, companyId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                units.add(
-                        new Units(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                rs.getString("cnpj"),
-                                rs.getString("cnae"),
-                                rs.getBoolean("is_active"),
-                                company,
-                                address
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return units;
-        }
-    }
-
-    /**
-     * metodo para buscar as units pelo nome da empresa (somente ativas)
-     * @param name O nome da empresa
-     * @return List<Units> com as units encontradas
-     */
-    public List<Units> searchByNameCompany(String name) {
-
-        List<Units> units = new ArrayList<>();
-        Companies company = null;
-        Addresses address = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                                "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from units u " +
-                                "join companies c on u.company_id = c.id " +
-                                "join addresses a on a.id = u.address_id " +
-                                "where c.name ilike ? and u.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                units.add(
-                        new Units(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                rs.getString("cnpj"),
-                                rs.getString("cnae"),
-                                rs.getBoolean("is_active"),
-                                company,
-                                address
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return units;
-        }
-    }
-
-    /**
-     * metodo para buscar por nome da unit (somente ativas)
-     * @param name O nome da unit
-     * @return List<Units> com as units encontradas
-     */
-    public List<Units> searchByName(String name) {
-
-        List<Units> units = new ArrayList<>();
-        Companies company = null;
-        Addresses address = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                                "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from units u " +
-                                "join companies c on u.company_id = c.id " +
-                                "join addresses a on a.id = u.address_id " +
-                                "where u.name ilike ? and u.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                units.add(
-                        new Units(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                rs.getString("cnpj"),
-                                rs.getString("cnae"),
-                                rs.getBoolean("is_active"),
-                                company,
-                                address
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return units;
-        }
-    }
-
-    /**
-     * metodo para buscar por cnpj da unit (somente ativas)
-     * @param cnpj O cnpj da unit
-     * @return Retorna a unit encontrada
-     */
-    public Units searchByCnpj(String cnpj) {
-
-        Units unit = null;
-        Companies company = null;
-        Addresses address = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                                "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from units u " +
-                                "join companies c on u.company_id = c.id " +
-                                "join addresses a on a.id = u.address_id " +
-                                "where u.cnpj = ? and u.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, cnpj);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                unit = new Units(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("cnpj"),
-                        rs.getString("cnae"),
-                        rs.getBoolean("is_active"),
-                        company,
-                        address
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return unit;
-        }
-    }
-
-    /**
-     * metodo para buscar por cnae da unit (somente ativas)
-     * @param cnae O cnae (Classificação Nacional de Atividades Econômicas) da unit
-     * @return List<Units> com as units encontradas
-     */
-    public List<Units> searchByCnae(String cnae) {
-
-        List<Units> units = new ArrayList<>();
-        Companies company = null;
-        Addresses address = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                                "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from units u " +
-                                "join companies c on u.company_id = c.id " +
-                                "join addresses a on a.id = u.address_id " +
-                                "where u.cnae = ? and u.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, cnae);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                units.add(
-                        new Units(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                rs.getString("cnpj"),
-                                rs.getString("cnae"),
-                                rs.getBoolean("is_active"),
-                                company,
-                                address
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return units;
-        }
+        return unit;
     }
 
     /**
@@ -580,13 +279,16 @@ public class UnitsDAO implements DAOI<Units> {
 
     /**
      * metodo que desativa as units de uma empresa (para quando uma empresa for desativada)
-     * Busca as units ativas da empresa e desativa uma por uma, reaproveitando delete() pra cascatear os funcionarios de cada unidade
+     * Busca as units ativas da empresa via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os funcionarios de cada unidade
      * @param companyId O id da empresa
      * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
      */
     public boolean deleteByCompanyId(int companyId) {
 
-        List<Units> units = searchByCompanyId(companyId);
+        UnitsFilter filter = new UnitsFilter();
+        filter.setCompanyId(companyId);
+
+        List<Units> units = searchAll(filter);
         boolean allSuccess = true;
 
         for (int i = 0; i < units.size(); i++) {
@@ -600,13 +302,16 @@ public class UnitsDAO implements DAOI<Units> {
 
     /**
      * metodo que desativa pelo nome
-     * Busca as units ativas pelo nome e desativa uma por uma, reaproveitando delete() pra cascatear os funcionarios de cada unidade
+     * Busca as units ativas pelo nome via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os funcionarios de cada unidade
      * @param name O nome da unit
      * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
      */
     public boolean deleteByName(String name) {
 
-        List<Units> units = searchByName(name);
+        UnitsFilter filter = new UnitsFilter();
+        filter.setName(name);
+
+        List<Units> units = searchAll(filter);
         boolean allSuccess = true;
 
         for (int i = 0; i < units.size(); i++) {

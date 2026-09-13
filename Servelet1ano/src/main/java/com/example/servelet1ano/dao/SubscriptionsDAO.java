@@ -1,6 +1,7 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.SubscriptionsFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Subscriptions;
 
@@ -8,34 +9,53 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SubscriptionsDAO implements DAOI<Subscriptions> {
+public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter> {
 
     /**
-     * Metodo que busca todas as assinaturas ativas
-     * @return List<Subscriptions> Lista das assinaturas
+     * Metodo que busca as assinaturas ativas aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Subscriptions> com as assinaturas encontradas
      */
     @Override
-    public List<Subscriptions> searchAll(){
+    public List<Subscriptions> searchAll(SubscriptionsFilter filter){
 
         List<Subscriptions> subscriptions = new ArrayList<>();
-        Companies company = null;
+
+        StringBuilder sql = new StringBuilder(
+                "select s.*, s.company_id as companyId, s.plan_id as planId, " +
+                        "c.id as idCompany, c.name as companyName " +
+                        "from subscriptions s " +
+                        "join companies c on c.id = s.company_id " +
+                        "where s.is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and s.id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getCompanyId() != null) {
+            sql.append(" and s.company_id = ?");
+            parametros.add(filter.getCompanyId());
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.plan_id as planId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from subscriptions s " +
-                                "join companies c on c.id = s.company_id " +
-                                "where s.is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ){
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
 
-                company = new Companies(
+                Companies company = new Companies(
                         rs.getInt("idCompany"),
                         rs.getString("companyName")
                 );
@@ -70,7 +90,6 @@ public class SubscriptionsDAO implements DAOI<Subscriptions> {
     public Subscriptions searchById(int id){
 
         Subscriptions subscription = null;
-        Companies company = null;
 
         try (
                 Connection conn = ConnectionFactory.connect();
@@ -88,7 +107,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions> {
             ResultSet rs = pstmt.executeQuery();
 
             if(rs.next()){
-                company = new Companies(
+                Companies company = new Companies(
                         rs.getInt("idCompany"),
                         rs.getString("companyName")
                 );
@@ -107,57 +126,6 @@ public class SubscriptionsDAO implements DAOI<Subscriptions> {
             e.printStackTrace();
         } finally {
             return subscription;
-        }
-    }
-
-    /**
-     * metodo para buscar assinaturas pela empresa (somente ativas)
-     * @param companyId O id da empresa
-     * @return List<Subscriptions> com as assinaturas encontradas
-     */
-    public List<Subscriptions> searchByCompanyId(int companyId){
-
-        List<Subscriptions> subscriptions = new ArrayList<>();
-        Companies company = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.plan_id as planId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from subscriptions s " +
-                                "join companies c on c.id = s.company_id " +
-                                "where c.id = ? and s.is_active = true"
-                )
-        ){
-
-            pstmt.setInt(1, companyId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while(rs.next()){
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                subscriptions.add(
-                        new Subscriptions(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("planId"),
-                                rs.getBoolean("is_active"),
-                                rs.getBoolean("installments"),
-                                company
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return subscriptions;
         }
     }
 

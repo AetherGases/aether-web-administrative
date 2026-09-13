@@ -1,6 +1,7 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.EmployeesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.model.PermissionGroups;
@@ -10,33 +11,74 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmployeesDAO implements DAOI<Employees> {
+public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
     /**
-     * Metodo que busca todos os funcionarios ativos
-     * @return List<Employees> Lista dos funcionários
+     * Metodo que busca os funcionarios ativos aplicando os filtros informados
+     * Os campos do filter que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Usado tanto pra busca geral (admin Aether) quanto pra busca por unidade (admin da unidade, preenchendo unitId)
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Employees> com os empregados encontrados
      */
     @Override
-    public List<Employees> searchAll() {
+    public List<Employees> searchAll(EmployeesFilter filter) {
 
         List<Employees> employees = new ArrayList<>();
         Companies company = null;
         PermissionGroups permissionGroup = null;
         Units unit = null;
 
+        StringBuilder sql = new StringBuilder(
+                "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
+                        "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
+                        "u.name as unitName, u.id as idUnit " +
+                        "from employees e " +
+                        "join companies c on e.company_id = c.id " +
+                        "join permission_groups pg on e.permission_group_id = pg.id " +
+                        "join units u on u.id = e.unit_id " +
+                        "where e.is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and e.id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            sql.append(" and e.name ilike ?");
+            parametros.add("%" + filter.getName() + "%");
+        }
+
+        if (filter.getCompanyId() != null) {
+            sql.append(" and e.company_id = ?");
+            parametros.add(filter.getCompanyId());
+        }
+
+        if (filter.getCompanyName() != null && !filter.getCompanyName().isBlank()) {
+            sql.append(" and c.name ilike ?");
+            parametros.add("%" + filter.getCompanyName() + "%");
+        }
+
+        if (filter.getUnitId() != null) {
+            sql.append(" and u.id = ?");
+            parametros.add(filter.getUnitId());
+        }
+
+        if (filter.getUnitName() != null && !filter.getUnitName().isBlank()) {
+            sql.append(" and u.name ilike ?");
+            parametros.add("%" + filter.getUnitName() + "%");
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join companies c on e.company_id = c.id " +
-                                "join permission_groups pg on e.permission_group_id = pg.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where e.is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -143,351 +185,6 @@ public class EmployeesDAO implements DAOI<Employees> {
             e.printStackTrace();
         } finally {
             return employee;
-        }
-    }
-
-    /**
-     * metodo para buscar por Id da empresa (somente ativos)
-     * @param idCompany O valor unico de cada empresa
-     * @return List<Employees> com os empregados encontrados
-     */
-    public List<Employees> searchByIdCompany(int idCompany) {
-
-        List<Employees> employees = new ArrayList<>();
-        Companies company = null;
-        PermissionGroups permissionGroup = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
-                                "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where e.company_id = ? and e.is_active = true"
-                )
-        ) {
-
-            pstmt.setInt(1, idCompany);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                permissionGroup = new PermissionGroups(
-                        rs.getInt("idPermissionGroup"),
-                        rs.getString("permissionGroup")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                employees.add(
-                        new Employees(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("permissionGroupId"),
-                                rs.getInt("unitId"),
-                                rs.getString("email"),
-                                rs.getString("name"),
-                                permissionGroup,
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employees;
-        }
-    }
-
-    /**
-     * metodo para buscar os empregados pelo nome da empresa (somente ativos)
-     * @param name O nome da empresa
-     * @return List<Employees> com os empregados encontrados
-     */
-    public List<Employees> searchByNameCompany(String name) {
-
-        List<Employees> employees = new ArrayList<>();
-        Companies company = null;
-        PermissionGroups permissionGroup = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
-                                "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where c.name ilike ? and e.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                permissionGroup = new PermissionGroups(
-                        rs.getInt("idPermissionGroup"),
-                        rs.getString("permissionGroup")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                employees.add(
-                        new Employees(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("permissionGroupId"),
-                                rs.getInt("unitId"),
-                                rs.getString("email"),
-                                rs.getString("name"),
-                                permissionGroup,
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employees;
-        }
-    }
-
-    /**
-     * metodo para buscar os empregados pelo id da unidade (somente ativos)
-     * @param idUnit O valor unico de cada unidade
-     * @return List<Employees> com os empregados encontrados
-     */
-    public List<Employees> searchByIdUnit(int idUnit) {
-
-        List<Employees> employees = new ArrayList<>();
-        Companies company = null;
-        PermissionGroups permissionGroup = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
-                                "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where u.id = ? and e.is_active = true"
-                )
-        ) {
-
-            pstmt.setInt(1, idUnit);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                permissionGroup = new PermissionGroups(
-                        rs.getInt("idPermissionGroup"),
-                        rs.getString("permissionGroup")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                employees.add(
-                        new Employees(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("permissionGroupId"),
-                                rs.getInt("unitId"),
-                                rs.getString("email"),
-                                rs.getString("name"),
-                                permissionGroup,
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employees;
-        }
-    }
-
-    /**
-     * metodo para buscar os empregados pelo nome da unidade (somente ativos)
-     * @param name O nome da unidade
-     * @return List<Employees> com os empregados encontrados
-     */
-    public List<Employees> searchByNameUnit(String name) {
-
-        List<Employees> employees = new ArrayList<>();
-        Companies company = null;
-        PermissionGroups permissionGroup = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
-                                "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where u.name ilike ? and e.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                permissionGroup = new PermissionGroups(
-                        rs.getInt("idPermissionGroup"),
-                        rs.getString("permissionGroup")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                employees.add(
-                        new Employees(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("permissionGroupId"),
-                                rs.getInt("unitId"),
-                                rs.getString("email"),
-                                rs.getString("name"),
-                                permissionGroup,
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employees;
-        }
-    }
-
-    /**
-     * metodo para buscar por nome do empregado (somente ativos)
-     * @param name O nome do funcionario
-     * @return List<Employees> com os empregados encontrados
-     */
-    public List<Employees> searchByName(String name) {
-
-        List<Employees> employees = new ArrayList<>();
-        Companies company = null;
-        PermissionGroups permissionGroup = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
-                                "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where e.name ilike ? and e.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                permissionGroup = new PermissionGroups(
-                        rs.getInt("idPermissionGroup"),
-                        rs.getString("permissionGroup")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                employees.add(
-                        new Employees(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("permissionGroupId"),
-                                rs.getInt("unitId"),
-                                rs.getString("email"),
-                                rs.getString("name"),
-                                permissionGroup,
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employees;
         }
     }
 
@@ -829,143 +526,6 @@ public class EmployeesDAO implements DAOI<Employees> {
 
 
 //    ------------- Metodos específicos para admins das units --------------
-
-    /**
-     * Metodo que busca todos os funcionarios ativos da unidade do usuario
-     * @param unitId id unico da unidade
-     * @return List<Employees> Lista dos funcionários
-     */
-    public List<Employees> searchAllPerUnit(int unitId) {
-
-        List<Employees> employees = new ArrayList<>();
-        Companies company = null;
-        PermissionGroups permissionGroup = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join companies c on e.company_id = c.id " +
-                                "join permission_groups pg on e.permission_group_id = pg.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where u.id = ? and e.is_active = true"
-                )
-        ) {
-
-            pstmt.setInt(1, unitId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                permissionGroup = new PermissionGroups(
-                        rs.getInt("idPermissionGroup"),
-                        rs.getString("permissionGroup")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                employees.add(
-                        new Employees(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("permissionGroupId"),
-                                rs.getInt("unitId"),
-                                rs.getString("email"),
-                                rs.getString("name"),
-                                permissionGroup,
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employees;
-        }
-    }
-
-    /**
-     * metodo para buscar por Id se estiver na unidade (somente ativos)
-     * @param id Numero unico do empregado
-     * @param unitId numero unico da unidade
-     * @return Retorna o empregado encontrado
-     */
-    public Employees searchByIdPerUnit(int id, int unitId) {
-
-        Employees employee = null;
-        PermissionGroups permissionGroup = null;
-        Companies company = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit " +
-                                "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
-                                "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "where e.id = ? and u.id = ? and e.is_active = true"
-                )
-        ) {
-
-            pstmt.setInt(1, id);
-            pstmt.setInt(2, unitId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                permissionGroup = new PermissionGroups(
-                        rs.getInt("idPermissionGroup"),
-                        rs.getString("permissionGroup")
-                );
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                employee = new Employees(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("permissionGroupId"),
-                        rs.getInt("unitId"),
-                        rs.getString("email"),
-                        rs.getString("name"),
-                        permissionGroup,
-                        company,
-                        unit
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employee;
-        }
-    }
 
     /**
      * metodo para cadastrar novos empregados no banco

@@ -1,6 +1,7 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.AddressesFilter;
 import com.example.servelet1ano.model.Addresses;
 
 import java.sql.*;
@@ -8,23 +9,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AddressesDAO implements DAOI<Addresses> {
+public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
     /**
-     * Metodo que busca todos os enderecos ativos
-     * @return List<Addresses> Lista dos enderecos
+     * Metodo que busca os enderecos ativos aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Addresses> com os enderecos encontrados
      */
+
     @Override
-    public List<Addresses> searchAll() {
+    public List<Addresses> searchAll(AddressesFilter filter) {
 
         List<Addresses> addresses = new ArrayList<>();
 
+        StringBuilder sql = new StringBuilder(
+                "select * from addresses where is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getCity() != null && !filter.getCity().isBlank()) {
+            sql.append(" and city ilike ?");
+            parametros.add("%" + filter.getCity() + "%");
+        }
+
+        if (filter.getState() != null && !filter.getState().isBlank()) {
+            sql.append(" and state ilike ?");
+            parametros.add("%" + filter.getState() + "%");
+        }
+
+        if (filter.getCountry() != null && !filter.getCountry().isBlank()) {
+            sql.append(" and country ilike ?");
+            parametros.add("%" + filter.getCountry() + "%");
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select * from addresses where is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 

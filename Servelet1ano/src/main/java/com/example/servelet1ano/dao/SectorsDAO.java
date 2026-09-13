@@ -1,6 +1,7 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.SectorsFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Sectors;
 import com.example.servelet1ano.model.Units;
@@ -9,31 +10,62 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SectorsDAO implements DAOI<Sectors> {
+public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
     /**
-     * Metodo que busca todos os setores ativos
-     * @return List<Sectors> Lista dos setores
+     * Metodo que busca os setores ativos aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Usado tanto pra busca geral (admin Aether) quanto pra busca por unidade (admin da unidade, preenchendo unitId)
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Sectors> com os setores encontrados
      */
     @Override
-    public List<Sectors> searchAll(){
+    public List<Sectors> searchAll(SectorsFilter filter){
 
         List<Sectors> sectors = new ArrayList<>();
         Companies company = null;
         Units unit = null;
 
+        StringBuilder sql = new StringBuilder(
+                "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                        "c.id as idCompany, c.name as companyName, " +
+                        "u.id as idUnit, u.name as unitName " +
+                        "from sectors s " +
+                        "join companies c on c.id = s.company_id " +
+                        "join units u on u.id = s.unit_id " +
+                        "where s.is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and s.id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getDescription() != null && !filter.getDescription().isBlank()) {
+            sql.append(" and s.description ilike ?");
+            parametros.add("%" + filter.getDescription() + "%");
+        }
+
+        if (filter.getUnitId() != null) {
+            sql.append(" and u.id = ?");
+            parametros.add(filter.getUnitId());
+        }
+
+        if (filter.getCompanyId() != null) {
+            sql.append(" and c.id = ?");
+            parametros.add(filter.getCompanyId());
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                                "c.id as idCompany, c.name as companyName, " +
-                                "u.id as idUnit, u.name as unitName " +
-                                "from sectors s " +
-                                "join companies c on c.id = s.company_id " +
-                                "join units u on u.id = s.unit_id " +
-                                "where s.is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ){
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -124,183 +156,6 @@ public class SectorsDAO implements DAOI<Sectors> {
             e.printStackTrace();
         } finally {
             return sector;
-        }
-    }
-
-    /**
-     * metodo para buscar setores pela descricao (somente ativos)
-     * @param description A descricao do setor
-     * @return List<Sectors> com os setores encontrados
-     */
-    public List<Sectors> searchByDescription(String description){
-
-        List<Sectors> sectors = new ArrayList<>();
-        Companies company = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                                "c.id as idCompany, c.name as companyName, " +
-                                "u.id as idUnit, u.name as unitName " +
-                                "from sectors s " +
-                                "join companies c on c.id = s.company_id " +
-                                "join units u on u.id = s.unit_id " +
-                                "where s.description ilike ? and s.is_active = true"
-                )
-        ){
-
-            pstmt.setString(1, description);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while(rs.next()){
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                sectors.add(
-                        new Sectors(
-                                rs.getInt("id"),
-                                rs.getInt("unitId"),
-                                rs.getInt("companyId"),
-                                rs.getString("description"),
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return sectors;
-        }
-    }
-
-    /**
-     * metodo para buscar setores pelo id da unidade (somente ativos)
-     * @param unitId O valor unico de cada unidade
-     * @return List<Sectors> com os setores encontrados
-     */
-    public List<Sectors> searchByUnitId(int unitId){
-
-        List<Sectors> sectors = new ArrayList<>();
-        Companies company = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                                "c.id as idCompany, c.name as companyName, " +
-                                "u.id as idUnit, u.name as unitName " +
-                                "from sectors s " +
-                                "join companies c on c.id = s.company_id " +
-                                "join units u on u.id = s.unit_id " +
-                                "where u.id = ? and s.is_active = true"
-                )
-        ){
-
-            pstmt.setInt(1, unitId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while(rs.next()){
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                sectors.add(
-                        new Sectors(
-                                rs.getInt("id"),
-                                rs.getInt("unitId"),
-                                rs.getInt("companyId"),
-                                rs.getString("description"),
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return sectors;
-        }
-    }
-
-    /**
-     * metodo para buscar setores pelo id da empresa (somente ativos)
-     * @param companyId O valor unico de cada empresa
-     * @return List<Sectors> com os setores encontrados
-     */
-    public List<Sectors> searchByCompanyId(int companyId){
-
-        List<Sectors> sectors = new ArrayList<>();
-        Companies company = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                                "c.id as idCompany, c.name as companyName, " +
-                                "u.id as idUnit, u.name as unitName " +
-                                "from sectors s " +
-                                "join companies c on c.id = s.company_id " +
-                                "join units u on u.id = s.unit_id " +
-                                "where c.id = ? and s.is_active = true"
-                )
-        ){
-
-            pstmt.setInt(1, companyId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while(rs.next()){
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                sectors.add(
-                        new Sectors(
-                                rs.getInt("id"),
-                                rs.getInt("unitId"),
-                                rs.getInt("companyId"),
-                                rs.getString("description"),
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return sectors;
         }
     }
 
@@ -481,125 +336,6 @@ public class SectorsDAO implements DAOI<Sectors> {
     }
 
     //    ------------- Metodos específicos para admins das units --------------
-
-    /**
-     * Metodo que busca todos os setores ativos da unidade do usuario
-     * @param unitId id unico da unidade
-     * @return List<Sectors> Lista dos setores
-     */
-    public List<Sectors> searchAllPerUnit(int unitId){
-
-        List<Sectors> sectors = new ArrayList<>();
-        Companies company = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                                "c.id as idCompany, c.name as companyName, " +
-                                "u.id as idUnit, u.name as unitName " +
-                                "from sectors s " +
-                                "join companies c on c.id = s.company_id " +
-                                "join units u on u.id = s.unit_id " +
-                                "where u.id = ? and s.is_active = true"
-                )
-        ){
-
-            pstmt.setInt(1, unitId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()){
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                sectors.add(
-                        new Sectors(
-                                rs.getInt("id"),
-                                rs.getInt("unitId"),
-                                rs.getInt("companyId"),
-                                rs.getString("description"),
-                                company,
-                                unit
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        finally {
-            return sectors;
-        }
-    }
-
-    /**
-     * metodo para buscar por Id se estiver na unidade (somente ativos)
-     * @param id Numero unico do setor
-     * @param unitId numero unico da unidade
-     * @return Retorna o setor encontrado
-     */
-    public Sectors searchByIdPerUnit(int id, int unitId){
-
-        Sectors sector = null;
-        Companies company = null;
-        Units unit = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
-                                "c.id as idCompany, c.name as companyName, " +
-                                "u.id as idUnit, u.name as unitName " +
-                                "from sectors s " +
-                                "join companies c on c.id = s.company_id " +
-                                "join units u on u.id = s.unit_id " +
-                                "where s.id = ? and u.id = ? and s.is_active = true"
-                )
-        ){
-
-            pstmt.setInt(1, id);
-            pstmt.setInt(2, unitId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if(rs.next()){
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                unit = new Units(
-                        rs.getInt("idUnit"),
-                        rs.getString("unitName")
-                );
-
-                sector = new Sectors(
-                        rs.getInt("id"),
-                        rs.getInt("unitId"),
-                        rs.getInt("companyId"),
-                        rs.getString("description"),
-                        company,
-                        unit
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return sector;
-        }
-    }
 
     /**
      * metodo para cadastrar novos setores no banco de uma unidade

@@ -1,6 +1,7 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
 
@@ -8,28 +9,58 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompaniesDAO implements DAOI<Companies> {
+public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
-     * Metodo que busca todas as empresas ativas
-     * @return List<Companies> Lista das empresas
+     * Metodo que busca as empresas ativas aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Companies> com as empresas encontradas
      */
     @Override
-    public List<Companies> searchAll() {
+    public List<Companies> searchAll(CompaniesFilter filter) {
 
         List<Companies> companies = new ArrayList<>();
 
+        StringBuilder sql = new StringBuilder(
+                "select c.*, c.address_id as addressId, " +
+                        "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
+                        "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
+                        "from companies c " +
+                        "join addresses a on a.id = c.address_id " +
+                        "where c.is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and c.id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            sql.append(" and c.name ilike ?");
+            parametros.add("%" + filter.getName() + "%");
+        }
+
+        if (filter.getCountry() != null && !filter.getCountry().isBlank()) {
+            sql.append(" and a.country ilike ?");
+            parametros.add("%" + filter.getCountry() + "%");
+        }
+
+        if (filter.getRegistrationDate() != null) {
+            sql.append(" and c.registration_date = ?");
+            parametros.add(filter.getRegistrationDate());
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select c.*, c.address_id as addressId, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from companies c " +
-                                "join addresses a on a.id = c.address_id " +
-                                "where c.is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -123,181 +154,6 @@ public class CompaniesDAO implements DAOI<Companies> {
         }
 
         return company;
-    }
-
-    /**
-     * Metodo para buscar por pais (somente ativas)
-     * @param country Nome do pais
-     * @return List<Companies> com as empresas encontradas
-     */
-    public List<Companies> searchByCountry(String country) {
-
-        List<Companies> companies = new ArrayList<>();
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select c.*, c.address_id as addressId, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from companies c " +
-                                "join addresses a on a.id = c.address_id " +
-                                "where a.country ilike ? and c.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, country);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                companies.add(
-                        new Companies(
-                                rs.getInt("id"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                rs.getInt("size"),
-                                rs.getDate("registration_date"),
-                                rs.getString("tax_id"),
-                                rs.getString("email"),
-                                rs.getDate("created_at"),
-                                address
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return companies;
-    }
-
-    /**
-     * Metodo para buscar pelo nome da empresa (somente ativas)
-     * @param name Nome da empresa
-     * @return Companies encontrada ou null caso nao exista
-     */
-    public Companies searchByName(String name) {
-
-        Companies company = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select c.*, c.address_id as addressId, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from companies c " +
-                                "join addresses a on a.id = c.address_id " +
-                                "where c.name ilike ? and c.is_active = true"
-                )
-        ) {
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                company = new Companies(
-                        rs.getInt("id"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getInt("size"),
-                        rs.getDate("registration_date"),
-                        rs.getString("tax_id"),
-                        rs.getString("email"),
-                        rs.getDate("created_at"),
-                        address
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return company;
-    }
-
-    /**
-     * Metodo para buscar pela data de registro (somente ativas)
-     * @param registrationDate Data de registro
-     * @return List<Companies> com as empresas encontradas
-     */
-    public List<Companies> searchByRegistration(Date registrationDate) {
-
-        List<Companies> companies = new ArrayList<>();
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select c.*, c.address_id as addressId, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from companies c " +
-                                "join addresses a on a.id = c.address_id " +
-                                "where c.registration_date = ? and c.is_active = true"
-                )
-        ) {
-
-            pstmt.setDate(1, registrationDate);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                companies.add(
-                        new Companies(
-                                rs.getInt("id"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                rs.getInt("size"),
-                                rs.getDate("registration_date"),
-                                rs.getString("tax_id"),
-                                rs.getString("email"),
-                                rs.getDate("created_at"),
-                                address
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return companies;
     }
 
     /**

@@ -1,29 +1,50 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.PermissionGroupsFilter;
 import com.example.servelet1ano.model.PermissionGroups;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PermissionGroupsDAO implements DAOI<PermissionGroups> {
+public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGroupsFilter> {
 
     /**
-     * Metodo que busca todos os grupos de permissao ativos
-     * @return List<PermissionGroups> Lista dos grupos de permissao
+     * Metodo que busca os grupos de permissao ativos aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<PermissionGroups> com os grupos encontrados
      */
     @Override
-    public List<PermissionGroups> searchAll(){
+    public List<PermissionGroups> searchAll(PermissionGroupsFilter filter){
 
         List<PermissionGroups> permissionGroups = new ArrayList<>();
 
+        StringBuilder sql = new StringBuilder(
+                "select * from permission_groups where is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            sql.append(" and name ilike ?");
+            parametros.add("%" + filter.getName() + "%");
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select * from permission_groups where is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ){
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 
@@ -78,43 +99,6 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups> {
             e.printStackTrace();
         } finally {
             return permissionGroup;
-        }
-    }
-
-    /**
-     * metodo para buscar pelo nome do grupo de permissao (somente ativos)
-     * @param name O nome do grupo de permissao
-     * @return List<PermissionGroups> com os grupos encontrados
-     */
-    public List<PermissionGroups> searchByName(String name){
-
-        List<PermissionGroups> permissionGroups = new ArrayList<>();
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select * from permission_groups where name ilike ? and is_active = true"
-                )
-        ){
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while(rs.next()){
-
-                permissionGroups.add(
-                        new PermissionGroups(
-                                rs.getInt("id"),
-                                rs.getString("name")
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return permissionGroups;
         }
     }
 

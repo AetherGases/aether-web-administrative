@@ -1,6 +1,7 @@
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.filter.TelephoneCompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.TelephoneCompanies;
 
@@ -8,34 +9,58 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies> {
+public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, TelephoneCompaniesFilter> {
 
     /**
-     * Metodo que busca todos os telefones ativos
-     * @return List<TelephoneCompanies> Lista dos telefones
+     * Metodo que busca os telefones ativos aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<TelephoneCompanies> com os telefones encontrados
      */
     @Override
-    public List<TelephoneCompanies> searchAll(){
+    public List<TelephoneCompanies> searchAll(TelephoneCompaniesFilter filter){
 
         List<TelephoneCompanies> telephones = new ArrayList<>();
-        Companies company = null;
+
+        StringBuilder sql = new StringBuilder(
+                "select tc.*, tc.company_id as companyId, " +
+                        "c.id as idCompany, c.name as companyName " +
+                        "from telephone_companies tc " +
+                        "join companies c on c.id = tc.company_id " +
+                        "where tc.is_active = true"
+        );
+
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getId() != null) {
+            sql.append(" and tc.id = ?");
+            parametros.add(filter.getId());
+        }
+
+        if (filter.getCompanyId() != null) {
+            sql.append(" and tc.company_id = ?");
+            parametros.add(filter.getCompanyId());
+        }
+
+        if (filter.getCompanyName() != null && !filter.getCompanyName().isBlank()) {
+            sql.append(" and c.name ilike ?");
+            parametros.add("%" + filter.getCompanyName() + "%");
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select tc.*, tc.company_id as companyId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from telephone_companies tc " +
-                                "join companies c on c.id = tc.company_id " +
-                                "where tc.is_active = true"
-                )
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ){
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()){
 
-                company = new Companies(
+                Companies company = new Companies(
                         rs.getInt("idCompany"),
                         rs.getString("companyName")
                 );
@@ -54,9 +79,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies> {
             e.printStackTrace();
         }
 
-        finally {
-            return telephones;
-        }
+        return telephones;
     }
 
     /**
@@ -68,7 +91,6 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies> {
     public TelephoneCompanies searchById(int id){
 
         TelephoneCompanies telephoneCompany = null;
-        Companies company = null;
 
         try (
                 Connection conn = ConnectionFactory.connect();
@@ -87,7 +109,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies> {
 
             if(rs.next()){
 
-                company = new Companies(
+                Companies company = new Companies(
                         rs.getInt("idCompany"),
                         rs.getString("companyName")
                 );
@@ -102,107 +124,9 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return telephoneCompany;
         }
-    }
 
-    /**
-     * metodo para buscar os telefones vinculados a empresa (somente ativos)
-     * @param companyId O id unico da empresa a qual o telefone esta vinculado (pode retornar mais de um)
-     * @return List<TelephoneCompanies> com os telefones encontrados
-     */
-    public List<TelephoneCompanies> searchByCompanyId(int companyId){
-
-        List<TelephoneCompanies> telephones = new ArrayList<>();
-        Companies company = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select tc.*, tc.company_id as companyId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from telephone_companies tc " +
-                                "join companies c on c.id = tc.company_id " +
-                                "where tc.company_id = ? and tc.is_active = true"
-                )
-        ){
-
-            pstmt.setInt(1, companyId);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while(rs.next()){
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                telephones.add(
-                        new TelephoneCompanies(
-                                rs.getString("telephone"),
-                                rs.getInt("companyId"),
-                                rs.getInt("id"),
-                                company
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return telephones;
-        }
-    }
-
-    /**
-     * metodo para buscar os telefones pelo nome da empresa (somente ativos)
-     * @param name O nome da empresa
-     * @return List<TelephoneCompanies> com os telefones encontrados
-     */
-    public List<TelephoneCompanies> searchByNameCompany(String name){
-
-        List<TelephoneCompanies> telephones = new ArrayList<>();
-        Companies company = null;
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select tc.*, tc.company_id as companyId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from telephone_companies tc " +
-                                "join companies c on c.id = tc.company_id " +
-                                "where c.name ilike ? and tc.is_active = true"
-                )
-        ){
-
-            pstmt.setString(1, name);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            while(rs.next()){
-
-                company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                telephones.add(
-                        new TelephoneCompanies(
-                                rs.getString("telephone"),
-                                rs.getInt("companyId"),
-                                rs.getInt("id"),
-                                company
-                        )
-                );
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return telephones;
-        }
+        return telephoneCompany;
     }
 
     /**
