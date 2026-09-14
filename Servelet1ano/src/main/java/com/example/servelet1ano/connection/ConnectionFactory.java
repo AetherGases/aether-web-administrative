@@ -9,8 +9,11 @@ public class ConnectionFactory {
 
         try {
             Class.forName("org.postgresql.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:postgresql://pg-af463ee-laisalmeida0143-375e.j.aivencloud.com:24903/db_aether?sslmode=require", "avnadmin", " ");
-
+            Connection conn = DriverManager.getConnection(
+                    DatabaseConfig.getUrl(),
+                    DatabaseConfig.getUser(),
+                    DatabaseConfig.getPassword()
+            );
             return conn;
         }
         catch (ClassNotFoundException | SQLException e){
