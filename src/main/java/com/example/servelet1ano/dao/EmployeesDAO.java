@@ -200,7 +200,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into employees (company_id, permission_group_id, unit_id, email, name, status) " +
-                                "values (?, ?, ?, ?, ?, ?)"
+                                "values (?, ?, ?, ?, ?, ?::status_employee)"
                 )
         ) {
 
