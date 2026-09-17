@@ -3,8 +3,9 @@ package com.example.servelet1ano;
 import com.example.servelet1ano.dao.*;
 import com.example.servelet1ano.filter.*;
 import com.example.servelet1ano.model.*;
+import com.example.servelet1ano.connection.ConnectionFactory;
 
-import java.sql.Date;
+import java.sql.*;
 import java.util.List;
 
 public class Main {
@@ -132,6 +133,42 @@ public class Main {
         int sectorId = sectorsDAO.searchAll(sectorFilter).get(0).getId();
         System.out.println("Setor criado, id: " + sectorId);
 
+        // ===================== PLANS (nao existe PlansDAO, insere direto so pra teste) =====================
+        System.out.println("\n===== PLANS (insercao direta, sem DAO) =====");
+
+        int planId = 0;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into plans (name, description, price) values (?, ?, ?)"
+                )
+        ) {
+            pstmt.setString(1, "Plano" + sufixo);
+            pstmt.setString(2, "Plano de teste");
+            pstmt.setBigDecimal(3, new java.math.BigDecimal("99.90"));
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select id from plans where name = ?"
+                )
+        ) {
+            pstmt.setString(1, "Plano" + sufixo);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                planId = rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Plano criado, id: " + planId);
+
         // ===================== SUBSCRIPTIONS =====================
         // ATENCAO: assume que ja existe uma linha com id = 1 na tabela plans
         System.out.println("\n===== SUBSCRIPTIONS =====");
@@ -139,7 +176,7 @@ public class Main {
         SubscriptionsDAO subscriptionsDAO = new SubscriptionsDAO();
 
         Subscriptions novaAssinatura = new Subscriptions(
-                0, companyId, 1, true, false, (Companies)null
+                0, companyId, planId, true, false, (Companies)null
         );
         subscriptionsDAO.register(novaAssinatura);
 
