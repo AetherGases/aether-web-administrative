@@ -32,9 +32,9 @@ body{
 .logoInicial{
     position: absolute;
     left: 72px;
-    top: 22px;
-    width: 178.63px;
-    height: 47.91px;
+    top: -42px;
+    width: 200px;
+    height: 200px;
 }
 
 
@@ -208,8 +208,7 @@ drop-shadow(3px 4px 11px 0px rgba(107, 158, 132, 10%));
 
 .botaoEsquerdoCarrossel{
     position: absolute;
-    left: 35.46px;
-    top: 282px;
+    top: -6px;
 
     width: 45px;
     height: 45px;
@@ -218,12 +217,13 @@ drop-shadow(3px 4px 11px 0px rgba(107, 158, 132, 10%));
     border: 4px solid #2DBD7E;
     background: #FFFFFF;
     opacity: 80%;
+
+    z-index: 0;
 }
 
 .botaoDireitoCarrossel{
     position: absolute;
-    left: 35.46px;
-    top: 282px;
+    left: 500px;
 
     width: 45px;
     height: 45px;
@@ -234,14 +234,32 @@ drop-shadow(3px 4px 11px 0px rgba(107, 158, 132, 10%));
     opacity: 80%;
 }
 
+.setaEsquerdaCarroselCelulares{
+    position: absolute;
+    top: 3px;
+    left: 13px;
+    z-index: 1;
+}
+
+.setaDireitaCarroselCelulares{
+    position: absolute;
+    top: 8px;
+    left: 516px;
+    z-index: 1;
+}
+
+
+.alinharPosiçaoComecarAgora{
+    position: relative;
+    left: 49px;
+    top: 483px;
+}
 
 .botaoComecarAgora{
     display: inline-flex;
     align-items: center;
     gap: 32px;
     position: absolute;
-    left: 49px;
-    top: 483px;
 
     width: 315px;
     height: 64px;
@@ -261,12 +279,13 @@ drop-shadow(5px 5px 5.7px 0px rgba(45, 189, 126, 0%));
 
 .botaoRedondoComecarAgora{
     position: absolute;
-    left: 280px;
-    top: 455px;
-    width: 120px;
-    height: 120px;
-    margin-left: auto;
-    margin-right: 0;
+    left: 251.06px;
+
+    width: 63.94px;
+    height: 64px;
+
+    background-color: #A8F0D2;
+    border-radius: 50%;
 }
 
 .Bola1{
@@ -856,6 +875,23 @@ drop-shadow(0px 4px 4px rgba(0, 0, 0, 25%))
     background: rgba(184, 255, 226, 100%);
     filter: blur(484.6px);
     z-index: -2;
+}
+
+.divBotoesInterativos{
+    width: 100%;
+    max-width: 100%;
+    font-family: "Montserrat", sans-serif;
+}
+
+.divTituloClicavel{
+    padding: 15px 10px;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    list-style: none; /* Remove a setinha padrão do navegador */
+    display: flex;
+    justify-content: space-between; /* Empurra o texto para a esquerda e o ícone para a direita */
+    align-items: center;
 }
 
 

@@ -6,7 +6,7 @@
 
     <title>Landing Page Aether</title>
 
-    <link rel="stylesheet" href="/src/main/webapp/style.css">
+    <link rel="stylesheet" href="WEB-INF/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -21,7 +21,7 @@
 
 <!--           SECTOR 1             -->
 <section>
-    <img class="logoInicial"  src="Imagens/Logo.svg" alt="Logo Aether">
+    <img class="logoInicial"  src="WEB-INF/Imagens/Logo.svg" alt="Logo Aether">
 
     <div class="retanguloMenuInicial montserrat">
         <nav>
@@ -46,23 +46,34 @@
         sugestões para troca de seus respectivos gases verdes, ou seja,<br>
         menor potencial de aquecimento global.</p>
 
+    <div class="alinharPosiçaoComecarAgora">
     <button class="botaoComecarAgora">COMEÇAR AGORA</button>
     <div class="botaoRedondoComecarAgora"></div>
+    </div>
 
     <p class="tipografiaFraseInicial">Pense no presente e mude seu futuro <br>
         ajudando empresas para um <span class="tipografiaFraseInicialDestaque">futuro <br> mais sustentável!</span> </p>
 
-    <img class="aekoInicial" src="Imagens/Aeko.svg" alt="Mascote Aether">
-    <img class="fundoVerde" src="Imagens/FundoVerdeCarrossel.svg" alt="Fundo Verde Para Carrosel de Celulares">
+    <img class="aekoInicial" src="WEB-INF/Imagens/Aeko.svg" alt="Mascote Aether">
+    <img class="fundoVerde" src="WEB-INF/Imagens/FundoVerdeCarrossel.svg" alt="Fundo Verde Para Carrosel de Celulares">
 
 
     '<div class="divCarroselCelular">
-    <img id="imagemCelular" class="celularInterativo" src="Imagens/CelularInterativo1.svg" alt="CelularInterativo">
+    <img id="imagemCelular" class="celularInterativo" src="WEB-INF/Imagens/CelularInterativo1.svg" alt="CelularInterativo">
 
     <div class="divBotoes">
+        <div>
         <button id="botaoAnterior" class="botaoEsquerdoCarrossel"></button>
+        <img class="setaEsquerdaCarroselCelulares" src="WEB-INF/Imagens/setaEsquerda.svg" alt="Seta Esquerda">
+        </div>
+
+        <div>
         <button id="botaoProximo" class="botaoDireitoCarrossel"></button>
+        <img class="setaDireitaCarroselCelulares" src="WEB-INF/Imagens/setaDireita.svg" alt="Seta Direita">
+        </div>
+
     </div>
+
 
 </div>
 
@@ -132,7 +143,7 @@
     <div class="cardEscopo1">
 
         <div>
-            <img class="imagemCaminhao" src="Imagens/caminhaoCard.svg" alt="Card Caminhão">
+            <img class="imagemCaminhao" src="WEB-INF/Imagens/caminhaoCard.svg" alt="Card Caminhão">
             <h2 class="escopo1Texto">ESCOPO 1</h2>
             <h2 class="emissoesDiretastexto">EMISSÕES DIRETAS</h2>
         </div>
@@ -149,7 +160,7 @@
     <div class="cardEscopo2">
 
         <div>
-            <img class="imagemRelampago" src="Imagens/relampagoCard.svg" alt="Card Relâmpago">
+            <img class="imagemRelampago" src="WEB-INF/Imagens/relampagoCard.svg" alt="Card Relâmpago">
             <h2 class="escopo2Texto">ESCOPO 2</h2>
             <h2 class="energiaAdequadatexto">ENERGIA ADQUIRIDA</h2>
         </div>
@@ -167,7 +178,7 @@
     <div class="cardEscopo3">
 
         <div>
-            <img class="imagemFogo" src="Imagens/fogoCard.svg" alt="Card Fogo">
+            <img class="imagemFogo" src="WEB-INF/Imagens/fogoCard.svg" alt="Card Fogo">
             <h2 class="escopo3Texto">ESCOPO 3</h2>
             <h2 class="cadeiaDeValortexto">CADEIA DE VALOR</h2>
         </div>
@@ -201,7 +212,7 @@
         <div class="cardCarrosseis carrosselVerde"></div>
         <div class="cardCarrosseis carrosselRoxo"></div>
 
-        <script src="../script.js"></script>
+        <script src="WEB-INF/script.js"></script>
     </div>
 
 
@@ -212,7 +223,6 @@
 
 
 <!--          SECTOR 5              -->
-<!-- COMENTADO TEMPORARIAMENTE PARA NÃO ATRAPALHAR O DESIGN:
 
 
 <section>
@@ -224,55 +234,55 @@
   <h2 class="tituloConhecaASolucao">Conheça nossa Solução</h2>
   <h3 class="tituloFuncionalidadeDoAPP">Funcionalidades do APP</h3>
 
-  <img class="imagemCelularAeko" src="Imagens/CelularesAeko.svg" alt="Celulares demonstrativos do ChatBot da empresa">
+  <img class="imagemCelularAeko" src="WEB-INF/Imagens/CelularesAeko.svg" alt="Celulares demonstrativos do ChatBot da empresa">
 
   <details>
     <summary>Leitor de PDF</summary>
-    <p>Um leitor de PDF que será possível uploadar <br>
-      relatórios de emissões de gases do efeito <br>
-      estufa (por unidade), que recomendara <br>
+    <p>Um leitor de PDF que será possível uploadar
+      relatórios de emissões de gases do efeito
+      estufa (por unidade), que recomendara
       possíveis alternativas.
     </p>
   </details>
 
   <details>
     <summary>Consultor Manual</summary>
-    <p>No plano Pulse, o consultor manual será uma <br>
-      forma de adicionar informações especiais. Já <br>
-      no plano Horizon, será o principal métod de <br>
+    <p>No plano Pulse, o consultor manual será uma
+      forma de adicionar informações especiais. Já
+      no plano Horizon, será o principal métod de
       input de informações.
     </p>
   </details>
 
   <details>
     <summary>Calculadora de CO²</summary>
-    <p>Essa feature terá como sua principal função <br>
-      calcular quantas toneladas de CO² será <br>
+    <p>Essa feature terá como sua principal função
+      calcular quantas toneladas de CO² será
       possível reduzir a partir da troca sugerida.
     </p>
   </details>
 
   <details>
     <summary>Calculadora de ROI</summary>
-    <p>Calculará o ROI (retorno de investimento) á <br>
-      partir da troca do gás poluente para o gás <br>
-      sugerido, utilizando como base desgaste de <br>
+    <p>Calculará o ROI (retorno de investimento) á
+      partir da troca do gás poluente para o gás
+      sugerido, utilizando como base desgaste de
       máquina, taxa WACC etc.
     </p>
   </details>
 
   <details>
     <summary>Cadastro</summary>
-    <p>Será possível o cadastro do usuário <br>
+    <p>Será possível o cadastro do usuário
       pelo nosso aplicativo.
     </p>
   </details>
 
   <details>
     <summary>ChatBot Aeko</summary>
-    <p>O Chatbot Aeko estará sempre disponível para <br>
-      tirar suas dúvidas sobre valor de gases (verdes <br>
-      e poluentes), sustentabilidade, gases, fórmulas, <br>
+    <p>O Chatbot Aeko estará sempre disponível para
+      tirar suas dúvidas sobre valor de gases (verdes
+      e poluentes), sustentabilidade, gases, fórmulas,
       abreviações etc.
     </p>
   </details>
@@ -321,7 +331,7 @@
     </p>
 
     <details>
-      <summarry><button> -> </button></summarry>
+      <summary><button> -> </button></summary>
       <p>Nessa etapa, será <br>
         feito o <br>
         processamento, <br>
@@ -347,7 +357,7 @@
     </p>
 
     <details>
-      <summarry><button> -> </button></summarry>
+      <summary><button> -> </button></summary>
       <p>Aqui, os dados lidos<br>
         serão transformados <br>
         em relatórios chave, <br>

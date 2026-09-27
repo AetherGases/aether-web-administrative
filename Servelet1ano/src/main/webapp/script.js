@@ -1,8 +1,8 @@
 // CARROSSEL 1 - CELULARES
 
 const celulares = [
-    "Imagens/CelularInterativo1.svg",
-    "Imagens/CelularInterativo2.svg"
+    "WEB-INF/Imagens/CelularInterativo1.svg",
+    "WEB-INF/Imagens/CelularInterativo2.svg"
 ]
 
 let indiceAtual = 0;
