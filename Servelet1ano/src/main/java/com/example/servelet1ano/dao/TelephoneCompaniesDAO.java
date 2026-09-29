@@ -70,6 +70,9 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
                                 rs.getString("telephone"),
                                 rs.getInt("companyId"),
                                 rs.getInt("id"),
+                                rs.getBoolean("is_active"),
+                                rs.getTimestamp("created_at"),
+                                rs.getTimestamp("updated_at"),
                                 company
                         )
                 );
@@ -118,6 +121,9 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
                         rs.getString("telephone"),
                         rs.getInt("companyId"),
                         rs.getInt("id"),
+                        rs.getBoolean("is_active"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at"),
                         company
                 );
             }
