@@ -1,14 +1,13 @@
 package com.example.servelet1ano.model;
 
 public enum StatusEmployee {
-    ACTIVE ("active"),
-    ON_LEAVE("on leave"),
-    ON_VACATION("on vacation"),
-    DISMISSED ("dismissed");
+    ACTIVE("ACTIVE"),
+    INACTIVE("INACTIVE"),
+    IN_VACATION("IN_VACATION");
 
-    private String valor;
+    private final String valor;
 
-    StatusEmployee(String valor){
+    StatusEmployee(String valor) {
         this.valor = valor;
     }
 
