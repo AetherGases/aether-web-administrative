@@ -6,7 +6,9 @@ public class Sectors {
     private int id;
     private int unitId;
     private int companyId;
+    private String name;
     private String description;
+    private boolean isActive;
     private Date createdAt;
     private Date updatedAt;
     private Companies company;
@@ -27,11 +29,13 @@ public class Sectors {
     public Sectors() {
     }
 
-    public Sectors(int id, int unitId, int companyId, String description, Companies company, Units unit) {
+    public Sectors(int id, int unitId, int companyId, String name, String description, boolean isActive, Companies company, Units unit) {
         this.id = id;
         this.unitId = unitId;
         this.companyId = companyId;
+        this.name = name;
         this.description = description;
+        this.isActive = isActive;
         this.company = company;
         this.unit = unit;
     }
@@ -62,12 +66,28 @@ public class Sectors {
         this.companyId = companyId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getDescription() {
         return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public Date getUpdatedAt() {
