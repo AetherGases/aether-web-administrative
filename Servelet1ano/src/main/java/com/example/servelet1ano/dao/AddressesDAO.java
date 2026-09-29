@@ -65,12 +65,17 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 addresses.add(
                         new Addresses(
                                 rs.getInt("id"),
+                                rs.getString("zip_code"),
                                 rs.getString("street"),
                                 rs.getString("number"),
                                 rs.getString("complement"),
                                 rs.getString("city"),
+                                rs.getString("neighborhood"),
                                 rs.getString("state"),
-                                rs.getString("country")
+                                rs.getString("country"),
+                                rs.getBoolean("is_active"),
+                                rs.getTimestamp("created_at"),
+                                rs.getTimestamp("updated_at")
                         )
                 );
             }
@@ -106,12 +111,17 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             if (rs.next()) {
                 address = new Addresses(
                         rs.getInt("id"),
+                        rs.getString("zip_code"),
                         rs.getString("street"),
                         rs.getString("number"),
                         rs.getString("complement"),
                         rs.getString("city"),
+                        rs.getString("neighborhood"),
                         rs.getString("state"),
-                        rs.getString("country")
+                        rs.getString("country"),
+                        rs.getBoolean("is_active"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at")
                 );
             }
 
@@ -147,12 +157,17 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 addresses.add(
                         new Addresses(
                                 rs.getInt("id"),
+                                rs.getString("zip_code"),
                                 rs.getString("street"),
                                 rs.getString("number"),
                                 rs.getString("complement"),
                                 rs.getString("city"),
+                                rs.getString("neighborhood"),
                                 rs.getString("state"),
-                                rs.getString("country")
+                                rs.getString("country"),
+                                rs.getBoolean("is_active"),
+                                rs.getTimestamp("created_at"),
+                                rs.getTimestamp("updated_at")
                         )
                 );
             }
@@ -189,12 +204,17 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 addresses.add(
                         new Addresses(
                                 rs.getInt("id"),
+                                rs.getString("zip_code"),
                                 rs.getString("street"),
                                 rs.getString("number"),
                                 rs.getString("complement"),
                                 rs.getString("city"),
+                                rs.getString("neighborhood"),
                                 rs.getString("state"),
-                                rs.getString("country")
+                                rs.getString("country"),
+                                rs.getBoolean("is_active"),
+                                rs.getTimestamp("created_at"),
+                                rs.getTimestamp("updated_at")
                         )
                 );
             }
@@ -231,12 +251,17 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 addresses.add(
                         new Addresses(
                                 rs.getInt("id"),
+                                rs.getString("zip_code"),
                                 rs.getString("street"),
                                 rs.getString("number"),
                                 rs.getString("complement"),
                                 rs.getString("city"),
+                                rs.getString("neighborhood"),
                                 rs.getString("state"),
-                                rs.getString("country")
+                                rs.getString("country"),
+                                rs.getBoolean("is_active"),
+                                rs.getTimestamp("created_at"),
+                                rs.getTimestamp("updated_at")
                         )
                 );
             }
@@ -259,17 +284,19 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into addresses (street, number, complement, city, state, country) " +
-                                "values (?, ?, ?, ?, ?, ?)"
+                        "insert into addresses (zip_code, street, number, complement, city, neighborhood, state, country) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?)"
                 )
         ) {
 
-            pstmt.setString(1, address.getStreet());
-            pstmt.setString(2, address.getNumber());
-            pstmt.setString(3, address.getComplement());
-            pstmt.setString(4, address.getCity());
-            pstmt.setString(5, address.getState());
-            pstmt.setString(6, address.getCountry());
+            pstmt.setString(1, address.getZipCode());
+            pstmt.setString(2, address.getStreet());
+            pstmt.setString(3, address.getNumber());
+            pstmt.setString(4, address.getComplement());
+            pstmt.setString(5, address.getCity());
+            pstmt.setString(6, address.getNeighborhood());
+            pstmt.setString(7, address.getState());
+            pstmt.setString(8, address.getCountry());
 
             return pstmt.executeUpdate() > 0;
 
@@ -316,10 +343,12 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update addresses set street = ?, " +
+                        "update addresses set zip_code = ?, " +
+                                "street = ?, " +
                                 "number = ?, " +
                                 "complement = ?, " +
                                 "city = ?, " +
+                                "neighborhood = ?, " +
                                 "state = ?, " +
                                 "country = ?, " +
                                 "updated_at = current_timestamp " +
@@ -327,13 +356,15 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 )
         ) {
 
-            pstmt.setString(1, address.getStreet());
-            pstmt.setString(2, address.getNumber());
-            pstmt.setString(3, address.getComplement());
-            pstmt.setString(4, address.getCity());
-            pstmt.setString(5, address.getState());
-            pstmt.setString(6, address.getCountry());
-            pstmt.setInt(7, id);
+            pstmt.setString(1, address.getZipCode());
+            pstmt.setString(2, address.getStreet());
+            pstmt.setString(3, address.getNumber());
+            pstmt.setString(4, address.getComplement());
+            pstmt.setString(5, address.getCity());
+            pstmt.setString(6, address.getNeighborhood());
+            pstmt.setString(7, address.getState());
+            pstmt.setString(8, address.getCountry());
+            pstmt.setInt(9, id);
 
             return pstmt.executeUpdate() > 0;
 

@@ -1,13 +1,20 @@
 package com.example.servelet1ano.model;
 
+import java.util.Date;
+
 public class Addresses {
     private int id;
+    private String zipCode;
     private String street;
     private String number;
     private String complement;
     private String city;
+    private String neighborhood;
     private String state;
     private String country;
+    private boolean isActive;
+    private Date createdAt;
+    private Date updatedAt;
 
     public Addresses(int id, String street, String number, String complement, String city, String state, String country) {
         this.id = id;
@@ -17,6 +24,34 @@ public class Addresses {
         this.city = city;
         this.state = state;
         this.country = country;
+    }
+
+    public Addresses(
+            int id,
+            String zipCode,
+            String street,
+            String number,
+            String complement,
+            String city,
+            String neighborhood,
+            String state,
+            String country,
+            boolean isActive,
+            Date createdAt,
+            Date updatedAt
+    ) {
+        this.id = id;
+        this.zipCode = zipCode;
+        this.street = street;
+        this.number = number;
+        this.complement = complement;
+        this.city = city;
+        this.neighborhood = neighborhood;
+        this.state = state;
+        this.country = country;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public Addresses() {
@@ -43,6 +78,14 @@ public class Addresses {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public String getStreet() {
@@ -77,6 +120,14 @@ public class Addresses {
         this.city = city;
     }
 
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public void setNeighborhood(String neighborhood) {
+        this.neighborhood = neighborhood;
+    }
+
     public String getState() {
         return state;
     }
@@ -91,5 +142,29 @@ public class Addresses {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
