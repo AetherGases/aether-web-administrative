@@ -81,11 +81,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                                 rs.getInt("id"),
                                 rs.getInt("addressId"),
                                 rs.getString("name"),
+                                rs.getString("trade_name"),
+                                rs.getString("cnpj"),
                                 rs.getInt("size"),
                                 rs.getDate("registration_date"),
                                 rs.getString("tax_id"),
                                 rs.getString("email"),
                                 rs.getDate("created_at"),
+                                rs.getBoolean("is_active"),
                                 address
                         )
                 );
@@ -140,11 +143,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         rs.getInt("id"),
                         rs.getInt("addressId"),
                         rs.getString("name"),
+                        rs.getString("trade_name"),
+                        rs.getString("cnpj"),
                         rs.getInt("size"),
                         rs.getDate("registration_date"),
                         rs.getString("tax_id"),
                         rs.getString("email"),
                         rs.getDate("created_at"),
+                        rs.getBoolean("is_active"),
                         address
                 );
             }
@@ -167,17 +173,19 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into companies (name, size, registration_date, tax_id, email, address_id) " +
-                                "values (?, ?, ?, ?, ?, ?)"
+                        "insert into companies (name, trade_name, cnpj, size, registration_date, tax_id, email, address_id) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?)"
                 )
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setInt(2, company.getSize());
-            pstmt.setDate(3, company.getRegistrationDate());
-            pstmt.setString(4, company.getTaxId());
-            pstmt.setString(5, company.getEmail());
-            pstmt.setInt(6, company.getAddressId());
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getCnpj());
+            pstmt.setInt(4, company.getSize());
+            pstmt.setDate(5, company.getRegistrationDate());
+            pstmt.setString(6, company.getTaxId());
+            pstmt.setString(7, company.getEmail());
+            pstmt.setInt(8, company.getAddressId());
 
             return pstmt.executeUpdate() > 0;
 
@@ -252,6 +260,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set name = ?, " +
+                                "trade_name = ?, " +
+                                "cnpj = ?, " +
                                 "size = ?, " +
                                 "registration_date = ?, " +
                                 "tax_id = ?, " +
@@ -262,11 +272,13 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setInt(2, company.getSize());
-            pstmt.setDate(3, company.getRegistrationDate());
-            pstmt.setString(4, company.getTaxId());
-            pstmt.setString(5, company.getEmail());
-            pstmt.setInt(6, id);
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getCnpj());
+            pstmt.setInt(4, company.getSize());
+            pstmt.setDate(5, company.getRegistrationDate());
+            pstmt.setString(6, company.getTaxId());
+            pstmt.setString(7, company.getEmail());
+            pstmt.setInt(8, id);
 
             return pstmt.executeUpdate() > 0;
 
@@ -288,6 +300,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set name = ?, " +
+                                "trade_name = ?, " +
+                                "cnpj = ?, " +
                                 "size = ?, " +
                                 "registration_date = ?, " +
                                 "tax_id = ?, " +
@@ -298,11 +312,13 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setInt(2, company.getSize());
-            pstmt.setDate(3, company.getRegistrationDate());
-            pstmt.setString(4, company.getTaxId());
-            pstmt.setString(5, company.getEmail());
-            pstmt.setString(6, name);
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getCnpj());
+            pstmt.setInt(4, company.getSize());
+            pstmt.setDate(5, company.getRegistrationDate());
+            pstmt.setString(6, company.getTaxId());
+            pstmt.setString(7, company.getEmail());
+            pstmt.setString(8, name);
 
             return pstmt.executeUpdate() > 0;
 

@@ -86,7 +86,9 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                                 rs.getInt("id"),
                                 rs.getInt("unitId"),
                                 rs.getInt("companyId"),
+                                rs.getString("name"),
                                 rs.getString("description"),
+                                rs.getBoolean("is_active"),
                                 company,
                                 unit
                         )
@@ -146,7 +148,9 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                         rs.getInt("id"),
                         rs.getInt("unitId"),
                         rs.getInt("companyId"),
+                        rs.getString("name"),
                         rs.getString("description"),
+                        rs.getBoolean("is_active"),
                         company,
                         unit
                 );
@@ -170,14 +174,15 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into sectors (unit_id, company_id, description) " +
-                                "values (?, ?, ?)"
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
                 )
         ){
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
-            pstmt.setString(3, sector.getDescription());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
 
             return pstmt.executeUpdate() > 0;
 
@@ -197,8 +202,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into sectors (unit_id, company_id, description) " +
-                                "values (?, ?, ?)"
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
                 )
         ){
 
@@ -207,7 +212,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
                 pstmt.setInt(1, sector.getUnitId());
                 pstmt.setInt(2, sector.getCompanyId());
-                pstmt.setString(3, sector.getDescription());
+                pstmt.setString(3, sector.getName());
+                pstmt.setString(4, sector.getDescription());
 
                 pstmt.addBatch();
             }
@@ -284,6 +290,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update sectors set unit_id = ?, " +
                                 "company_id = ?, " +
+                                "name = ?, " +
                                 "description = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where id = ?"
@@ -292,8 +299,9 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
-            pstmt.setString(3, sector.getDescription());
-            pstmt.setInt(4, id);
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setInt(5, id);
 
             return pstmt.executeUpdate() > 0;
 
@@ -316,6 +324,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update sectors set unit_id = ?, " +
                                 "company_id = ?, " +
+                                "name = ?, " +
                                 "description = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where description ilike ?"
@@ -324,8 +333,9 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
-            pstmt.setString(3, sector.getDescription());
-            pstmt.setString(4, description);
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setString(5, description);
 
             return pstmt.executeUpdate() > 0;
 
@@ -348,8 +358,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into sectors (unit_id, company_id, description) " +
-                                "values (?, ?, ?)"
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
                 )
         ){
             if(unitId != sector.getUnitId()){
@@ -358,7 +368,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
-            pstmt.setString(3, sector.getDescription());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
 
             return pstmt.executeUpdate() > 0;
 
@@ -379,8 +390,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into sectors (unit_id, company_id, description) " +
-                                "values (?, ?, ?)"
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
                 )
         ){
 
@@ -393,7 +404,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
                 pstmt.setInt(1, sector.getUnitId());
                 pstmt.setInt(2, sector.getCompanyId());
-                pstmt.setString(3, sector.getDescription());
+                pstmt.setString(3, sector.getName());
+                pstmt.setString(4, sector.getDescription());
 
                 pstmt.addBatch();
             }
@@ -457,6 +469,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update sectors set unit_id = ?, " +
                                 "company_id = ?, " +
+                                "name = ?, " +
                                 "description = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where id = ?"
@@ -465,8 +478,9 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
-            pstmt.setString(3, sector.getDescription());
-            pstmt.setInt(4, id);
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setInt(5, id);
 
             return pstmt.executeUpdate() > 0;
 
@@ -490,6 +504,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update sectors set unit_id = ?, " +
                                 "company_id = ?, " +
+                                "name = ?, " +
                                 "description = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where description ilike ? and unit_id = ?"
@@ -498,9 +513,10 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
             pstmt.setInt(1, sector.getUnitId());
             pstmt.setInt(2, sector.getCompanyId());
-            pstmt.setString(3, sector.getDescription());
-            pstmt.setString(4, description);
-            pstmt.setInt(5, unitId);
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setString(5, description);
+            pstmt.setInt(6, unitId);
 
             return pstmt.executeUpdate() > 0;
 

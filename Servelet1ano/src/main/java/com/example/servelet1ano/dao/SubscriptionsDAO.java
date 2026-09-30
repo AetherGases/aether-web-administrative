@@ -67,6 +67,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                                 rs.getInt("planId"),
                                 rs.getBoolean("is_active"),
                                 rs.getBoolean("installments"),
+                                rs.getTimestamp("deactivated_at"),
                                 company
                         )
                 );
@@ -118,6 +119,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                         rs.getInt("planId"),
                         rs.getBoolean("is_active"),
                         rs.getBoolean("installments"),
+                        rs.getTimestamp("deactivated_at"),
                         company
                 );
             }

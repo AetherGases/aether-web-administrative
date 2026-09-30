@@ -2,6 +2,7 @@ package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.filter.PermissionGroupsFilter;
+import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.PermissionGroups;
 
 import java.sql.*;
@@ -22,18 +23,21 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         List<PermissionGroups> permissionGroups = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "select * from permission_groups where is_active = true"
+                "select pg.*, c.id as idCompany, c.name as companyName " +
+                        "from permission_groups pg " +
+                        "left join companies c on c.id = pg.company_id " +
+                        "where pg.is_active = true"
         );
 
         List<Object> parametros = new ArrayList<>();
 
         if (filter.getId() != null) {
-            sql.append(" and id = ?");
+            sql.append(" and pg.id = ?");
             parametros.add(filter.getId());
         }
 
         if (filter.getName() != null && !filter.getName().isBlank()) {
-            sql.append(" and name ilike ?");
+            sql.append(" and pg.name ilike ?");
             parametros.add("%" + filter.getName() + "%");
         }
 
@@ -50,10 +54,21 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
             while (rs.next()){
 
+                Companies company = null;
+                int companyId = rs.getInt("company_id");
+                if (!rs.wasNull() && rs.getObject("idCompany") != null) {
+                    company = new Companies(rs.getInt("idCompany"), rs.getString("companyName"));
+                }
+
                 permissionGroups.add(
                         new PermissionGroups(
                                 rs.getInt("id"),
-                                rs.getString("name")
+                                rs.getString("name"),
+                                companyId,
+                                rs.getBoolean("is_active"),
+                                rs.getTimestamp("created_at"),
+                                rs.getTimestamp("updated_at"),
+                                company
                         )
                 );
             }
@@ -80,7 +95,10 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "select * from permission_groups where id = ? and is_active = true"
+                        "select pg.*, c.id as idCompany, c.name as companyName " +
+                                "from permission_groups pg " +
+                                "left join companies c on c.id = pg.company_id " +
+                                "where pg.id = ? and pg.is_active = true"
                 )
         ){
 
@@ -89,9 +107,19 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             ResultSet rs = pstmt.executeQuery();
 
             if(rs.next()){
+                Companies company = null;
+                int companyId = rs.getInt("company_id");
+                if (!rs.wasNull() && rs.getObject("idCompany") != null) {
+                    company = new Companies(rs.getInt("idCompany"), rs.getString("companyName"));
+                }
                 permissionGroup = new PermissionGroups(
                         rs.getInt("id"),
-                        rs.getString("name")
+                        rs.getString("name"),
+                        companyId,
+                        rs.getBoolean("is_active"),
+                        rs.getTimestamp("created_at"),
+                        rs.getTimestamp("updated_at"),
+                        company
                 );
             }
 
@@ -113,11 +141,12 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into permission_groups (name) values (?)"
+                        "insert into permission_groups (name, company_id) values (?, ?)"
                 )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
+            pstmt.setInt(2, permissionGroup.getCompanyId());
 
             return pstmt.executeUpdate() > 0;
 
@@ -137,7 +166,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into permission_groups (name) values (?)"
+                        "insert into permission_groups (name, company_id) values (?, ?)"
                 )
         ){
 
@@ -145,6 +174,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 PermissionGroups permissionGroup = permissionGroups.get(i);
 
                 pstmt.setString(1, permissionGroup.getName());
+                pstmt.setInt(2, permissionGroup.getCompanyId());
 
                 pstmt.addBatch();
             }
@@ -220,13 +250,15 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update permission_groups set name = ?, " +
+                                "company_id = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where id = ?"
                 )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
-            pstmt.setInt(2, id);
+            pstmt.setInt(2, permissionGroup.getCompanyId());
+            pstmt.setInt(3, id);
 
             return pstmt.executeUpdate() > 0;
 
@@ -248,13 +280,15 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update permission_groups set name = ?, " +
+                                "company_id = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where name ilike ?"
                 )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
-            pstmt.setString(2, name);
+            pstmt.setInt(2, permissionGroup.getCompanyId());
+            pstmt.setString(3, name);
 
             return pstmt.executeUpdate() > 0;
 
