@@ -102,4 +102,18 @@ public class Subscriptions {
     public void setCompany(Companies company) {
         this.company = company;
     }
+
+    @Override
+    public String toString() {
+        return "Subscriptions{" +
+                "id=" + id +
+                ", companyId=" + companyId +
+                ", planId=" + planId +
+                ", isActive=" + isActive +
+                ", installments=" + installments +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", company=" + company +
+                '}';
+    }
 }

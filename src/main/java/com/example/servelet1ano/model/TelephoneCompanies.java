@@ -59,4 +59,14 @@ public class TelephoneCompanies {
     public void setCompany(Companies company) {
         this.company = company;
     }
+
+    @Override
+    public String toString() {
+        return "TelephoneCompanies{" +
+                "id=" + id +
+                ", telephone='" + telephone + '\'' +
+                ", companyId=" + companyId +
+                ", company=" + company +
+                '}';
+    }
 }

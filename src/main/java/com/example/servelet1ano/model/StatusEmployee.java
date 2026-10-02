@@ -15,4 +15,5 @@ public enum StatusEmployee {
     public String getValor() {
         return valor;
     }
+
 }

@@ -165,4 +165,21 @@ public class Employees {
         this.unit = unit;
     }
 
+    @Override
+    public String toString() {
+        return "Employees{" +
+                "id=" + id +
+                ", companyId=" + companyId +
+                ", permissionGroupId=" + permissionGroupId +
+                ", unitId=" + unitId +
+                ", permissionGroup=" + permissionGroup +
+                ", email='" + email + '\'' +
+                ", name='" + name + '\'' +
+                ", status='" + status + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", company=" + company +
+                ", unit=" + unit +
+                '}';
+    }
 }

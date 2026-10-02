@@ -6,7 +6,7 @@ public class Companies {
     private int id;
     private int addressId;
     private String name;
-    private int size;
+    private CompanySize size;
     private Date registrationDate;
     private String taxId;
     private String email;
@@ -14,7 +14,7 @@ public class Companies {
     private Date updatedAt;
     private Addresses address;
 
-    public Companies(int id, int addressId, String name, int size, Date registrationDate, String taxId, String email, Date createdAt) {
+    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
@@ -25,22 +25,19 @@ public class Companies {
         this.createdAt = createdAt;
     }
 
-    public Companies(String name, int size, String taxId, String email) {
-        this.name = name;
-        this.size = size;
-        this.taxId = taxId;
-        this.email = email;
-    }
-
-    public Companies() {
-    }
-
     public Companies(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public Companies(int id, String name, int size, String taxId, String email) {
+    public Companies(String name, CompanySize size, String taxId, String email) {
+        this.name = name;
+        this.size = size;
+        this.taxId = taxId;
+        this.email = email;
+    }
+
+    public Companies(int id, String name, CompanySize size, String taxId, String email) {
         this.id = id;
         this.name = name;
         this.size = size;
@@ -48,7 +45,7 @@ public class Companies {
         this.email = email;
     }
 
-    public Companies(int id, int addressId, String name, int size, Date registrationDate, String taxId, String email, Date createdAt, Addresses address) {
+    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt, Addresses address) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
@@ -86,11 +83,11 @@ public class Companies {
         this.name = name;
     }
 
-    public int getSize() {
+    public CompanySize getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(CompanySize size) {
         this.size = size;
     }
 
@@ -140,5 +137,21 @@ public class Companies {
 
     public void setAddress(Addresses address) {
         this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        return "Companies{" +
+                "id=" + id +
+                ", addressId=" + addressId +
+                ", name='" + name + '\'' +
+                ", size=" + size +
+                ", registrationDate=" + registrationDate +
+                ", taxId='" + taxId + '\'' +
+                ", email='" + email + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", address=" + address +
+                '}';
     }
 }

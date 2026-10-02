@@ -27,6 +27,13 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
         List<Object> parametros = new ArrayList<>();
 
+        if (filter.getCompanyId() == null) {
+            sql.append(" and company_id is null");
+        } else {
+            sql.append(" and company_id = ?");
+            parametros.add(filter.getCompanyId());
+        }
+
         if (filter.getId() != null) {
             sql.append(" and id = ?");
             parametros.add(filter.getId());
@@ -53,7 +60,8 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 permissionGroups.add(
                         new PermissionGroups(
                                 rs.getInt("id"),
-                                rs.getString("name")
+                                rs.getString("name"),
+                                rs.getObject("company_id", Integer.class)
                         )
                 );
             }
@@ -91,7 +99,8 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             if(rs.next()){
                 permissionGroup = new PermissionGroups(
                         rs.getInt("id"),
-                        rs.getString("name")
+                        rs.getString("name"),
+                        rs.getObject("company_id", Integer.class)
                 );
             }
 
@@ -104,6 +113,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
     /**
      * metodo para cadastrar novos grupos de permissao no banco
+     * O companyId pode vir nulo, quando o grupo for global (da Aether)
      * @param permissionGroup O grupo de permissao que sera cadastrado
      * @return true se foi registrado e false caso tenha dado erro
      */
@@ -113,11 +123,12 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into permission_groups (name) values (?)"
+                        "insert into permission_groups (name, company_id) values (?, ?)"
                 )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
+            pstmt.setObject(2, permissionGroup.getCompanyId());
 
             return pstmt.executeUpdate() > 0;
 
@@ -137,7 +148,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into permission_groups (name) values (?)"
+                        "insert into permission_groups (name, company_id) values (?, ?)"
                 )
         ){
 
@@ -145,6 +156,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 PermissionGroups permissionGroup = permissionGroups.get(i);
 
                 pstmt.setString(1, permissionGroup.getName());
+                pstmt.setObject(2, permissionGroup.getCompanyId());
 
                 pstmt.addBatch();
             }
@@ -208,6 +220,30 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
     }
 
     /**
+     * metodo que desativa os grupos de permissao de uma empresa (para quando uma empresa for desativada)
+     * @param companyId O id da empresa
+     * @return true se foi desativado e false caso tenha dado erro
+     */
+    public boolean deleteByCompanyId(int companyId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update permission_groups set is_active = false, updated_at = current_timestamp where company_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, companyId);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * metodo que muda os values do grupo de permissao selecionado pelo id
      * @param permissionGroup Os valores do grupo de permissao para ser atualizado
      * @param id O valor unico do grupo de permissao que quer atualizar
@@ -220,13 +256,15 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update permission_groups set name = ?, " +
+                                "company_id = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where id = ?"
                 )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
-            pstmt.setInt(2, id);
+            pstmt.setObject(2, permissionGroup.getCompanyId());
+            pstmt.setInt(3, id);
 
             return pstmt.executeUpdate() > 0;
 
@@ -248,13 +286,15 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update permission_groups set name = ?, " +
+                                "company_id = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where name ilike ?"
                 )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
-            pstmt.setString(2, name);
+            pstmt.setObject(2, permissionGroup.getCompanyId());
+            pstmt.setString(3, name);
 
             return pstmt.executeUpdate() > 0;
 

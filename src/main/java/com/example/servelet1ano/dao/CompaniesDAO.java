@@ -4,6 +4,7 @@ import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
+import com.example.servelet1ano.model.CompanySize;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                                 rs.getInt("id"),
                                 rs.getInt("addressId"),
                                 rs.getString("name"),
-                                rs.getInt("size"),
+                                CompanySize.fromValor(rs.getString("size")),
                                 rs.getDate("registration_date"),
                                 rs.getString("tax_id"),
                                 rs.getString("email"),
@@ -140,7 +141,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         rs.getInt("id"),
                         rs.getInt("addressId"),
                         rs.getString("name"),
-                        rs.getInt("size"),
+                        CompanySize.fromValor(rs.getString("size")),
                         rs.getDate("registration_date"),
                         rs.getString("tax_id"),
                         rs.getString("email"),
@@ -173,7 +174,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setInt(2, company.getSize());
+            pstmt.setString(2, company.getSize().getValor());
             pstmt.setDate(3, company.getRegistrationDate());
             pstmt.setString(4, company.getTaxId());
             pstmt.setString(5, company.getEmail());
@@ -262,7 +263,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setInt(2, company.getSize());
+            pstmt.setString(2, company.getSize().getValor());
             pstmt.setDate(3, company.getRegistrationDate());
             pstmt.setString(4, company.getTaxId());
             pstmt.setString(5, company.getEmail());
@@ -298,7 +299,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setInt(2, company.getSize());
+            pstmt.setString(2, company.getSize().getValor());
             pstmt.setDate(3, company.getRegistrationDate());
             pstmt.setString(4, company.getTaxId());
             pstmt.setString(5, company.getEmail());

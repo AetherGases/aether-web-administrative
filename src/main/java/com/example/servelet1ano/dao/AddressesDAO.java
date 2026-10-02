@@ -279,6 +279,50 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
         }
     }
 
+
+    /**
+     * metodo para cadastrar um novo endereco e devolver o id gerado
+     * Usado quando o endereco precisa ser vinculado na hora a uma empresa ou unit
+     * @param address O endereco que sera cadastrado
+     * @return O id gerado, ou -1 caso tenha dado erro
+     */
+    public int registerReturningId(Addresses address) {
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into addresses (street, number, complement, city, state, country) " +
+                                "values (?, ?, ?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                )
+        ) {
+
+            pstmt.setString(1, address.getStreet());
+            pstmt.setString(2, address.getNumber());
+            pstmt.setString(3, address.getComplement());
+            pstmt.setString(4, address.getCity());
+            pstmt.setString(5, address.getState());
+            pstmt.setString(6, address.getCountry());
+
+            if (pstmt.executeUpdate() == 0) {
+                return -1;
+            }
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+
+            return -1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+
     /**
      * metodo para desativar o endereco por id (is_active = false)
      * @param id Valor unico de cada endereco

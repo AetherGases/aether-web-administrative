@@ -52,8 +52,8 @@ public class Main {
         CompaniesDAO companiesDAO = new CompaniesDAO();
 
         Companies novaEmpresa = new Companies(
-                0, addressId, "Empresa" + sufixo, 50,
-                new Date(System.currentTimeMillis()), "12345678900010",
+                0, addressId, "Empresa" + sufixo, CompanySize.PEQUENO,
+                new java.sql.Date(System.currentTimeMillis()), "12345678900010",
                 "empresa" + sufixo + "@teste.com", null, null
         );
         companiesDAO.register(novaEmpresa);

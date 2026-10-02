@@ -101,4 +101,18 @@ public class Sectors {
     public void setUnit(Units unit) {
         this.unit = unit;
     }
+
+    @Override
+    public String toString() {
+        return "Sectors{" +
+                "id=" + id +
+                ", unitId=" + unitId +
+                ", companyId=" + companyId +
+                ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", company=" + company +
+                ", unit=" + unit +
+                '}';
+    }
 }
