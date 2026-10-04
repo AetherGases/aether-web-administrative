@@ -4,6 +4,7 @@ import com.example.servelet1ano.dao.*;
 import com.example.servelet1ano.filter.*;
 import com.example.servelet1ano.model.*;
 import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.util.PasswordHasher;
 
 import java.sql.*;
 import java.util.List;
@@ -119,8 +120,7 @@ public class Main {
         novoFuncionario.setName("Funcionario" + sufixo);
         novoFuncionario.setEmail("funcionario" + sufixo + "@teste.com");
         novoFuncionario.setPhone("11988887777");
-        // TODO: trocar pelo hash do Argon2id (PasswordHasher.hash("senha")) quando a classe estiver pronta
-        novoFuncionario.setPasswordHash("senha_hash_placeholder");
+        novoFuncionario.setPasswordHash(PasswordHasher.hash("senha123"));
 
         employeesDAO.register(novoFuncionario);
 
