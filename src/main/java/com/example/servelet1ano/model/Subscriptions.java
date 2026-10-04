@@ -7,6 +7,7 @@ public class Subscriptions {
     private int planId;
     private boolean isActive;
     private boolean installments;
+    private Date deactivatedAt;
     private Date createdAt;
     private Date updatedAt;
     private Companies company;
@@ -79,6 +80,14 @@ public class Subscriptions {
         this.installments = installments;
     }
 
+    public Date getDeactivatedAt() {
+        return deactivatedAt;
+    }
+
+    public void setDeactivatedAt(Date deactivatedAt) {
+        this.deactivatedAt = deactivatedAt;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -111,6 +120,7 @@ public class Subscriptions {
                 ", planId=" + planId +
                 ", isActive=" + isActive +
                 ", installments=" + installments +
+                ", deactivatedAt=" + deactivatedAt +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", company=" + company +

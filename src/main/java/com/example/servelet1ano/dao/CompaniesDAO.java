@@ -25,8 +25,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         StringBuilder sql = new StringBuilder(
                 "select c.*, c.address_id as addressId, " +
-                        "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                        "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
+                        "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
+                        "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
                         "from companies c " +
                         "join addresses a on a.id = c.address_id " +
                         "where c.is_active = true"
@@ -42,6 +42,11 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         if (filter.getName() != null && !filter.getName().isBlank()) {
             sql.append(" and c.name ilike ?");
             parametros.add("%" + filter.getName() + "%");
+        }
+
+        if (filter.getCnpj() != null && !filter.getCnpj().isBlank()) {
+            sql.append(" and c.cnpj = ?");
+            parametros.add(filter.getCnpj());
         }
 
         if (filter.getCountry() != null && !filter.getCountry().isBlank()) {
@@ -69,34 +74,39 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
                 Addresses address = new Addresses(
                         rs.getInt("idAddress"),
+                        rs.getString("addressZipCode"),
                         rs.getString("addressStreet"),
                         rs.getString("addressNumber"),
                         rs.getString("addressComplement"),
+                        rs.getString("addressNeighborhood"),
                         rs.getString("addressCity"),
                         rs.getString("addressState"),
                         rs.getString("addressCountry")
                 );
 
-                companies.add(
-                        new Companies(
-                                rs.getInt("id"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                CompanySize.fromValor(rs.getString("size")),
-                                rs.getDate("registration_date"),
-                                rs.getString("tax_id"),
-                                rs.getString("email"),
-                                rs.getDate("created_at"),
-                                address
-                        )
+                Companies company = new Companies(
+                        rs.getInt("id"),
+                        rs.getInt("addressId"),
+                        rs.getString("name"),
+                        CompanySize.fromValor(rs.getString("size")),
+                        rs.getDate("registration_date"),
+                        rs.getString("cnpj"),
+                        rs.getString("email"),
+                        rs.getDate("created_at"),
+                        address
                 );
+
+                company.setTradeName(rs.getString("trade_name"));
+                company.setUpdatedAt(rs.getDate("updated_at"));
+
+                companies.add(company);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            return companies;
         }
-
-        return companies;
     }
 
     /**
@@ -113,8 +123,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select c.*, c.address_id as addressId, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
+                                "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
+                                "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
                                 "from companies c " +
                                 "join addresses a on a.id = c.address_id " +
                                 "where c.id = ? and c.is_active = true"
@@ -129,9 +139,11 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
                 Addresses address = new Addresses(
                         rs.getInt("idAddress"),
+                        rs.getString("addressZipCode"),
                         rs.getString("addressStreet"),
                         rs.getString("addressNumber"),
                         rs.getString("addressComplement"),
+                        rs.getString("addressNeighborhood"),
                         rs.getString("addressCity"),
                         rs.getString("addressState"),
                         rs.getString("addressCountry")
@@ -143,18 +155,21 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         rs.getString("name"),
                         CompanySize.fromValor(rs.getString("size")),
                         rs.getDate("registration_date"),
-                        rs.getString("tax_id"),
+                        rs.getString("cnpj"),
                         rs.getString("email"),
                         rs.getDate("created_at"),
                         address
                 );
+
+                company.setTradeName(rs.getString("trade_name"));
+                company.setUpdatedAt(rs.getDate("updated_at"));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            return company;
         }
-
-        return company;
     }
 
     /**
@@ -168,17 +183,18 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into companies (name, size, registration_date, tax_id, email, address_id) " +
-                                "values (?, ?, ?, ?, ?, ?)"
+                        "insert into companies (name, trade_name, size, registration_date, cnpj, email, address_id) " +
+                                "values (?, ?, ?::company_size, ?, ?, ?, ?)"
                 )
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setString(2, company.getSize().getValor());
-            pstmt.setDate(3, company.getRegistrationDate());
-            pstmt.setString(4, company.getTaxId());
-            pstmt.setString(5, company.getEmail());
-            pstmt.setInt(6, company.getAddressId());
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getSize().getValor());
+            pstmt.setDate(4, company.getRegistrationDate());
+            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(6, company.getEmail());
+            pstmt.setInt(7, company.getAddressId());
 
             return pstmt.executeUpdate() > 0;
 
@@ -190,7 +206,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
      * Metodo para desativar a empresa por ID (is_active = false)
-     * Cascateia a desativacao para as units da empresa, que por sua vez cascateiam para os funcionarios de cada unidade
+     * Cascateia a desativacao para as units da empresa (que por sua vez cascateiam para setores e funcionarios),
+     * e tambem para setores, telefones, grupos de permissao e assinaturas da empresa
      * @param id Valor unico de cada empresa
      * @return true se foi desativada e false caso tenha dado erro
      */
@@ -198,6 +215,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
     public boolean delete(int id) {
 
         new UnitsDAO().deleteByCompanyId(id);
+        new SectorsDAO().deleteByCompanyId(id);
+        new TelephoneCompaniesDAO().deleteByCompanyId(id);
+        new PermissionGroupsDAO().deleteByCompanyId(id);
+        new SubscriptionsDAO().deleteByCompanyId(id);
 
         try (
                 Connection conn = ConnectionFactory.connect();
@@ -253,9 +274,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set name = ?, " +
-                                "size = ?, " +
+                                "trade_name = ?, " +
+                                "size = ?::company_size, " +
                                 "registration_date = ?, " +
-                                "tax_id = ?, " +
+                                "cnpj = ?, " +
                                 "email = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where id = ?"
@@ -263,11 +285,12 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setString(2, company.getSize().getValor());
-            pstmt.setDate(3, company.getRegistrationDate());
-            pstmt.setString(4, company.getTaxId());
-            pstmt.setString(5, company.getEmail());
-            pstmt.setInt(6, id);
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getSize().getValor());
+            pstmt.setDate(4, company.getRegistrationDate());
+            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(6, company.getEmail());
+            pstmt.setInt(7, id);
 
             return pstmt.executeUpdate() > 0;
 
@@ -289,9 +312,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set name = ?, " +
-                                "size = ?, " +
+                                "trade_name = ?, " +
+                                "size = ?::company_size, " +
                                 "registration_date = ?, " +
-                                "tax_id = ?, " +
+                                "cnpj = ?, " +
                                 "email = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where name ilike ?"
@@ -299,11 +323,12 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         ) {
 
             pstmt.setString(1, company.getName());
-            pstmt.setString(2, company.getSize().getValor());
-            pstmt.setDate(3, company.getRegistrationDate());
-            pstmt.setString(4, company.getTaxId());
-            pstmt.setString(5, company.getEmail());
-            pstmt.setString(6, name);
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getSize().getValor());
+            pstmt.setDate(4, company.getRegistrationDate());
+            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(6, company.getEmail());
+            pstmt.setString(7, name);
 
             return pstmt.executeUpdate() > 0;
 

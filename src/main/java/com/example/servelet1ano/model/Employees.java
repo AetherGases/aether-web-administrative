@@ -4,36 +4,30 @@ import java.util.Date;
 
 public class Employees {
     private int id;
+    private String cpf;
     private int companyId;
     private int permissionGroupId;
     private int unitId;
-    private PermissionGroups permissionGroup;
-    private String email;
+    private int sectorId;
     private String name;
-    private String status;
+    private String email;
+    private String phone;
+    private String passwordHash;
+    private StatusEmployee status;
+    private int storageFileId;
     private Date createdAt;
     private Date updatedAt;
+    private PermissionGroups permissionGroup;
     private Companies company;
     private Units unit;
-
-
-    public Employees(int id, int companyId, int permissionGroupId, PermissionGroups permissionGroup, String email, String name, Date createdAt, Companies company) {
-        this.id = id;
-        this.companyId = companyId;
-        this.permissionGroupId = permissionGroupId;
-        this.permissionGroup = permissionGroup;
-        this.email = email;
-        this.name = name;
-        this.createdAt = createdAt;
-        this.company = company;
-    }
+    private Sectors sector;
 
     public Employees() {
     }
 
     public Employees(String name, String email) {
-        this.email = email;
         this.name = name;
+        this.email = email;
     }
 
     public Employees(int id, String name, String email) {
@@ -50,23 +44,33 @@ public class Employees {
         this.company = company;
     }
 
-    public Employees(int id, int companyId, int permissionGroupId, int unitId, String email, String name, PermissionGroups permissionGroup, Companies company, Units unit) {
+    public Employees(int companyId, int permissionGroupId, int sectorId, String cpf, String name, String email, String phone, String passwordHash, StatusEmployee status) {
+        this.companyId = companyId;
+        this.permissionGroupId = permissionGroupId;
+        this.sectorId = sectorId;
+        this.cpf = cpf;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.passwordHash = passwordHash;
+        this.status = status;
+    }
+
+    public Employees(int id, int companyId, int permissionGroupId, int unitId, int sectorId, String cpf, String name, String email, String phone, StatusEmployee status, PermissionGroups permissionGroup, Companies company, Units unit, Sectors sector) {
         this.id = id;
         this.companyId = companyId;
         this.permissionGroupId = permissionGroupId;
         this.unitId = unitId;
-        this.permissionGroup = permissionGroup;
-        this.email = email;
+        this.sectorId = sectorId;
+        this.cpf = cpf;
         this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.status = status;
+        this.permissionGroup = permissionGroup;
         this.company = company;
         this.unit = unit;
-    }
-
-    public Employees(int companyId, int permissionGroupId, String email, String name) {
-        this.companyId = companyId;
-        this.permissionGroupId = permissionGroupId;
-        this.email = email;
-        this.name = name;
+        this.sector = sector;
     }
 
     public int getId() {
@@ -75,6 +79,14 @@ public class Employees {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public int getCompanyId() {
@@ -101,12 +113,12 @@ public class Employees {
         this.unitId = unitId;
     }
 
-    public String getEmail() {
-        return email;
+    public int getSectorId() {
+        return sectorId;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setSectorId(int sectorId) {
+        this.sectorId = sectorId;
     }
 
     public String getName() {
@@ -117,12 +129,44 @@ public class Employees {
         this.name = name;
     }
 
-    public String getStatus() {
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public StatusEmployee getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusEmployee status) {
         this.status = status;
+    }
+
+    public int getStorageFileId() {
+        return storageFileId;
+    }
+
+    public void setStorageFileId(int storageFileId) {
+        this.storageFileId = storageFileId;
     }
 
     public Date getCreatedAt() {
@@ -165,21 +209,34 @@ public class Employees {
         this.unit = unit;
     }
 
+    public Sectors getSector() {
+        return sector;
+    }
+
+    public void setSector(Sectors sector) {
+        this.sector = sector;
+    }
+
     @Override
     public String toString() {
         return "Employees{" +
                 "id=" + id +
+                ", cpf='" + cpf + '\'' +
                 ", companyId=" + companyId +
                 ", permissionGroupId=" + permissionGroupId +
                 ", unitId=" + unitId +
-                ", permissionGroup=" + permissionGroup +
-                ", email='" + email + '\'' +
+                ", sectorId=" + sectorId +
                 ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", status=" + status +
+                ", storageFileId=" + storageFileId +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", permissionGroup=" + permissionGroup +
                 ", company=" + company +
                 ", unit=" + unit +
+                ", sector=" + sector +
                 '}';
     }
 }

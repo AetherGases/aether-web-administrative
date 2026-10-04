@@ -3,6 +3,8 @@ package com.example.servelet1ano.filter;
 public class AddressesFilter {
 
     private Integer id;
+    private String zipCode;
+    private String neighborhood;
     private String city;
     private String state;
     private String country;
@@ -16,6 +18,22 @@ public class AddressesFilter {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
+    }
+
+    public String getNeighborhood() {
+        return neighborhood;
+    }
+
+    public void setNeighborhood(String neighborhood) {
+        this.neighborhood = neighborhood;
     }
 
     public String getCity() {

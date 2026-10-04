@@ -6,21 +6,22 @@ public class Companies {
     private int id;
     private int addressId;
     private String name;
+    private String tradeName;
     private CompanySize size;
     private Date registrationDate;
-    private String taxId;
+    private String cnpj;
     private String email;
     private Date createdAt;
     private Date updatedAt;
     private Addresses address;
 
-    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt) {
+    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
         this.size = size;
         this.registrationDate = registrationDate;
-        this.taxId = taxId;
+        this.cnpj = cnpj;
         this.email = email;
         this.createdAt = createdAt;
     }
@@ -30,28 +31,28 @@ public class Companies {
         this.name = name;
     }
 
-    public Companies(String name, CompanySize size, String taxId, String email) {
+    public Companies(String name, CompanySize size, String cnpj, String email) {
         this.name = name;
         this.size = size;
-        this.taxId = taxId;
+        this.cnpj = cnpj;
         this.email = email;
     }
 
-    public Companies(int id, String name, CompanySize size, String taxId, String email) {
+    public Companies(int id, String name, CompanySize size, String cnpj, String email) {
         this.id = id;
         this.name = name;
         this.size = size;
-        this.taxId = taxId;
+        this.cnpj = cnpj;
         this.email = email;
     }
 
-    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt, Addresses address) {
+    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt, Addresses address) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
         this.size = size;
         this.registrationDate = registrationDate;
-        this.taxId = taxId;
+        this.cnpj = cnpj;
         this.email = email;
         this.createdAt = createdAt;
         this.address = address;
@@ -83,6 +84,14 @@ public class Companies {
         this.name = name;
     }
 
+    public String getTradeName() {
+        return tradeName;
+    }
+
+    public void setTradeName(String tradeName) {
+        this.tradeName = tradeName;
+    }
+
     public CompanySize getSize() {
         return size;
     }
@@ -99,12 +108,12 @@ public class Companies {
         this.registrationDate = registrationDate;
     }
 
-    public String getTaxId() {
-        return taxId;
+    public String getCnpj() {
+        return cnpj;
     }
 
-    public void setTaxId(String taxId) {
-        this.taxId = taxId;
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public String getEmail() {
@@ -145,9 +154,10 @@ public class Companies {
                 "id=" + id +
                 ", addressId=" + addressId +
                 ", name='" + name + '\'' +
+                ", tradeName='" + tradeName + '\'' +
                 ", size=" + size +
                 ", registrationDate=" + registrationDate +
-                ", taxId='" + taxId + '\'' +
+                ", cnpj='" + cnpj + '\'' +
                 ", email='" + email + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
