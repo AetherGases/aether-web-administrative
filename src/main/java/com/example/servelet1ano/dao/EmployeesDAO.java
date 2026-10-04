@@ -8,12 +8,23 @@ import com.example.servelet1ano.model.PermissionGroups;
 import com.example.servelet1ano.model.Sectors;
 import com.example.servelet1ano.model.StatusEmployee;
 import com.example.servelet1ano.model.Units;
+import com.example.servelet1ano.validation.Validators;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
+
+    /**
+     * Valida os dados do funcionario antes de gravar (cpf e email)
+     * @param employee O funcionario a validar
+     * @return true se cpf e email forem validos
+     */
+    private boolean isValid(Employees employee) {
+        return Validators.isCpf(employee.getCpf()) && Validators.isEmail(employee.getEmail());
+    }
+
 
     /**
      * Metodo que busca os funcionarios ativos aplicando os filtros informados
@@ -337,6 +348,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     @Override
     public boolean register(Employees employee) {
 
+        if (!isValid(employee)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -381,6 +396,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
             for (int i = 0; i < employees.size(); i++) {
                 Employees employee = employees.get(i);
+
+                if (!isValid(employee)) {
+                    return false;
+                }
 
                 pstmt.setInt(1, employee.getCompanyId());
                 pstmt.setInt(2, employee.getPermissionGroupId());
@@ -562,6 +581,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     @Override
     public boolean update(Employees employee, int id) {
 
+        if (!isValid(employee)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -604,6 +627,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
      */
     public boolean updateByName(Employees employee, String name) {
 
+        if (!isValid(employee)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -645,6 +672,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean updateByCpf(Employees employee, String cpf) {
+
+        if (!isValid(employee)) {
+            return false;
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();
@@ -766,6 +797,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
      */
     public boolean registerPerUnit(Employees employee, int unitId) {
 
+        if (!isValid(employee)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -815,7 +850,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             for (int i = 0; i < employees.size(); i++) {
                 Employees employee = employees.get(i);
 
-                if (unitId != employee.getUnitId()) {
+                if (unitId != employee.getUnitId() || !isValid(employee)) {
                     return false;
                 }
 
@@ -912,6 +947,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
      * @return true se foi mudado e false caso tenha dado erro
      */
     public boolean updateByIdPerUnit(Employees employee, int id, int unitId) {
+
+        if (!isValid(employee)) {
+            return false;
+        }
         Employees employeeFound = searchById(id);
 
         if (employeeFound == null || unitId != employeeFound.getUnitId()) {
@@ -961,6 +1000,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
      */
     public boolean updateByNamePerUnit(Employees employee, String name, int unitId) {
 
+        if (!isValid(employee)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -1004,6 +1047,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean updateByCpfPerUnit(Employees employee, String cpf, int unitId) {
+
+        if (!isValid(employee)) {
+            return false;
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();

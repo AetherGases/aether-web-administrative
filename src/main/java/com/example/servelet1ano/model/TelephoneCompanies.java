@@ -1,9 +1,13 @@
 package com.example.servelet1ano.model;
 
+import java.util.Date;
+
 public class TelephoneCompanies {
     private int id;
     private String telephone;
     private int companyId;
+    private Date createdAt;
+    private Date updatedAt;
     private Companies company;
 
     public TelephoneCompanies(String telephone, int companyId, int id) {
@@ -52,6 +56,22 @@ public class TelephoneCompanies {
         this.companyId = companyId;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public Companies getCompany() {
         return company;
     }
@@ -66,6 +86,8 @@ public class TelephoneCompanies {
                 "id=" + id +
                 ", telephone='" + telephone + '\'' +
                 ", companyId=" + companyId +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 ", company=" + company +
                 '}';
     }

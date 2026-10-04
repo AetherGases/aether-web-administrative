@@ -5,12 +5,29 @@ import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
+import com.example.servelet1ano.validation.Validators;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
+
+    /**
+     * Valida os dados da empresa antes de gravar (cnpj e, se preenchido, email)
+     * @param company A empresa a validar
+     * @return true se cnpj for valido e o email (quando informado) tambem
+     */
+    private boolean isValid(Companies company) {
+        if (!Validators.isCnpj(company.getCnpj())) {
+            return false;
+        }
+        if (company.getEmail() != null && !company.getEmail().isBlank() && !Validators.isEmail(company.getEmail())) {
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Metodo que busca as empresas ativas aplicando os filtros informados
@@ -180,6 +197,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
     @Override
     public boolean register(Companies company) {
 
+        if (!isValid(company)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -270,6 +291,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
     @Override
     public boolean update(Companies company, int id) {
 
+        if (!isValid(company)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -307,6 +332,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * @return true se foi atualizada e false caso tenha dado erro
      */
     public boolean updateByName(Companies company, String name) {
+
+        if (!isValid(company)) {
+            return false;
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();

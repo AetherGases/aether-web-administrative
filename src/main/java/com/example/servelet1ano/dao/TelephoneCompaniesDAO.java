@@ -4,6 +4,7 @@ import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.filter.TelephoneCompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.TelephoneCompanies;
+import com.example.servelet1ano.validation.Validators;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -65,21 +66,24 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
                         rs.getString("companyName")
                 );
 
-                telephones.add(
-                        new TelephoneCompanies(
-                                rs.getString("telephone"),
-                                rs.getInt("companyId"),
-                                rs.getInt("id"),
-                                company
-                        )
+                TelephoneCompanies telephoneCompany = new TelephoneCompanies(
+                        rs.getString("telephone"),
+                        rs.getInt("companyId"),
+                        rs.getInt("id"),
+                        company
                 );
+
+                telephoneCompany.setCreatedAt(rs.getTimestamp("created_at"));
+                telephoneCompany.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                telephones.add(telephoneCompany);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            return telephones;
         }
-
-        return telephones;
     }
 
     /**
@@ -120,13 +124,16 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
                         rs.getInt("id"),
                         company
                 );
+
+                telephoneCompany.setCreatedAt(rs.getTimestamp("created_at"));
+                telephoneCompany.setUpdatedAt(rs.getTimestamp("updated_at"));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            return telephoneCompany;
         }
-
-        return telephoneCompany;
     }
 
     /**
@@ -136,6 +143,10 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      */
     @Override
     public boolean register(TelephoneCompanies telephoneCompany){
+
+        if (!Validators.isMobilePhone(telephoneCompany.getTelephone())) {
+            return false;
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();
@@ -213,6 +224,10 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      */
     @Override
     public boolean update(TelephoneCompanies telephoneCompany, int id){
+
+        if (!Validators.isMobilePhone(telephoneCompany.getTelephone())) {
+            return false;
+        }
 
         try(
                 Connection conn = ConnectionFactory.connect();

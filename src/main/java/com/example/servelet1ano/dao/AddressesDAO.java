@@ -2,6 +2,7 @@ package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.filter.AddressesFilter;
+import com.example.servelet1ano.validation.Validators;
 import com.example.servelet1ano.model.Addresses;
 
 import java.sql.*;
@@ -10,6 +11,20 @@ import java.util.List;
 
 
 public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
+
+    /**
+     * Valida os dados do endereco antes de gravar
+     * O CEP é opcional no banco, entao so é validado quando vier preenchido
+     * @param address O endereco a validar
+     * @return true se o CEP (quando informado) for valido
+     */
+    private boolean isValid(Addresses address) {
+        if (address.getZipCode() != null && !address.getZipCode().isBlank() && !Validators.isCep(address.getZipCode())) {
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * Metodo que busca os enderecos ativos aplicando os filtros informados
@@ -291,6 +306,10 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
     @Override
     public boolean register(Addresses address) {
 
+        if (!isValid(address)) {
+            return false;
+        }
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -325,6 +344,10 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
      * @return O id gerado, ou -1 caso tenha dado erro
      */
     public int registerReturningId(Addresses address) {
+
+        if (!isValid(address)) {
+            return -1;
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();
@@ -392,6 +415,10 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
      */
     @Override
     public boolean update(Addresses address, int id) {
+
+        if (!isValid(address)) {
+            return false;
+        }
 
         try (
                 Connection conn = ConnectionFactory.connect();

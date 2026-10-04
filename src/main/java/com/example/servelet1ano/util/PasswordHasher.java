@@ -9,44 +9,42 @@ import de.mkammerer.argon2.Argon2Factory;
  */
 public class PasswordHasher {
 
-    // variante Argon2id (hibrida: protege contra GPU e contra side-channel)
     private static final Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
-    // parametros minimos recomendados pelo OWASP
-    private static final int ITERACOES = 2;        // numero de passagens pela memoria
-    private static final int MEMORIA_KIB = 19456;  // 19 MiB de memoria
-    private static final int PARALELISMO = 1;       // linhas de calculo em paralelo
+    private static final int ITERATIONS = 2;      // numero de passagens pela memoria
+    private static final int MEMORY_KIB = 19456;  // 19 MiB de memoria
+    private static final int PARALLELISM = 1;      // linhas de calculo em paralelo
 
     /**
      * Gera o hash da senha (com salt embutido) pronto pra guardar no banco
-     * @param senha A senha em texto puro
+     * @param password A senha em texto puro
      * @return O hash da senha
      */
-    public static String hash(String senha) {
+    public static String hash(String password) {
 
-        char[] senhaChars = senha.toCharArray();
+        char[] passwordChars = password.toCharArray();
 
         try {
-            return argon2.hash(ITERACOES, MEMORIA_KIB, PARALELISMO, senhaChars);
+            return argon2.hash(ITERATIONS, MEMORY_KIB, PARALLELISM, passwordChars);
         } finally {
-            argon2.wipeArray(senhaChars);
+            argon2.wipeArray(passwordChars);
         }
     }
 
     /**
      * Confere se a senha digitada bate com o hash guardado
      * @param hash O hash que esta no banco
-     * @param senha A senha digitada no login
+     * @param password A senha digitada no login
      * @return true se a senha confere e false caso contrario
      */
-    public static boolean verify(String hash, String senha) {
+    public static boolean verify(String hash, String password) {
 
-        char[] senhaChars = senha.toCharArray();
+        char[] passwordChars = password.toCharArray();
 
         try {
-            return argon2.verify(hash, senhaChars);
+            return argon2.verify(hash, passwordChars);
         } finally {
-            argon2.wipeArray(senhaChars);
+            argon2.wipeArray(passwordChars);
         }
     }
 }
