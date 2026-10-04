@@ -286,6 +286,41 @@ drop-shadow(5px 5px 5.7px 0px rgba(45, 189, 126, 0%));
 
     background-color: #A8F0D2;
     border-radius: 50%;
+
+    drop-shadow(0px 0px 16.7px rgba(107, 228, 176, 100%))
+}
+
+.setaComecarAgora{
+    position: absolute;
+    left: 270px;
+    top: 20px;
+
+    width: 24.95px;
+    height: 24.95px;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+}
+
+.setaComecarAgora::before{
+    content: "";
+    position: absolute;
+    width: 24.95px;
+    height: 4.57px;
+    background-color: #159E5C;
+    border-radius: 5px;
+}
+
+.setaComecarAgora::after{
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 12.48px;
+    height: 12.48px;
+    border-top: 4.57px solid #159E5C;
+    border-right: 4.57px solid #159E5C;
+    border-radius: 3px;
+    transform: rotate(45deg);
 }
 
 .Bola1{
@@ -418,6 +453,8 @@ drop-shadow(2px 16px 36px rgba(131, 206, 167, 10%))
     color: #FFFFFF;
 
 }
+
+
 
 .Bola3{
     position: absolute;
@@ -781,30 +818,124 @@ drop-shadow(0px 4px 4px rgba(0, 0, 0, 25%))
     color: #4A435E;
 }
 
-.divCards{
-    display: flex;
-    justify-content: center;
+.divCard{
+    display: flex ;
+    gap: 20px;
+    position: relative;
+    top: 0 !important;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    drop-shadow(0px 90.4px 25.6px 0px rgba(70, 44, 177, 0%))
+    drop-shadow(0px 57.6px 23.2px 0px rgba(70, 44, 177, 1%))
+    drop-shadow(0px 32.8px 19.2px 0px rgba(70, 44, 177, 5%))
+    drop-shadow(0px 14.4px 14.4px 0px rgba(70, 44, 177, 9%))
+    drop-shadow(0px 4px 8px 0px rgba(70, 44, 177, 10%))
 }
 
-/*
-.cardCarrosseis{
-  width: 50vw;
-  height: 300vh;
-  opacity: 70%;
-  border-radius: 19.2px;
+.divCardVerde{
+    background: linear-gradient(#42B481 0%, #73E4B4 50%, #42B481 100%);
+    border: 0.8px solid #1A5C41;
 }
 
-.carrosselVerde{
-  border: 0.8px solid #1A5C4A;
-  background: linear-gradient(#42B481 0%, #73E4B4 100%, #42B481 100%);
+.divCardRoxo{
+    background: linear-gradient(#816CCF 0%, #C3B3FF 50%, #816CCF 100%);
+    border: 0.8px solid #1A5C41;
 }
 
-.carroselRoxo{
-  border: 0.8px solid #7C3AED;
-  background: linear-gradient(#816CCF 0%, #C3B3FF 100%, #816CCF 100%);
+.divTipografiaTitulosMenoresVerde{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #225749;
 }
 
-*/
+.divTipografiaGasesMenores{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #161C2D;
+}
+
+.divTipografiaTitulosMenoresRoxo{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #4D1B98;
+}
+
+.divTipografiaTituloRisco{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 25.6px;
+    color: #161C2D;
+}
+
+.divTipografiaNomeGas{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 14.4px;
+    color: #161C2D;
+}
+
+.divTipografiaEscopoVerde{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: #225749;
+}
+
+.divTipografiaEscopoRoxo{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: #4D1B98;
+}
+
+.divTipografiaEscopoVerde{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: #225749;
+}
+
+.divTipografiaEscopoVerde{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: #4D1B98;
+}
+
+.divTipografiaEmissao{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 22.4px;
+    color: #23262B;
+}
+
+.divTipografiaEmissao2{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: #23262B;
+}
+
+.divTipografia1paragrafo{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 12.8px;
+    color: #23262B;
+}
+
+.divTipografia2paragrafo{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 12.8px;
+    color: #23262B;
+}
+
+
 
 /*        SETOR 5       */
 
@@ -877,25 +1008,108 @@ drop-shadow(0px 4px 4px rgba(0, 0, 0, 25%))
     z-index: -2;
 }
 
-.divBotoesInterativos{
-    width: 100%;
-    max-width: 100%;
+.agrupandoGrupo{
+    position: absolute;
+    left: 627px;
+    top: 3243px;
+
+    width: 627px;
+    height: 456px;
+}
+
+.tipografiaMenuAbreEFechaTitulo{
     font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -3%;
+    line-height: 150%;
+    color: #010205;
 }
 
-.divTituloClicavel{
-    padding: 15px 10px;
-    font-weight: bold;
-    font-size: 18px;
-    cursor: pointer;
-    list-style: none; /* Remove a setinha padrão do navegador */
+.tipografiaMenuAbreEFechaConteudo{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: 25px;
+    color: #4A435E;
+}
+
+details {
+    border-bottom: 1px solid #000000;
+}
+
+summary {
     display: flex;
-    justify-content: space-between; /* Empurra o texto para a esquerda e o ícone para a direita */
+    justify-content: space-between;
     align-items: center;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 15px 0;
+}
+
+summary::after {
+    content: "+";
+    width: 24px;
+    height: 24px;
+    font-weight: bold;
+}
+
+details[open] summary::after {
+    content: "—";
+}
+
+details[open] summary {
+    background-color: #B99DF8;
+    color: #6C51B0;
+    padding: 15px;
+}
+
+details p{
+    padding: 20px 15px;
+    margin: 0;
+    line-height: 1.5;
 }
 
 
 
 
+.divTituloAnaliseDeDados{
+    position: absolute;
+    left: 80px;
+    top: 3998px;
+}
+
+.tituloAnalise{
+    position: absolute;
+    left: 80px;
+    top: 4011px;
+
+    width: 1280px;
+    height: 69px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 60px;
+}
+
+.tituloDadosDestacado{
+    background: linear-gradient(to right, #7C3AED 25%, #2DBD7E 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.textoAnaliseDados{
+    position: absolute;
+    left: 795px;
+    top: 4011px;
+
+    width: 565px;
+    height: 69px;
+
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+
+    color: #7E8294;
 
 
+}

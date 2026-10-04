@@ -47,8 +47,11 @@
         menor potencial de aquecimento global.</p>
 
     <div class="alinharPosiçaoComecarAgora">
+
     <button class="botaoComecarAgora">COMEÇAR AGORA</button>
     <div class="botaoRedondoComecarAgora"></div>
+    <div class="setaComecarAgora"></div>
+
     </div>
 
     <p class="tipografiaFraseInicial">Pense no presente e mude seu futuro <br>
@@ -59,7 +62,7 @@
 
 
     '<div class="divCarroselCelular">
-    <img id="imagemCelular" class="celularInterativo" src="WEB-INF/Imagens/CelularInterativo1.svg" alt="CelularInterativo">
+    <img id="imagemCelular" class="celularInterativo" src="WEB-INF/Imagens/CelularInterativo1.svg" alt="Celular Interativo">
 
     <div class="divBotoes">
         <div>
@@ -113,13 +116,24 @@
             sustentabilidade ao futuro.</p>
     </div>
 
-    <div class="retangulosRoxos">
-        1° Médio
-    </div>
+    <!-- COMENTADO TEMPORARIAMENTE PARA NÃO ATRAPALHAR O DESIGN:
 
-    <div class="retangulosRoxos2">
-        2° Médio
+    <div class="alunos">
+
+        <input type="radio" id="1ano" name="turma" checked>
+        <input type="radio" id="2ano" name="turma">
+
+        <div class="botoesAno">
+            <label for="1ano" class="retangulosRoxos">1° Médio</label>
+            <label for="2ano" class="retangulosRoxos2">2° Médio</label>
+        </div>
+
+        <div class="cardFoto">
+            <img src="WEB-INF/Imagens/1anoFoto.jpg" alt="Foto 1º Médio" class="foto-1ano">
+            <img src="WEB-INF/Imagens/2anoFoto.png" alt="Foto 2º Médio" class="foto-2ano">
+        </div>
     </div>
+    -->
 
 </section>
 <!--           SECTOR 3            -->
@@ -205,291 +219,382 @@
     <p class="descricaoSubstituicao">Então, o Aether deseja sugerir à sua empresa um substituto verde para gases poluentes de Escopo 1, 2 e 3, <br>
         utilizado em cada setor de sua empresa. Essas categorias incluem os gases:
     </p>
+    <div class="divCarrosselCards">
 
-    <div class="divCards">
+        <button id="btnAnterior" class="botaoEsquerdoCarrossel2"></button>
+        <img class="setaEsquerdaCarroselCelulares2" src="WEB-INF/Imagens/setaEsquerda.svg" alt="Seta Esquerda">
 
 
-        <div class="cardCarrosseis carrosselVerde"></div>
-        <div class="cardCarrosseis carrosselRoxo"></div>
+        <div class="divCard" id="trilhoCarrossel">
 
-        <script src="WEB-INF/script.js"></script>
+
+            <!--           Card 1 - Monóxido de Carbono -->
+            <div class="divCardVerde cardItem">
+                <h2 class="divTipografiaTituloRisco">RISCO GEE: ALTO</h2>
+                <p class="divTipografiaEscopoVerde">ESCOPO 3</p>
+                <p class="divTipografiaTitulosMenoresVerde">GÁS / SUBSTÂNCIA</p>
+                <p class="divTipografiaTitulosMenoresVerde">GHGS EMITIDOS</p>
+                <p class="divTipografiaTitulosMenoresVerde">FATOR DE EMISSÃO</p>
+                <p class="divTipografiaTitulosMenoresVerde">POTENCIAL CLIMÁTICO</p>
+                <p class="divTipografiaNomeGas">Monóxido de Carbono</p>
+                <p class="divTipografiaEmissao2">2</p>
+                <p class="divTipografiaEmissao2">~</p>
+                <p class="divTipografiaEmissao2">~</p>
+                <p class="divTipografiaGasesMenores">CO</p>
+                <p class="divTipografiaNomeGas">tCO<sub>2</sub>e / t HFC-134a</p>
+                <p class="divTipografia1paragrafo">Moderado (GWP indireto)</p>
+                <p class="divTipografia2paragrafo">Empalagem MAP e combustão incompleta</p>
+            </div>
+
+                       Card 2 - Óxido Nitroso
+            <div class="divCardRoxo cardItem">
+                <h2 class="divTipografiaTituloRisco">RISCO GEE: CRÍTICO</h2>
+                <p class="divTipografiaEscopoRoxo">ESCOPO 3</p>
+                <p class="divTipografiaTitulosMenoresRoxo">GÁS / SUBSTÂNCIA</p>
+                <p class="divTipografiaTitulosMenoresRoxo">GHGS EMITIDOS</p>
+                <p class="divTipografiaTitulosMenoresRoxo">FATOR DE EMISSÃO</p>
+                <p class="divTipografiaEmissao2">273</p>
+                <p class="divTipografiaTitulosMenoresRoxo">POTENCIAL CLIMÁTICO</p>
+                <p class="divTipografiaNomeGas">Óxido Nitroso</p>
+                <p class="divTipografiaGasesMenores">N<sub>2</sub>O</p>
+                <p class="divTipografiaNomeGas">tCO<sub>2</sub>e / t N<sub>2</sub>O</p>
+                <p class="divTipografia1paragrafo">Alto (GWP100 = 273)</p>
+                <p class="divTipografia2paragrafo">Fertilizantes sintéticos nitrogenados</p>
+            </div>
+
+                       Card 3 - Hexafluoreto de Enxofre
+            <div class="divCardRoxo cardItem">
+                <h2 class="divTipografiaTituloRisco">RISCO GEE: CRÍTICO</h2>
+                <p class="divTipografiaEscopoRoxo">ESCOPO 3</p>
+                <p class="divTipografiaTitulosMenoresRoxo">GÁS / SUBSTÂNCIA</p>
+                <p class="divTipografiaTitulosMenoresRoxo">GHGS EMITIDOS</p>
+                <p class="divTipografiaTitulosMenoresRoxo">FATOR DE EMISSÃO</p>
+                <p class="divTipografiaEmissao2">23.500</p>
+                <p class="divTipografiaTitulosMenoresRoxo">POTENCIAL CLIMÁTICO</p>
+                <p class="divTipografiaNomeGas">Hexafluoreto de Enxofre</p>
+                <p class="divTipografiaGasesMenores">SF<sub>6</sub></p>
+                <p class="divTipografiaNomeGas">tCO<sub>2</sub>e / t SF<sub>6</sub></p>
+                <p class="divTipografia1paragrafo">Extremo (GWP100 = 23.500)</p>
+                <p class="divTipografia2paragrafo">Disjuntores e subestações elétricas</p>
+            </div>
+
+                       Card 4 - Trifluorometano
+            <div class="divCardRoxo cardItem">
+                <h2 class="divTipografiaTituloRisco">RISCO GEE: CRÍTICO</h2>
+                <p class="divTipografiaEscopoRoxo">ESCOPO 3</p>
+                <p class="divTipografiaTitulosMenoresRoxo">GÁS / SUBSTÂNCIA</p>
+                <p class="divTipografiaTitulosMenoresRoxo">GHGS EMITIDOS</p>
+                <p class="divTipografiaTitulosMenoresRoxo">FATOR DE EMISSÃO</p>
+                <p class="divTipografiaEmissao2">14.800</p>
+                <p class="divTipografiaTitulosMenoresRoxo">POTENCIAL CLIMÁTICO</p>
+                <p class="divTipografiaNomeGas">HFC-23 (Trifluorometano)</p>
+                <p class="divTipografiaGasesMenores">CHF<sub>3</sub></p>
+                <p class="divTipografiaNomeGas">tCO<sub>2</sub>e / t HFC-23</p>
+                <p class="divTipografia1paragrafo">Extremo (GWP100 = 14.800)</p>
+                <p class="divTipografia2paragrafo">Supremação de incêncio e ultra-congelamento</p>
+            </div>
+
+                       Card 5 - Óxidos de Nitrogenio
+            <div class="divCardVerde cardItem">
+                <h2 class="divTipografiaTituloRisco">RISCO GEE: CRÍTICO</h2>
+                <p class="divTipografiaEscopoRoxo">ESCOPO 3</p>
+                <p class="divTipografiaTitulosMenoresVerde">GÁS / SUBSTÂNCIA</p>
+                <p class="divTipografiaTitulosMenoresVerde">GHGS EMITIDOS</p>
+                <p class="divTipografiaTitulosMenoresVerde">FATOR DE EMISSÃO</p>
+                <p class="divTipografiaEmissao2">298</p>
+                <p class="divTipografiaTitulosMenoresVerde">POTENCIAL CLIMÁTICO</p>
+                <p class="divTipografiaNomeGas">Óxidos de Nitrogênio</p>
+                <p class="divTipografiaGasesMenores">NO<sub>x</sub> / NO<sub>2</sub></p>
+                <p class="divTipografiaNomeGas">tCO<sub>2</sub>e / t NO<sub>2</sub> equiv.
+                    (GWP indireto)</p>
+                <p class="divTipografia1paragrafo">Alto - precursor de ozônio</p>
+                <p class="divTipografia2paragrafo">Frato diesel e caldeiras industriais</p>
+            </div>
+
+                       Card 6 - Tretrafluoroetano
+            <div class="divCardVerde cardItem">
+                <h2 class="divTipografiaTituloRisco">RISCO GEE: ALTO</h2>
+                <p class="divTipografiaEscopoVerde">ESCOPO 3</p>
+                <p class="divTipografiaTitulosMenoresVerde">GÁS / SUBSTÂNCIA</p>
+                <p class="divTipografiaTitulosMenoresVerde">GHGS EMITIDOS</p>
+                <p class="divTipografiaTitulosMenoresVerde">FATOR DE EMISSÃO</p>
+                <p class="divTipografiaEmissao2">1.430</p>
+                <p class="divTipografiaTitulosMenoresVerde">POTENCIAL CLIMÁTICO</p>
+                <p class="divTipografiaNomeGas">HFC-134a</p>
+                <p class="divTipografiaGasesMenores">(Tetrafluoroetano)</p>
+                <p class="divTipografiaNomeGas">tCO<sub>2</sub>e / t HFC-134a</p>
+                <p class="divTipografia1paragrafo">Alto (GWP100 = 1.430)</p>
+                <p class="divTipografia2paragrafo">Fertilizantes sintéticos nitrogenados</p>
+            </div>
+
+        </div>
+
+        <button id="btnProximo" class="botaoDireitoCarrossel2"></button>
+        <img class="setaDireitaCarroselCelulares2" src="WEB-INF/Imagens/setaDireita.svg" alt="Seta Direita">
+
     </div>
-
-
-
-
-
+    <script src="WEB-INF/script.js"></script>
 </section>
 
 
 <!--          SECTOR 5              -->
+            <!-- COMENTADO TEMPORARIAMENTE PARA NÃO ATRAPALHAR O DESIGN:
 
 
-<section>
-<div class="retanguloSetor5">
-</div>
+            <section>
+            <div class="retanguloSetor5">
+            </div>
 
-<div class="Bola5">
-</div>
-  <h2 class="tituloConhecaASolucao">Conheça nossa Solução</h2>
-  <h3 class="tituloFuncionalidadeDoAPP">Funcionalidades do APP</h3>
+            <div class="Bola5">
+            </div>
+              <h2 class="tituloConhecaASolucao">Conheça nossa Solução</h2>
+              <h3 class="tituloFuncionalidadeDoAPP">Funcionalidades do APP</h3>
 
-  <img class="imagemCelularAeko" src="WEB-INF/Imagens/CelularesAeko.svg" alt="Celulares demonstrativos do ChatBot da empresa">
+              <img class="imagemCelularAeko" src="WEB-INF/Imagens/CelularesAeko.svg" alt="Celulares demonstrativos do ChatBot da empresa">
 
-  <details>
-    <summary>Leitor de PDF</summary>
-    <p>Um leitor de PDF que será possível uploadar
-      relatórios de emissões de gases do efeito
-      estufa (por unidade), que recomendara
-      possíveis alternativas.
-    </p>
-  </details>
+              <section class="agrupandoGrupo">
 
-  <details>
-    <summary>Consultor Manual</summary>
-    <p>No plano Pulse, o consultor manual será uma
-      forma de adicionar informações especiais. Já
-      no plano Horizon, será o principal métod de
-      input de informações.
-    </p>
-  </details>
+              <details name="menuFuncionalidades">
+                <summary class="tipografiaMenuAbreEFechaTitulo">Leitor de PDF</summary>
+                <p class="tipografiaMenuAbreEFechaConteudo">Um leitor de PDF que será possível uploadar
+                  relatórios de emissões de gases do efeito
+                  estufa (por unidade), que recomendara
+                  possíveis alternativas.
+                </p>
+              </details>
 
-  <details>
-    <summary>Calculadora de CO²</summary>
-    <p>Essa feature terá como sua principal função
-      calcular quantas toneladas de CO² será
-      possível reduzir a partir da troca sugerida.
-    </p>
-  </details>
+              <details name="menuFuncionalidades">
+                <summary class="tipografiaMenuAbreEFechaTitulo">Consultor Manual</summary>
+                <p class="tipografiaMenuAbreEFechaConteudo">No plano Pulse, o consultor manual será uma
+                  forma de adicionar informações especiais. Já
+                  no plano Horizon, será o principal métod de
+                  input de informações.
+                </p>
+              </details>
 
-  <details>
-    <summary>Calculadora de ROI</summary>
-    <p>Calculará o ROI (retorno de investimento) á
-      partir da troca do gás poluente para o gás
-      sugerido, utilizando como base desgaste de
-      máquina, taxa WACC etc.
-    </p>
-  </details>
+              <details name="menuFuncionalidades">
+                <summary class="tipografiaMenuAbreEFechaTitulo">Calculadora de CO²</summary>
+                <p class="tipografiaMenuAbreEFechaConteudo">Essa feature terá como sua principal função
+                  calcular quantas toneladas de CO² será
+                  possível reduzir a partir da troca sugerida.
+                </p>
+              </details>
 
-  <details>
-    <summary>Cadastro</summary>
-    <p>Será possível o cadastro do usuário
-      pelo nosso aplicativo.
-    </p>
-  </details>
+              <details name="menuFuncionalidades">
+                <summary class="tipografiaMenuAbreEFechaTitulo">Calculadora de ROI</summary>
+                <p class="tipografiaMenuAbreEFechaConteudo">Calculará o ROI (retorno de investimento) á
+                  partir da troca do gás poluente para o gás
+                  sugerido, utilizando como base desgaste de
+                  máquina, taxa WACC etc.
+                </p>
+              </details>
 
-  <details>
-    <summary>ChatBot Aeko</summary>
-    <p>O Chatbot Aeko estará sempre disponível para
-      tirar suas dúvidas sobre valor de gases (verdes
-      e poluentes), sustentabilidade, gases, fórmulas,
-      abreviações etc.
-    </p>
-  </details>
+              <details name="menuFuncionalidades">
+                <summary class="tipografiaMenuAbreEFechaTitulo">Cadastro</summary>
+                <p class="tipografiaMenuAbreEFechaConteudo">Será possível o cadastro do usuário
+                  pelo nosso aplicativo.
+                </p>
+              </details>
 
-  <h2>Análise de Dados</h2>
+              <details name="menuFuncionalidades">
+                <summary class="tipografiaMenuAbreEFechaTitulo">ChatBot Aeko</summary>
+                <p class="tipografiaMenuAbreEFechaConteudo">O Chatbot Aeko estará sempre disponível para
+                  tirar suas dúvidas sobre valor de gases (verdes
+                  e poluentes), sustentabilidade, gases, fórmulas,
+                  abreviações etc.
+                </p>
+              </details>
 
-  <p>
-    Nossa empresa busca trazer a melhor solução para a sua em 3 etapas <br>
-    principais. Analisamos dados e relatórios a partir de diversos critérios <br>
-    para sugerir as melhores alternativas renováveis aos gases poluentes.
-  </p>
+              </section>
 
-  <div>
-    <h3>Entrada de Dados</h3>
-    <div>circulo</div>
-    <p>1° Passo</p>
-    <p>A primeira etapa é <br>
-      onde armazenamos <br>
-      os dados sendo por <br>
-      meio de leitura de <br>
-      relatórios ou de mo...
-    </p>
+                <div>
+                <h2 class="tituloAnalise">Análise de  <span class="tituloDadosDestacado">Dados</span></h2>
 
-    <details>
-      <summary><button> -> </button></summary>
-      <p>A primeira etapa é <br>
-        onde armazenamos <br>
-        os dados sendo por <br>
-        meio de leitura de <br>
-        relatórios ou de <br>
-        modo manual pelo<br>
-        usuário.
-      </p>
-    </details>
-  </div>
+                <p class="textoAnaliseDados">
+                    Nossa empresa busca trazer a melhor solução para a sua em 3 etapas
+                    principais. Analisamos dados e relatórios a partir de diversos critérios
+                    para sugerir as melhores alternativas renováveis aos gases poluentes.
+                </p>
+                </div>
 
-  <div>
-    <h3>Leitura de Dados</h3>
-    <div>circulo</div>
-    <p>2° Passo</p>
-    <p>Nessa etapa, será <br>
-      feito o <br>
-      processamento, <br>
-      leitura de dados para <br>
-      que possam ser tran...
-    </p>
+                <section class="secaoCards">
+                <details class="card1Dados">
+                    <summary>
+                        <div>
+                            <span></span>
+                            <span class="tipografiaCardsTitulos">1° Etapa</span>
+                        </div>
 
-    <details>
-      <summary><button> -> </button></summary>
-      <p>Nessa etapa, será <br>
-        feito o <br>
-        processamento, <br>
-        leitura de dados para <br>
-        que possam ser <br>
-        transformados em <br>
-        relatórios com dados <br>
-        chave para sua <br>
-        empresa.
-      </p>
-    </details>
-  </div>
+                        <h3 class="tipografiaCardsTitulos">Entrada de Dados</h3>
 
-  <div>
-    <h3>Saída de Dados</h3>
-    <div>circulo</div>
-    <p>3° Passo</p>
-    <p>Aqui, os dados lidos<br>
-      serão transformados <br>
-      em relatórios chave, <br>
-      que indicarão <br>
-      Categoria no Selo Cli...
-    </p>
+                        <p class="tipografiaCardsConteudo">A primeira etapa é onde armazenamos os dados sendo por meio de leitura de relatórios ou de mo...</p>
 
-    <details>
-      <summary><button> -> </button></summary>
-      <p>Aqui, os dados lidos<br>
-        serão transformados <br>
-        em relatórios chave, <br>
-        que indicarão <br>
-        Categoria no Selo <br>
-        Clima Paraná, qual <br>
-        será o retorno do seu <br>
-        investimento após 5 <br>
-        anos e quantas <br>
-        toneladas de CO² <br>
-        serão possíveis evitar à partir da troca <br>
-        verde sugerida.
-      </p>
-    </details>
-  </div>
-</section>
+                        <button>↓</button>
+                    </summary>
 
--->
+                    <p class="tipografiaCardsConteudo">
+                        A primeira etapa é onde armazenamos os dados sendo por meio de leitura de relatórios ou de modo manual pelo usuário.
+                    </p>
+                </details>
+
+                <details class="card2Dados">
+                    <summary>
+                        <div>
+                            <span></span>
+                            <span class="tipografiaCardsTitulos">2° Etapa</span>
+                        </div>
+
+                        <h3 class="tipografiaCardsTitulos">Leitura de Dados</h3>
+
+                        <p class="tipografiaCardsConteudo">Nessa etapa, será feito o processamento, leitura de dados para que possam ser tran...</p>
+
+                        <button>↓</button>
+                    </summary>
+
+                    <p class="tipografiaCardsConteudo">
+                        Nessa etapa, será feito o processamento, leitura de dados para que possam ser transformados em relatórios com dados chave para sua empresa.
+                    </p>
+                </details>
+
+                <details class="card3Dados">
+                    <summary>
+                        <div>
+                            <span></span>
+                            <span class="tipografiaCardsTitulos">3° Etapa</span>
+                        </div>
+
+                        <h3 class="tipografiaCardsTitulos">Saída de Dados</h3>
+
+                        <p class="tipografiaCardsConteudo">Aqui, os dados lidos serão transformados em relatórios chave, que indicarão Categoria no Selo Cli...</p>
+
+                        <button>↓</button>
+                    </summary>
+
+                    <p class="tipografiaCardsConteudo">
+                        Aqui, os dados lidos serão transformados em relatórios chave, que indicarão Categoria no Selo Clima Paraná, qual será o retorno do seu investimento após 5 anos e quantas toneladas de CO² serão possíveis evitar à partir da troca verde sugerida.
+                    </p>
+                </details>
+                </section>
+
+            </section>
+
+            -->
+
 <!--          SECTOR 6              -->
 <!-- COMENTADO TEMPORARIAMENTE PARA NÃO ATRAPALHAR O DESIGN:
 <section>
-<div>
-  Planos
-</div>
+    <div>
+      Planos
+    </div>
 
-<h1>Planos</h1>
+    <h1>Planos</h1>
 
-<p>Plano mensal</p>
-<button></button>
-<p>Plano trimestral</p>
+    <p>Plano mensal</p>
+    <button></button>
+    <p>Plano trimestral</p>
 
-<div>
-  <p>aether Pulse</p>
-  <p>For Industry Leaders</p>
-  <p>R$3.300/por mês</p>
+    <div>
+      <p>aether Pulse</p>
+      <p>For Industry Leaders</p>
+      <p>R$3.300/por mês</p>
 
-  <button>Assine agora -></button>
+      <button>Assine agora -></button>
 
-  <ul>
-    <li>Quantidade de cadastro <br>
-      Quantidade de analistas e <br></li>
+      <ul>
+        <li>Quantidade de cadastro <br>
+          Quantidade de analistas e <br></li>
 
-    <li>Quantidade de analistas e <br>
-    administradores limitada a 2</li>
+        <li>Quantidade de analistas e <br>
+        administradores limitada a 2</li>
 
-    <li>Acompanhamento mensal</li>
-  </ul>
-</div>
+        <li>Acompanhamento mensal</li>
+      </ul>
+    </div>
 
-<div>
-  <p>aether Horizon</p>
-  <p>For Custom Plan</p>
-  <p>R$9.400/a cada 3 meses</p>
+    <div>
+      <p>aether Horizon</p>
+      <p>For Custom Plan</p>
+      <p>R$9.400/a cada 3 meses</p>
 
-  <button>Assine agora -></button>
+      <button>Assine agora -></button>
 
-  <ul>
-    <li>Tudo do plano aether Pulse</li>
+      <ul>
+        <li>Tudo do plano aether Pulse</li>
 
-    <li>Quantidade de Cadastro de <br>
-      funcionários ilimitada</li>
+        <li>Quantidade de Cadastro de <br>
+          funcionários ilimitada</li>
 
-    <li>Acompanhamento Trimestral</li>
-  </ul>
-</div>
-</section>
+        <li>Acompanhamento Trimestral</li>
+      </ul>
+    </div>
+    </section>
+    -->
 
--->
-<!--          SECTOR 7              -->
-<!-- COMENTADO TEMPORARIAMENTE PARA NÃO ATRAPALHAR O DESIGN:
+    <!--          SECTOR 7              -->
+    <!-- COMENTADO TEMPORARIAMENTE PARA NÃO ATRAPALHAR O DESIGN:
 
-<section>
-<div>
-  Cadastro
-</div>
+    <section>
+    <div>
+      Cadastro
+    </div>
 
-  <div>
-    Login
-  </div>
+      <div>
+        Login
+      </div>
 
-<img src="Imagens/LogoAethererdeEscuro.svg" alt="LogoAether">
+    <img src="Imagens/LogoAethererdeEscuro.svg" alt="LogoAether">
 
-<div>
+    <div>
 
-  <img src="Imagens/Aeko.svg" alt="Aeko">
+      <img src="Imagens/Aeko.svg" alt="Aeko">
 
-  <p>Email:</p>
-  <p>Senha:</p>
-  <p>Confirme sua senha</p>
-  <p>Senha:</p>
+      <p>Email:</p>
+      <p>Senha:</p>
+      <p>Confirme sua senha</p>
+      <p>Senha:</p>
 
-  <fieldset>
-    <form action="" method="get">
-      <input type="text" id="email" name="campoEmail">
-      <label for="email"></label>
+      <fieldset>
+        <form action="" method="get">
+          <input type="text" id="email" name="campoEmail">
+          <label for="email"></label>
 
-      <input type="text" id="senha" name="campoEmail">
-      <label for="senha"></label>
+          <input type="text" id="senha" name="campoEmail">
+          <label for="senha"></label>
 
-      <input type="text" id="confirmeSenha" name="campoConfirmarSenha">
-      <label for="confirmeSenha"></label>
+          <input type="text" id="confirmeSenha" name="campoConfirmarSenha">
+          <label for="confirmeSenha"></label>
 
-      <label for="plano"></label>
-      <select name="planos" id="plano">
-        <option value="pulse">Aether Pulse</option>
-        <option value="horizon">Aether Horizon</option>
-      </select>
+          <label for="plano"></label>
+          <select name="planos" id="plano">
+            <option value="pulse">Aether Pulse</option>
+            <option value="horizon">Aether Horizon</option>
+          </select>
 
-      <input type="submit" value="submitt">
+          <input type="submit" value="submitt">
 
-    </form>
-  </fieldset>
-
-
-  <div>
-    Digite aqui...
-  </div>
-
-  <p>Confirme sua Senha:</p>
-  <div>
-    Digite aqui...
-  </div>
-
-  <form>
+        </form>
+      </fieldset>
 
 
-  </form>
+      <div>
+        Digite aqui...
+      </div>
 
-  <button>Se cadastrar</button>
-  <p>Já possui uma conta? clique aqui</p>
-</div>
-</section>
+      <p>Confirme sua Senha:</p>
+      <div>
+        Digite aqui...
+      </div>
 
+      <form>
+
+
+      </form>
+
+      <button>Se cadastrar</button>
+      <p>Já possui uma conta? clique aqui</p>
+    </div>
+
+    </section>
+    -->
 
 </body>
