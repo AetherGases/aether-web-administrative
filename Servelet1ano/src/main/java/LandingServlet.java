@@ -1,5 +1,3 @@
-package com.example.servelet1ano.servlet;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

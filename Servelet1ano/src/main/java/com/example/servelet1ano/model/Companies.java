@@ -8,7 +8,7 @@ public class Companies {
     private String name;
     private String tradeName;
     private String cnpj;
-    private int size;
+    private CompanySize size;
     private Date registrationDate;
     private String taxId;
     private String email;
@@ -17,7 +17,7 @@ public class Companies {
     private boolean isActive;
     private Addresses address;
 
-    public Companies(int id, int addressId, String name, int size, Date registrationDate, String taxId, String email, Date createdAt) {
+    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
@@ -28,7 +28,7 @@ public class Companies {
         this.createdAt = createdAt;
     }
 
-    public Companies(String name, int size, String taxId, String email) {
+    public Companies(String name, CompanySize size, String taxId, String email) {
         this.name = name;
         this.size = size;
         this.taxId = taxId;
@@ -43,7 +43,7 @@ public class Companies {
         this.name = name;
     }
 
-    public Companies(int id, String name, int size, String taxId, String email) {
+    public Companies(int id, String name, CompanySize size, String taxId, String email) {
         this.id = id;
         this.name = name;
         this.size = size;
@@ -51,7 +51,7 @@ public class Companies {
         this.email = email;
     }
 
-    public Companies(int id, int addressId, String name, String tradeName, String cnpj, int size, Date registrationDate, String taxId, String email, Date createdAt, boolean isActive, Addresses address) {
+    public Companies(int id, int addressId, String name, String tradeName, String cnpj, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt, boolean isActive, Addresses address) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;

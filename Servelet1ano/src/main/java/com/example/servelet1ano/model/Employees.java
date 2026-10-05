@@ -4,43 +4,30 @@ import java.util.Date;
 
 public class Employees {
     private int id;
+    private String cpf;
     private int companyId;
     private int permissionGroupId;
     private int unitId;
     private int sectorId;
-    private String cpf;
-    private PermissionGroups permissionGroup;
-    private String email;
     private String name;
+    private String email;
     private String phone;
     private String passwordHash;
-    private String status;
+    private StatusEmployee status;
     private int storageFileId;
-    private boolean isActive;
     private Date createdAt;
     private Date updatedAt;
+    private PermissionGroups permissionGroup;
     private Companies company;
     private Units unit;
     private Sectors sector;
-
-
-    public Employees(int id, int companyId, int permissionGroupId, PermissionGroups permissionGroup, String email, String name, Date createdAt, Companies company) {
-        this.id = id;
-        this.companyId = companyId;
-        this.permissionGroupId = permissionGroupId;
-        this.permissionGroup = permissionGroup;
-        this.email = email;
-        this.name = name;
-        this.createdAt = createdAt;
-        this.company = company;
-    }
 
     public Employees() {
     }
 
     public Employees(String name, String email) {
-        this.email = email;
         this.name = name;
+        this.email = email;
     }
 
     public Employees(int id, String name, String email) {
@@ -57,44 +44,29 @@ public class Employees {
         this.company = company;
     }
 
-    public Employees(int id, int companyId, int permissionGroupId, int unitId, String email, String name, PermissionGroups permissionGroup, Companies company, Units unit) {
-        this.id = id;
+    public Employees(int companyId, int permissionGroupId, int sectorId, String cpf, String name, String email, String phone, String passwordHash, StatusEmployee status) {
         this.companyId = companyId;
         this.permissionGroupId = permissionGroupId;
-        this.unitId = unitId;
-        this.permissionGroup = permissionGroup;
-        this.email = email;
+        this.sectorId = sectorId;
+        this.cpf = cpf;
         this.name = name;
-        this.company = company;
-        this.unit = unit;
+        this.email = email;
+        this.phone = phone;
+        this.passwordHash = passwordHash;
+        this.status = status;
     }
 
-    public Employees(int companyId, int permissionGroupId, String email, String name) {
-        this.companyId = companyId;
-        this.permissionGroupId = permissionGroupId;
-        this.email = email;
-        this.name = name;
-    }
-
-    public Employees(
-            int id, int companyId, int permissionGroupId, int unitId, int sectorId,
-            String cpf, String email, String name, String phone, String passwordHash,
-            String status, int storageFileId, boolean isActive,
-            PermissionGroups permissionGroup, Companies company, Units unit, Sectors sector
-    ) {
+    public Employees(int id, int companyId, int permissionGroupId, int unitId, int sectorId, String cpf, String name, String email, String phone, StatusEmployee status, PermissionGroups permissionGroup, Companies company, Units unit, Sectors sector) {
         this.id = id;
         this.companyId = companyId;
         this.permissionGroupId = permissionGroupId;
         this.unitId = unitId;
         this.sectorId = sectorId;
         this.cpf = cpf;
-        this.email = email;
         this.name = name;
+        this.email = email;
         this.phone = phone;
-        this.passwordHash = passwordHash;
         this.status = status;
-        this.storageFileId = storageFileId;
-        this.isActive = isActive;
         this.permissionGroup = permissionGroup;
         this.company = company;
         this.unit = unit;
@@ -107,6 +79,14 @@ public class Employees {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public int getCompanyId() {
@@ -141,12 +121,12 @@ public class Employees {
         this.sectorId = sectorId;
     }
 
-    public String getCpf() {
-        return cpf;
+    public String getName() {
+        return name;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -155,14 +135,6 @@ public class Employees {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getPhone() {
@@ -181,11 +153,11 @@ public class Employees {
         this.passwordHash = passwordHash;
     }
 
-    public String getStatus() {
+    public StatusEmployee getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(StatusEmployee status) {
         this.status = status;
     }
 
@@ -195,14 +167,6 @@ public class Employees {
 
     public void setStorageFileId(int storageFileId) {
         this.storageFileId = storageFileId;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
     }
 
     public Date getCreatedAt() {
@@ -253,4 +217,26 @@ public class Employees {
         this.sector = sector;
     }
 
+    @Override
+    public String toString() {
+        return "Employees{" +
+                "id=" + id +
+                ", cpf='" + cpf + '\'' +
+                ", companyId=" + companyId +
+                ", permissionGroupId=" + permissionGroupId +
+                ", unitId=" + unitId +
+                ", sectorId=" + sectorId +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", status=" + status +
+                ", storageFileId=" + storageFileId +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", permissionGroup=" + permissionGroup +
+                ", company=" + company +
+                ", unit=" + unit +
+                ", sector=" + sector +
+                '}';
+    }
 }

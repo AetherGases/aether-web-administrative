@@ -8,13 +8,24 @@ public class Addresses {
     private String street;
     private String number;
     private String complement;
-    private String city;
     private String neighborhood;
+    private String city;
     private String state;
     private String country;
-    private boolean isActive;
     private Date createdAt;
     private Date updatedAt;
+
+    public Addresses(int id, String zipCode, String street, String number, String complement, String neighborhood, String city, String state, String country) {
+        this.id = id;
+        this.zipCode = zipCode;
+        this.street = street;
+        this.number = number;
+        this.complement = complement;
+        this.neighborhood = neighborhood;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+    }
 
     public Addresses(int id, String street, String number, String complement, String city, String state, String country) {
         this.id = id;
@@ -24,34 +35,6 @@ public class Addresses {
         this.city = city;
         this.state = state;
         this.country = country;
-    }
-
-    public Addresses(
-            int id,
-            String zipCode,
-            String street,
-            String number,
-            String complement,
-            String city,
-            String neighborhood,
-            String state,
-            String country,
-            boolean isActive,
-            Date createdAt,
-            Date updatedAt
-    ) {
-        this.id = id;
-        this.zipCode = zipCode;
-        this.street = street;
-        this.number = number;
-        this.complement = complement;
-        this.city = city;
-        this.neighborhood = neighborhood;
-        this.state = state;
-        this.country = country;
-        this.isActive = isActive;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Addresses() {
@@ -112,20 +95,20 @@ public class Addresses {
         this.complement = complement;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public String getNeighborhood() {
         return neighborhood;
     }
 
     public void setNeighborhood(String neighborhood) {
         this.neighborhood = neighborhood;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public String getState() {
@@ -144,14 +127,6 @@ public class Addresses {
         this.country = country;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -166,5 +141,22 @@ public class Addresses {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Addresses{" +
+                "id=" + id +
+                ", zipCode='" + zipCode + '\'' +
+                ", street='" + street + '\'' +
+                ", number='" + number + '\'' +
+                ", complement='" + complement + '\'' +
+                ", neighborhood='" + neighborhood + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", country='" + country + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
 }

@@ -60,17 +60,20 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                         rs.getString("companyName")
                 );
 
-                subscriptions.add(
-                        new Subscriptions(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("planId"),
-                                rs.getBoolean("is_active"),
-                                rs.getBoolean("installments"),
-                                rs.getTimestamp("deactivated_at"),
-                                company
-                        )
+                Subscriptions subscription = new Subscriptions(
+                        rs.getInt("id"),
+                        rs.getInt("companyId"),
+                        rs.getInt("planId"),
+                        rs.getBoolean("is_active"),
+                        rs.getBoolean("installments"),
+                        company
                 );
+
+                subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
+                subscription.setCreatedAt(rs.getTimestamp("created_at"));
+                subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                subscriptions.add(subscription);
             }
 
         } catch (SQLException e) {
@@ -119,9 +122,12 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                         rs.getInt("planId"),
                         rs.getBoolean("is_active"),
                         rs.getBoolean("installments"),
-                        rs.getTimestamp("deactivated_at"),
                         company
                 );
+
+                subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
+                subscription.setCreatedAt(rs.getTimestamp("created_at"));
+                subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
             }
 
         } catch (SQLException e) {
@@ -172,11 +178,35 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
         try(
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, updated_at = current_timestamp where id = ?"
+                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
                 )
         ) {
 
             pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * metodo que desativa as assinaturas de uma empresa (para quando uma empresa for desativada)
+     * @param companyId O id da empresa
+     * @return true se foi desativada e false caso tenha dado erro
+     */
+    public boolean deleteByCompanyId(int companyId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where company_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, companyId);
 
             return pstmt.executeUpdate() > 0;
 
@@ -229,7 +259,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
         try(
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = true, updated_at = current_timestamp where id = ?"
+                        "update subscriptions set is_active = true, deactivated_at = null, updated_at = current_timestamp where id = ?"
                 )
         ){
 
@@ -253,7 +283,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
         try(
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, updated_at = current_timestamp where id = ?"
+                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
                 )
         ){
 

@@ -8,34 +8,39 @@ public class Sectors {
     private int companyId;
     private String name;
     private String description;
-    private boolean isActive;
     private Date createdAt;
     private Date updatedAt;
     private Companies company;
     private Units unit;
 
-    public Sectors(int id, int unitId, int companyId, String description, Date createdAt) {
+    public Sectors(int id, int unitId, int companyId, String name, String description, Date createdAt) {
         this.id = id;
         this.unitId = unitId;
         this.companyId = companyId;
+        this.name = name;
         this.description = description;
         this.createdAt = createdAt;
     }
 
-    public Sectors(String description) {
+    public Sectors(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Sectors(String name, String description) {
+        this.name = name;
         this.description = description;
     }
 
     public Sectors() {
     }
 
-    public Sectors(int id, int unitId, int companyId, String name, String description, boolean isActive, Companies company, Units unit) {
+    public Sectors(int id, int unitId, int companyId, String name, String description, Companies company, Units unit) {
         this.id = id;
         this.unitId = unitId;
         this.companyId = companyId;
         this.name = name;
         this.description = description;
-        this.isActive = isActive;
         this.company = company;
         this.unit = unit;
     }
@@ -82,14 +87,6 @@ public class Sectors {
         this.description = description;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
     }
@@ -120,5 +117,20 @@ public class Sectors {
 
     public void setUnit(Units unit) {
         this.unit = unit;
+    }
+
+    @Override
+    public String toString() {
+        return "Sectors{" +
+                "id=" + id +
+                ", unitId=" + unitId +
+                ", companyId=" + companyId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", company=" + company +
+                ", unit=" + unit +
+                '}';
     }
 }

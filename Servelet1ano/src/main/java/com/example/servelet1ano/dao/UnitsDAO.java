@@ -26,8 +26,8 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
         StringBuilder sql = new StringBuilder(
                 "select u.*, u.company_id as companyId, u.address_id as addressId, " +
                         "c.name as companyName, c.id as idCompany, " +
-                        "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                        "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
+                        "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
+                        "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
                         "from units u " +
                         "join companies c on u.company_id = c.id " +
                         "join addresses a on a.id = u.address_id " +
@@ -86,34 +86,39 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
                 Addresses address = new Addresses(
                         rs.getInt("idAddress"),
+                        rs.getString("addressZipCode"),
                         rs.getString("addressStreet"),
                         rs.getString("addressNumber"),
                         rs.getString("addressComplement"),
+                        rs.getString("addressNeighborhood"),
                         rs.getString("addressCity"),
                         rs.getString("addressState"),
                         rs.getString("addressCountry")
                 );
 
-                units.add(
-                        new Units(
-                                rs.getInt("id"),
-                                rs.getInt("companyId"),
-                                rs.getInt("addressId"),
-                                rs.getString("name"),
-                                rs.getString("cnpj"),
-                                rs.getString("cnae"),
-                                rs.getBoolean("is_active"),
-                                company,
-                                address
-                        )
+                Units unit = new Units(
+                        rs.getInt("id"),
+                        rs.getInt("companyId"),
+                        rs.getInt("addressId"),
+                        rs.getString("name"),
+                        rs.getString("cnpj"),
+                        rs.getString("cnae"),
+                        rs.getBoolean("is_active"),
+                        company,
+                        address
                 );
+
+                unit.setCreatedAt(rs.getTimestamp("created_at"));
+                unit.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                units.add(unit);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            return units;
         }
-
-        return units;
     }
 
     /**
@@ -131,8 +136,8 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select u.*, u.company_id as companyId, u.address_id as addressId, " +
                                 "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.city as addressCity, a.state as addressState, a.country as addressCountry " +
+                                "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
+                                "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
                                 "from units u " +
                                 "join companies c on u.company_id = c.id " +
                                 "join addresses a on a.id = u.address_id " +
@@ -153,9 +158,11 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
                 Addresses address = new Addresses(
                         rs.getInt("idAddress"),
+                        rs.getString("addressZipCode"),
                         rs.getString("addressStreet"),
                         rs.getString("addressNumber"),
                         rs.getString("addressComplement"),
+                        rs.getString("addressNeighborhood"),
                         rs.getString("addressCity"),
                         rs.getString("addressState"),
                         rs.getString("addressCountry")
@@ -172,13 +179,16 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
                         company,
                         address
                 );
+
+                unit.setCreatedAt(rs.getTimestamp("created_at"));
+                unit.setUpdatedAt(rs.getTimestamp("updated_at"));
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            return unit;
         }
-
-        return unit;
     }
 
     /**
@@ -251,13 +261,14 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
      * metodo para desativar a unit por id (is_active = false)
-     * Cascateia a desativacao para os funcionarios da unidade via EmployeesDAO.deleteByIdUnit
+     * Cascateia a desativacao para os setores e os funcionarios da unidade
      * @param id Valor unico de cada unit
      * @return true se foi desativada e false caso tenha dado erro
      */
     @Override
     public boolean delete(int id) {
 
+        new SectorsDAO().deleteByUnitId(id);
         new EmployeesDAO().deleteByIdUnit(id);
 
         try (
@@ -279,7 +290,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
      * metodo que desativa as units de uma empresa (para quando uma empresa for desativada)
-     * Busca as units ativas da empresa via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os funcionarios de cada unidade
+     * Busca as units ativas da empresa via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os setores e funcionarios de cada unidade
      * @param companyId O id da empresa
      * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
      */
@@ -302,7 +313,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
      * metodo que desativa pelo nome
-     * Busca as units ativas pelo nome via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os funcionarios de cada unidade
+     * Busca as units ativas pelo nome via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os setores e funcionarios de cada unidade
      * @param name O nome da unit
      * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
      */

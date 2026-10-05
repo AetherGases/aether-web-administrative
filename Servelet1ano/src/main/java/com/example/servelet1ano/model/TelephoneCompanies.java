@@ -6,7 +6,6 @@ public class TelephoneCompanies {
     private int id;
     private String telephone;
     private int companyId;
-    private boolean isActive;
     private Date createdAt;
     private Date updatedAt;
     private Companies company;
@@ -28,16 +27,6 @@ public class TelephoneCompanies {
         this.telephone = telephone;
         this.companyId = companyId;
         this.id = id;
-        this.company = company;
-    }
-
-    public TelephoneCompanies(String telephone, int companyId, int id, boolean isActive, Date createdAt, Date updatedAt, Companies company) {
-        this.telephone = telephone;
-        this.companyId = companyId;
-        this.id = id;
-        this.isActive = isActive;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.company = company;
     }
 
@@ -67,14 +56,6 @@ public class TelephoneCompanies {
         this.companyId = companyId;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean isActive) {
-        this.isActive = isActive;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -97,5 +78,17 @@ public class TelephoneCompanies {
 
     public void setCompany(Companies company) {
         this.company = company;
+    }
+
+    @Override
+    public String toString() {
+        return "TelephoneCompanies{" +
+                "id=" + id +
+                ", telephone='" + telephone + '\'' +
+                ", companyId=" + companyId +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", company=" + company +
+                '}';
     }
 }
