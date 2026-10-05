@@ -3,8 +3,10 @@ package com.example.servelet1ano;
 import com.example.servelet1ano.dao.*;
 import com.example.servelet1ano.filter.*;
 import com.example.servelet1ano.model.*;
+import com.example.servelet1ano.connection.ConnectionFactory;
+import com.example.servelet1ano.util.PasswordHasher;
 
-import java.sql.Date;
+import java.sql.*;
 import java.util.List;
 
 public class Main {
@@ -13,13 +15,19 @@ public class Main {
 
         String sufixo = String.valueOf(System.currentTimeMillis());
 
+        // cpf tem CHAR(11): pego os 11 ultimos digitos do sufixo pra ficar unico e no tamanho certo
+        String cpfTeste = sufixo.substring(sufixo.length() - 11);
+
+        // cnpj da empresa tem CHAR(14): "0" + sufixo (13 digitos) = 14 caracteres
+        String cnpjTeste = "0" + sufixo;
+
         // ===================== ADDRESSES =====================
         System.out.println("===== ADDRESSES =====");
 
         AddressesDAO addressesDAO = new AddressesDAO();
 
         Addresses novoEndereco = new Addresses(
-                0, "Rua Teste", "100", "Sala 1", "Cidade" + sufixo, "SP", "Brasil"
+                0, "01001000", "Rua Teste", "100", "Sala 1", "Centro", "Cidade" + sufixo, "SP", "Brasil"
         );
         addressesDAO.register(novoEndereco);
 
@@ -51,10 +59,11 @@ public class Main {
         CompaniesDAO companiesDAO = new CompaniesDAO();
 
         Companies novaEmpresa = new Companies(
-                0, addressId, "Empresa" + sufixo, 50,
-                new Date(System.currentTimeMillis()), "12345678900010",
-                "empresa" + sufixo + "@teste.com", null, null
+                0, addressId, "Empresa" + sufixo, CompanySize.PEQUENO,
+                new java.sql.Date(System.currentTimeMillis()), cnpjTeste,
+                "empresa" + sufixo + "@teste.com", null
         );
+        novaEmpresa.setTradeName("Fantasia" + sufixo);
         companiesDAO.register(novaEmpresa);
 
         CompaniesFilter companyFilter = new CompaniesFilter();
@@ -80,6 +89,23 @@ public class Main {
         int unitId = unitsDAO.searchAll(unitFilter).get(0).getId();
         System.out.println("Unidade criada, id: " + unitId);
 
+        // ===================== SECTORS =====================
+        // criado antes do funcionario porque employees.sector_id é NOT NULL
+        System.out.println("\n===== SECTORS =====");
+
+        SectorsDAO sectorsDAO = new SectorsDAO();
+
+        Sectors novoSetor = new Sectors(
+                0, unitId, companyId, "Setor" + sufixo, null, null, null
+        );
+        sectorsDAO.register(novoSetor);
+
+        SectorsFilter sectorFilter = new SectorsFilter();
+        sectorFilter.setName("Setor" + sufixo);
+
+        int sectorId = sectorsDAO.searchAll(sectorFilter).get(0).getId();
+        System.out.println("Setor criado, id: " + sectorId);
+
         // ===================== EMPLOYEES =====================
         System.out.println("\n===== EMPLOYEES =====");
 
@@ -89,8 +115,12 @@ public class Main {
         novoFuncionario.setCompanyId(companyId);
         novoFuncionario.setPermissionGroupId(permissionGroupId);
         novoFuncionario.setUnitId(unitId);
+        novoFuncionario.setSectorId(sectorId);
+        novoFuncionario.setCpf(cpfTeste);
         novoFuncionario.setName("Funcionario" + sufixo);
         novoFuncionario.setEmail("funcionario" + sufixo + "@teste.com");
+        novoFuncionario.setPhone("11988887777");
+        novoFuncionario.setPasswordHash(PasswordHasher.hash("senha123"));
 
         employeesDAO.register(novoFuncionario);
 
@@ -116,31 +146,54 @@ public class Main {
         List<TelephoneCompanies> telefonesEncontrados = telephoneCompaniesDAO.searchAll(telephoneFilter);
         System.out.println("Telefones da empresa: " + telefonesEncontrados.size());
 
-        // ===================== SECTORS =====================
-        System.out.println("\n===== SECTORS =====");
+        // ===================== PLANS (nao existe PlansDAO, insere direto so pra teste) =====================
+        System.out.println("\n===== PLANS (insercao direta, sem DAO) =====");
 
-        SectorsDAO sectorsDAO = new SectorsDAO();
+        int planId = 0;
 
-        Sectors novoSetor = new Sectors(
-                0, unitId, companyId, "Setor" + sufixo, null, null
-        );
-        sectorsDAO.register(novoSetor);
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into plans (name, description, price, duration_days) values (?, ?, ?, ?)"
+                )
+        ) {
+            pstmt.setString(1, "Plano" + sufixo);
+            pstmt.setString(2, "Plano de teste");
+            pstmt.setBigDecimal(3, new java.math.BigDecimal("99.90"));
+            pstmt.setInt(4, 30);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        SectorsFilter sectorFilter = new SectorsFilter();
-        sectorFilter.setDescription("Setor" + sufixo);
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select id from plans where name = ?"
+                )
+        ) {
+            pstmt.setString(1, "Plano" + sufixo);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                planId = rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
-        int sectorId = sectorsDAO.searchAll(sectorFilter).get(0).getId();
-        System.out.println("Setor criado, id: " + sectorId);
+        System.out.println("Plano criado, id: " + planId);
 
         // ===================== SUBSCRIPTIONS =====================
-        // ATENCAO: assume que ja existe uma linha com id = 1 na tabela plans
         System.out.println("\n===== SUBSCRIPTIONS =====");
 
         SubscriptionsDAO subscriptionsDAO = new SubscriptionsDAO();
 
-        Subscriptions novaAssinatura = new Subscriptions(
-                0, companyId, 1, true, false, (Companies)null
-        );
+        Subscriptions novaAssinatura = new Subscriptions();
+        novaAssinatura.setCompanyId(companyId);
+        novaAssinatura.setPlanId(planId);
+        novaAssinatura.setActive(true);
+        novaAssinatura.setInstallments(false);
+
         subscriptionsDAO.register(novaAssinatura);
 
         SubscriptionsFilter subscriptionFilter = new SubscriptionsFilter();
