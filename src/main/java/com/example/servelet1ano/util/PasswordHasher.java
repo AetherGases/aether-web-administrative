@@ -16,7 +16,7 @@ public class PasswordHasher {
     private static final int PARALLELISM = 1;      // linhas de calculo em paralelo
 
     /**
-     * Gera o hash da senha (com salt embutido) pronto pra guardar no banco
+     * Gera o hash da senha pronto pra guardar no banco
      * @param password A senha em texto puro
      * @return O hash da senha
      */
