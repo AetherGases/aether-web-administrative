@@ -33,7 +33,7 @@ public class Validators {
     }
 
     /**
-     * Valida um celular com DDD (so os digitos, sem parenteses ou traco)
+     * Valida um celular com DDD
      * Aceita so celular (com o nono digito 9), nao valida telefone fixo
      * @param phone O numero a validar
      * @return true se for um celular valido
@@ -47,7 +47,7 @@ public class Validators {
     }
 
     /**
-     * Valida um CEP (so os digitos)
+     * Valida um CEP
      * @param cep O CEP a validar
      * @return true se for um CEP valido
      */
@@ -60,8 +60,8 @@ public class Validators {
     }
 
     /**
-     * Valida um CPF: confere o formato (11 digitos) e os 2 digitos verificadores (modulo 11)
-     * @param cpf O CPF a validar (aceita com ou sem pontuacao)
+     * Valida um CPF: confere o formato (11 digitos) e os 2 digitos verificadores
+     * @param cpf O CPF a validar
      * @return true se for um CPF valido
      */
     public static boolean isCpf(String cpf) {
@@ -93,10 +93,10 @@ public class Validators {
     }
 
     /**
-     * Valida um CNPJ alfanumerico (formato valido desde 2026): confere o formato
-     * (12 caracteres alfanumericos + 2 digitos verificadores) e os DVs pelo modulo 11.
+     * Valida um CNPJ alfanumerico: confere o formato
+     * 12 caracteres alfanumericos + 2 digitos verificadores e os DVs pelo modulo 11.
      * Tambem aceita CNPJ antigo so numerico, porque numero é um caso particular do alfanumerico.
-     * @param cnpj O CNPJ a validar (aceita com ou sem pontuacao)
+     * @param cnpj O CNPJ a validar
      * @return true se for um CNPJ valido
      */
     public static boolean isCnpj(String cnpj) {
@@ -132,7 +132,7 @@ public class Validators {
     }
 
     /**
-     * Converte um caractere do CNPJ no seu valor numerico (regra oficial: ASCII - 48)
+     * Converte um caractere do CNPJ no seu valor numerico
      * Numeros 0-9 viram 0-9; letras A-Z viram 17-42
      * @param c O caractere
      * @return O valor numerico do caractere
