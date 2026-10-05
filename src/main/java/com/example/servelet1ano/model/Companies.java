@@ -7,23 +7,35 @@ public class Companies {
     private int addressId;
     private String name;
     private String tradeName;
-    private CompanySize size;
-    private Date registrationDate;
     private String cnpj;
+    private int size;
+    private Date registrationDate;
+    private String taxId;
     private String email;
     private Date createdAt;
     private Date updatedAt;
+    private boolean isActive;
     private Addresses address;
 
-    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt) {
+    public Companies(int id, int addressId, String name, int size, Date registrationDate, String taxId, String email, Date createdAt) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
         this.size = size;
         this.registrationDate = registrationDate;
-        this.cnpj = cnpj;
+        this.taxId = taxId;
         this.email = email;
         this.createdAt = createdAt;
+    }
+
+    public Companies(String name, int size, String taxId, String email) {
+        this.name = name;
+        this.size = size;
+        this.taxId = taxId;
+        this.email = email;
+    }
+
+    public Companies() {
     }
 
     public Companies(int id, String name) {
@@ -31,30 +43,26 @@ public class Companies {
         this.name = name;
     }
 
-    public Companies(String name, CompanySize size, String cnpj, String email) {
-        this.name = name;
-        this.size = size;
-        this.cnpj = cnpj;
-        this.email = email;
-    }
-
-    public Companies(int id, String name, CompanySize size, String cnpj, String email) {
+    public Companies(int id, String name, int size, String taxId, String email) {
         this.id = id;
         this.name = name;
         this.size = size;
-        this.cnpj = cnpj;
+        this.taxId = taxId;
         this.email = email;
     }
 
-    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt, Addresses address) {
+    public Companies(int id, int addressId, String name, String tradeName, String cnpj, int size, Date registrationDate, String taxId, String email, Date createdAt, boolean isActive, Addresses address) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
+        this.tradeName = tradeName;
+        this.cnpj = cnpj;
         this.size = size;
         this.registrationDate = registrationDate;
-        this.cnpj = cnpj;
+        this.taxId = taxId;
         this.email = email;
         this.createdAt = createdAt;
+        this.isActive = isActive;
         this.address = address;
     }
 
@@ -92,11 +100,19 @@ public class Companies {
         this.tradeName = tradeName;
     }
 
-    public CompanySize getSize() {
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
+    public int getSize() {
         return size;
     }
 
-    public void setSize(CompanySize size) {
+    public void setSize(int size) {
         this.size = size;
     }
 
@@ -108,12 +124,12 @@ public class Companies {
         this.registrationDate = registrationDate;
     }
 
-    public String getCnpj() {
-        return cnpj;
+    public String getTaxId() {
+        return taxId;
     }
 
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public void setTaxId(String taxId) {
+        this.taxId = taxId;
     }
 
     public String getEmail() {
@@ -140,28 +156,19 @@ public class Companies {
         this.updatedAt = updatedAt;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
     public Addresses getAddress() {
         return address;
     }
 
     public void setAddress(Addresses address) {
         this.address = address;
-    }
-
-    @Override
-    public String toString() {
-        return "Companies{" +
-                "id=" + id +
-                ", addressId=" + addressId +
-                ", name='" + name + '\'' +
-                ", tradeName='" + tradeName + '\'' +
-                ", size=" + size +
-                ", registrationDate=" + registrationDate +
-                ", cnpj='" + cnpj + '\'' +
-                ", email='" + email + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", address=" + address +
-                '}';
     }
 }

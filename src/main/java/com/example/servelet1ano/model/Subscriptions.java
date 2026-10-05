@@ -29,12 +29,13 @@ public class Subscriptions {
         this.installments = installments;
     }
 
-    public Subscriptions(int id, int companyId, int planId, boolean isActive, boolean installments, Companies company) {
+    public Subscriptions(int id, int companyId, int planId, boolean isActive, boolean installments, Date deactivatedAt, Companies company) {
         this.id = id;
         this.companyId = companyId;
         this.planId = planId;
         this.isActive = isActive;
         this.installments = installments;
+        this.deactivatedAt = deactivatedAt;
         this.company = company;
     }
 
