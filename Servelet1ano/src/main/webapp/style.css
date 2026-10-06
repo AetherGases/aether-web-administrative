@@ -1,9 +1,3 @@
-/* ==========================================================================
-   AETHER — style.css
-   Tela de referência: 1920 x 6863 px (coordenadas do layout original).
-   Organização: reset -> base -> tipografia -> setores 1 a 8 -> utilitários.
-   ========================================================================== */
-
 /* ----------------------------- RESET ----------------------------------- */
 *,
 *::before,
@@ -46,29 +40,20 @@ ol {
 html {
     background-color: #EDEEF8;
     scroll-behavior: smooth;
-    /* Os círculos desfocados (.Bola*) ultrapassam a tela de 1440 px de propósito.
-       O corte precisa ficar aqui: "overflow-x" declarado só no body é propagado
-       para a viewport e deixa de recortar o próprio body. */
     overflow-x: hidden;
 }
 
-/* ALTERADO: o original usava "height: 1000vh", que não corresponde à altura real
-   do layout. A tela tem 1440 x 6863 px e agora fica centralizada na janela. */
 body {
     position: relative;
-    width: 1440px;
     min-height: 6863px;
     margin: 0 auto;
     overflow-x: hidden;
 }
 
-/* As <section> não têm altura: servem apenas para agrupar o conteúdo
-   posicionado de forma absoluta sobre a tela. */
 .setor {
     position: static;
 }
 
-/* Alvos dos links do menu. */
 .ancora {
     position: absolute;
     left: 0;
@@ -127,8 +112,6 @@ body {
     justify-content: center;
     align-items: center;
 
-    /* CORRIGIDO: no original as sombras estavam soltas no bloco, sem a
-       propriedade "filter", e por isso eram ignoradas pelo navegador. */
     filter: drop-shadow(0 2px 4px rgba(120, 120, 120, 0.10))
     drop-shadow(0 8px 8px rgba(120, 120, 120, 0.09))
     drop-shadow(0 18px 11px rgba(120, 120, 120, 0.05));
@@ -262,7 +245,6 @@ body {
 }
 
 /* Botão "Começar agora" ------------------------------------------------- */
-/* ALTERADO: era "position: relative", o que empurrava o fluxo da página. */
 .alinharPosiçaoComecarAgora {
     position: absolute;
     left: 49px;
@@ -345,7 +327,6 @@ body {
     filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.25));
 }
 
-/* ALTERADO: era "position: relative" sem dimensões. */
 .divCarroselCelular {
     position: absolute;
     left: 800px;
@@ -452,7 +433,6 @@ body {
     background: #B8FFE2;
 }
 
-/* Selo "grupo aether" entre duas linhas */
 .linhas,
 .linhasPlanos,
 .linhasCadastro {
@@ -556,7 +536,7 @@ body {
     color: #4A435E;
 }
 
-/* Bloco "alunos" (atualmente comentado no HTML) ------------------------- */
+/* Bloco "alunos" ------------------------- */
 .retangulosRoxos,
 .retangulosRoxos2 {
     position: absolute;
@@ -642,7 +622,6 @@ body {
 }
 
 /* Cards de escopo ------------------------------------------------------- */
-/* ALTERADO: o cardEscopo1 era "relative" e desalinhava em relação aos outros dois. */
 .cardEscopo1,
 .cardEscopo2,
 .cardEscopo3 {
@@ -778,8 +757,6 @@ body {
     color: #4A435E;
 }
 
-/* NOVO: o HTML já chamava .divCarrosselCards, .botaoEsquerdoCarrossel2 e
-   .setaEsquerdaCarroselCelulares2, mas o CSS original não as definia. */
 .divCarrosselCards {
     position: absolute;
     left: 0;
@@ -881,8 +858,6 @@ body {
     color: #161C2D;
 }
 
-/* CORRIGIDO: no original esta classe estava declarada três vezes e a última
-   sobrescrevia a cor verde pela roxa (#4D1B98). */
 .divTipografiaEscopoVerde {
     font-family: "Montserrat", sans-serif;
     font-weight: 600;
@@ -1033,8 +1008,6 @@ body {
     width: 627px;
 }
 
-/* ALTERADO: as regras de <details>/<summary> eram globais e afetavam qualquer
-   acordeão da página. Agora estão limitadas a este bloco. */
 .agrupandoGrupo details {
     border-bottom: 1px solid #000000;
     background-color: #FFFFFF;
@@ -1131,7 +1104,7 @@ body {
     color: #7E8294;
 }
 
-/* NOVO: cards das três etapas (antes existiam apenas comentados no HTML). */
+/* NOVO: cards das três etapas. */
 .secaoCards {
     position: absolute;
     left: 77px;
@@ -1219,7 +1192,7 @@ body {
 
 /* Opcional: Efeito básico ao passar o mouse */
 .saibaMais:hover {
-    transform: scale(1.05);    /* Dá um leve zoom ao passar o mouse */
+    transform: scale(1.05);
 }
 
 .cardDados::after {
@@ -1445,8 +1418,6 @@ body {
     font-weight: 400;
 }
 
-/* NOVO: os "checks" eram imagens no arquivo gerado; aqui são desenhados em CSS
-   para não depender de arquivos que não existem na pasta Imagens. */
 .listaBeneficios li::before {
     content: "";
     position: absolute;

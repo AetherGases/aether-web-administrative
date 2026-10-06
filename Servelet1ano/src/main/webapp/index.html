@@ -12,7 +12,6 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- CORRIGIDO: a URL terminava com "%22" (aspa codificada sobrando), o que invalidava o pedido das fontes. -->
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap">
 </head>
@@ -22,9 +21,6 @@
 <!-- =========================================================
      SETOR 1 — TOPO / HERO
      ========================================================= -->
-<!-- Âncoras de navegação: o layout usa posicionamento absoluto sobre uma tela de
-     1440 x 6863 px, então as <section> não têm altura própria. Estes marcadores
-     invisíveis ficam na altura certa e são os alvos reais dos links do menu. -->
 <span class="ancora" id="inicio"></span>
 <span class="ancora" id="quemSomos"></span>
 <span class="ancora" id="gasesPoluentes"></span>
@@ -332,8 +328,6 @@
 
                 <!-- Card 5 — Óxidos de Nitrogênio -->
                 <article class="cardItem divCardVerde">
-                    <!-- CORRIGIDO: o card verde dizia "CRÍTICO", mas o verde representa risco ALTO
-                         (e o próprio texto do card diz "Alto"). -->
                     <h3 class="divTipografiaTituloRisco">RISCO GEE: ALTO</h3>
                     <p class="divTipografiaEscopoVerde">ESCOPO 3</p>
                     <dl class="divCardLinhas">
@@ -548,7 +542,6 @@
                 <h3 class="nomePlano">aether Pulse</h3>
                 <p class="subtituloPlano">For Industry Leaders</p>
 
-                <!-- Valor trimestral derivado do mensal (3 x R$3.300). Ajuste conforme a tabela comercial. -->
                 <p class="precoPlano">
                     <span class="valorPlano" data-mensal="R$3.300"></span><span
                         class="periodoPlano" data-mensal="/por mês">/por mês</span>
@@ -568,8 +561,6 @@
                 <h3 class="nomePlano">aether Horizon</h3>
                 <p class="subtituloPlano">For Bigger Industries</p>
 
-                <!-- CORRIGIDO: R$9.400 / 3 = R$3.133,33, que arredonda para R$3.133 (estava R$3.134).
-                     Ajuste conforme a tabela comercial. -->
                 <p class="precoPlano">
                     <span class="valorPlano" data-trimestral="R$9.400">R$9.400</span><span
                         class="periodoPlano" data-trimestral="/a cada 3 meses">/por mês</span>

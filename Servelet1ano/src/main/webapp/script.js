@@ -43,10 +43,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
    1. CARROSSEL DE CELULARES
 
-   Mantém a lógica original, com a correção dos caminhos (sem "WEB-INF/")
-
-   e com verificação de existência dos elementos.
-
    -------------------------------------------------------------------------- */
 
 function carrosselCelulares() {
@@ -117,10 +113,6 @@ function carrosselCelulares() {
 /* --------------------------------------------------------------------------
 
    2. CARROSSEL DE CARDS DE GASES
-
-   O HTML original já tinha os botões #btnAnterior / #btnProximo e o trilho
-
-   #trilhoCarrossel, mas não havia nenhum JavaScript ligado a eles.
 
    -------------------------------------------------------------------------- */
 
@@ -233,10 +225,6 @@ function carrosselCards() {
 
    3. ACORDEÃO DE FUNCIONALIDADES
 
-   O atributo name em <details> ainda não é suportado por todos os
-
-   navegadores; este módulo garante que apenas um item fique aberto.
-
    -------------------------------------------------------------------------- */
 
 function menuFuncionalidades() {
@@ -279,10 +267,6 @@ function menuFuncionalidades() {
 /* --------------------------------------------------------------------------
 
    4. ALTERNÂNCIA DE PLANOS (MENSAL / TRIMESTRAL)
-
-   Os valores ficam em atributos data-mensal e data-trimestral no HTML,
-
-   para que a equipe comercial possa ajustá-los sem mexer no JavaScript.
 
    -------------------------------------------------------------------------- */
 
@@ -427,11 +411,7 @@ function abasCadastroLogin() {
 /* --------------------------------------------------------------------------
 
    6. VALIDAÇÃO DOS FORMULÁRIOS
-
-   Validação apenas no cliente, para orientar o usuário. Toda verificação
-
-   definitiva (inclusive de senha) precisa ser refeita no servidor.
-
+   
    -------------------------------------------------------------------------- */
 
 function validarFormularios() {
