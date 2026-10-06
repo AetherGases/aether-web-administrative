@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="paginaContato">
+<head>
+    <!-- CORRIGIDO: estava <meta charset="pt-BR">. O valor do charset é a codificação (UTF-8),
+         não o idioma; com o valor errado, acentos como o de "São Paulo" podem sair quebrados. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Contato do grupo Aether: Instagram, e-mail, telefones e localização.">
+    <meta name="theme-color" content="#2A2A2A">
+
+    <title>Contato — Aether</title>
+
+    <link rel="icon" type="image/svg+xml" href="Imagens/Logo.svg">
+
+    <!-- CORRIGIDO: antes a fonte vinha de @font-face com src: local(), que só funciona
+         em computadores que já têm a Comfortaa instalada. Agora ela é carregada do Google Fonts. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="desktop">
+
+    <img class="logo" src="Imagens/LogoAether.svg" alt="Aether">
+    <img class="divisor" src="Imagens/Linha.svg" alt="">
+
+    <address class="contatos">
+
+        <div class="grupoInstagram">
+            <img class="icone" src="Imagens/Instagram.svg" alt="">
+            <a class="texto textoInstagram" href="https://www.instagram.com/aethergases/" target="_blank" rel="noopener noreferrer">@aethergases</a>
+        </div>
+
+        <div class="grupoEmail">
+            <img class="icone" src="Imagens/E-mail.svg" alt="">
+            <a class="texto textoEmail" href="mailto:grupoaetherjef@gmail.com">grupoaetherjef@gmail.com</a>
+        </div>
+
+        <img class="icone iconeTelefone" src="Imagens/Telefone.svg" alt="">
+        <a class="texto textoTelefone1" href="tel:+5511993016010">+55 11 99301-6010</a>
+        <a class="texto textoTelefone2" href="tel:+5511950873144">+55 11 95087-3144</a>
+
+    </address>
+
+    <div class="grupoLocal">
+        <img class="icone" src="Imagens/Local.svg" alt="">
+        <p class="texto textoLocal">São Paulo - SP</p>
+    </div>
+
+    <!-- CORRIGIDO: o "X" era um <div> sem função. Agora é um link de volta para a página inicial. -->
+    <a class="fechar" href="index.html" aria-label="Fechar e voltar para a página inicial">
+        <span class="fecharTraco fecharTraco1" aria-hidden="true"></span>
+        <span class="fecharTraco fecharTraco2" aria-hidden="true"></span>
+    </a>
+
+</main>
+
+<!-- Reduz a tela de 1440 x 1024 para caber na janela (nunca amplia). -->
+<script>
+    (function () {
+        var tela = document.querySelector(".desktop");
+
+        function ajustar() {
+            var raiz = document.documentElement;
+            var escala = Math.min(1, raiz.clientWidth / 1440, raiz.clientHeight / 1024);
+            tela.style.zoom = escala < 1 ? escala : "";
+        }
+
+        ajustar();
+        window.addEventListener("resize", ajustar);
+    })();
+</script>
+
+</body>
+</html>

@@ -25,11 +25,13 @@ public class ConnectionFactory {
 
     public static void disconnect(Connection conn){
         try {
-            if (conn != null || !conn.isClosed()){
+            if (conn != null && !conn.isClosed()){
                 conn.close();
             }
         }catch (SQLException e){
             e.printStackTrace();
         }
     }
+
+
 }

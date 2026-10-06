@@ -141,4 +141,21 @@ public class Units {
     public void setAddress(Addresses address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return "Units{" +
+                "id=" + id +
+                ", companyId=" + companyId +
+                ", addressId=" + addressId +
+                ", name='" + name + '\'' +
+                ", cnpj='" + cnpj + '\'' +
+                ", cnae='" + cnae + '\'' +
+                ", isActive=" + isActive +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", company=" + company +
+                ", address=" + address +
+                '}';
+    }
 }

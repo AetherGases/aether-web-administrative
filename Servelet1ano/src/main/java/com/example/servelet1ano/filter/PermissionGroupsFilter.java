@@ -4,6 +4,7 @@ public class PermissionGroupsFilter {
 
     private Integer id;
     private String name;
+    private Integer companyId;
 
     public PermissionGroupsFilter() {
     }
@@ -22,5 +23,13 @@ public class PermissionGroupsFilter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Integer companyId) {
+        this.companyId = companyId;
     }
 }

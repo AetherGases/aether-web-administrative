@@ -1,0 +1,1939 @@
+/* ----------------------------- RESET ----------------------------------- */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Remove as margens padrão do navegador e centraliza o container */
+
+img,
+svg {
+    display: block;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+/* ------------------------------ BASE ----------------------------------- */
+html {
+    background-color: #EDEEF8;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    position: relative;
+    min-height: 6863px;
+    margin: 0 auto;
+}
+
+.setor {
+    position: static;
+}
+
+.ancora {
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    scroll-margin-top: 90px;
+}
+
+#inicio          { top: 0; }
+#quemSomos       { top: 960px; }
+#gasesPoluentes  { top: 1810px; }
+#nossaSolucao    { top: 2990px; }
+#planos          { top: 4640px; }
+#cadastro        { top: 5420px; }
+
+/* --------------------------- TIPOGRAFIA -------------------------------- */
+.montserrat {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.comfortaa {
+    font-family: "Comfortaa", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+}
+
+
+/* ==========================================================================
+   SETOR 1 — TOPO / HERO
+   ========================================================================== */
+
+.logoInicial {
+    position: absolute;
+    left: 72px;
+    top: -42px;
+    width: 200px;
+    height: 200px;
+}
+
+.retanguloMenuInicial {
+    position: absolute;
+    left: 357px;
+    top: 20px;
+    width: 725px;
+    height: 52px;
+
+    background-color: rgba(168, 240, 210, 0.3);
+    border: 1px solid #B3B7C9;
+    border-radius: 47px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    filter: drop-shadow(0 2px 4px rgba(120, 120, 120, 0.10))
+    drop-shadow(0 8px 8px rgba(120, 120, 120, 0.09))
+    drop-shadow(0 18px 11px rgba(120, 120, 120, 0.05));
+    z-index: 5;
+}
+
+.retanguloMenuInicial li {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.listaDeOpçõesMenu {
+    list-style: none;
+    display: flex;
+    gap: 24px;
+    color: #59546D;
+}
+
+.listaDeOpçõesMenu a:hover,
+.listaDeOpçõesMenu a:focus-visible {
+    color: #7C3AED;
+}
+
+.botaoEntrar {
+    position: absolute;
+    left: 1100px;
+    top: 26px;
+    width: 149px;
+    height: 37px;
+
+    background-color: #7C3AED;
+    border: 2px solid #FFFFFF;
+    border-radius: 106px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.conteudoBotaoEntrar {
+    color: #FFFFFF;
+    font-size: 20px;
+    font-family: "Comfortaa", sans-serif;
+    font-weight: bold;
+}
+
+.botaoCadastrar {
+    position: absolute;
+    left: 1275px;
+    top: 26px;
+    width: 149px;
+    height: 37px;
+
+    background-color: #2DBD7E;
+    border: 2px solid #FFFFFF;
+    border-radius: 106px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.conteudoBotaoCadastar {
+    color: #FFFFFF;
+    font-size: 20px;
+    font-family: "Comfortaa", sans-serif;
+    font-weight: bold;
+}
+
+.descarbonizando {
+    position: absolute;
+    left: 47px;
+    top: 165px;
+    font-size: 70px;
+    font-weight: bold;
+    background: linear-gradient(to right, #7C3AED 20%, #2DBD7E 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.palavraFuturo {
+    position: absolute;
+    left: 47px;
+    top: 236px;
+    font-size: 70px;
+    font-weight: 400;
+    font-family: "Montserrat", sans-serif;
+    color: #4A435E;
+}
+
+.descricaoInicial {
+    position: absolute;
+    left: 49px;
+    top: 328px;
+    width: 643px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #4A435E;
+}
+
+.aekoInicial {
+    position: absolute;
+    left: 503px;
+    top: 414px;
+    width: 244px;
+    height: 164px;
+    filter: drop-shadow(3px 4px 11px rgba(107, 158, 132, 0.10))
+    drop-shadow(11px 17px 21px rgba(107, 158, 132, 0.09));
+}
+
+.tipografiaFraseInicial {
+    position: absolute;
+    left: 49px;
+    top: 643px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 25px;
+    font-weight: 400;
+    color: #4A435E;
+}
+
+.tipografiaFraseInicialDestaque {
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 25px;
+    color: #7C3AED;
+}
+
+/* Botão "Começar agora" ------------------------------------------------- */
+.alinharPosiçaoComecarAgora {
+    position: absolute;
+    left: 49px;
+    top: 491px;
+    width: 315px;
+    height: 64px;
+}
+
+.botaoComecarAgora {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 13px;
+
+    background: radial-gradient(circle, #90FACC 0%, #82F1C1 28%, #5DDBA5 100%);
+    border: none;
+    border-radius: 84px;
+
+    color: #1E0A4A;
+    font-family: "Montserrat", sans-serif;
+    font-size: 25px;
+    font-weight: 500;
+    box-shadow: 0 0 17px rgba(107, 228, 176, 0.65);
+}
+
+.botaoRedondoComecarAgora {
+    position: absolute;
+    left: 251.06px;
+    width: 63.94px;
+    height: 64px;
+    background-color: #A8F0D2;
+    border-radius: 50%;
+}
+
+.setaComecarAgora {
+    position: absolute;
+    left: 270px;
+    top: 20px;
+    width: 24.95px;
+    height: 24.95px;
+    display: flex;
+    align-items: center;
+    z-index: 2;
+}
+
+.setaComecarAgora::before {
+    content: "";
+    position: absolute;
+    width: 24.95px;
+    height: 4.57px;
+    background-color: #159E5C;
+    border-radius: 5px;
+}
+
+.setaComecarAgora::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    width: 12.48px;
+    height: 12.48px;
+    border-top: 4.57px solid #159E5C;
+    border-right: 4.57px solid #159E5C;
+    border-radius: 3px;
+    transform: rotate(45deg);
+}
+
+.alinharPosiçaoComecarAgora:hover .botaoComecarAgora {
+    filter: brightness(1.05);
+}
+
+/* Carrossel de celulares ------------------------------------------------ */
+.fundoVerde {
+    position: absolute;
+    left: 854px;
+    top: 213px;
+    width: 508px;
+    height: 577px;
+    z-index: -1;
+    filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.25));
+}
+
+.divCarroselCelular {
+    position: absolute;
+    left: 800px;
+    top: 173px;
+    width: 608px;
+    height: 630px;
+}
+
+.celularInterativo {
+    position: absolute;
+    left: 79.89px;
+    top: 0;
+    max-height: 630px;
+}
+
+.divBotoes {
+    position: absolute;
+    left: 35px;
+    top: 282px;
+    width: 545px;
+    height: 45px;
+}
+
+.botaoEsquerdoCarrossel,
+.botaoDireitoCarrossel {
+    position: absolute;
+    top: 0;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 4px solid #2DBD7E;
+    background: #FFFFFF;
+    opacity: 0.8;
+    z-index: 0;
+}
+
+.botaoEsquerdoCarrossel { left: 0; }
+.botaoDireitoCarrossel  { left: 500px; }
+
+.botaoEsquerdoCarrossel:hover,
+.botaoDireitoCarrossel:hover {
+    opacity: 1;
+}
+
+.setaEsquerdaCarroselCelulares {
+    position: absolute;
+    top: 9px;
+    left: 13px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.setaDireitaCarroselCelulares {
+    position: absolute;
+    top: 9px;
+    left: 516px;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Círculos desfocados de fundo ----------------------------------------- */
+.Bola1,
+.Bola2,
+.Bola3,
+.Bola4,
+.Bola5,
+.Bola6,
+.Bola7,
+.Bola8,
+.Bola9,
+.Bola10 {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(484.6px);
+    z-index: -1;
+}
+
+.Bola1 {
+    left: 113px;
+    top: 148px;
+    width: 679.75px;
+    height: 679.75px;
+    background: #B8FFE2;
+}
+
+.Bola2 {
+    left: 856px;
+    top: 360px;
+    width: 679.75px;
+    height: 679.75px;
+    background: #D7CCFF;
+}
+
+
+/* ==========================================================================
+   SETOR 2 — QUEM SOMOS
+   ========================================================================== */
+
+.Bola3 {
+    left: 287.62px;
+    top: 989.27px;
+    width: 679.75px;
+    height: 679.75px;
+    background: #B8FFE2;
+}
+
+.linhas,
+.linhasPlanos,
+.linhasCadastro {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.linhas         { left: 436px;  top: 992px; }
+.linhasPlanos   { left: 457px;  top: 4681px; }
+.linhasCadastro { left: 100px;  top: 5456px; }
+
+.linhas::before,
+.linhas::after,
+.linhasPlanos::before,
+.linhasPlanos::after,
+.linhasCadastro::after {
+    content: "";
+    height: 1px;
+    width: 180px;
+    background-color: #2A2A2A;
+}
+
+.linhasCadastro::before {
+    content: "";
+    height: 1px;
+    width: 80px;
+    background-color: #2A2A2A;
+}
+
+.basePraTexto {
+    min-width: 134px;
+    height: 34px;
+    padding: 0 20px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #2A2A2A;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(45, 189, 126, 0.12);
+}
+
+.quemSomos {
+    position: absolute;
+    left: 500px;
+    top: 1040px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 60px;
+    color: #2A2A2A;
+}
+
+.somos {
+    background: linear-gradient(90deg, #7C3AED 0%, #2DBD7E 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline;
+}
+
+.retanguloDescricao {
+    position: absolute;
+    left: 66px;
+    top: 1193px;
+    width: 623px;
+    height: 517px;
+    padding: 65px 38px;
+
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.7);
+
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: 32px;
+    color: #4A435E;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 2px 16px 36px rgba(131, 206, 167, 0.10),
+    8px 64px 65px rgba(131, 206, 167, 0.09),
+    19px 145px 88px rgba(131, 206, 167, 0.05);
+}
+
+.aetherDestacado {
+    font-family: "Comfortaa", sans-serif;
+    font-weight: bold;
+    font-size: 32px;
+    color: #4A435E;
+}
+
+/* Bloco "alunos" ------------------------- */
+.retangulosRoxos,
+.retangulosRoxos2 {
+    position: absolute;
+    top: 1162px;
+    width: 235px;
+    height: 49px;
+    border-radius: 41px;
+    background: radial-gradient(circle, #C4B5FD, #7C3AED);
+
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 30px;
+    color: #FFFFFF;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.retangulosRoxos  { left: 809px; }
+.retangulosRoxos2 { left: 1077px; }
+
+
+/* ==========================================================================
+   SETOR 3 — GASES DE EFEITO ESTUFA
+   ========================================================================== */
+
+.linhasExplicacao {
+    position: absolute;
+    left: 100px;
+    top: 1872px;
+    height: 1px;
+    width: 80px;
+    background-color: #2A2A2A;
+}
+
+.explicacao {
+    position: absolute;
+    left: 200px;
+    top: 1855px;
+    width: 148px;
+    height: 34px;
+
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(45, 189, 126, 0.12);
+
+    font-size: 20px;
+    color: #2A2A2A;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tituloOqueSao {
+    position: absolute;
+    left: 100px;
+    top: 1914px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 60px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.tituloGasesEf {
+    background: linear-gradient(to right, #7C3AED 0%, #2DBD7E 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.descricaoGasesPoluentes {
+    position: absolute;
+    left: 100px;
+    top: 1995px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: #4A435E;
+}
+
+/* Cards de escopo ------------------------------------------------------- */
+.cardEscopo1,
+.cardEscopo2,
+.cardEscopo3 {
+    position: absolute;
+    top: 2137px;
+    width: 369px;
+    height: 230px;
+    border: 5px solid #FFFFFF;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #C4B5FD 0%, #7C3AED 100%);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+
+    isolation: isolate;
+}
+
+.cardEscopo1 { left: 98px; }
+.cardEscopo2 { left: 533px; }
+.cardEscopo3 { left: 969px; }
+
+.cardEscopo1::after,
+.cardEscopo2::after,
+.cardEscopo3::after {
+    content: "";
+    position: absolute;
+
+    top: -10px;
+    left: -10px;
+    right: -10px;
+    bottom: -10px;
+
+    padding: 5px;
+
+    background: linear-gradient(135deg, #7C3AED 0%, #C4B5FD 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+
+    border-radius: 15px;
+
+    z-index: +1;
+    pointer-events: none;
+}
+
+.imagemCaminhao,
+.imagemRelampago,
+.imagemFogo {
+    position: absolute;
+    left: 10px;
+    top: 0px;
+    width: 112px;
+    height: 108.41px;
+    z-index: 2;
+}
+
+.escopo1Texto,
+.escopo2Texto,
+.escopo3Texto {
+    position: absolute;
+    left: 120px;
+    top: 24px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    color: #FFFFFF;
+}
+
+
+.emissoesDiretastexto,
+.energiaAdequadatexto,
+.cadeiaDeValortexto {
+    position: absolute;
+    left: 121px;
+    top: 47px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: #FFFFFF;
+}
+
+.listaCard1Linha1, .listaCard1Linha2, .listaCard1Linha3,
+.listaCard2Linha1, .listaCard2Linha2, .listaCard2Linha3,
+.listaCard3Linha1, .listaCard3Linha2, .listaCard3Linha3 {
+    position: absolute;
+    left: 48px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: #FFFFFF;
+    list-style-type: disc;
+}
+
+.listaCard1Linha1, .listaCard2Linha1, .listaCard3Linha1 { top: 108px; }
+.listaCard1Linha2, .listaCard2Linha2, .listaCard3Linha2 { top: 138px; }
+.listaCard1Linha3, .listaCard2Linha3, .listaCard3Linha3 { top: 168px; }
+
+.Bola4 {
+    left: 290.73px;
+    top: 1988.38px;
+    width: 807.53px;
+    height: 807.53px;
+    background: #F3F0FF;
+}
+
+
+/* ==========================================================================
+   SETOR 4 — CARROSSEL DE GASES
+   ========================================================================== */
+
+.tituloSobreSubstituicaoDeGases {
+    position: absolute;
+    left: 100px;
+    top: 2455px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 45px;
+    color: #000000;
+}
+
+.gasesDestacado {
+    background: linear-gradient(to right, #7C3AED 0%, #2DBD7E 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.descricaoSubstituicao {
+    position: absolute;
+    left: 100px;
+    top: 2532px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #4A435E;
+}
+
+.divCarrosselCards {
+    position: absolute;
+    left: 0;
+    top: 2633px;
+    width: 1440px;
+    height: 340px;
+}
+
+.janelaCarrosselCards {
+    position: absolute;
+    left: 100px;
+    top: 0;
+    width: 1240px;
+    height: 340px;
+    overflow: hidden;
+}
+
+.divCard {
+    display: flex;
+    gap: 20px;
+    width: max-content;
+    height: 100%;
+    transition: transform 0.4s ease;
+    will-change: transform;
+}
+
+.cardItem {
+    flex: 0 0 290px;
+    width: 432px;
+    height: 253.6px;
+    padding: 16px 18px;
+    border-radius: 15px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 4px 8px rgba(70, 44, 177, 0.10),
+    0 14.4px 14.4px rgba(70, 44, 177, 0.09);
+}
+
+.divCardVerde {
+    background: linear-gradient(#42B481 0%, #73E4B4 50%, #42B481 100%);
+    border: 0.8px solid #1A5C41;
+}
+
+.divCardRoxo {
+    background: linear-gradient(#816CCF 0%, #C3B3FF 50%, #816CCF 100%);
+    border: 0.8px solid #4D1B98;
+}
+
+.divCardLinhas {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+    flex: 1;
+}
+
+.divCardLinha {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.divTipografiaTituloRisco {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 20px;
+    color: #161C2D;
+}
+
+.divTipografiaTitulosMenoresVerde {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: #225749;
+}
+
+.divTipografiaTitulosMenoresRoxo {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: #4D1B98;
+}
+
+.divTipografiaGasesMenores {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: #161C2D;
+}
+
+.divTipografiaNomeGas {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 14.4px;
+    color: #161C2D;
+}
+
+.divTipografiaEscopoVerde {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: #225749;
+}
+
+.divTipografiaEscopoRoxo {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 12px;
+    color: #4D1B98;
+}
+
+.divTipografiaEmissao,
+.divTipografiaEmissao2 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    color: #23262B;
+}
+
+.divTipografia1paragrafo,
+.divTipografia2paragrafo {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 12.8px;
+    color: #23262B;
+}
+
+.divTipografia2paragrafo {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid rgba(22, 28, 45, 0.2);
+}
+
+/* Botões do carrossel de cards */
+.botaoEsquerdoCarrossel2,
+.botaoDireitoCarrossel2 {
+    position: absolute;
+    top: 136px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 4px solid #2DBD7E;
+    background: #FFFFFF;
+    opacity: 0.8;
+    z-index: 1;
+}
+
+.botaoEsquerdoCarrossel2 { left: 35px; }
+.botaoDireitoCarrossel2  { left: 1360px; }
+
+.botaoEsquerdoCarrossel2:hover:not(:disabled),
+.botaoDireitoCarrossel2:hover:not(:disabled) {
+    opacity: 1;
+}
+
+.botaoEsquerdoCarrossel2:disabled,
+.botaoDireitoCarrossel2:disabled {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.setaEsquerdaCarroselCelulares2,
+.setaDireitaCarroselCelulares2 {
+    position: absolute;
+    top: 145px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.setaEsquerdaCarroselCelulares2 { left: 48px; }
+.setaDireitaCarroselCelulares2  { left: 1373px; }
+
+
+/* ==========================================================================
+   SETOR 5 — NOSSA SOLUÇÃO + ANÁLISE DE DADOS
+   ========================================================================== */
+
+.Bola5 {
+    left: 61.97px;
+    top: 2954.69px;
+    width: 708.55px;
+    height: 708.55px;
+    background: #D7CCFF;
+}
+
+.Bola6 {
+    left: 298.59px;
+    top: 3389.46px;
+    width: 708.55px;
+    height: 708.55px;
+    background: #B8FFE2;
+}
+
+.retanguloSetor5 {
+    width: 1363px;
+    height: 1641px;
+    position: absolute;
+    left: 38px;
+    top: 3008px;
+    background-color: #FFFFFF;
+    border-radius: 45px;
+    padding: 45px;
+    z-index: -1;
+}
+
+.tituloConhecaASolucao {
+    position: absolute;
+    left: 343px;
+    top: 3052px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 60px;
+    color: #000000;
+}
+
+.tituloFuncionalidadeDoAPP {
+    position: absolute;
+    left: 413px;
+    top: 3135px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 45px;
+
+    background: linear-gradient(to right, #7C3AED 20%, #2DBD7E 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    z-index: 2;
+}
+
+.imagemCelularAeko {
+    position: absolute;
+    left: 101px;
+    top: 3147px;
+    width: 444px;
+    height: 707px;
+}
+
+/* Acordeão de funcionalidades ------------------------------------------ */
+.agrupandoGrupo {
+    position: absolute;
+    left: 627px;
+    top: 3243px;
+    width: 627px;
+}
+
+.agrupandoGrupo details {
+    border-bottom: 1px solid #000000;
+    background-color: #FFFFFF;
+}
+
+.agrupandoGrupo summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 20px 24px;
+    list-style: none;
+}
+
+.agrupandoGrupo summary::-webkit-details-marker {
+    display: none;
+}
+
+.tipografiaMenuAbreEFechaTitulo {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    letter-spacing: -0.5px;
+    line-height: 1.5;
+    color: #010205;
+}
+
+.agrupandoGrupo summary::after {
+    content: "+";
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 24px;
+}
+
+.agrupandoGrupo details[open] summary::after {
+    content: "–";
+}
+
+.agrupandoGrupo details[open] summary {
+    background-color: #B99DF8;
+    color: #6C51B0;
+}
+
+.tipografiaMenuAbreEFechaConteudo {
+    padding: 16px 24px 24px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.5;
+    color: #4A435E;
+}
+
+/* Análise de dados ------------------------------------------------------ */
+.divTituloAnaliseDeDados {
+    position: absolute;
+    left: 80px;
+    top: 3998px;
+    width: 1280px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 48px;
+}
+
+.tituloAnalise {
+    position: static;
+    width: 533px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: bold;
+    font-size: 60px;
+    line-height: 1.3;
+    letter-spacing: -2px;
+    color: #010205;
+}
+
+.tituloDadosDestacado {
+    background: linear-gradient(to right, #7C3AED 25%, #2DBD7E 80%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.textoAnaliseDados {
+    position: static;
+    width: 565px;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 29px;
+    color: #7E8294;
+}
+
+/* NOVO: cards das três etapas. */
+.secaoCards {
+    position: absolute;
+    left: 77px;
+    top: 4127px;
+    width: 1282px;
+    display: flex;
+    gap: 8px;
+}
+
+.cardDados {
+    position: relative;
+    width: 422px;
+    height: 250px;
+    padding: 22px 24px;
+    border-radius: 20px;
+    background: radial-gradient(350px 203px at 85% 6%, #5DDBA5 0%, #27AD73 100%);
+    outline: 3px solid rgba(45, 189, 126, 0.93);
+    outline-offset: -3px;
+    color: #FFFFFF;
+    margin-left: 8px;
+}
+
+.marcadorEtapa {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.marcadorEtapa1 { background-color: #C4B5FD; }
+.marcadorEtapa2 { background-color: #8868FF; }
+.marcadorEtapa3 { background-color: #643BFF; }
+
+.tipografiaCardsEtapa {
+    position: absolute;
+    right: 24px;
+    top: 22px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+.tipografiaCardsTitulos {
+    margin-top: 16px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 39px;
+    letter-spacing: -1px;
+    color: #FFFFFF;
+}
+
+.tipografiaCardsConteudo {
+    margin-top: 10px;
+    width: 250px;
+    max-height: 104px;
+    overflow: hidden;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.35;
+    color: #E8ECF8;
+}
+
+.saibaMais {
+    position: absolute;
+    left: 308.09px;
+    top: 180.09px;
+    padding: 8px 16px;
+    border-radius: 70px;
+    border: 2px solid #FFFFFF;
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.seta-svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Opcional: Efeito básico ao passar o mouse */
+.saibaMais:hover {
+    transform: scale(1.05);
+}
+
+.cardDados::after {
+    content: "";
+    position: absolute;
+
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+
+    padding: 3px;
+
+    background: #2DBD7E;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+
+    border-radius: 25px;
+
+    z-index: +1;
+    pointer-events: none;
+}
+
+
+
+/* ==========================================================================
+   SETOR 6 — PLANOS   (NOVO)
+   ========================================================================== */
+
+.Bola7 {
+    left: 7px;
+    top: 4660px;
+    width: 709px;
+    height: 708px;
+    background: #D7CCFF;
+}
+
+.Bola8 {
+    left: 918px;
+    top: 4934px;
+    width: 709px;
+    height: 709px;
+    background: rgba(184, 255, 226, 0.75);
+}
+
+.tituloPlanos {
+    position: absolute;
+    left: 0;
+    top: 4742px;
+    width: 1440px;
+    text-align: center;
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 60px;
+    font-weight: 700;
+    line-height: 76px;
+    background: linear-gradient(90deg, #9A72F9 0%, #80B9E6 50%, #2DBD7E 100%);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+
+}
+
+.divPlanos {
+    position: absolute;
+    left: 305px;
+    top: 4844px;
+    width: 821px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+.alternadorPeriodo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.rotuloPeriodo {
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #7E8294;
+    transition: color 0.2s ease;
+}
+
+.rotuloPeriodoAtivo {
+    color: #2A2A2A;
+}
+
+.interruptorPeriodo[aria-checked="true"] {
+    position: relative;
+    width: 49px;
+    height: 27px;
+    border: none;
+    border-radius: 40px;
+    background-color: #9A72F9;
+}
+
+.interruptorPeriodo[aria-checked="false"] {
+    position: relative;
+    width: 49px;
+    height: 27px;
+    border: none;
+    border-radius: 40px;
+    background-color: #2DBD7E;
+}
+
+.bolinhaInterruptor {
+    position: absolute;
+    left: 1px;
+    top: 1px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+    transition: transform 0.25s ease;
+}
+
+.interruptorPeriodo[aria-checked="true"] .bolinhaInterruptor {
+    transform: translateX(22px);
+}
+
+.gradePlanos {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 21px;
+}
+
+.cardPlano {
+    position: relative;
+    width: 400px;
+    min-height: 459px;
+    padding: 37px 40px 40px 59px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.cardPlanoPulse {
+    background-color: #2DBD7E;
+    color: #FFFFFF;
+}
+
+
+.cardPlanoHorizon {
+    background-color: #9A72F9;
+    color: #FFFFFF;
+}
+
+
+.nomePlano {
+    font-family: "Montserrat", sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+.subtituloPlano {
+    font-family: "Montserrat", sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    margin-top: -12px;
+}
+
+.precoPlano {
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.valorPlano {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 42px;
+}
+
+.botaoAssinar {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 40px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #2A2A2A;
+}
+
+.botaoAssinarRoxo {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+.botaoAssinar:hover {
+    filter: brightness(0.95);
+}
+
+.listaBeneficios {
+    margin-top: 10px;
+    padding-top: 24px;
+    border-top: 2px solid currentColor;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.listaBeneficios li {
+    position: relative;
+    padding-left: 26px;
+    max-width: 263px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.listaBeneficios li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 4px;
+    width: 7px;
+    height: 13px;
+    border-right: 2.5px solid currentColor;
+    border-bottom: 2.5px solid currentColor;
+    transform: rotate(45deg);
+}
+
+
+/* ==========================================================================
+   SETOR 7 — CADASTRO / LOGIN   (NOVO)
+   ========================================================================== */
+#Aethercadastro {
+    position: absolute;
+    left: 132px;
+    top: 5714px;
+}
+
+#LogoCadastro {
+    width: 433px;
+    height: 365.29px;
+}
+
+.Bola9 {
+    left: -115px;
+    top: 5240px;
+    width: 709px;
+    height: 709px;
+    background: rgba(168, 240, 210, 0.75);
+}
+
+.Bola10 {
+    left: 532px;
+    top: 5853px;
+    width: 709px;
+    height: 709px;
+    background: #D7CCFF;
+}
+
+.marcaDaguaCadastro {
+    position: absolute;
+    left: 132px;
+    top: 5714px;
+    width: 433px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.marcaDaguaCadastro img {
+    width: 321px;
+    height: 230px;
+    margin-left: 56px;
+}
+
+.aetherMarcaDagua {
+    font-family: "Comfortaa", sans-serif;
+    font-size: 125px;
+    font-weight: 600;
+    color: #5B6473;
+    line-height: 1;
+}
+
+.cardCadastroLogin {
+    position: absolute;
+    left: 675px;
+    top: 5563px;
+    width: 546px;
+    min-height: 716px;
+    padding: 130px 43px 40px;
+
+    border-radius: 30px;
+    background-color: rgba(218, 237, 229, 0.8);
+    outline: 2px solid rgba(37, 169, 100, 0.45);
+    outline-offset: -2px;
+}
+
+.aekoCadastro {
+    position: absolute;
+    left: 212px;
+    top: 35px;
+    width: 122px;
+    height: 82px;
+}
+
+.abasCadastro {
+    position: absolute;
+    left: 50px;
+    top: 146px;
+    display: flex;
+    gap: 38px;
+}
+
+.abaCadastro {
+    width: 195px;
+    height: 41px;
+    border: none;
+    border-radius: 39px;
+    background-color: rgba(174, 197, 187, 0.2);
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 30px;
+    font-weight: 500;
+    color: #1E0A4A;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.abaCadastroAtiva {
+    background-color: #2DBD7E;
+    color: #FFFFFF;
+}
+
+.formularioCadastro {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.formularioOculto {
+    display: none;
+}
+
+.campoFormulario {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rotuloCampo {
+    font-family: "Montserrat", sans-serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: #1E0A4A;
+}
+
+.rotuloCampoOculto {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+}
+
+.entradaCampo {
+    width: 100%;
+    height: 50px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    box-shadow: 7px 7px 6px rgba(148, 192, 173, 0.17);
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #1A5C4A;
+}
+
+.entradaCampo::placeholder {
+    color: rgba(26, 92, 74, 0.5);
+}
+
+.entradaCampo:focus-visible {
+    outline: 2px solid #2DBD7E;
+    outline-offset: 2px;
+}
+
+.entradaSelecao {
+    height: 48px;
+    background-color: rgba(255, 255, 255, 0.47);
+    border: 1px solid #B3B7C9;
+    color: #1A5C4A;
+}
+
+.mensagemFormulario {
+    min-height: 20px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #B3261E;
+}
+
+.mensagemFormularioSucesso {
+    color: #1A5C41;
+}
+
+.botaoEnviarFormulario {
+    width: 100%;
+    height: 55px;
+    border: none;
+    border-radius: 60px;
+    background-color: #2DBD7E;
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 30px;
+    font-weight: 600;
+    color: #FFFFFF;
+}
+
+.botaoEnviarFormulario:hover {
+    background-color: #27A86F;
+}
+
+.rodapeFormulario {
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: #4A435E;
+    opacity: 0.8;
+}
+
+.linkTrocaAba {
+    border: none;
+    background: none;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #7C3AED;
+    text-decoration: underline;
+}
+
+
+/* ==========================================================================
+   SETOR 8 — RODAPÉ   (NOVO)
+   ========================================================================== */
+
+.rodape {
+    position: absolute;
+    left: 0;
+    top: 6441px;
+    width: 1440px;
+    height: 422px;
+    padding: 100px 112px 0;
+
+    background: linear-gradient(180deg, rgba(168, 240, 210, 0.45) 0%, rgba(215, 204, 255, 0.55) 100%);
+    border-top-left-radius: 45px;
+    border-top-right-radius: 45px;
+
+    display: grid;
+    grid-template-columns: 343px 185px 1fr 1fr;
+    column-gap: 60px;
+}
+
+.colunaRodape {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.colunaRodapeMarca {
+    gap: 30px;
+}
+
+.marcaRodape {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.marcaRodape img {
+    width: 100px;
+    height: 100px;
+}
+
+.aetherRodape {
+    font-family: "Comfortaa", sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+    color: #5B6473;
+    margin: -20px;
+    margin-bottom: -2px;
+}
+
+.descricaoRodape {
+    width: 343px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #000000;
+}
+
+.colunaRodapeLinks {
+    gap: 12px;
+}
+
+.linkRodape {
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    color: #2A2A2A;
+}
+
+.tituloColunaRodape {
+    font-family: "Montserrat", sans-serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: #2A2A2A;
+}
+
+.linkRodapeSecundario {
+    font-family: "Montserrat", sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: #2A2A2A;
+}
+
+.linkRodape:hover,
+.linkRodapeSecundario:hover {
+    color: #7C3AED;
+}
+
+.direitosRodape {
+    grid-column: 1 / -1;
+    margin-top: 40px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: #59546D;
+}
+
+
+/* ==========================================================================
+   UTILITÁRIOS E ACESSIBILIDADE
+   ========================================================================== */
+
+:focus-visible {
+    outline: 3px solid #7C3AED;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .divCard,
+    .bolinhaInterruptor {
+        transition: none;
+    }
+}
+
+/* ==========================================================================
+   PÁGINA DE CONTATO — cole este bloco no FINAL do style.css da landing.
+   ========================================================================== */
+
+/* Variáveis com prefixo "contato" para não colidir com as da landing */
+html.paginaContato {
+    --contato-fundo: #2A2A2A;
+    --contato-texto: #A2A2A2;
+    --contato-destaque: #FFFFFF;
+    --contato-fonte: "Comfortaa", Helvetica, Arial, sans-serif;
+
+    background-color: var(--contato-fundo);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* A landing define o body com 1440 px de largura e 6863 px de altura;
+   aqui isso é desfeito só para a página de contato. */
+.paginaContato body {
+    position: static;
+    width: auto;
+    min-height: 100vh;
+    margin: 0;
+    overflow: visible;
+
+    display: flex;
+    background-color: var(--contato-fundo);
+    font-family: var(--contato-fonte);
+}
+
+.paginaContato img {
+    display: block;
+}
+
+.paginaContato a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.paginaContato a:focus-visible {
+    outline: 2px solid #4A90E2;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* A tela de 1440 x 1024. O margin: auto centraliza sem cortar o lado esquerdo. */
+.paginaContato .desktop {
+    position: relative;
+    flex: none;
+    width: 1440px;
+    height: 1024px;
+    margin: auto;
+}
+
+/* ---------------------------- Logo e divisor --------------------------- */
+.paginaContato .logo {
+    position: absolute;
+    top: 333px;
+    left: 517px;
+    width: 407px;
+    height: 291px;
+}
+
+.paginaContato .divisor {
+    position: absolute;
+    top: 612px;
+    left: calc(50% - 110px);
+    width: 219px;
+    height: 6px;
+}
+
+/* ------------------------------- Contatos ------------------------------ */
+.paginaContato .contatos {
+    position: absolute;
+    top: 694px;
+    left: 237px;
+    width: 970px;
+    height: 47px;
+    font-style: normal;
+}
+
+.paginaContato .grupoInstagram,
+.paginaContato .grupoEmail,
+.paginaContato .grupoLocal {
+    position: absolute;
+    height: 40px;
+}
+
+.paginaContato .grupoInstagram { top: 4px; left: 0;     width: 200px; }
+.paginaContato .grupoEmail     { top: 4px; left: 296px; width: 355px; }
+
+.paginaContato .grupoLocal {
+    top: 838px;
+    left: 627px;
+    width: 188px;
+}
+
+/* O ícone ocupa a caixa do grupo; o texto fica por cima, clicável. */
+.paginaContato .icone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.paginaContato .iconeTelefone {
+    top: 4px;
+    left: 747px;
+    width: 223px;
+    height: 43px;
+}
+
+.paginaContato .texto {
+    position: absolute;
+    margin: 0;
+    font-family: var(--contato-fonte);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: var(--contato-texto);
+}
+
+.paginaContato a.texto:hover {
+    color: var(--contato-destaque);
+}
+
+.paginaContato .textoInstagram { top: 9px;  left: 47px; }
+.paginaContato .textoEmail     { top: 9px;  left: 67px; text-decoration: underline; }
+.paginaContato .textoTelefone1 { top: 0;    left: 794px; }
+.paginaContato .textoTelefone2 { top: 25px; left: 794px; }
+.paginaContato .textoLocal     { top: 9px;  left: 37px; }
+
+/* ------------------------------ Botão fechar --------------------------- */
+.paginaContato .fechar {
+    position: absolute;
+    top: 28px;
+    left: 1344px;
+    width: 53px;
+    height: 53px;
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+}
+
+.paginaContato .fechar:hover,
+.paginaContato .fechar:focus-visible {
+    opacity: 1;
+}
+
+.paginaContato .fecharTraco {
+    position: absolute;
+    top: -7px;
+    left: 23px;
+    width: 8px;
+    height: 67px;
+    border-radius: 53px;
+    background-color: var(--contato-texto);
+}
+
+.paginaContato .fecharTraco1 { transform: rotate(-45deg); }
+.paginaContato .fecharTraco2 { transform: rotate(45deg); }
+
+@media (prefers-reduced-motion: reduce) {
+    .paginaContato .fechar {
+        transition: none;
+    }
+}
