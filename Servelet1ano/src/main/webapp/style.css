@@ -1,6 +1,6 @@
 /* ==========================================================================
    AETHER — style.css
-   Tela de referência: 1440 x 6863 px (coordenadas do layout original).
+   Tela de referência: 1920 x 6863 px (coordenadas do layout original).
    Organização: reset -> base -> tipografia -> setores 1 a 8 -> utilitários.
    ========================================================================== */
 
@@ -14,25 +14,6 @@
 }
 
 /* Remove as margens padrão do navegador e centraliza o container */
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #f0f0f0; /* Cor de fundo externa */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh; /* Ocupa toda a altura do monitor (1080px) */
-    box-sizing: border-box;
-}
-
-/* Define o tamanho exato da sua área de trabalho */
-.container-tela {
-    width: 1440px;
-    height: 1040px;
-    background-color: #ffffff; /* Cor de fundo da sua aplicação */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Sombra para destacar a área */
-    overflow: auto; /* Adiciona barra de rolagem se o conteúdo transbordar */
-}
 
 img,
 svg {
