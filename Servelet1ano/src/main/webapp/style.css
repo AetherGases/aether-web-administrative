@@ -47,7 +47,6 @@ body {
     position: relative;
     min-height: 6863px;
     margin: 0 auto;
-    overflow-x: hidden;
 }
 
 .setor {
@@ -1686,8 +1685,8 @@ body {
 }
 
 .marcaRodape img {
-    width: 70px;
-    height: 52px;
+    width: 100px;
+    height: 100px;
 }
 
 .aetherRodape {
@@ -1695,6 +1694,8 @@ body {
     font-size: 40px;
     font-weight: 600;
     color: #5B6473;
+    margin: -20px;
+    margin-bottom: -2px;
 }
 
 .descricaoRodape {
@@ -1763,6 +1764,176 @@ body {
 
     .divCard,
     .bolinhaInterruptor {
+        transition: none;
+    }
+}
+
+/* ==========================================================================
+   PÁGINA DE CONTATO — cole este bloco no FINAL do style.css da landing.
+   ========================================================================== */
+
+/* Variáveis com prefixo "contato" para não colidir com as da landing */
+html.paginaContato {
+    --contato-fundo: #2A2A2A;
+    --contato-texto: #A2A2A2;
+    --contato-destaque: #FFFFFF;
+    --contato-fonte: "Comfortaa", Helvetica, Arial, sans-serif;
+
+    background-color: var(--contato-fundo);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* A landing define o body com 1440 px de largura e 6863 px de altura;
+   aqui isso é desfeito só para a página de contato. */
+.paginaContato body {
+    position: static;
+    width: auto;
+    min-height: 100vh;
+    margin: 0;
+    overflow: visible;
+
+    display: flex;
+    background-color: var(--contato-fundo);
+    font-family: var(--contato-fonte);
+}
+
+.paginaContato img {
+    display: block;
+}
+
+.paginaContato a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.paginaContato a:focus-visible {
+    outline: 2px solid #4A90E2;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* A tela de 1440 x 1024. O margin: auto centraliza sem cortar o lado esquerdo. */
+.paginaContato .desktop {
+    position: relative;
+    flex: none;
+    width: 1440px;
+    height: 1024px;
+    margin: auto;
+}
+
+/* ---------------------------- Logo e divisor --------------------------- */
+.paginaContato .logo {
+    position: absolute;
+    top: 333px;
+    left: 517px;
+    width: 407px;
+    height: 291px;
+}
+
+.paginaContato .divisor {
+    position: absolute;
+    top: 612px;
+    left: calc(50% - 110px);
+    width: 219px;
+    height: 6px;
+}
+
+/* ------------------------------- Contatos ------------------------------ */
+.paginaContato .contatos {
+    position: absolute;
+    top: 694px;
+    left: 237px;
+    width: 970px;
+    height: 47px;
+    font-style: normal;
+}
+
+.paginaContato .grupoInstagram,
+.paginaContato .grupoEmail,
+.paginaContato .grupoLocal {
+    position: absolute;
+    height: 40px;
+}
+
+.paginaContato .grupoInstagram { top: 4px; left: 0;     width: 200px; }
+.paginaContato .grupoEmail     { top: 4px; left: 296px; width: 355px; }
+
+.paginaContato .grupoLocal {
+    top: 838px;
+    left: 627px;
+    width: 188px;
+}
+
+/* O ícone ocupa a caixa do grupo; o texto fica por cima, clicável. */
+.paginaContato .icone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.paginaContato .iconeTelefone {
+    top: 4px;
+    left: 747px;
+    width: 223px;
+    height: 43px;
+}
+
+.paginaContato .texto {
+    position: absolute;
+    margin: 0;
+    font-family: var(--contato-fonte);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: var(--contato-texto);
+}
+
+.paginaContato a.texto:hover {
+    color: var(--contato-destaque);
+}
+
+.paginaContato .textoInstagram { top: 9px;  left: 47px; }
+.paginaContato .textoEmail     { top: 9px;  left: 67px; text-decoration: underline; }
+.paginaContato .textoTelefone1 { top: 0;    left: 794px; }
+.paginaContato .textoTelefone2 { top: 25px; left: 794px; }
+.paginaContato .textoLocal     { top: 9px;  left: 37px; }
+
+/* ------------------------------ Botão fechar --------------------------- */
+.paginaContato .fechar {
+    position: absolute;
+    top: 28px;
+    left: 1344px;
+    width: 53px;
+    height: 53px;
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+}
+
+.paginaContato .fechar:hover,
+.paginaContato .fechar:focus-visible {
+    opacity: 1;
+}
+
+.paginaContato .fecharTraco {
+    position: absolute;
+    top: -7px;
+    left: 23px;
+    width: 8px;
+    height: 67px;
+    border-radius: 53px;
+    background-color: var(--contato-texto);
+}
+
+.paginaContato .fecharTraco1 { transform: rotate(-45deg); }
+.paginaContato .fecharTraco2 { transform: rotate(45deg); }
+
+@media (prefers-reduced-motion: reduce) {
+    .paginaContato .fechar {
         transition: none;
     }
 }
