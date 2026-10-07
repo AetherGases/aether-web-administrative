@@ -105,13 +105,19 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         rs.getInt("id"),
                         rs.getInt("addressId"),
                         rs.getString("name"),
+                        rs.getString("trade_name"),
+                        rs.getString("cnpj"),
                         CompanySize.fromValor(rs.getString("size")),
                         rs.getDate("registration_date"),
-                        rs.getString("cnpj"),
                         rs.getString("email"),
                         rs.getDate("created_at"),
+                        rs.getBoolean("is_active"),
                         address
                 );
+
+                company.setUpdatedAt(rs.getDate("updated_at"));
+
+                companies.add(company);
 
                 company.setTradeName(rs.getString("trade_name"));
                 company.setUpdatedAt(rs.getDate("updated_at"));
@@ -170,13 +176,17 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         rs.getInt("id"),
                         rs.getInt("addressId"),
                         rs.getString("name"),
+                        rs.getString("trade_name"),
+                        rs.getString("cnpj"),
                         CompanySize.fromValor(rs.getString("size")),
                         rs.getDate("registration_date"),
-                        rs.getString("cnpj"),
                         rs.getString("email"),
                         rs.getDate("created_at"),
+                        rs.getBoolean("is_active"),
                         address
                 );
+
+                company.setUpdatedAt(rs.getDate("updated_at"));
 
                 company.setTradeName(rs.getString("trade_name"));
                 company.setUpdatedAt(rs.getDate("updated_at"));

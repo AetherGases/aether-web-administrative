@@ -24,6 +24,15 @@ public class Subscriptions {
         this.createdAt = createdAt;
     }
 
+    public Subscriptions(int id, int companyId, int planId, boolean isActive, boolean installments, Companies company) {
+        this.id = id;
+        this.companyId = companyId;
+        this.planId = planId;
+        this.isActive = isActive;
+        this.installments = installments;
+        this.company = company;
+    }
+
     public Subscriptions(boolean isActive, boolean installments) {
         this.isActive = isActive;
         this.installments = installments;

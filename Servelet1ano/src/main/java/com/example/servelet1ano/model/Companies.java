@@ -10,29 +10,50 @@ public class Companies {
     private String cnpj;
     private CompanySize size;
     private Date registrationDate;
-    private String taxId;
     private String email;
     private Date createdAt;
     private Date updatedAt;
     private boolean isActive;
     private Addresses address;
 
-    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt) {
+    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt) {
         this.id = id;
         this.addressId = addressId;
         this.name = name;
         this.size = size;
         this.registrationDate = registrationDate;
-        this.taxId = taxId;
+        this.cnpj = cnpj;
         this.email = email;
         this.createdAt = createdAt;
     }
 
-    public Companies(String name, CompanySize size, String taxId, String email) {
+    public Companies(String name, CompanySize size, String cnpj, String email) {
         this.name = name;
         this.size = size;
-        this.taxId = taxId;
+        this.cnpj = cnpj;
         this.email = email;
+    }
+
+    public Companies(int id, String name, CompanySize size, String cnpj, String email) {
+        this.id = id;
+        this.name = name;
+        this.size = size;
+        this.cnpj = cnpj;
+        this.email = email;
+    }
+
+    public Companies(int id, int addressId, String name, String tradeName, String cnpj, CompanySize size, Date registrationDate, String email, Date createdAt, boolean isActive, Addresses address) {
+        this.id = id;
+        this.addressId = addressId;
+        this.name = name;
+        this.tradeName = tradeName;
+        this.cnpj = cnpj;
+        this.size = size;
+        this.registrationDate = registrationDate;
+        this.email = email;
+        this.createdAt = createdAt;
+        this.isActive = isActive;
+        this.address = address;
     }
 
     public Companies() {
@@ -41,29 +62,6 @@ public class Companies {
     public Companies(int id, String name) {
         this.id = id;
         this.name = name;
-    }
-
-    public Companies(int id, String name, CompanySize size, String taxId, String email) {
-        this.id = id;
-        this.name = name;
-        this.size = size;
-        this.taxId = taxId;
-        this.email = email;
-    }
-
-    public Companies(int id, int addressId, String name, String tradeName, String cnpj, CompanySize size, Date registrationDate, String taxId, String email, Date createdAt, boolean isActive, Addresses address) {
-        this.id = id;
-        this.addressId = addressId;
-        this.name = name;
-        this.tradeName = tradeName;
-        this.cnpj = cnpj;
-        this.size = size;
-        this.registrationDate = registrationDate;
-        this.taxId = taxId;
-        this.email = email;
-        this.createdAt = createdAt;
-        this.isActive = isActive;
-        this.address = address;
     }
 
     //    Getters e setters
@@ -108,11 +106,11 @@ public class Companies {
         this.cnpj = cnpj;
     }
 
-    public int getSize() {
+    public CompanySize getSize() {
         return size;
     }
 
-    public void setSize(int size) {
+    public void setSize(CompanySize size) {
         this.size = size;
     }
 
@@ -122,14 +120,6 @@ public class Companies {
 
     public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
-    }
-
-    public String getTaxId() {
-        return taxId;
-    }
-
-    public void setTaxId(String taxId) {
-        this.taxId = taxId;
     }
 
     public String getEmail() {

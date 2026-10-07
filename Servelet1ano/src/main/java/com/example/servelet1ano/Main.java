@@ -15,11 +15,27 @@ public class Main {
 
         String sufixo = String.valueOf(System.currentTimeMillis());
 
+
         // cpf tem CHAR(11): pego os 11 ultimos digitos do sufixo pra ficar unico e no tamanho certo
         String cpfTeste = sufixo.substring(sufixo.length() - 11);
 
-        // cnpj da empresa tem CHAR(14): "0" + sufixo (13 digitos) = 14 caracteres
-        String cnpjTeste = "0" + sufixo;
+        // cnpj: usa o sufixo pra garantir unicidade; calcula os 2 DVs pelo modulo 11
+        String cnpjBase = ("000000000000" + sufixo).substring(sufixo.length());
+        cnpjBase = cnpjBase.substring(0, 12);
+
+        int[] pesos1 = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+        int[] pesos2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+
+        int soma = 0;
+        for (int i = 0; i < 12; i++) soma += (cnpjBase.charAt(i) - '0') * pesos1[i];
+        int dv1 = soma % 11 < 2 ? 0 : 11 - soma % 11;
+
+        soma = 0;
+        for (int i = 0; i < 12; i++) soma += (cnpjBase.charAt(i) - '0') * pesos2[i];
+        soma += dv1 * pesos2[12];
+        int dv2 = soma % 11 < 2 ? 0 : 11 - soma % 11;
+
+        String cnpjTeste = cnpjBase + dv1 + dv2;
 
         // ===================== ADDRESSES =====================
         System.out.println("===== ADDRESSES =====");
@@ -29,10 +45,9 @@ public class Main {
         Addresses novoEndereco = new Addresses(
                 0, "01001000", "Rua Teste", "100", "Sala 1", "Centro", "Cidade" + sufixo, "SP", "Brasil"
         );
-        addressesDAO.register(novoEndereco);
+        boolean okEndereco = addressesDAO.register(novoEndereco);
+        System.out.println("register endereco: " + okEndereco);
 
-        // register() nao devolve o id gerado -- buscamos de volta pelo filtro,
-        // usando um valor unico (a cidade com sufixo) pra garantir que so existe um resultado
         AddressesFilter addressFilter = new AddressesFilter();
         addressFilter.setCity("Cidade" + sufixo);
 
@@ -53,17 +68,19 @@ public class Main {
         int permissionGroupId = permissionGroupsDAO.searchAll(permissionGroupFilter).get(0).getId();
         System.out.println("Grupo de permissao criado, id: " + permissionGroupId);
 
+        boolean okGrupo = permissionGroupsDAO.register(novoGrupo);
+        System.out.println("register grupo: " + okGrupo);
+
         // ===================== COMPANIES =====================
         System.out.println("\n===== COMPANIES =====");
 
         CompaniesDAO companiesDAO = new CompaniesDAO();
 
         Companies novaEmpresa = new Companies(
-                0, addressId, "Empresa" + sufixo, CompanySize.PEQUENO,
-                new java.sql.Date(System.currentTimeMillis()), cnpjTeste,
-                "empresa" + sufixo + "@teste.com", null
+                0, addressId, "Empresa" + sufixo, "Fantasia" + sufixo, cnpjTeste,
+                CompanySize.PEQUENO, new java.sql.Date(System.currentTimeMillis()),
+                "empresa" + sufixo + "@teste.com", null, true, null
         );
-        novaEmpresa.setTradeName("Fantasia" + sufixo);
         companiesDAO.register(novaEmpresa);
 
         CompaniesFilter companyFilter = new CompaniesFilter();
@@ -129,6 +146,7 @@ public class Main {
 
         int employeeId = employeesDAO.searchAll(employeeFilter).get(0).getId();
         System.out.println("Funcionario criado, id: " + employeeId);
+
 
         // ===================== TELEPHONE COMPANIES =====================
         System.out.println("\n===== TELEPHONE COMPANIES =====");
