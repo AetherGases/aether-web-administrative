@@ -47,7 +47,7 @@
 
         <dependency>
             <groupId>org.postgresql</groupId>
-            <artifactId> postgresql</artifactId>
+            <artifactId>postgresql</artifactId>
             <version>42.7.13</version>
         </dependency>
 
@@ -63,15 +63,18 @@
             <version>2.12</version>
         </dependency>
 
-
     </dependencies>
 
     <build>
+        <sourceDirectory>Servelet1ano/src/main/java</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
+                <configuration>
+                    <warSourceDirectory>Servelet1ano/src/main/webapp</warSourceDirectory>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
