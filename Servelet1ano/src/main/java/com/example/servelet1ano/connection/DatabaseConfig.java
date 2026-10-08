@@ -4,7 +4,6 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class DatabaseConfig {
     private static final Dotenv dotenv = Dotenv.configure()
-            .ignoreIfMissing()
             .load();
 
     public static String getUrl() {

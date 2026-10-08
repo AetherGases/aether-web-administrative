@@ -68,8 +68,8 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("ERRO searchAll permission_groups: " + e.getMessage());
         }
-
         finally {
             return permissionGroups;
         }
