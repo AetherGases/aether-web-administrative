@@ -9,6 +9,13 @@
 
 /* Remove as margens padrão do navegador e centraliza o container */
 
+body {
+    position: relative;
+    width: 1440px;
+    min-height: 6863px;
+    margin: 0 auto;
+}
+
 img,
 svg {
     display: block;

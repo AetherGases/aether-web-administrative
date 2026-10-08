@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tela de Verificação do Aether</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+
+</head>
+<body>
+
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+
+<div>
+    <img src="Imagens/AekoLogoEmBaixo.svg" alt="Logo Aether">
+    <p>Pense no presente e mude seu <span>futuro</span></p>
+</div>
+
+<div>
+
+    <img src="Imagens/AekoLogin.svg" alt="Aeko">
+    <div>Verificação</div>
+
+    <form>
+
+        <div>
+            <input type="text" id="codigo1" aria-label="Primeiro dígito do código" name="codigo1" maxlength="1" required class="quadradinhoCodigo" autofocus oninput="moverProximo(this, 'codigo2')">
+            <input type="text" id="codigo2" aria-label="Segundo dígito do código" name="codigo2" maxlength="1" required class="quadradinhoCodigo" oninput="moverProximo(this, 'codigo3')">
+            <input type="text" id="codigo3" aria-label="Terceiro dígito do código" name="codigo3" maxlength="1" required class="quadradinhoCodigo" oninput="moverProximo(this, 'codigo4')">
+            <input type="text" id="codigo4" aria-label="Quarto dígito do código" name="codigo4" maxlength="1" required class="quadradinhoCodigo" oninput="moverProximo(this, 'codigo5')">
+            <input type="text" id="codigo5" aria-label="Quinto dígito do código" name="codigo5" maxlength="1" required class="quadradinhoCodigo" oninput="moverProximo(this, 'codigo6')">
+            <input type="text" id="codigo6" aria-label="Sexto dígito do código" name="codigo6" maxlength="1" required class="quadradinhoCodigo">
+        </div>
+
+        <button type="submit" value="EnviarFormulárioSenha">Entrar</button>
+
+    </form>
+
+    <script>
+        function moverProximo(campoAtual, proximoId) {
+            if (campoAtual.value.length >= campoAtual.maxLength) {
+                document.getElementById(proximoId).focus();
+            }
+        }
+    </script>
+
+    <p>Digite o código de 6 dígitos enviado para o seu email</p>
+
+    <p>Não recebeu o código? Reenviar</p>
+
+    <p>Colocou o E-mail errado? <a href="recuperarSenha.html">altere aqui</a></p>
+
+</div>
+
+</body>
+</html>

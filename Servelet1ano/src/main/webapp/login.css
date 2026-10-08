@@ -1,0 +1,78 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.comfortaa{
+    font-family: "Comfortaa", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+}
+
+.montserrat{
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.blur1{
+    position: absolute;
+    left: 46px;
+    top: -155px;
+
+    width: 708.55px;
+    height: 708.55px;
+    border-radius: 50%;
+
+    background: rgba(184, 255, 226, 75%);
+    filter: blur(453.8px);
+    z-index: -1;
+}
+
+.blur2{
+    position: absolute;
+    left: 843px;
+    top: -88px;
+
+    width: 708.55px;
+    height: 708.55px;
+    border-radius: 50%;
+
+    background: rgba(215, 204, 255, 100%);
+    filter: blur(453.8px);
+    z-index: -1;
+}
+
+.blur3{
+    position: absolute;
+    left: -28px;
+    top: 413px;
+
+    width: 708.55px;
+    height: 708.55px;
+    border-radius: 50%;
+
+    background: rgba(215, 204, 255, 100%);
+    filter: blur(453.8px);
+    z-index: -1;
+}
+
+.blur4{
+    position: absolute;
+    left: -28px;
+    top: 413px;
+
+    width: 708.55px;
+    height: 708.55px;
+    border-radius: 50%;
+
+    background: rgba(184, 255, 226, 75%);
+    filter: blur(453.8px);
+    z-index: -1;
+}
+
