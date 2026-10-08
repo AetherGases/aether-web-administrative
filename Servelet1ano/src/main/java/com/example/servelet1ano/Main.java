@@ -15,9 +15,19 @@ public class Main {
 
         String sufixo = String.valueOf(System.currentTimeMillis());
 
+        // cpf: 9 digitos do sufixo + 2 DVs calculados (o Validators.isCpf confere os digitos verificadores)
+        String cpfBase = sufixo.substring(sufixo.length() - 9);
 
-        // cpf tem CHAR(11): pego os 11 ultimos digitos do sufixo pra ficar unico e no tamanho certo
-        String cpfTeste = sufixo.substring(sufixo.length() - 11);
+        int somaCpf = 0;
+        for (int i = 0; i < 9; i++) somaCpf += (cpfBase.charAt(i) - '0') * (10 - i);
+        int cpfDv1 = somaCpf % 11 < 2 ? 0 : 11 - somaCpf % 11;
+
+        somaCpf = 0;
+        for (int i = 0; i < 9; i++) somaCpf += (cpfBase.charAt(i) - '0') * (11 - i);
+        somaCpf += cpfDv1 * 2;
+        int cpfDv2 = somaCpf % 11 < 2 ? 0 : 11 - somaCpf % 11;
+
+        String cpfTeste = cpfBase + cpfDv1 + cpfDv2;
 
         // cnpj: usa o sufixo pra garantir unicidade; calcula os 2 DVs pelo modulo 11
         String cnpjBase = ("000000000000" + sufixo).substring(sufixo.length());
@@ -45,13 +55,17 @@ public class Main {
         Addresses novoEndereco = new Addresses(
                 0, "01001000", "Rua Teste", "100", "Sala 1", "Centro", "Cidade" + sufixo, "SP", "Brasil"
         );
+
         boolean okEndereco = addressesDAO.register(novoEndereco);
         System.out.println("register endereco: " + okEndereco);
 
         AddressesFilter addressFilter = new AddressesFilter();
         addressFilter.setCity("Cidade" + sufixo);
 
-        int addressId = addressesDAO.searchAll(addressFilter).get(0).getId();
+        List<Addresses> enderecos = addressesDAO.searchAll(addressFilter);
+        System.out.println("searchAll endereco size: " + enderecos.size());
+
+        int addressId = enderecos.get(0).getId();
         System.out.println("Endereco criado, id: " + addressId);
 
         // ===================== PERMISSION GROUPS =====================
@@ -60,16 +74,18 @@ public class Main {
         PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
 
         PermissionGroups novoGrupo = new PermissionGroups(0, "Grupo" + sufixo);
-        permissionGroupsDAO.register(novoGrupo);
+
+        boolean okGrupo = permissionGroupsDAO.register(novoGrupo);
+        System.out.println("register grupo: " + okGrupo);
 
         PermissionGroupsFilter permissionGroupFilter = new PermissionGroupsFilter();
         permissionGroupFilter.setName("Grupo" + sufixo);
 
-        int permissionGroupId = permissionGroupsDAO.searchAll(permissionGroupFilter).get(0).getId();
-        System.out.println("Grupo de permissao criado, id: " + permissionGroupId);
+        List<PermissionGroups> grupos = permissionGroupsDAO.searchAll(permissionGroupFilter);
+        System.out.println("searchAll grupo size: " + grupos.size());
 
-        boolean okGrupo = permissionGroupsDAO.register(novoGrupo);
-        System.out.println("register grupo: " + okGrupo);
+        int permissionGroupId = grupos.get(0).getId();
+        System.out.println("Grupo de permissao criado, id: " + permissionGroupId);
 
         // ===================== COMPANIES =====================
         System.out.println("\n===== COMPANIES =====");
@@ -81,12 +97,17 @@ public class Main {
                 CompanySize.PEQUENO, new java.sql.Date(System.currentTimeMillis()),
                 "empresa" + sufixo + "@teste.com", null, true, null
         );
-        companiesDAO.register(novaEmpresa);
+
+        boolean okEmpresa = companiesDAO.register(novaEmpresa);
+        System.out.println("register empresa: " + okEmpresa);
 
         CompaniesFilter companyFilter = new CompaniesFilter();
         companyFilter.setName("Empresa" + sufixo);
 
-        int companyId = companiesDAO.searchAll(companyFilter).get(0).getId();
+        List<Companies> empresas = companiesDAO.searchAll(companyFilter);
+        System.out.println("searchAll empresa size: " + empresas.size());
+
+        int companyId = empresas.get(0).getId();
         System.out.println("Empresa criada, id: " + companyId);
 
         // ===================== UNITS =====================
@@ -98,12 +119,17 @@ public class Main {
                 0, companyId, addressId, "Unidade" + sufixo,
                 "12345678000199", "6201-5/01", true, null, null
         );
-        unitsDAO.register(novaUnidade);
+
+        boolean okUnidade = unitsDAO.register(novaUnidade);
+        System.out.println("register unidade: " + okUnidade);
 
         UnitsFilter unitFilter = new UnitsFilter();
         unitFilter.setName("Unidade" + sufixo);
 
-        int unitId = unitsDAO.searchAll(unitFilter).get(0).getId();
+        List<Units> unidades = unitsDAO.searchAll(unitFilter);
+        System.out.println("searchAll unidade size: " + unidades.size());
+
+        int unitId = unidades.get(0).getId();
         System.out.println("Unidade criada, id: " + unitId);
 
         // ===================== SECTORS =====================
@@ -115,12 +141,17 @@ public class Main {
         Sectors novoSetor = new Sectors(
                 0, unitId, companyId, "Setor" + sufixo, null, null, null
         );
-        sectorsDAO.register(novoSetor);
+
+        boolean okSetor = sectorsDAO.register(novoSetor);
+        System.out.println("register setor: " + okSetor);
 
         SectorsFilter sectorFilter = new SectorsFilter();
         sectorFilter.setName("Setor" + sufixo);
 
-        int sectorId = sectorsDAO.searchAll(sectorFilter).get(0).getId();
+        List<Sectors> setores = sectorsDAO.searchAll(sectorFilter);
+        System.out.println("searchAll setor size: " + setores.size());
+
+        int sectorId = setores.get(0).getId();
         System.out.println("Setor criado, id: " + sectorId);
 
         // ===================== EMPLOYEES =====================
@@ -139,14 +170,17 @@ public class Main {
         novoFuncionario.setPhone("11988887777");
         novoFuncionario.setPasswordHash(PasswordHasher.hash("senha123"));
 
-        employeesDAO.register(novoFuncionario);
+        boolean okFuncionario = employeesDAO.register(novoFuncionario);
+        System.out.println("register funcionario: " + okFuncionario);
 
         EmployeesFilter employeeFilter = new EmployeesFilter();
         employeeFilter.setName("Funcionario" + sufixo);
 
-        int employeeId = employeesDAO.searchAll(employeeFilter).get(0).getId();
-        System.out.println("Funcionario criado, id: " + employeeId);
+        List<Employees> funcionarios = employeesDAO.searchAll(employeeFilter);
+        System.out.println("searchAll funcionario size: " + funcionarios.size());
 
+        int employeeId = funcionarios.get(0).getId();
+        System.out.println("Funcionario criado, id: " + employeeId);
 
         // ===================== TELEPHONE COMPANIES =====================
         System.out.println("\n===== TELEPHONE COMPANIES =====");
@@ -156,7 +190,9 @@ public class Main {
         TelephoneCompanies novoTelefone = new TelephoneCompanies(
                 "11999999999", companyId, 0, null
         );
-        telephoneCompaniesDAO.register(novoTelefone);
+
+        boolean okTelefone = telephoneCompaniesDAO.register(novoTelefone);
+        System.out.println("register telefone: " + okTelefone);
 
         TelephoneCompaniesFilter telephoneFilter = new TelephoneCompaniesFilter();
         telephoneFilter.setCompanyId(companyId);
@@ -212,12 +248,16 @@ public class Main {
         novaAssinatura.setActive(true);
         novaAssinatura.setInstallments(false);
 
-        subscriptionsDAO.register(novaAssinatura);
+        boolean okAssinatura = subscriptionsDAO.register(novaAssinatura);
+        System.out.println("register assinatura: " + okAssinatura);
 
         SubscriptionsFilter subscriptionFilter = new SubscriptionsFilter();
         subscriptionFilter.setCompanyId(companyId);
 
-        int subscriptionId = subscriptionsDAO.searchAll(subscriptionFilter).get(0).getId();
+        List<Subscriptions> assinaturas = subscriptionsDAO.searchAll(subscriptionFilter);
+        System.out.println("searchAll assinatura size: " + assinaturas.size());
+
+        int subscriptionId = assinaturas.get(0).getId();
         System.out.println("Assinatura criada, id: " + subscriptionId);
 
         // ===================== FILTRO COMBINADO =====================

@@ -118,11 +118,6 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 company.setUpdatedAt(rs.getDate("updated_at"));
 
                 companies.add(company);
-
-                company.setTradeName(rs.getString("trade_name"));
-                company.setUpdatedAt(rs.getDate("updated_at"));
-
-                companies.add(company);
             }
 
         } catch (SQLException e) {
@@ -186,9 +181,6 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         address
                 );
 
-                company.setUpdatedAt(rs.getDate("updated_at"));
-
-                company.setTradeName(rs.getString("trade_name"));
                 company.setUpdatedAt(rs.getDate("updated_at"));
             }
 
