@@ -763,181 +763,277 @@ body {
     color: #4A435E;
 }
 
-.divCarrosselCards {
-    position: absolute;
-    left: 0;
-    top: 2633px;
-    width: 1440px;
-    height: 340px;
-}
+.carrosselGases {
+    --gas-roxo-escuro: #4D1B9B;
+    --gas-roxo-borda: #7C3AED;
+    --gas-verde-escuro: #225749;
+    --gas-verde-borda: #1E6B56;
+    --gas-texto: #161C2D;
+    --gas-texto-suave: #23262B;
+    --gas-sombra: 70, 44, 177;
 
-.janelaCarrosselCards {
-    position: absolute;
-    left: 100px;
-    top: 0;
-    width: 1240px;
-    height: 340px;
+    position: relative;
+    width: 100%;
+    height: 317px;
+    top: 2630px;
     overflow: hidden;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
 }
 
-.divCard {
-    display: flex;
-    gap: 20px;
-    width: max-content;
-    height: 100%;
-    transition: transform 0.4s ease;
-    will-change: transform;
-}
-
-.cardItem {
-    flex: 0 0 290px;
-    width: 432px;
-    height: 253.6px;
-    padding: 16px 18px;
-    border-radius: 15px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 4px 8px rgba(70, 44, 177, 0.10),
-    0 14.4px 14.4px rgba(70, 44, 177, 0.09);
-}
-
-.divCardVerde {
-    background: linear-gradient(#42B481 0%, #73E4B4 50%, #42B481 100%);
-    border: 0.8px solid #1A5C41;
-}
-
-.divCardRoxo {
-    background: linear-gradient(#816CCF 0%, #C3B3FF 50%, #816CCF 100%);
-    border: 0.8px solid #4D1B98;
-}
-
-.divCardLinhas {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 4px;
-    flex: 1;
-}
-
-.divCardLinha {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-
-.divTipografiaTituloRisco {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 20px;
-    color: #161C2D;
-}
-
-.divTipografiaTitulosMenoresVerde {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.4px;
-    color: #225749;
-}
-
-.divTipografiaTitulosMenoresRoxo {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.4px;
-    color: #4D1B98;
-}
-
-.divTipografiaGasesMenores {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    color: #161C2D;
-}
-
-.divTipografiaNomeGas {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 14.4px;
-    color: #161C2D;
-}
-
-.divTipografiaEscopoVerde {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    color: #225749;
-}
-
-.divTipografiaEscopoRoxo {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    color: #4D1B98;
-}
-
-.divTipografiaEmissao,
-.divTipografiaEmissao2 {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 22px;
-    color: #23262B;
-}
-
-.divTipografia1paragrafo,
-.divTipografia2paragrafo {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 12.8px;
-    color: #23262B;
-}
-
-.divTipografia2paragrafo {
-    margin-top: auto;
-    padding-top: 8px;
-    border-top: 1px solid rgba(22, 28, 45, 0.2);
-}
-
-/* Botões do carrossel de cards */
-.botaoEsquerdoCarrossel2,
-.botaoDireitoCarrossel2 {
+/* ------------------------------- Card -------------------------------- */
+.cardGas {
     position: absolute;
-    top: 136px;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 4px solid #2DBD7E;
-    background: #FFFFFF;
-    opacity: 0.8;
-    z-index: 1;
-}
+    top: 0;
+    left: calc(50% - 270px);
+    width: 540px;
+    height: 317px;
+    box-sizing: border-box;
+    padding: 32px 35px 0 39px;
+    border-radius: 24px;
+    border: 1px solid var(--gas-roxo-borda);
+    color: var(--gas-texto);
 
-.botaoEsquerdoCarrossel2 { left: 35px; }
-.botaoDireitoCarrossel2  { left: 1360px; }
+    display: grid;
+    grid-template-columns: 256px 1fr;
+    grid-template-rows: auto 1fr;
+    column-gap: 0;
 
-.botaoEsquerdoCarrossel2:hover:not(:disabled),
-.botaoDireitoCarrossel2:hover:not(:disabled) {
+    transform: scale(1);
     opacity: 1;
+    z-index: 3;
+    transition: left 0.5s ease, transform 0.5s ease, opacity 0.5s ease;
+
+    /* 4 sombras empilhadas do design */
+    box-shadow:
+            0 4px 10px rgba(var(--gas-sombra), 0.1),
+            0 17px 17px rgba(var(--gas-sombra), 0.1),
+            0 39px 23px rgba(var(--gas-sombra), 0.1),
+            0 69px 28px rgba(var(--gas-sombra), 0.1);
 }
 
-.botaoEsquerdoCarrossel2:disabled,
-.botaoDireitoCarrossel2:disabled {
-    opacity: 0.3;
-    cursor: default;
+.cardGas[data-cor="roxo"] {
+    background: linear-gradient(117deg, #816CCF 0%, #C3B3FF 50%, #816CCF 100%);
 }
 
-.setaEsquerdaCarroselCelulares2,
-.setaDireitaCarroselCelulares2 {
-    position: absolute;
-    top: 145px;
+.cardGas[data-cor="verde"] {
+    background: linear-gradient(117deg, #42B481 0%, #73E4B4 50%, #42B481 100%);
+    border-color: var(--gas-verde-borda);
+}
+
+/* --------------------------- Posições (JS) ---------------------------- */
+.cardGas[data-pos="esq"] {
+    left: calc(50% - 1004px);
+    transform: scale(0.8);
+    opacity: 0.7;
     z-index: 2;
+}
+
+.cardGas[data-pos="dir"] {
+    left: calc(50% + 464px);
+    transform: scale(0.8);
+    opacity: 0.7;
+    z-index: 2;
+}
+
+/* Cards de espera: fora da tela e invisíveis */
+.cardGas[data-pos="esq2"] {
+    left: calc(50% - 1600px);
+    transform: scale(0.8);
+    opacity: 0;
+    z-index: 1;
     pointer-events: none;
 }
 
-.setaEsquerdaCarroselCelulares2 { left: 48px; }
-.setaDireitaCarroselCelulares2  { left: 1373px; }
+.cardGas[data-pos="dir2"] {
+    left: calc(50% + 1060px);
+    transform: scale(0.8);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.cardGas[data-pos="oculto"] {
+    transform: scale(0.6);
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ------------------------------ Textos -------------------------------- */
+.cardGasRisco {
+    grid-column: 1 / -1;
+    margin: 0 0 20px;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 38px;
+    color: var(--gas-texto);
+}
+
+.cardGasEscopo {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--gas-roxo-escuro);
+}
+
+.cardGas[data-cor="verde"] .cardGasEscopo {
+    color: var(--gas-verde-escuro);
+}
+
+.cardGasColuna {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    margin: 0;
+}
+
+.cardGasItem {
+    margin: 0;
+}
+
+.cardGasItem dt {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    text-transform: uppercase;
+    color: var(--gas-roxo-escuro);
+}
+
+.cardGas[data-cor="verde"] .cardGasItem dt {
+    color: var(--gas-verde-escuro);
+}
+
+.cardGasItem dd {
+    margin: 5px 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--gas-texto);
+}
+
+.cardGasItem dd + dd {
+    margin-top: 0;
+}
+
+/* Valor grande (273, N₂O, CO CO₂...) */
+.cardGasItem dd.cardGasNumero {
+    margin-top: 2px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 34px;
+    color: var(--gas-texto-suave);
+}
+
+/* Unidade e textos pequenos */
+.cardGasItem dd.cardGasUnidade {
+    margin-top: 0;
+    line-height: 20px;
+}
+
+.cardGasItem dd.cardGasPotencial {
+    margin-top: 3px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.cardGasItem dd.cardGasAplicacao {
+    margin-top: 0;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.cardGas sub {
+    font-size: 0.65em;
+    line-height: 0;
+}
+
+/* ------------------------------- Setas -------------------------------- */
+.carrosselGasesSeta {
+    --seta-cor: var(--gas-roxo-escuro);
+
+    position: absolute;
+    top: 117px;
+    z-index: 4;
+    width: 82px;
+    height: 82px;
+    padding: 0;
+    box-sizing: border-box;
+    border: 6.2px solid var(--seta-cor);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform 0.2s ease, border-color 0.3s ease;
+}
+
+.carrosselGasesSeta[data-cor="verde"] { --seta-cor: #2DBD7E; }
+.carrosselGasesSeta[data-cor="roxo"]  { --seta-cor: var(--gas-roxo-escuro); }
+
+.carrosselGasesSeta svg {
+    width: 40px;
+    height: 40px;
+    stroke: var(--seta-cor);
+    transition: stroke 0.3s ease;
+}
+
+.carrosselGasesSetaEsq { left: calc(50% - 373px); }
+.carrosselGasesSetaDir { left: calc(50% + 291px); }
+
+.carrosselGasesSeta:hover {
+    transform: scale(1.08);
+}
+
+.carrosselGasesSeta:focus-visible {
+    outline: 2px solid #4A90E2;
+    outline-offset: 4px;
+}
+
+/* ----------------------------- Telas menores --------------------------- */
+@media (max-width: 780px) {
+    .carrosselGases { height: 420px; }
+
+    .cardGas[data-pos="esq"],
+    .cardGas[data-pos="dir"] {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .carrosselGasesSeta { top: 340px; }
+    .carrosselGasesSetaEsq { left: calc(50% - 100px); }
+    .carrosselGasesSetaDir { left: calc(50% + 18px); }
+}
+
+@media (max-width: 580px) {
+    .carrosselGases { height: 300px; }
+
+    .cardGas[data-pos="ativo"] {
+        transform: scale(0.64);
+        transform-origin: top center;
+        left: calc(50% - 270px);
+    }
+
+    .carrosselGasesSeta {
+        top: 224px;
+        width: 64px;
+        height: 64px;
+    }
+
+    .carrosselGasesSetaEsq { left: calc(50% - 76px); }
+    .carrosselGasesSetaDir { left: calc(50% + 12px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cardGas,
+    .carrosselGasesSeta,
+    .carrosselGasesSeta svg {
+        transition: none;
+    }
+}
 
 
 /* ==========================================================================
@@ -1657,104 +1753,149 @@ body {
    SETOR 8 — RODAPÉ   (NOVO)
    ========================================================================== */
 
-.rodape {
-    position: absolute;
-    left: 0;
+.rodapeAether {
+    --rodape-texto: #2A2A2A;
+    --rodape-texto-suave: #2A2A2A;
+    --rodape-paragrafo: #000000;
+    --rodape-fonte: "Montserrat", Helvetica, Arial, sans-serif;
+
+    position: relative;
+    width: 100%;
+    max-width: 1440px;
+    min-height: 422px;
     top: 6441px;
-    width: 1440px;
-    height: 422px;
-    padding: 100px 112px 0;
-
-    background: linear-gradient(180deg, rgba(168, 240, 210, 0.45) 0%, rgba(215, 204, 255, 0.55) 100%);
-    border-top-left-radius: 45px;
-    border-top-right-radius: 45px;
-
-    display: grid;
-    grid-template-columns: 343px 185px 1fr 1fr;
-    column-gap: 60px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    font-family: var(--rodape-fonte);
+    color: var(--rodape-texto);
+    isolation: isolate;
 }
 
-.colunaRodape {
+.rodapeAether::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 50vw);
+    right: calc(50% - 50vw);
+    z-index: -1;
+    background: url("Imagens/NuvemFooter (1).svg") center / 100% 100% no-repeat;
+    pointer-events: none;
+}
+
+.rodapeAether a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.rodapeAether a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.rodapeAether a:focus-visible {
+    outline: 2px solid #4A90E2;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+.rodapeAetherConteudo {
+    display: grid;
+    grid-template-columns: 495fr 370fr 252fr 211fr;
+    column-gap: 0;
+    padding: 99px 0 60px 112px;
+    box-sizing: border-box;
+}
+
+.rodapeAetherMarca {
+    max-width: 330px;
+}
+
+.rodapeAetherLogo {
+    width: 240px;
+    height: auto;
+    margin: -3px 0 0 -8px;
+}
+
+.rodapeAetherDescricao {
+    margin: 22px 0 0;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--rodape-paragrafo);
+}
+
+/* ----------------------------- Navegação ------------------------------ */
+.rodapeAetherNav ul,
+.rodapeAetherColuna ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rodapeAetherNav ul {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+    gap: 20px;
 }
 
-.colunaRodapeMarca {
-    gap: 30px;
-}
-
-.marcaRodape {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.marcaRodape img {
-    width: 100px;
-    height: 100px;
-}
-
-.aetherRodape {
-    font-family: "Comfortaa", sans-serif;
-    font-size: 40px;
-    font-weight: 600;
-    color: #5B6473;
-    margin: -20px;
-    margin-bottom: -2px;
-}
-
-.descricaoRodape {
-    width: 343px;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #000000;
-}
-
-.colunaRodapeLinks {
-    gap: 12px;
-}
-
-.linkRodape {
-    font-family: "Montserrat", sans-serif;
+.rodapeAetherNav a {
     font-size: 20px;
     font-weight: 500;
-    line-height: 30px;
-    color: #2A2A2A;
+    line-height: 24px;
 }
 
-.tituloColunaRodape {
-    font-family: "Montserrat", sans-serif;
+/* ------------------------ Colunas Recursos / Empresa ------------------ */
+.rodapeAetherColuna h2 {
+    margin: 0 0 14px;
     font-size: 32px;
     font-weight: 500;
-    color: #2A2A2A;
+    line-height: 38px;
+    color: var(--rodape-texto);
 }
 
-.linkRodapeSecundario {
-    font-family: "Montserrat", sans-serif;
+.rodapeAetherColuna ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rodapeAetherColuna a {
     font-size: 22px;
     font-weight: 400;
-    color: #2A2A2A;
+    line-height: 24px;
+    color: var(--rodape-texto-suave);
 }
 
-.linkRodape:hover,
-.linkRodapeSecundario:hover {
-    color: #7C3AED;
+/* ------------------------------ Tablet -------------------------------- */
+@media (max-width: 1024px) {
+    .rodapeAetherConteudo {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px 32px;
+        padding: 64px 48px 48px;
+    }
+
+    .rodapeAetherMarca {
+        grid-column: 1 / -1;
+    }
 }
 
-.direitosRodape {
-    grid-column: 1 / -1;
-    margin-top: 40px;
-    font-family: "Montserrat", sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: #59546D;
+/* ------------------------------ Celular ------------------------------- */
+@media (max-width: 600px) {
+    .rodapeAetherConteudo {
+        grid-template-columns: 1fr;
+        padding: 48px 24px 40px;
+    }
+
+    .rodapeAetherColuna h2 {
+        font-size: 26px;
+        line-height: 32px;
+    }
+
+    .rodapeAetherColuna a {
+        font-size: 18px;
+    }
 }
-
-
 /* ==========================================================================
    UTILITÁRIOS E ACESSIBILIDADE
    ========================================================================== */
@@ -1769,17 +1910,15 @@ body {
         scroll-behavior: auto;
     }
 
-    .divCard,
     .bolinhaInterruptor {
         transition: none;
     }
 }
 
 /* ==========================================================================
-   PÁGINA DE CONTATO — cole este bloco no FINAL do style.css da landing.
+   PÁGINA DE CONTATO
    ========================================================================== */
 
-/* Variáveis com prefixo "contato" para não colidir com as da landing */
 html.paginaContato {
     --contato-fundo: #2A2A2A;
     --contato-texto: #A2A2A2;
@@ -1790,8 +1929,6 @@ html.paginaContato {
     -webkit-font-smoothing: antialiased;
 }
 
-/* A landing define o body com 1440 px de largura e 6863 px de altura;
-   aqui isso é desfeito só para a página de contato. */
 .paginaContato body {
     position: static;
     width: auto;
@@ -1819,7 +1956,6 @@ html.paginaContato {
     border-radius: 4px;
 }
 
-/* A tela de 1440 x 1024. O margin: auto centraliza sem cortar o lado esquerdo. */
 .paginaContato .desktop {
     position: relative;
     flex: none;
@@ -1857,6 +1993,7 @@ html.paginaContato {
 
 .paginaContato .grupoInstagram,
 .paginaContato .grupoEmail,
+.paginaContato .grupoTelefone,
 .paginaContato .grupoLocal {
     position: absolute;
     height: 40px;
@@ -1864,6 +2001,7 @@ html.paginaContato {
 
 .paginaContato .grupoInstagram { top: 4px; left: 0;     width: 200px; }
 .paginaContato .grupoEmail     { top: 4px; left: 296px; width: 355px; }
+.paginaContato .grupoTelefone  { top: 0;   left: 727px; width: 257px; height: 47px; }
 
 .paginaContato .grupoLocal {
     top: 838px;
@@ -1871,20 +2009,28 @@ html.paginaContato {
     width: 188px;
 }
 
-/* O ícone ocupa a caixa do grupo; o texto fica por cima, clicável. */
-.paginaContato .icone {
+.paginaContato .iconeInstagram {
     position: absolute;
     top: 0;
-    left: 0;
+    left: -80px;
     width: 100%;
     height: 100%;
     pointer-events: none;
 }
 
-.paginaContato .iconeTelefone {
-    top: 4px;
-    left: 747px;
-    width: 223px;
+.paginaContato .icone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+    max-width: 60px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.paginaContato .grupoTelefone .icone {
+    top: 2px;
     height: 43px;
 }
 
@@ -1906,8 +2052,8 @@ html.paginaContato {
 
 .paginaContato .textoInstagram { top: 9px;  left: 47px; }
 .paginaContato .textoEmail     { top: 9px;  left: 67px; text-decoration: underline; }
-.paginaContato .textoTelefone1 { top: 0;    left: 794px; }
-.paginaContato .textoTelefone2 { top: 25px; left: 794px; }
+.paginaContato .textoTelefone1 { top: 0;    left: 67px; }
+.paginaContato .textoTelefone2 { top: 25px; left: 67px; }
 .paginaContato .textoLocal     { top: 9px;  left: 37px; }
 
 /* ------------------------------ Botão fechar --------------------------- */
