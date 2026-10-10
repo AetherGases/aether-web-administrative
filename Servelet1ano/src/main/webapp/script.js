@@ -116,110 +116,59 @@ function carrosselCelulares() {
 
    -------------------------------------------------------------------------- */
 
-function carrosselCards() {
+(function () {
+    var palco = document.getElementById("carrosselGases");
+    if (!palco) return;
 
-    const trilho = document.getElementById("trilhoCarrossel");
+    var cards = Array.prototype.slice.call(palco.querySelectorAll(".cardGas"));
+    var botaoAnterior = document.getElementById("gasesAnterior");
+    var botaoProximo = document.getElementById("gasesProximo");
+    var total = cards.length;
+    var ativo = 0;
 
-    const janela = document.querySelector(".janelaCarrosselCards");
-
-    const botaoAnterior = document.getElementById("btnAnterior");
-
-    const botaoProximo = document.getElementById("btnProximo");
-
-    if (!trilho || !janela || !botaoAnterior || !botaoProximo) {
-
-        return;
-
+    function posicao(deslocamento) {
+        if (deslocamento === 0) return "ativo";
+        if (deslocamento === 1) return "dir";
+        if (deslocamento === total - 1) return "esq";
+        if (deslocamento === 2) return "dir2";
+        if (deslocamento === total - 2) return "esq2";
+        return "oculto";
     }
 
-    let deslocamento = 0;
+    function atualizar() {
+        cards.forEach(function (card, i) {
+            var pos = posicao((i - ativo + total) % total);
+            card.dataset.pos = pos;
+            card.setAttribute("aria-hidden", pos === "ativo" ? "false" : "true");
+        });
 
-    function larguraDoPasso() {
-
-        const card = trilho.querySelector(".cardItem");
-
-        if (!card) {
-
-            return 0;
-
-        }
-
-        const estilo = window.getComputedStyle(trilho);
-
-        const espacamento = parseFloat(estilo.columnGap || estilo.gap || "0") || 0;
-
-        return card.getBoundingClientRect().width + espacamento;
-
+        botaoAnterior.dataset.cor = cards[(ativo - 1 + total) % total].dataset.cor;
+        botaoProximo.dataset.cor = cards[(ativo + 1) % total].dataset.cor;
     }
 
-    function deslocamentoMaximo() {
-
-        return Math.max(0, trilho.scrollWidth - janela.clientWidth);
-
+    function mover(passo) {
+        ativo = (ativo + passo + total) % total;
+        atualizar();
     }
 
-    function aplicar() {
+    botaoAnterior.addEventListener("click", function () { mover(-1); });
+    botaoProximo.addEventListener("click", function () { mover(1); });
 
-        const limite = deslocamentoMaximo();
-
-        deslocamento = Math.min(Math.max(deslocamento, 0), limite);
-
-        trilho.style.transform = "translateX(" + -deslocamento + "px)";
-
-        botaoAnterior.disabled = deslocamento <= 0;
-
-        botaoProximo.disabled = deslocamento >= limite - 1;
-
-    }
-
-    botaoProximo.addEventListener("click", function () {
-
-        deslocamento += larguraDoPasso();
-
-        aplicar();
-
+    // Clicar num card lateral também navega
+    cards.forEach(function (card) {
+        card.addEventListener("click", function () {
+            if (card.dataset.pos === "esq") mover(-1);
+            if (card.dataset.pos === "dir") mover(1);
+        });
     });
 
-    botaoAnterior.addEventListener("click", function () {
-
-        deslocamento -= larguraDoPasso();
-
-        aplicar();
-
+    palco.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowLeft") mover(-1);
+        if (e.key === "ArrowRight") mover(1);
     });
 
-    // Navegação por teclado quando o carrossel estiver em foco.
-
-    janela.setAttribute("tabindex", "0");
-
-    janela.addEventListener("keydown", function (evento) {
-
-        if (evento.key === "ArrowRight") {
-
-            evento.preventDefault();
-
-            deslocamento += larguraDoPasso();
-
-            aplicar();
-
-        } else if (evento.key === "ArrowLeft") {
-
-            evento.preventDefault();
-
-            deslocamento -= larguraDoPasso();
-
-            aplicar();
-
-        }
-
-    });
-
-    window.addEventListener("resize", aplicar);
-
-    aplicar();
-
-}
-
+    atualizar();
+})();
 
 /* --------------------------------------------------------------------------
 

@@ -9,6 +9,7 @@
     <title>Landing Page Aether</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="footer.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -215,177 +216,198 @@
         utilizado em cada setor de sua empresa. Essas categorias incluem os gases:
     </p>
 
-    <div class="divCarrosselCards">
+    <!-- ===== CARROSSEL DE GASES: substitua o antigo <div class="divCarrosselCards"> inteiro por este bloco ===== -->
+    <div class="carrosselGases" id="carrosselGases" role="region" aria-roledescription="carrossel" aria-label="Gases que procuramos substituir">
 
-        <button id="btnAnterior" class="botaoEsquerdoCarrossel2" type="button" aria-label="Cards anteriores"></button>
-        <img class="setaEsquerdaCarroselCelulares2" src="Imagens/setaEsquerda.svg" alt="">
+        <button id="gasesAnterior" class="carrosselGasesSeta carrosselGasesSetaEsq" type="button" data-cor="verde" aria-label="Gás anterior">
+            <svg viewBox="-20 -20 40 40" fill="none" stroke-width="10.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5.55 -14.78L-7.64 -2.17C-8.92 -0.94 -8.92 1.12 -7.62 2.34L5.55 14.78"/>
+            </svg>
+        </button>
 
-        <div class="janelaCarrosselCards">
-            <div class="divCard" id="trilhoCarrossel">
+        <article class="cardGas" data-cor="verde" data-pos="ativo" aria-label="Monóxido de Carbono">
+            <h3 class="cardGasRisco">RISCO GEE: ALTO</h3>
+            <p class="cardGasEscopo">ESCOPO 3</p>
 
-                <!-- Card 1 — Monóxido de Carbono -->
-                <article class="cardItem divCardVerde">
-                    <h3 class="divTipografiaTituloRisco">RISCO GEE: ALTO</h3>
-                    <p class="divTipografiaEscopoVerde">ESCOPO 3</p>
-                    <dl class="divCardLinhas">
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">GÁS / SUBSTÂNCIA</dt>
-                            <dd class="divTipografiaNomeGas">Monóxido de Carbono <span
-                                    class="divTipografiaGasesMenores">(CO)</span></dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">GHGS EMITIDOS</dt>
-                            <dd class="divTipografiaEmissao2">2</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">FATOR DE EMISSÃO</dt>
-                            <dd class="divTipografiaNomeGas">tCO<sub>2</sub>e / t CO</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">POTENCIAL CLIMÁTICO</dt>
-                            <dd class="divTipografia1paragrafo">Moderado (GWP indireto)</dd>
-                        </div>
-                    </dl>
-                    <p class="divTipografia2paragrafo">Embalagem MAP e combustão incompleta</p>
-                </article>
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>Gás / substância</dt>
+                    <dd>Monóxido de Carbono<br>CO</dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Fator de emissão</dt>
+                    <dd class="cardGasNumero">≈ 2</dd>
+                    <dd class="cardGasUnidade">tCO<sub>2</sub>e / t CO</dd>
+                </div>
+            </dl>
 
-                <!-- Card 2 — Óxido Nitroso -->
-                <article class="cardItem divCardRoxo">
-                    <h3 class="divTipografiaTituloRisco">RISCO GEE: CRÍTICO</h3>
-                    <p class="divTipografiaEscopoRoxo">ESCOPO 3</p>
-                    <dl class="divCardLinhas">
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">GÁS / SUBSTÂNCIA</dt>
-                            <dd class="divTipografiaNomeGas">Óxido Nitroso <span
-                                    class="divTipografiaGasesMenores">(N<sub>2</sub>O)</span></dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">GHGS EMITIDOS</dt>
-                            <dd class="divTipografiaEmissao2">273</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">FATOR DE EMISSÃO</dt>
-                            <dd class="divTipografiaNomeGas">tCO<sub>2</sub>e / t N<sub>2</sub>O</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">POTENCIAL CLIMÁTICO</dt>
-                            <dd class="divTipografia1paragrafo">Alto (GWP100 = 273)</dd>
-                        </div>
-                    </dl>
-                    <p class="divTipografia2paragrafo">Fertilizantes sintéticos nitrogenados</p>
-                </article>
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>GHGs emitidos</dt>
+                    <dd class="cardGasNumero">CO CO<sub>2</sub></dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Potencial climático</dt>
+                    <dd class="cardGasPotencial">Moderado (GWP indireto)</dd>
+                    <dd class="cardGasAplicacao">Embalagem MAP e combustão incompleta</dd>
+                </div>
+            </dl>
+        </article>
 
-                <!-- Card 3 — Hexafluoreto de Enxofre -->
-                <article class="cardItem divCardRoxo">
-                    <h3 class="divTipografiaTituloRisco">RISCO GEE: CRÍTICO</h3>
-                    <p class="divTipografiaEscopoRoxo">ESCOPO 3</p>
-                    <dl class="divCardLinhas">
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">GÁS / SUBSTÂNCIA</dt>
-                            <dd class="divTipografiaNomeGas">Hexafluoreto de Enxofre <span
-                                    class="divTipografiaGasesMenores">(SF<sub>6</sub>)</span></dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">GHGS EMITIDOS</dt>
-                            <dd class="divTipografiaEmissao2">23.500</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">FATOR DE EMISSÃO</dt>
-                            <dd class="divTipografiaNomeGas">tCO<sub>2</sub>e / t SF<sub>6</sub></dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">POTENCIAL CLIMÁTICO</dt>
-                            <dd class="divTipografia1paragrafo">Extremo (GWP100 = 23.500)</dd>
-                        </div>
-                    </dl>
-                    <p class="divTipografia2paragrafo">Disjuntores e subestações elétricas</p>
-                </article>
+        <article class="cardGas" data-cor="roxo" aria-label="Óxido Nitroso">
+            <h3 class="cardGasRisco">RISCO GEE: CRÍTICO</h3>
+            <p class="cardGasEscopo">ESCOPO 3</p>
 
-                <!-- Card 4 — HFC-23 (Trifluorometano) -->
-                <article class="cardItem divCardRoxo">
-                    <h3 class="divTipografiaTituloRisco">RISCO GEE: CRÍTICO</h3>
-                    <p class="divTipografiaEscopoRoxo">ESCOPO 3</p>
-                    <dl class="divCardLinhas">
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">GÁS / SUBSTÂNCIA</dt>
-                            <dd class="divTipografiaNomeGas">HFC-23 — Trifluorometano <span
-                                    class="divTipografiaGasesMenores">(CHF<sub>3</sub>)</span></dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">GHGS EMITIDOS</dt>
-                            <dd class="divTipografiaEmissao2">14.800</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">FATOR DE EMISSÃO</dt>
-                            <dd class="divTipografiaNomeGas">tCO<sub>2</sub>e / t HFC-23</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresRoxo">POTENCIAL CLIMÁTICO</dt>
-                            <dd class="divTipografia1paragrafo">Extremo (GWP100 = 14.800)</dd>
-                        </div>
-                    </dl>
-                    <p class="divTipografia2paragrafo">Supressão de incêndio e ultracongelamento</p>
-                </article>
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>Gás / substância</dt>
+                    <dd>Óxido Nitroso<br>N<sub>2</sub>O</dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Fator de emissão</dt>
+                    <dd class="cardGasNumero">273</dd>
+                    <dd class="cardGasUnidade">tCO<sub>2</sub>e / t N<sub>2</sub>O</dd>
+                </div>
+            </dl>
 
-                <!-- Card 5 — Óxidos de Nitrogênio -->
-                <article class="cardItem divCardVerde">
-                    <h3 class="divTipografiaTituloRisco">RISCO GEE: ALTO</h3>
-                    <p class="divTipografiaEscopoVerde">ESCOPO 3</p>
-                    <dl class="divCardLinhas">
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">GÁS / SUBSTÂNCIA</dt>
-                            <dd class="divTipografiaNomeGas">Óxidos de Nitrogênio <span
-                                    class="divTipografiaGasesMenores">(NO<sub>x</sub> / NO<sub>2</sub>)</span></dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">GHGS EMITIDOS</dt>
-                            <dd class="divTipografiaEmissao2">298</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">FATOR DE EMISSÃO</dt>
-                            <dd class="divTipografiaNomeGas">tCO<sub>2</sub>e / t NO<sub>2</sub> equiv. (GWP indireto)
-                            </dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">POTENCIAL CLIMÁTICO</dt>
-                            <dd class="divTipografia1paragrafo">Alto — precursor de ozônio</dd>
-                        </div>
-                    </dl>
-                    <p class="divTipografia2paragrafo">Frota diesel e caldeiras industriais</p>
-                </article>
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>GHGs emitidos</dt>
+                    <dd class="cardGasNumero">N<sub>2</sub>O</dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Potencial climático</dt>
+                    <dd class="cardGasPotencial">Alto (GWP100 = 273)</dd>
+                    <dd class="cardGasAplicacao">Fertilizantes sintéticos nitrogenados</dd>
+                </div>
+            </dl>
+        </article>
 
-                <!-- Card 6 — HFC-134a (Tetrafluoroetano) -->
-                <article class="cardItem divCardVerde">
-                    <h3 class="divTipografiaTituloRisco">RISCO GEE: ALTO</h3>
-                    <p class="divTipografiaEscopoVerde">ESCOPO 3</p>
-                    <dl class="divCardLinhas">
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">GÁS / SUBSTÂNCIA</dt>
-                            <dd class="divTipografiaNomeGas">HFC-134a <span class="divTipografiaGasesMenores">(Tetrafluoroetano)</span>
-                            </dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">GHGS EMITIDOS</dt>
-                            <dd class="divTipografiaEmissao2">1.430</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">FATOR DE EMISSÃO</dt>
-                            <dd class="divTipografiaNomeGas">tCO<sub>2</sub>e / t HFC-134a</dd>
-                        </div>
-                        <div class="divCardLinha">
-                            <dt class="divTipografiaTitulosMenoresVerde">POTENCIAL CLIMÁTICO</dt>
-                            <dd class="divTipografia1paragrafo">Alto (GWP100 = 1.430)</dd>
-                        </div>
-                    </dl>
-                    <p class="divTipografia2paragrafo">Refrigeração comercial e ar-condicionado veicular</p>
-                </article>
+        <article class="cardGas" data-cor="roxo" aria-label="Hexafluoreto de Enxofre">
+            <h3 class="cardGasRisco">RISCO GEE: CRÍTICO</h3>
+            <p class="cardGasEscopo">ESCOPO 3</p>
 
-            </div>
-        </div>
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>Gás / substância</dt>
+                    <dd>Hexafluoreto de Enxofre<br>SF<sub>6</sub></dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Fator de emissão</dt>
+                    <dd class="cardGasNumero">23.500</dd>
+                    <dd class="cardGasUnidade">tCO<sub>2</sub>e / t SF<sub>6</sub></dd>
+                </div>
+            </dl>
 
-        <button id="btnProximo" class="botaoDireitoCarrossel2" type="button" aria-label="Próximos cards"></button>
-        <img class="setaDireitaCarroselCelulares2" src="Imagens/setaDireita.svg" alt="">
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>GHGs emitidos</dt>
+                    <dd class="cardGasNumero">SF<sub>6</sub></dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Potencial climático</dt>
+                    <dd class="cardGasPotencial">Extremo (GWP100 = 23.500)</dd>
+                    <dd class="cardGasAplicacao">Disjuntores e subestações elétricas</dd>
+                </div>
+            </dl>
+        </article>
+
+        <article class="cardGas" data-cor="roxo" aria-label="HFC-23, Trifluorometano">
+            <h3 class="cardGasRisco">RISCO GEE: CRÍTICO</h3>
+            <p class="cardGasEscopo">ESCOPO 3</p>
+
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>Gás / substância</dt>
+                    <dd>HFC-23 (Trifluorometano)<br>CHF<sub>3</sub></dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Fator de emissão</dt>
+                    <dd class="cardGasNumero">14.800</dd>
+                    <dd class="cardGasUnidade">tCO<sub>2</sub>e / t HFC-23</dd>
+                </div>
+            </dl>
+
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>GHGs emitidos</dt>
+                    <dd class="cardGasNumero">CHF<sub>3</sub></dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Potencial climático</dt>
+                    <dd class="cardGasPotencial">Extremo (GWP100 = 14.800)</dd>
+                    <dd class="cardGasAplicacao">Supressão de incêndio e ultracongelamento</dd>
+                </div>
+            </dl>
+        </article>
+
+        <article class="cardGas" data-cor="verde" aria-label="HFC-134a, Tetrafluoroetano">
+            <h3 class="cardGasRisco">RISCO GEE: ALTO</h3>
+            <p class="cardGasEscopo">ESCOPO 3</p>
+
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>Gás / substância</dt>
+                    <dd>HFC-134a<br>(Tetrafluoroetano)</dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Fator de emissão</dt>
+                    <dd class="cardGasNumero">1.430</dd>
+                    <dd class="cardGasUnidade">tCO<sub>2</sub>e / t HFC-134a</dd>
+                </div>
+            </dl>
+
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>GHGs emitidos</dt>
+                    <dd class="cardGasNumero">HFC</dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Potencial climático</dt>
+                    <dd class="cardGasPotencial">Alto (GWP100 = 1.430)</dd>
+                    <dd class="cardGasAplicacao">Refrigeração comercial e ar-condicionado veicular</dd>
+                </div>
+            </dl>
+        </article>
+
+        <article class="cardGas" data-cor="verde" aria-label="Óxidos de Nitrogênio">
+            <h3 class="cardGasRisco">RISCO GEE: ALTO</h3>
+            <p class="cardGasEscopo">ESCOPO 3</p>
+
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>Gás / substância</dt>
+                    <dd>Óxidos de Nitrogênio<br>NO<sub>x</sub> / NO<sub>2</sub></dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Fator de emissão</dt>
+                    <dd class="cardGasNumero">298</dd>
+                    <dd class="cardGasUnidade">tCO<sub>2</sub>e / t NO<sub>2</sub> equiv. (GWP indireto)</dd>
+                </div>
+            </dl>
+
+            <dl class="cardGasColuna">
+                <div class="cardGasItem">
+                    <dt>GHGs emitidos</dt>
+                    <dd class="cardGasNumero">NO<sub>x</sub> NO<sub>2</sub></dd>
+                </div>
+                <div class="cardGasItem">
+                    <dt>Potencial climático</dt>
+                    <dd class="cardGasPotencial">Alto — precursor de ozônio</dd>
+                    <dd class="cardGasAplicacao">Frota diesel e caldeiras industriais</dd>
+                </div>
+            </dl>
+        </article>
+
+        <button id="gasesProximo" class="carrosselGasesSeta carrosselGasesSetaDir" type="button" data-cor="roxo" aria-label="Próximo gás">
+            <svg viewBox="-20 -20 40 40" fill="none" stroke-width="10.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M-5.55 -14.78L7.64 -2.17C8.92 -0.94 8.92 1.12 7.62 2.34L-5.55 14.78"/>
+            </svg>
+        </button>
+
     </div>
+    <!-- ===== FIM DO CARROSSEL DE GASES ===== -->
+
 </section>
 
 
@@ -467,7 +489,7 @@
             <h3 class="tipografiaCardsTitulos">Entrada de Dados</h3>
             <p class="tipografiaCardsConteudo">A primeira etapa é onde armazenamos os dados, seja por
                 meio da leitura de relatórios, seja de modo manual pelo usuário.</p>
-            <a class="saibaMais" href="#cadastro">
+            <a class="saibaMais" href="">
                 <svg class="seta-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
                           stroke-linejoin="round"/>
@@ -481,7 +503,7 @@
             <h3 class="tipografiaCardsTitulos">Leitura de Dados</h3>
             <p class="tipografiaCardsConteudo">Nessa etapa será feito o processamento e a leitura dos
                 dados, para que possam ser transformados em relatórios com dados-chave para sua empresa.</p>
-            <a class="saibaMais" href="#cadastro">
+            <a class="saibaMais" href="">
                 <svg class="seta-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
                           stroke-linejoin="round"/>
@@ -496,7 +518,7 @@
             <p class="tipografiaCardsConteudo">Os dados lidos viram relatórios-chave, que indicam sua
                 categoria no Selo Clima Paraná, o retorno do investimento em 5 anos e quantas toneladas
                 de CO<sub>2</sub> a troca verde evita.</p>
-            <a class="saibaMais" href="#cadastro">
+            <a class="saibaMais" href="">
                 <svg class="seta-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
                           stroke-linejoin="round"/>
@@ -681,41 +703,49 @@
 
 
 <!-- =========================================================
-     SETOR 8 — RODAPÉ
+     SETOR 8 — RODAPÉ (novo)
      ========================================================= -->
-<footer class="rodape">
+<footer class="rodapeAether">
+    <div class="rodapeAetherConteudo">
 
-    <div class="colunaRodape colunaRodapeMarca">
-        <div class="marcaRodape">
-            <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-            <span class="aetherRodape">aether</span>
+        <div class="rodapeAetherMarca">
+            <a href="#inicio" aria-label="Aether, voltar ao início">
+                <img class="rodapeAetherLogo" src="Imagens/LogoFooter.svg" alt="Aether">
+            </a>
+            <p class="rodapeAetherDescricao">
+                A Aether é uma empresa dedicada a acelerar a transição energética global.
+                Indicamos a transformação do legado de emissões em energia limpa por meio de
+                inovação, tecnologia de ponta e soluções de alto impacto, movendo o amanhã de
+                forma sustentável para as próximas gerações.
+            </p>
         </div>
-        <p class="descricaoRodape">A Aether é uma empresa dedicada a acelerar a transição energética
-            global. Indicamos a transformação do legado de emissões em energia limpa por meio de
-            inovação, tecnologia de ponta e soluções de alto impacto, movendo o amanhã de forma
-            sustentável para as próximas gerações.</p>
+
+        <nav class="rodapeAetherNav" aria-label="Navegação do rodapé">
+            <ul>
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#quemSomos">Quem Somos</a></li>
+                <li><a href="#nossaSolucao">Nossa Solução</a></li>
+                <li><a href="#planos">Planos</a></li>
+                <li><a href="contato.html">Contatos</a></li>
+            </ul>
+        </nav>
+
+        <section class="rodapeAetherColuna" aria-labelledby="rodapeAetherRecursos">
+            <h2 id="rodapeAetherRecursos">Recursos</h2>
+            <ul>
+                <li><a href="https://www.instagram.com/aethergases/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+            </ul>
+        </section>
+
+        <section class="rodapeAetherColuna" aria-labelledby="rodapeAetherEmpresa">
+            <h2 id="rodapeAetherEmpresa">Empresa</h2>
+            <ul>
+                <li><a href="#quemSomos">Nossa equipe</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </section>
+
     </div>
-
-    <nav class="colunaRodape colunaRodapeLinks" aria-label="Navegação do rodapé">
-        <a class="linkRodape" href="#inicio">Início</a>
-        <a class="linkRodape" href="#quemSomos">Quem Somos</a>
-        <a class="linkRodape" href="#nossaSolucao">Nossa Solução</a>
-        <a class="linkRodape" href="#planos">Planos</a>
-        <a class="linkRodape" href="contato.html">Contatos</a>
-    </nav>
-
-    <div class="colunaRodape colunaRodapeRecursos">
-        <h3 class="tituloColunaRodape">Recursos</h3>
-        <a class="linkRodapeSecundario" href="#" rel="noopener">Instagram</a>
-    </div>
-
-    <div class="colunaRodape colunaRodapeEmpresa">
-        <h3 class="tituloColunaRodape">Empresa</h3>
-        <a class="linkRodapeSecundario" href="#quemSomos">Nossa equipe</a>
-        <a class="fechar" href="contato.html" aria-label="Abrir página de contato"></a>
-    </div>
-
-    <p class="direitosRodape">© 2026 aether — Programa de Tecnologia do Ensino Médio, Instituto J&amp;F.</p>
 </footer>
 
 <script src="script.js"></script>
