@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tela de Cadastro do Aether</title>
+    <title>Tela de Cadastro Empresarial do Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,31 +56,45 @@
     <div>
 
         <img src="Imagens/AekoLogin.svg" alt="Aeko">
-        <div>Cadastro</div>
+        <div>Cadastro empresarial</div>
 
         <fieldset>
-            <form action="" method="get">
+            <form action="empresass" method="post">
 
-                <p>Email:</p>
-                <input type="email" id="email" name="campoEmail" placeholder="Digite aqui...">
+                <label for="empresa"></label>
+                <select name="empresas" id="empresa" >
+                    <option value="" disabled selected hidden>Selecionar</option>
+                    <option value="jbs">JBS</option>
+                    <option value="friboi">Friboi</option>
+                    <option value="seara">Seara</option>
+                </select>
+
+                <label for="tamanho"></label>
+                <select name="tamanhos" id="tamanho" >
+                    <option value="" disabled selected hidden>Selecionar</option>
+                    <option value="micro">Microempresa</option>
+                    <option value="pequena">Pequena Empresa</option>
+                    <option value="media">Média empresa</option>
+                    <option value="grande">Grande empresa</option>
+                </select>
+
+                <input type="text" id="cnpj" name="campoCNPJ" placeholder="CNPJ">
+                <label for="cnpj"></label>
+
+                <input type="email" id="email" name="campoEmail" placeholder="e-mail">
                 <label for="email"></label>
 
-                <p>Senha:</p>
-                <input type="password" id="senha" name="campoSenha" placeholder="Digite aqui...">
-                <label for="senha"></label>
-
-                <p>Confirme sua senha:</p>
-                <input type="password" id="confirmeSenha" name="campoConfirmarSenha" placeholder="Digite aqui...">
-                <label for="confirmeSenha"></label>
+                <input type="text" id="endereco" name="campoEndereco" placeholder="endereco">
+                <label for="endereco"></label>
 
                 <label for="plano"></label>
                 <select name="planos" id="plano" >
-                    <option value="" disabled selected hidden>Plano</option>
+                    <option value="" disabled selected hidden>Plano...</option>
                     <option value="pulse">Aether Pulse</option>
                     <option value="horizon">Aether Horizon</option>
                 </select>
 
-                <button type="submit" value="EnviarFormulárioCadastro">Se cadastrar</button>
+                <button type="submit" value="EnviarFormulárioCadastroEmpresarial">Cadastrar</button>
 
             </form>
             </fieldset>

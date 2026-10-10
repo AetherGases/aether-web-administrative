@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tela de Login no Aether</title>
+    <title>Tela de Login do Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,12 +35,22 @@
         <img src="Imagens/AekoLogin.svg" alt="Aeko">
 
         <fieldset>
-            <form action="" method="get">
-                <p>Email:</p>
-                <input type="email" id="email" name="campoEmail" placeholder="Digite aqui...">
+            <form action="login" method="post">
+
+                <label for="empresa"></label>
+                <select name="empresas" id="empresa" >
+                    <option value="" disabled selected hidden>Selecionar</option>
+                    <option value="jbs">JBS</option>
+                    <option value="friboi">Friboi</option>
+                    <option value="seara">Seara</option>
+                </select>
+
+                <input type="text" id="nome" name="campoNome" placeholder="nome">
+                <label for="nome"></label>
+
+                <input type="email" id="email" name="campoEmail" placeholder="e-mail">
                 <label for="email"></label>
 
-                <p>Senha:</p>
                 <input type="password" id="senha" name="campoSenha" placeholder="Digite aqui...">
                 <label for="senha"></label>
 
@@ -50,7 +60,7 @@
             </form>
         </fieldset>
 
-            <p>Não possui uma conta? <a href="cadastro.html">clique aqui</a></p>
+            <p>Não possui uma conta? <a href="cadastroEmpresarial.html">clique aqui</a></p>
             <p><a href="recuperarSenha.html">Esqueci a senha</a></p>
 
 
