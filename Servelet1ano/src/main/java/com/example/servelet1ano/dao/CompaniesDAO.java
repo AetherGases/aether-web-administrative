@@ -2,7 +2,6 @@ package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.filter.CompaniesFilter;
-import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
 import com.example.servelet1ano.validation.Validators;
@@ -35,17 +34,15 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return List<Companies> com as empresas encontradas
      */
+
     @Override
     public List<Companies> searchAll(CompaniesFilter filter) {
 
         List<Companies> companies = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "select c.*, c.address_id as addressId, " +
-                        "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                        "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
+                "select c.* " +
                         "from companies c " +
-                        "join addresses a on a.id = c.address_id " +
                         "where c.is_active = true"
         );
 
@@ -66,11 +63,6 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             parametros.add(filter.getCnpj());
         }
 
-        if (filter.getCountry() != null && !filter.getCountry().isBlank()) {
-            sql.append(" and a.country ilike ?");
-            parametros.add("%" + filter.getCountry() + "%");
-        }
-
         if (filter.getRegistrationDate() != null) {
             sql.append(" and c.registration_date = ?");
             parametros.add(filter.getRegistrationDate());
@@ -85,111 +77,79 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
+                    Companies company = new Companies(
+                            rs.getInt("id"),
+                            rs.getString("name"),
+                            rs.getString("trade_name"),
+                            rs.getString("cnpj"),
+                            CompanySize.fromValor(rs.getString("size")),
+                            rs.getDate("registration_date"),
+                            rs.getString("email"),
+                            rs.getDate("created_at"),
+                            rs.getBoolean("is_active")
+                    );
 
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
+                    company.setUpdatedAt(rs.getDate("updated_at"));
 
-                Companies company = new Companies(
-                        rs.getInt("id"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("trade_name"),
-                        rs.getString("cnpj"),
-                        CompanySize.fromValor(rs.getString("size")),
-                        rs.getDate("registration_date"),
-                        rs.getString("email"),
-                        rs.getDate("created_at"),
-                        rs.getBoolean("is_active"),
-                        address
-                );
-
-                company.setUpdatedAt(rs.getDate("updated_at"));
-
-                companies.add(company);
+                    companies.add(company);
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return companies;
         }
-    }
 
+        return companies;
+    }
     /**
      * Metodo para buscar por ID (somente ativas)
      * @param id Numero unico da empresa
      * @return Companies encontrada ou null caso nao exista
-     */
-    @Override
-    public Companies searchById(int id) {
+    */
+        @Override
+        public Companies searchById(int id) {
 
-        Companies company = null;
+            Companies company = null;
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select c.*, c.address_id as addressId, " +
-                                "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from companies c " +
-                                "join addresses a on a.id = c.address_id " +
-                                "where c.id = ? and c.is_active = true"
-                )
-        ) {
+            try (
+                    Connection conn = ConnectionFactory.connect();
+                    PreparedStatement pstmt = conn.prepareStatement(
+                            "SELECT c.* " +
+                                    "FROM companies c " +
+                                    "WHERE c.id = ? AND c.is_active = true"
+                    )
+            ) {
 
-            pstmt.setInt(1, id);
+                pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
+                try (ResultSet rs = pstmt.executeQuery()) {
 
-            if (rs.next()) {
+                    if (rs.next()) {
+                        company = new Companies(
+                                rs.getInt("id"),
+                                rs.getString("name"),
+                                rs.getString("trade_name"),
+                                rs.getString("cnpj"),
+                                CompanySize.fromValor(rs.getString("size")),
+                                rs.getDate("registration_date"),
+                                rs.getString("email"),
+                                rs.getDate("created_at"),
+                                rs.getBoolean("is_active")
+                        );
 
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
+                        company.setUpdatedAt(rs.getDate("updated_at"));
+                    }
+                }
 
-                company = new Companies(
-                        rs.getInt("id"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("trade_name"),
-                        rs.getString("cnpj"),
-                        CompanySize.fromValor(rs.getString("size")),
-                        rs.getDate("registration_date"),
-                        rs.getString("email"),
-                        rs.getDate("created_at"),
-                        rs.getBoolean("is_active"),
-                        address
-                );
-
-                company.setUpdatedAt(rs.getDate("updated_at"));
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                return company;
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return company;
         }
-    }
 
     /**
      * Metodo para cadastrar novas empresas no banco
@@ -217,7 +177,6 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             pstmt.setDate(4, company.getRegistrationDate());
             pstmt.setString(5, company.getCnpj());
             pstmt.setString(6, company.getEmail());
-            pstmt.setInt(7, company.getAddressId());
 
             return pstmt.executeUpdate() > 0;
 
@@ -368,5 +327,5 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
     }
-
 }
+

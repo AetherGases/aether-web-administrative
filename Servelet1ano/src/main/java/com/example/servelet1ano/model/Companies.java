@@ -4,7 +4,6 @@ import java.sql.Date;
 
 public class Companies {
     private int id;
-    private int addressId;
     private String name;
     private String tradeName;
     private String cnpj;
@@ -14,11 +13,9 @@ public class Companies {
     private Date createdAt;
     private Date updatedAt;
     private boolean isActive;
-    private Addresses address;
 
-    public Companies(int id, int addressId, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt) {
+    public Companies(int id, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt) {
         this.id = id;
-        this.addressId = addressId;
         this.name = name;
         this.size = size;
         this.registrationDate = registrationDate;
@@ -42,9 +39,8 @@ public class Companies {
         this.email = email;
     }
 
-    public Companies(int id, int addressId, String name, String tradeName, String cnpj, CompanySize size, Date registrationDate, String email, Date createdAt, boolean isActive, Addresses address) {
+    public Companies(int id, String name, String tradeName, String cnpj, CompanySize size, Date registrationDate, String email, Date createdAt, boolean isActive) {
         this.id = id;
-        this.addressId = addressId;
         this.name = name;
         this.tradeName = tradeName;
         this.cnpj = cnpj;
@@ -53,7 +49,6 @@ public class Companies {
         this.email = email;
         this.createdAt = createdAt;
         this.isActive = isActive;
-        this.address = address;
     }
 
     public Companies() {
@@ -72,14 +67,6 @@ public class Companies {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(int addressId) {
-        this.addressId = addressId;
     }
 
     public String getName() {
@@ -154,11 +141,4 @@ public class Companies {
         this.isActive = isActive;
     }
 
-    public Addresses getAddress() {
-        return address;
-    }
-
-    public void setAddress(Addresses address) {
-        this.address = address;
-    }
 }

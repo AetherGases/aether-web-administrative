@@ -7,7 +7,6 @@ public class CompaniesFilter {
     private Integer id;
     private String name;
     private String cnpj;
-    private String country;
     private Date registrationDate;
 
     public CompaniesFilter() {
@@ -35,14 +34,6 @@ public class CompaniesFilter {
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     public Date getRegistrationDate() {
