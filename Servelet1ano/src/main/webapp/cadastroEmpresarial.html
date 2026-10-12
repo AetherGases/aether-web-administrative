@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Tela de Cadastro Empresarial do Aether</title>
@@ -27,7 +27,7 @@
 
         <div>
 
-            <p>aether Pulse</p>
+            <p>Aether Pulse</p>
             <p><strong>R$3.300</strong>/por mês</p>
 
             <ul class="listaCustomizada">
@@ -40,7 +40,7 @@
 
         <div>
 
-            <p>aether Horizon</p>
+            <p>Aether Horizon</p>
             <p><strong>R$9.400</strong>/a cada 3 meses</p>
 
             <ul class="listaCustomizada2">
@@ -62,12 +62,8 @@
             <form action="empresas" method="post">
 
                 <label for="empresa"></label>
-                <select name="empresas" id="empresa" >
-                    <option value="" disabled selected hidden>Selecionar</option>
-                    <option value="jbs">JBS</option>
-                    <option value="friboi">Friboi</option>
-                    <option value="seara">Seara</option>
-                </select>
+                <input type="text" name="empresas" id="empresa"
+                       placeholder="Nome da empresa">
 
                 <label for="tamanho"></label>
                 <select name="tamanhos" id="tamanho" >
@@ -86,8 +82,8 @@
                 <label for="plano"></label>
                 <select name="planos" id="plano" >
                     <option value="" disabled selected hidden>Plano...</option>
-                    <option value="pulse">Aether Pulse</option>
-                    <option value="horizon">Aether Horizon</option>
+                    <option value="Aether Pulse">Aether Pulse</option>
+                    <option value="Aether Horizon">Aether Horizon</option>
                 </select>
 
                 <button type="submit" value="EnviarFormulárioCadastroEmpresarial">Cadastrar</button>
