@@ -166,8 +166,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into companies (name, trade_name, size, registration_date, cnpj, email, address_id) " +
-                                "values (?, ?, ?::company_size, ?, ?, ?, ?)"
+                        "insert into companies (name, trade_name, size, registration_date, cnpj, email) " +
+                                "values (?, ?, ?::company_size, ?, ?, ?)"
                 )
         ) {
 
@@ -184,6 +184,48 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * metodo para cadastrar uma nova empresa e devolver o id gerado
+     * Usado quando a empresa precisa ser vinculada a uma subscription
+     * Usa o returning do PostgreSQL em vez de RETURN_GENERATED_KEYS
+     * @param company A empresa que sera cadastrada
+     * @return O id gerado, ou -1 caso tenha dado erro
+     */
+    public int registerReturningId(Companies company) {
+
+        if (!isValid(company)) {
+            return -1;
+        }
+
+        String sql = "INSERT INTO companies " +
+                "(name, trade_name, size, registration_date, cnpj, email) " +
+                "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
+                "RETURNING id";
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+            pstmt.setString(1, company.getName());
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getSize().getValor());
+            pstmt.setDate(4, company.getRegistrationDate());
+            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(6, company.getEmail());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
     }
 
     /**

@@ -1,8 +1,8 @@
 package com.example.servelet1ano.model;
 
 public enum CompanySize {
-    PEQUENO("pequeno"),
-    MEDIO("medio"),
+    PEQUENA("pequena"),
+    MEDIA("media"),
     GRANDE("grande");
 
     private String valor;
