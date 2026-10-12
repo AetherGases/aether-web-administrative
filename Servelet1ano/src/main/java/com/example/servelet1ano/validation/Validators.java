@@ -29,7 +29,8 @@ public class Validators {
         if (email == null) {
             return false;
         }
-        return EMAIL.matcher(email).matches();
+
+        return EMAIL.matcher(email.trim()).matches();
     }
 
     /**
