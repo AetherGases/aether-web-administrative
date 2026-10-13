@@ -59,7 +59,7 @@
         <div>Cadastro empresarial</div>
 
         <fieldset>
-            <form action="empresas" method="post">
+            <form action="empresass" method="post">
 
                 <label for="empresa"></label>
                 <input type="text" name="empresas" id="empresa"
@@ -68,6 +68,7 @@
                 <label for="tamanho"></label>
                 <select name="tamanhos" id="tamanho" >
                     <option value="" disabled selected hidden>Selecionar</option>
+                    <option value="micro">Microempresa</option>
                     <option value="pequena">Pequena Empresa</option>
                     <option value="media">Média empresa</option>
                     <option value="grande">Grande empresa</option>
@@ -78,6 +79,9 @@
 
                 <input type="email" id="email" name="campoEmail" placeholder="e-mail">
                 <label for="email"></label>
+
+                <input type="text" id="endereco" name="campoEndereco" placeholder="endereco">
+                <label for="endereco"></label>
 
                 <label for="plano"></label>
                 <select name="planos" id="plano" >
