@@ -93,9 +93,9 @@ public class Main {
         CompaniesDAO companiesDAO = new CompaniesDAO();
 
         Companies novaEmpresa = new Companies(
-                0, addressId, "Empresa" + sufixo, "Fantasia" + sufixo, cnpjTeste,
+                0, "Empresa" + sufixo, "Fantasia" + sufixo, cnpjTeste,
                 CompanySize.PEQUENA, new java.sql.Date(System.currentTimeMillis()),
-                "empresa" + sufixo + "@teste.com", null, true, null
+                "empresa" + sufixo + "@teste.com", null, true
         );
 
         boolean okEmpresa = companiesDAO.register(novaEmpresa);
