@@ -94,7 +94,7 @@ public class Main {
 
         Companies novaEmpresa = new Companies(
                 0, addressId, "Empresa" + sufixo, "Fantasia" + sufixo, cnpjTeste,
-                CompanySize.PEQUENO, new java.sql.Date(System.currentTimeMillis()),
+                CompanySize.PEQUENA, new java.sql.Date(System.currentTimeMillis()),
                 "empresa" + sufixo + "@teste.com", null, true, null
         );
 
