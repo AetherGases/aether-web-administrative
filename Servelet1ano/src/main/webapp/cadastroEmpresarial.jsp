@@ -97,7 +97,7 @@
             </form>
             </fieldset>
 
-        <p>Já possui uma conta? <a href="login.html">clique aqui</a></p>
+        <p>Já possui uma conta? <a href="login.jsp">clique aqui</a></p>
 
     </div>
 

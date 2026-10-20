@@ -44,25 +44,26 @@
                 <p class="loginPessoalTexto">Login pessoal</p>
             </div>
 
-            <form action="funcionario.html" method="post">
+            <form action="${pageContext.request.contextPath}/login"
+                  method="post">
 
                 <label for="empresa"></label>
 
 
-                <select class="campoEmpresa campoEmpresaEmpresa" name="empresas" id="empresa" >
+                <select class="campoEmpresa campoEmpresaEmpresa" name="empresas" id="empresa" required>
                     <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="" disabled selected hidden>Selecionar</option>
                     <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="aas">Aurora Alimentos Sustentáveis S.A.</option>
                     <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="hlil">Horizonte Logística Integrada Ltda.</option>
                     <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="vci">Vale Circular Indústria S.A.</option>
                 </select>
 
-                <input class="campoNome campoNomeNome"  type="text" id="nome" name="campoNome" placeholder="nome">
+                <input class="campoNome campoNomeNome"  type="text" id="nome" name="campoNome" placeholder="nome" required>
                 <label for="nome"></label>
 
-                <input class="campoEmail campoEmailEmail" type="email" id="email" name="campoEmail" placeholder="e-mail">
+                <input class="campoEmail campoEmailEmail" type="email" id="email" name="campoEmail" placeholder="e-mail" required>
                 <label for="email"></label>
 
-                <input class="campoSenha campoSenhaSenha" type="password" id="senha" name="campoSenha" placeholder="senha">
+                <input class="campoSenha campoSenhaSenha" type="password" id="senha" name="campoSenha" placeholder="senha" required>
                 <label for="senha"></label>
 
 

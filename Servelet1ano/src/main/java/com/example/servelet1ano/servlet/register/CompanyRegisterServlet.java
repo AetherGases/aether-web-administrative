@@ -1,4 +1,4 @@
-package com.example.servelet1ano.Servlet;
+package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.model.Companies;
@@ -19,7 +19,7 @@ import java.time.LocalDate;
 
 @WebServlet("/empresas")
 
-public class EmpresaServlet extends HttpServlet {
+public class CompanyRegisterServlet extends HttpServlet {
         @Override
         protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
             request.setCharacterEncoding("UTF-8");

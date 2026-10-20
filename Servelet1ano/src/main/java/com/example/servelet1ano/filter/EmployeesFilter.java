@@ -14,6 +14,7 @@ public class EmployeesFilter {
     private String unitName;
     private Integer sectorId;
     private String sectorName;
+    private String email;
 
     public EmployeesFilter() {
     }
@@ -96,5 +97,13 @@ public class EmployeesFilter {
 
     public void setSectorName(String sectorName) {
         this.sectorName = sectorName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

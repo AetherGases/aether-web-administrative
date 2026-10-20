@@ -50,6 +50,12 @@
                 <input class="campoEmailCG campoEmailCG2" type="email" id="email" name="campoEmail" placeholder="email">
                 <label for="email"></label>
 
+                <input class="campoTelefoneCG campoTelefoneCG2" type="text" id="telefone" name="campoTelefone" placeholder="telefone">
+                <label for="telefone"></label>
+
+                <input class="campoSetorCG campoTelefoneCG2" type="text" id="setor" name="campoSetor" placeholder="Setor">
+                <label for="telefone"></label>
+
                 <input class="campoSenhaCG campoSenhaCG2" type="password" id="senha" name="campoSenha" placeholder="senha">
                 <label for="senha"></label>
 
@@ -75,7 +81,7 @@
 
             </form>
 
-            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="login.html">clique aqui</a></p>
+            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="login.jsp">clique aqui</a></p>
 
         </div>
     </main>
