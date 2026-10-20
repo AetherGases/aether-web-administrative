@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tela de Cadastro de Gerente do Aether</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="cadGerente.css">
+
+</head>
+<body>
+
+    <div class="blur1"></div>
+    <div class="blur2"></div>
+    <div class="blur3"></div>
+    <div class="blur4"></div>
+
+    <div class="divLogo">
+        <img class="logoCRUD" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+        <h1 class="logotipoAether">aether</h1>
+        <p class="fraseLogo">Pense no presente e mude seu <span class="fraseFuturoLogo">futuro</span></p>
+    </div>
+
+    <main class="divLoginPrincipal">
+
+        <div class="caixaFormGerente">
+
+            <img class="aekoCRUD" src="Imagens/AekoLogin.svg" alt="Aeko">
+            <div class="tipografiaRetanguloGerente retanguloGerente">
+                Cadastro de gerente
+            </div>
+
+
+            <form action="cadastroEmpresarial.html" method="post">
+
+                <input class="campoNomeCG campoNomeCG2" type="text" id="nome" name="campoNome" placeholder="nome">
+                <label for="nome"></label>
+
+                <input class="campoEmailCG campoEmailCG2" type="email" id="email" name="campoEmail" placeholder="email">
+                <label for="email"></label>
+
+                <input class="campoTelefoneCG campoTelefoneCG2" type="text" id="telefone" name="campoTelefone" placeholder="telefone">
+                <label for="telefone"></label>
+
+                <input class="campoSetorCG campoTelefoneCG2" type="text" id="setor" name="campoSetor" placeholder="Setor">
+                <label for="telefone"></label>
+
+                <input class="campoSenhaCG campoSenhaCG2" type="password" id="senha" name="campoSenha" placeholder="senha">
+                <label for="senha"></label>
+
+                <input class="campoConfSenhaCG campoConfSenhaCG2" type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmarSenha">
+                <label for="confirmarSenha"></label>
+
+                <div class="setaParaBaixo"></div>
+
+                <label for="empresa"></label>
+                <select class="campoEmpresa2 campoEmpresaEmpresa2" name="empresas" id="empresa" >
+                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="" disabled selected hidden>Selecionar</option>
+                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="aas">Aurora Alimentos Sustentáveis S.A.</option>
+                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="hlil">Horizonte Logística Integrada Ltda.</option>
+                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="vci">Vale Circular Indústria S.A.</option>
+                </select>
+
+                <p class="campoCPF">CPF:</p>
+
+                <input class="campoCPFcg campoCPFcgTipografia" type="text" id="cpf" name="campoCPF" placeholder="CPF">
+                <label for="cpf"></label>
+
+                <button class="botaoEnvioRoxo tipografiaEnvio" type="submit" value="enviarFormulárioCadastroGerente">Entrar</button>
+
+            </form>
+
+            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="login.jsp">clique aqui</a></p>
+
+        </div>
+    </main>
+
+</body>
+</html>

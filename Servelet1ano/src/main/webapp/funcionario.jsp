@@ -44,7 +44,7 @@
         </nav>
 
         <div>
-            <a href="login.html">Logout</a>
+            <a href="login.jsp">Logout</a>
         </div>
 
     </aside>

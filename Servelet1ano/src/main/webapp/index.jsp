@@ -45,7 +45,7 @@
         </nav>
     </div>
 
-    <a class="botaoEntrar conteudoBotaoEntrar" href="login.html">Entrar</a>
+    <a class="botaoEntrar conteudoBotaoEntrar" href="login.jsp">Entrar</a>
     <a class="botaoCadastrar conteudoBotaoCadastar" href="cadastroEmpresarial.html">Cadastrar-se</a>
 
     <h1 class="montserrat descarbonizando">DESCARBONIZANDO</h1>

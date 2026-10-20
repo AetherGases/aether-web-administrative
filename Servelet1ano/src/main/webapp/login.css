@@ -1,78 +1,136 @@
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.divCaixaForm{
+    display: flex;
+    width: 546px;
+    padding: 35px 42px 42px 42px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+    border-radius: 30px;
+    border: 1px solid #7E8294;
+    background: rgba(255, 255, 255, 0.75);
 }
 
-.comfortaa{
-    font-family: "Comfortaa", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 600;
-    font-style: normal;
+.retanguloLogin{
+    display: inline-flex;
+    height: 41px;
+    padding: 2px 33px 2px 27px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 39px;
+    background: #2DBD7E;
 }
 
-.montserrat{
+.loginPessoalTexto{
+    color: #FFF;
     font-family: "Montserrat", sans-serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
+    font-size: 30px;
     font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
-.blur1{
-    position: absolute;
-    left: 46px;
-    top: -155px;
-
-    width: 708.55px;
-    height: 708.55px;
-    border-radius: 50%;
-
-    background: rgba(184, 255, 226, 75%);
-    filter: blur(453.8px);
-    z-index: -1;
+.campoNome{
+    width: 461px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
 }
 
-.blur2{
-    position: absolute;
-    left: 843px;
-    top: -88px;
-
-    width: 708.55px;
-    height: 708.55px;
-    border-radius: 50%;
-
-    background: rgba(215, 204, 255, 100%);
-    filter: blur(453.8px);
-    z-index: -1;
+.campoNomeNome{
+    display: -webkit-box;
+    width: 400.174px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    color: #B3B7C9;
+    text-overflow: ellipsis;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    opacity: 0.8;
 }
 
-.blur3{
-    position: absolute;
-    left: -28px;
-    top: 413px;
-
-    width: 708.55px;
-    height: 708.55px;
-    border-radius: 50%;
-
-    background: rgba(215, 204, 255, 100%);
-    filter: blur(453.8px);
-    z-index: -1;
+.campoEmail{
+    width: 461px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
 }
 
-.blur4{
-    position: absolute;
-    left: -28px;
-    top: 413px;
+.campoEmailEmail{
+    display: -webkit-box;
+    width: 400.174px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    color: #B3B7C9;
+    text-overflow: ellipsis;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    opacity: 0.8;
 
-    width: 708.55px;
-    height: 708.55px;
-    border-radius: 50%;
-
-    background: rgba(184, 255, 226, 75%);
-    filter: blur(453.8px);
-    z-index: -1;
 }
+
+.campoSenha{
+    width: 461px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.campoSenhaSenha{
+    overflow: hidden;
+    color: #B3B7C9;
+    text-overflow: ellipsis;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    display: -webkit-box;
+    width: 400.174px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.campoEmpresa{
+    width: 461px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.campoEmpresaEmpresa{
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    color: #B3B7C9;
+    text-overflow: ellipsis;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.setaParaBaixo{
+    width: 14px;
+    height: 7px;
+    transform: scaleY(-1);
+    stroke-width: 2px;
+    stroke: #7E8294;
+}
+
 

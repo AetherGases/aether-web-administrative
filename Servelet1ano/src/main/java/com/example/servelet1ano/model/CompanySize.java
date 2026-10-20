@@ -17,15 +17,25 @@ public enum CompanySize {
 
     /**
      * Converte o valor salvo no banco de volta pro enum correspondente
+     * Se o valor vier vazio ou nao existir no enum, avisa o problema e devolve null
+     * (assim uma linha com porte errado nao derruba a listagem inteira)
      * @param valor O valor como esta salvo na coluna size
-     * @return O CompanySize correspondente
+     * @return O CompanySize correspondente ou null se o valor for invalido
      */
     public static CompanySize fromValor(String valor) {
+
+        if (valor == null || valor.isBlank()) {
+            System.out.println("Error: the company size is empty. Check the size column in the companies table.");
+            return null;
+        }
+
         for (CompanySize size : values()) {
             if (size.valor.equalsIgnoreCase(valor)) {
                 return size;
             }
         }
-        throw new IllegalArgumentException("Porte invalido: " + valor);
+
+        System.out.println("Error: the company size '" + valor + "' is not valid. The accepted values are pequeno, medio and grande.");
+        return null;
     }
 }

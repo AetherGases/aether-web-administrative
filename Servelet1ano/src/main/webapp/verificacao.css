@@ -1,0 +1,115 @@
+.correio{
+    width: 53.648px;
+    height: 42.919px;
+    transform: rotate(-13.254deg);
+    aspect-ratio: 5/4;
+}
+
+.retanguloVerificacao{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 225px;
+    height: 46px;
+    border-radius: 39px;
+    background: #9A72F9;
+}
+
+.tipografiaVerificacao{
+    width: 177.523px;
+    height: 29.171px;
+    color: #FFF;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.quadradinhoCod{
+    width: 72px;
+    height: 81px;
+    aspect-ratio: 8/9;
+    border-radius: 8px;
+    border: 1px solid #5B21B6;
+
+    font-size: 32px;
+    font-weight: 600;
+    font-family: "Montserrat", sans-serif;
+    color: #5B21B6;
+}
+
+.caixaFormVerificacao{
+    position: absolute;
+    right: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 546px;
+    height: auto;
+    min-height: 632px;
+    padding: 40px 30px;
+    box-sizing: border-box;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.75);
+    gap: 20px;
+    z-index: 10;
+}
+
+.divQuadradinhos{
+    display: inline-flex;
+    padding: 10px 16px;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.divSubtexto1{
+    width: 378px;
+    color: #4A435E;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.divSubtexto2{
+    color: #4A435E;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px; /* 110% */
+}
+
+.divSubtexto2Reenviar{
+    color: #7C3AED;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.divSubTexto3{
+    color: #1E0A4A;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+}
+
+.divSubTexto3Destaque{
+    color: #7C3AED;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+}
+
