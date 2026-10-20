@@ -42,7 +42,7 @@
             </div>
 
 
-            <form action="cadastroEmpresarial.html" method="post">
+            <form action="cadastroEmpresarial.jsp" method="post">
 
                 <input class="campoNomeCG campoNomeCG2" type="text" id="nome" name="campoNome" placeholder="nome">
                 <label for="nome"></label>
@@ -75,7 +75,7 @@
 
             </form>
 
-            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="login.html">clique aqui</a></p>
+            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="login.jsp">clique aqui</a></p>
 
         </div>
     </main>

@@ -48,7 +48,7 @@
         <p class="texto textoLocal">São Paulo - SP</p>
     </div>
 
-    <a class="fechar" href="index.html" aria-label="Fechar e voltar para a página inicial">
+    <a class="fechar" href="index.jsp" aria-label="Fechar e voltar para a página inicial">
         <span class="fecharTraco fecharTraco1" aria-hidden="true"></span>
         <span class="fecharTraco fecharTraco2" aria-hidden="true"></span>
     </a>

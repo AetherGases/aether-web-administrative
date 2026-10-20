@@ -43,7 +43,7 @@
                 <p class="tipografiaRecSenha">Recuperar senha</p>
             </div>
 
-            <form action="verificacao.html" method="post">
+            <form action="verificacao.jsp" method="post">
 
                 <input class="campoEmail campoEmailtipografia" type="email" id="email" name="campoEmail" placeholder="e-mail">
                 <label for="email"></label>
