@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* ----------------------------- RESET ----------------------------------- */
 *,
 
@@ -154,7 +155,7 @@ body {
     font-weight: bold;
 }
 
-.listaDeOpçõesMenu {
+.listaDeOpcoesMenu {
     list-style: none;
     display: flex;
     gap: 24px;
@@ -165,14 +166,14 @@ body {
     transition: opacity var(--duracao-nav) var(--easing-nav);
 }
 
-.retanguloMenuInicial:hover .listaDeOpçõesMenu,
-.retanguloMenuInicial:focus-within .listaDeOpçõesMenu {
+.retanguloMenuInicial:hover .listaDeOpcoesMenu,
+.retanguloMenuInicial:focus-within .listaDeOpcoesMenu {
     opacity: 1;
     pointer-events: auto;
 }
 
-.listaDeOpçõesMenu a:hover,
-.listaDeOpçõesMenu a:focus-visible {
+.listaDeOpcoesMenu a:hover,
+.listaDeOpcoesMenu a:focus-visible {
     color: #7C3AED;
 }
 
@@ -182,7 +183,7 @@ body {
         height: var(--altura-aberto);
     }
 
-    .listaDeOpçõesMenu {
+    .listaDeOpcoesMenu {
         opacity: 1;
         pointer-events: auto;
     }
@@ -318,7 +319,7 @@ body {
 
 /* Botão "Começar agora" ------------------------------------------------- */
 
-.alinharPosiçaoComecarAgora {
+.alinharPosicaoComecarAgora {
     position: absolute;
     left: 49px;
     top: 491px;
@@ -330,7 +331,7 @@ body {
     transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-.alinharPosiçaoComecarAgora:hover {
+.alinharPosicaoComecarAgora:hover {
     transform: scale(1.1);
     filter: brightness(1.05);
 }

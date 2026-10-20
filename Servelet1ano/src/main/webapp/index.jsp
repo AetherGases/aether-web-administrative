@@ -1,3 +1,4 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -46,7 +47,7 @@
     </div>
 
     <a class="botaoEntrar conteudoBotaoEntrar" href="login.jsp">Entrar</a>
-    <a class="botaoCadastrar conteudoBotaoCadastar" href="cadastroEmpresarial.html">Cadastrar-se</a>
+    <a class="botaoCadastrar conteudoBotaoCadastar" href="cadastroEmpresarial.jsp">Cadastrar-se</a>
 
     <h1 class="montserrat descarbonizando">DESCARBONIZANDO</h1>
     <p class="palavraFuturo">O FUTURO</p>
@@ -728,7 +729,7 @@
                 <li><a href="#quemSomos">Quem Somos</a></li>
                 <li><a href="#nossaSolucao">Nossa Solução</a></li>
                 <li><a href="#planos">Planos</a></li>
-                <li><a href="contato.html">Contatos</a></li>
+                <li><a href="contato.jsp">Contatos</a></li>
             </ul>
         </nav>
 
@@ -743,7 +744,7 @@
             <h2 id="rodapeAetherEmpresa">Empresa</h2>
             <ul>
                 <li><a href="#quemSomos">Nossa equipe</a></li>
-                <li><a href="contato.html">Contato</a></li>
+                <li><a href="contato.jsp">Contato</a></li>
             </ul>
         </section>
 
