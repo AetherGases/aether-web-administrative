@@ -158,6 +158,13 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             parametros.add("%" + filter.getSectorName() + "%");
         }
 
+        if (filter.getEmail() != null
+                && !filter.getEmail().isBlank()) {
+
+            sql.append(" and e.email = ?");
+            parametros.add(filter.getEmail().trim());
+        }
+
         Connection conn = ConnectionFactory.connect();
 
         if (conn == null) {

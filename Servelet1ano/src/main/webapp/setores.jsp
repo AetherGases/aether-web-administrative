@@ -1,0 +1,143 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tela de Setores do Aether</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+
+</head>
+<body>
+
+<aside>
+
+
+    <div >
+        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+        <p>aether</p>
+    </div>
+
+    <div>
+        <h3>Giulia Cacá</h3>
+        <p>ADMIN</p>
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="">Dashboards</a></li>
+            <li><a href="">Funcionários</a></li>
+            <li><a href="">Setores</a></li>
+            <li><a href="">Unidades</a></li>
+            <li><a href="">Empresas</a></li>
+            <li><a href="">Permissões</a></li>
+            <li><a href="">Permissões</a></li>
+        </ul>
+    </nav>
+
+    <div>
+        <a href="login.jsp">Logout</a>
+    </div>
+
+</aside>
+
+<div>
+
+    <h2>Area restrista</h2>
+    <p>Setores</p>
+
+</div>
+
+<div>
+    <button id="btnAbrirModal">Adicionar novo</button>
+    <img src="Imagens/Mais.svg" alt="Adicionar">
+</div>
+
+<div id="modalSetores">
+
+    <div>
+        <h2>Adicionar Setor</h2>
+        <button id="btnFecharModal">✕</button>
+
+        <form action="AdicionarSetor" method="post">
+
+            <input type="text" id="nomeSetor" name="campoNomeSetor" placeholder="setor">
+            <label for="nomeSetor"></label>
+
+            <input type="text" id="subSetor" name="campoSubSetor" placeholder="subsetor">
+            <label for="subSetor"></label>
+
+            <input type="text" id="idUnidade" name="campoidUnidade" placeholder="id unidade">
+            <label for="idUnidade"></label>
+
+            <input type="text" id="descricao" name="campoDescricao" placeholder="descricao">
+            <label for="descricao"></label>
+
+            <button type="submit" value="enviarFormularioAdicionarSetor">Adicionar</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<section>
+    <table>
+        <thead>
+        <tr>
+            <th>Setor</th>
+            <th>ID</th>
+            <th>Subsetor</th>
+            <th>Status</th>
+            <th>Descrição</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr>
+            <td>Caio Campelo Rocha</td>
+            <td>350</td>
+            <td>sdmfdlfs</td>
+            <td>Ativo</td>
+            <td>legal</td>
+
+
+            <td>
+                <button></button>
+                <button></button>
+                <button></button>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+</section>
+
+
+<script>
+    const btnAbrir = document.getElementById('btnAbrirModal');
+    const btnFechar = document.getElementById('btnFecharModal');
+    const modal = document.getElementById('modalSetores');
+
+    btnAbrir.addEventListener('click', function() {
+        modal.classList.add('ativo');
+    });
+
+    btnFechar.addEventListener('click', function() {
+        modal.classList.remove('ativo');
+    });
+</script>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
+@charset "UTF-8";
 /* ----------------------------- RESET ----------------------------------- */
 *,
-*::before,
+
 *::after {
     margin: 0;
     padding: 0;
@@ -12,7 +13,7 @@
 body {
     position: relative;
     width: 1440px;
-    min-height: 6863px;
+    min-height: 6400px;       /* era 6863px */
     margin: 0 auto;
 }
 
@@ -52,7 +53,7 @@ html {
 
 body {
     position: relative;
-    min-height: 6863px;
+    min-height: 6400px;       /* era 6863px */
     margin: 0 auto;
 }
 
@@ -102,17 +103,18 @@ body {
     width: 200px;
     height: 200px;
 }
-
 .retanguloMenuInicial {
-    position: absolute;
-    left: 357px;
+    --duracao-nav: 400ms;
+    --easing-nav: ease-in-out;
+    --altura-fechado: 16px;
+    --altura-aberto: 52px;
+
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
     top: 20px;
     width: 725px;
-    height: 52px;
-
-    background-color: rgba(168, 240, 210, 0.3);
-    border: 1px solid #B3B7C9;
-    border-radius: 47px;
+    height: var(--altura-aberto);        /* área de hover fixa */
 
     display: flex;
     justify-content: center;
@@ -121,7 +123,31 @@ body {
     filter: drop-shadow(0 2px 4px rgba(120, 120, 120, 0.10))
     drop-shadow(0 8px 8px rgba(120, 120, 120, 0.09))
     drop-shadow(0 18px 11px rgba(120, 120, 120, 0.05));
-    z-index: 5;
+    z-index: 100;
+}
+
+/* Barra visível: começa fechada (fina, mesma cor da aberta) */
+.retanguloMenuInicial::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--altura-fechado);
+    box-sizing: border-box;
+
+    background-color: rgba(168, 240, 210, 0.3);
+    border: 1px solid #B3B7C9;
+    border-radius: 47px;
+    z-index: -1;
+
+    transition: height var(--duracao-nav) var(--easing-nav);
+}
+
+/* Aberta: mouse em cima ou foco por teclado */
+.retanguloMenuInicial:hover::before,
+.retanguloMenuInicial:focus-within::before {
+    height: var(--altura-aberto);
 }
 
 .retanguloMenuInicial li {
@@ -129,18 +155,39 @@ body {
     font-weight: bold;
 }
 
-.listaDeOpçõesMenu {
+.listaDeOpcoesMenu {
     list-style: none;
     display: flex;
     gap: 24px;
     color: #59546D;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duracao-nav) var(--easing-nav);
 }
 
-.listaDeOpçõesMenu a:hover,
-.listaDeOpçõesMenu a:focus-visible {
+.retanguloMenuInicial:hover .listaDeOpcoesMenu,
+.retanguloMenuInicial:focus-within .listaDeOpcoesMenu {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.listaDeOpcoesMenu a:hover,
+.listaDeOpcoesMenu a:focus-visible {
     color: #7C3AED;
 }
 
+/* Celular/tablet não tem hover: sempre aberta */
+@media (hover: none) {
+    .retanguloMenuInicial::before {
+        height: var(--altura-aberto);
+    }
+
+    .listaDeOpcoesMenu {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
 .botaoEntrar {
     position: absolute;
     left: 1100px;
@@ -151,11 +198,14 @@ body {
     background-color: #7C3AED;
     border: 2px solid #FFFFFF;
     border-radius: 106px;
+    box-sizing: border-box;
 
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 5;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
 }
 
 .conteudoBotaoEntrar {
@@ -163,6 +213,13 @@ body {
     font-size: 20px;
     font-family: "Comfortaa", sans-serif;
     font-weight: bold;
+    transition: all 0.3s ease-out;
+}
+
+.botaoEntrar:hover {
+    border: 2px solid #7C3AED;
+    color: #7C3AED;
+    background-color: #ffffff;
 }
 
 .botaoCadastrar {
@@ -171,6 +228,7 @@ body {
     top: 26px;
     width: 149px;
     height: 37px;
+    box-sizing: border-box;
 
     background-color: #2DBD7E;
     border: 2px solid #FFFFFF;
@@ -180,6 +238,8 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 5;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
 }
 
 .conteudoBotaoCadastar {
@@ -187,6 +247,13 @@ body {
     font-size: 20px;
     font-family: "Comfortaa", sans-serif;
     font-weight: bold;
+    transition: all 0.3s ease-out;
+}
+
+.botaoCadastrar:hover {
+    color: #2DBD7E;
+    border: 2px solid #2DBD7E;
+    background-color: #ffffff;
 }
 
 .descarbonizando {
@@ -251,12 +318,22 @@ body {
 }
 
 /* Botão "Começar agora" ------------------------------------------------- */
-.alinharPosiçaoComecarAgora {
+
+.alinharPosicaoComecarAgora {
     position: absolute;
     left: 49px;
     top: 491px;
     width: 315px;
     height: 64px;
+
+    transform-origin: left center;
+
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.alinharPosicaoComecarAgora:hover {
+    transform: scale(1.1);
+    filter: brightness(1.05);
 }
 
 .botaoComecarAgora {
@@ -318,10 +395,6 @@ body {
     transform: rotate(45deg);
 }
 
-.alinharPosiçaoComecarAgora:hover .botaoComecarAgora {
-    filter: brightness(1.05);
-}
-
 /* Carrossel de celulares ------------------------------------------------ */
 .fundoVerde {
     position: absolute;
@@ -354,6 +427,7 @@ body {
     top: 282px;
     width: 545px;
     height: 45px;
+    z-index: 10;
 }
 
 .botaoEsquerdoCarrossel,
@@ -542,29 +616,171 @@ body {
     color: #4A435E;
 }
 
-/* Bloco "alunos" ------------------------- */
+@property --centro-x {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 50%;
+}
+
+.carrosselAlunos {
+    --duracao-alunos: 500ms;
+    --easing-alunos: ease-out;
+    --roxo-escuro-alunos: #5B21B6;
+    --roxo-claro-alunos: #C4B5FD;
+
+    --largura-foto: 623px;
+    --altura-foto: 442px;
+
+    position: absolute;
+    left: 744px;
+    top: 1157px;
+    width: calc(var(--largura-foto) + 10px);
+    height: calc(var(--altura-foto) + 147px);
+}
+
 .retangulosRoxos,
 .retangulosRoxos2 {
     position: absolute;
-    top: 1162px;
-    width: 235px;
+    top: 5px;
+    width: calc((var(--largura-foto) - 23px) / 2);
     height: 49px;
+    padding: 0;
+    z-index: 3;
+
+    border: 0;
     border-radius: 41px;
-    background: radial-gradient(circle, #C4B5FD, #7C3AED);
+    box-shadow: 4px 3px 0 0 var(--roxo-claro-alunos);
 
     font-family: "Montserrat", sans-serif;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 30px;
+    line-height: normal;
     color: #FFFFFF;
 
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
+    transition: --centro-x var(--duracao-alunos) var(--easing-alunos);
 }
 
-.retangulosRoxos  { left: 809px; }
-.retangulosRoxos2 { left: 1077px; }
+.retangulosRoxos {
+    left: 0;
+    --centro-x: 82.6%;
+    background: radial-gradient(ellipse 78.3% 78.5% at var(--centro-x) 0%,
+    #C4B5FD 0%, #A078F5 50%, #8E59F1 75%, #7C3AED 100%);
+}
 
+.retangulosRoxos2 {
+    right: 0;
+    --centro-x: 78.3%;
+    background: radial-gradient(ellipse 48.8% 51% at var(--centro-x) 18.4%,
+    #C4B5FD 0%, #A078F5 50%, #8E59F1 75%, #7C3AED 100%);
+}
+
+.retangulosRoxos:hover,
+.retangulosRoxos:focus-visible {
+    --centro-x: 17.4%;
+}
+
+.retangulosRoxos2:hover,
+.retangulosRoxos2:focus-visible {
+    --centro-x: 21.7%;
+}
+
+.retangulosRoxos:focus-visible,
+.retangulosRoxos2:focus-visible {
+    outline: 3px solid var(--roxo-escuro-alunos);
+    outline-offset: 3px;
+}
+
+.carrosselAlunosQuadro {
+    position: absolute;
+    top: 66px;
+    left: 0;
+    width: calc(var(--largura-foto) + 10px);
+    height: calc(var(--altura-foto) + 10px);
+    border: 3px solid var(--roxo-escuro-alunos);
+    border-radius: 21px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.carrosselAlunosFotos {
+    position: absolute;
+    top: 71px;
+    left: 5px;
+    width: var(--largura-foto);
+    height: var(--altura-foto);
+    border-radius: 15px;
+    overflow: hidden;
+    isolation: isolate;
+    background-color: #D9D0F5;
+}
+
+.carrosselAlunosFoto {
+    position: absolute;
+    inset: 0;
+    background-color: #D9D0F5;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    z-index: 1;
+
+    transition: opacity 0s linear var(--duracao-alunos);
+}
+
+.carrosselAlunosFoto.visivel {
+    opacity: 1;
+    z-index: 2;
+    transition: opacity var(--duracao-alunos) var(--easing-alunos);
+}
+
+.carrosselAlunosLegenda {
+    position: absolute;
+    top: calc(var(--altura-foto) + 80px);
+    left: 0;
+    width: calc(var(--largura-foto) + 10px);
+    height: 58px;
+    margin: 0;
+
+    background: radial-gradient(ellipse 78.3% 78.5% at 82.6% 0%,
+    #C4B5FD 0%, #A078F5 50%, #8E59F1 75%, #7C3AED 100%);
+    border-radius: 41px;
+
+    font-family: "Montserrat", sans-serif;
+    font-weight: 500;
+    font-size: 30px;
+    line-height: normal;
+    color: #FFFFFF;
+}
+
+.carrosselAlunosLegendaTexto {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0s linear var(--duracao-alunos);
+}
+
+.carrosselAlunosLegendaTexto.visivel {
+    opacity: 1;
+    transition: opacity var(--duracao-alunos) var(--easing-alunos);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .retangulosRoxos,
+    .retangulosRoxos2,
+    .carrosselAlunosFoto,
+    .carrosselAlunosFoto.visivel,
+    .carrosselAlunosLegendaTexto,
+    .carrosselAlunosLegendaTexto.visivel {
+        transition-duration: 0ms;
+        transition-delay: 0ms;
+    }
+}
 
 /* ==========================================================================
    SETOR 3 — GASES DE EFEITO ESTUFA
@@ -628,6 +844,28 @@ body {
 }
 
 /* Cards de escopo ------------------------------------------------------- */
+@property --corInicio {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: #C4B5FD;
+}
+@property --corFim {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: #7C3AED;
+}
+
+@keyframes inverterGradiente {
+    from {
+        --corInicio: #C4B5FD;
+        --corFim: #7C3AED;
+    }
+    to {
+        --corInicio: #7C3AED;
+        --corFim: #C4B5FD;
+    }
+}
+
 .cardEscopo1,
 .cardEscopo2,
 .cardEscopo3 {
@@ -637,40 +875,32 @@ body {
     height: 230px;
     border: 5px solid #FFFFFF;
     border-radius: 10px;
-    background: linear-gradient(135deg, #C4B5FD 0%, #7C3AED 100%);
+    background: linear-gradient(135deg, var(--corInicio) 0%, var(--corFim) 100%);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-
     isolation: isolate;
+    animation: inverterGradiente 2000ms ease-in-out 1ms infinite alternate;
 }
-
 .cardEscopo1 { left: 98px; }
 .cardEscopo2 { left: 533px; }
 .cardEscopo3 { left: 969px; }
-
 .cardEscopo1::after,
 .cardEscopo2::after,
 .cardEscopo3::after {
     content: "";
     position: absolute;
-
     top: -10px;
     left: -10px;
     right: -10px;
     bottom: -10px;
-
     padding: 5px;
-
     background: linear-gradient(135deg, #7C3AED 0%, #C4B5FD 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: destination-out;
     mask-composite: exclude;
-
     border-radius: 15px;
-
     z-index: +1;
     pointer-events: none;
 }
-
 .imagemCaminhao,
 .imagemRelampago,
 .imagemFogo {
@@ -681,7 +911,6 @@ body {
     height: 108.41px;
     z-index: 2;
 }
-
 .escopo1Texto,
 .escopo2Texto,
 .escopo3Texto {
@@ -693,8 +922,6 @@ body {
     font-size: 20px;
     color: #FFFFFF;
 }
-
-
 .emissoesDiretastexto,
 .energiaAdequadatexto,
 .cadeiaDeValortexto {
@@ -706,7 +933,6 @@ body {
     font-size: 17px;
     color: #FFFFFF;
 }
-
 .listaCard1Linha1, .listaCard1Linha2, .listaCard1Linha3,
 .listaCard2Linha1, .listaCard2Linha2, .listaCard2Linha3,
 .listaCard3Linha1, .listaCard3Linha2, .listaCard3Linha3 {
@@ -718,11 +944,9 @@ body {
     color: #FFFFFF;
     list-style-type: disc;
 }
-
 .listaCard1Linha1, .listaCard2Linha1, .listaCard3Linha1 { top: 108px; }
 .listaCard1Linha2, .listaCard2Linha2, .listaCard3Linha2 { top: 138px; }
 .listaCard1Linha3, .listaCard2Linha3, .listaCard3Linha3 { top: 168px; }
-
 .Bola4 {
     left: 290.73px;
     top: 1988.38px;
@@ -730,7 +954,6 @@ body {
     height: 807.53px;
     background: #F3F0FF;
 }
-
 
 /* ==========================================================================
    SETOR 4 — CARROSSEL DE GASES
@@ -763,181 +986,277 @@ body {
     color: #4A435E;
 }
 
-.divCarrosselCards {
-    position: absolute;
-    left: 0;
-    top: 2633px;
-    width: 1440px;
-    height: 340px;
-}
+.carrosselGases {
+    --gas-roxo-escuro: #4D1B9B;
+    --gas-roxo-borda: #7C3AED;
+    --gas-verde-escuro: #225749;
+    --gas-verde-borda: #1E6B56;
+    --gas-texto: #161C2D;
+    --gas-texto-suave: #23262B;
+    --gas-sombra: 70, 44, 177;
 
-.janelaCarrosselCards {
-    position: absolute;
-    left: 100px;
-    top: 0;
-    width: 1240px;
-    height: 340px;
+    position: relative;
+    width: 100%;
+    height: 317px;
+    top: 2630px;
     overflow: hidden;
+    font-family: "Montserrat", Helvetica, Arial, sans-serif;
 }
 
-.divCard {
-    display: flex;
-    gap: 20px;
-    width: max-content;
-    height: 100%;
-    transition: transform 0.4s ease;
-    will-change: transform;
-}
-
-.cardItem {
-    flex: 0 0 290px;
-    width: 432px;
-    height: 253.6px;
-    padding: 16px 18px;
-    border-radius: 15px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 4px 8px rgba(70, 44, 177, 0.10),
-    0 14.4px 14.4px rgba(70, 44, 177, 0.09);
-}
-
-.divCardVerde {
-    background: linear-gradient(#42B481 0%, #73E4B4 50%, #42B481 100%);
-    border: 0.8px solid #1A5C41;
-}
-
-.divCardRoxo {
-    background: linear-gradient(#816CCF 0%, #C3B3FF 50%, #816CCF 100%);
-    border: 0.8px solid #4D1B98;
-}
-
-.divCardLinhas {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 4px;
-    flex: 1;
-}
-
-.divCardLinha {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-}
-
-.divTipografiaTituloRisco {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 20px;
-    color: #161C2D;
-}
-
-.divTipografiaTitulosMenoresVerde {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.4px;
-    color: #225749;
-}
-
-.divTipografiaTitulosMenoresRoxo {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 0.4px;
-    color: #4D1B98;
-}
-
-.divTipografiaGasesMenores {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    color: #161C2D;
-}
-
-.divTipografiaNomeGas {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 14.4px;
-    color: #161C2D;
-}
-
-.divTipografiaEscopoVerde {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    color: #225749;
-}
-
-.divTipografiaEscopoRoxo {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    color: #4D1B98;
-}
-
-.divTipografiaEmissao,
-.divTipografiaEmissao2 {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 600;
-    font-size: 22px;
-    color: #23262B;
-}
-
-.divTipografia1paragrafo,
-.divTipografia2paragrafo {
-    font-family: "Montserrat", sans-serif;
-    font-weight: 500;
-    font-size: 12.8px;
-    color: #23262B;
-}
-
-.divTipografia2paragrafo {
-    margin-top: auto;
-    padding-top: 8px;
-    border-top: 1px solid rgba(22, 28, 45, 0.2);
-}
-
-/* Botões do carrossel de cards */
-.botaoEsquerdoCarrossel2,
-.botaoDireitoCarrossel2 {
+/* ------------------------------- Card -------------------------------- */
+.cardGas {
     position: absolute;
-    top: 136px;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: 4px solid #2DBD7E;
-    background: #FFFFFF;
-    opacity: 0.8;
-    z-index: 1;
-}
+    top: 0;
+    left: calc(50% - 270px);
+    width: 540px;
+    height: 317px;
+    box-sizing: border-box;
+    padding: 32px 35px 0 39px;
+    border-radius: 24px;
+    border: 1px solid var(--gas-roxo-borda);
+    color: var(--gas-texto);
 
-.botaoEsquerdoCarrossel2 { left: 35px; }
-.botaoDireitoCarrossel2  { left: 1360px; }
+    display: grid;
+    grid-template-columns: 256px 1fr;
+    grid-template-rows: auto 1fr;
+    column-gap: 0;
 
-.botaoEsquerdoCarrossel2:hover:not(:disabled),
-.botaoDireitoCarrossel2:hover:not(:disabled) {
+    transform: scale(1);
     opacity: 1;
+    z-index: 3;
+    transition: left 0.5s ease, transform 0.5s ease, opacity 0.5s ease;
+
+    /* 4 sombras empilhadas do design */
+    box-shadow:
+            0 4px 10px rgba(var(--gas-sombra), 0.1),
+            0 17px 17px rgba(var(--gas-sombra), 0.1),
+            0 39px 23px rgba(var(--gas-sombra), 0.1),
+            0 69px 28px rgba(var(--gas-sombra), 0.1);
 }
 
-.botaoEsquerdoCarrossel2:disabled,
-.botaoDireitoCarrossel2:disabled {
-    opacity: 0.3;
-    cursor: default;
+.cardGas[data-cor="roxo"] {
+    background: linear-gradient(117deg, #816CCF 0%, #C3B3FF 50%, #816CCF 100%);
 }
 
-.setaEsquerdaCarroselCelulares2,
-.setaDireitaCarroselCelulares2 {
-    position: absolute;
-    top: 145px;
+.cardGas[data-cor="verde"] {
+    background: linear-gradient(117deg, #42B481 0%, #73E4B4 50%, #42B481 100%);
+    border-color: var(--gas-verde-borda);
+}
+
+/* --------------------------- Posições (JS) ---------------------------- */
+.cardGas[data-pos="esq"] {
+    left: calc(50% - 1004px);
+    transform: scale(0.8);
+    opacity: 0.7;
     z-index: 2;
+}
+
+.cardGas[data-pos="dir"] {
+    left: calc(50% + 464px);
+    transform: scale(0.8);
+    opacity: 0.7;
+    z-index: 2;
+}
+
+/* Cards de espera: fora da tela e invisíveis */
+.cardGas[data-pos="esq2"] {
+    left: calc(50% - 1600px);
+    transform: scale(0.8);
+    opacity: 0;
+    z-index: 1;
     pointer-events: none;
 }
 
-.setaEsquerdaCarroselCelulares2 { left: 48px; }
-.setaDireitaCarroselCelulares2  { left: 1373px; }
+.cardGas[data-pos="dir2"] {
+    left: calc(50% + 1060px);
+    transform: scale(0.8);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.cardGas[data-pos="oculto"] {
+    transform: scale(0.6);
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ------------------------------ Textos -------------------------------- */
+.cardGasRisco {
+    grid-column: 1 / -1;
+    margin: 0 0 20px;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 38px;
+    color: var(--gas-texto);
+}
+
+.cardGasEscopo {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--gas-roxo-escuro);
+}
+
+.cardGas[data-cor="verde"] .cardGasEscopo {
+    color: var(--gas-verde-escuro);
+}
+
+.cardGasColuna {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    margin: 0;
+}
+
+.cardGasItem {
+    margin: 0;
+}
+
+.cardGasItem dt {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    text-transform: uppercase;
+    color: var(--gas-roxo-escuro);
+}
+
+.cardGas[data-cor="verde"] .cardGasItem dt {
+    color: var(--gas-verde-escuro);
+}
+
+.cardGasItem dd {
+    margin: 5px 0 0;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--gas-texto);
+}
+
+.cardGasItem dd + dd {
+    margin-top: 0;
+}
+
+/* Valor grande (273, N₂O, CO CO₂...) */
+.cardGasItem dd.cardGasNumero {
+    margin-top: 2px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 34px;
+    color: var(--gas-texto-suave);
+}
+
+/* Unidade e textos pequenos */
+.cardGasItem dd.cardGasUnidade {
+    margin-top: 0;
+    line-height: 20px;
+}
+
+.cardGasItem dd.cardGasPotencial {
+    margin-top: 3px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.cardGasItem dd.cardGasAplicacao {
+    margin-top: 0;
+    font-size: 14px;
+    line-height: 16px;
+}
+
+.cardGas sub {
+    font-size: 0.65em;
+    line-height: 0;
+}
+
+/* ------------------------------- Setas -------------------------------- */
+.carrosselGasesSeta {
+    --seta-cor: var(--gas-roxo-escuro);
+
+    position: absolute;
+    top: 117px;
+    z-index: 4;
+    width: 82px;
+    height: 82px;
+    padding: 0;
+    box-sizing: border-box;
+    border: 6.2px solid var(--seta-cor);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform 0.2s ease, border-color 0.3s ease;
+}
+
+.carrosselGasesSeta[data-cor="verde"] { --seta-cor: #2DBD7E; }
+.carrosselGasesSeta[data-cor="roxo"]  { --seta-cor: var(--gas-roxo-escuro); }
+
+.carrosselGasesSeta svg {
+    width: 40px;
+    height: 40px;
+    stroke: var(--seta-cor);
+    transition: stroke 0.3s ease;
+}
+
+.carrosselGasesSetaEsq { left: calc(50% - 373px); }
+.carrosselGasesSetaDir { left: calc(50% + 291px); }
+
+.carrosselGasesSeta:hover {
+    transform: scale(1.08);
+}
+
+.carrosselGasesSeta:focus-visible {
+    outline: 2px solid #4A90E2;
+    outline-offset: 4px;
+}
+
+/* ----------------------------- Telas menores --------------------------- */
+@media (max-width: 780px) {
+    .carrosselGases { height: 420px; }
+
+    .cardGas[data-pos="esq"],
+    .cardGas[data-pos="dir"] {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .carrosselGasesSeta { top: 340px; }
+    .carrosselGasesSetaEsq { left: calc(50% - 100px); }
+    .carrosselGasesSetaDir { left: calc(50% + 18px); }
+}
+
+@media (max-width: 580px) {
+    .carrosselGases { height: 300px; }
+
+    .cardGas[data-pos="ativo"] {
+        transform: scale(0.64);
+        transform-origin: top center;
+        left: calc(50% - 270px);
+    }
+
+    .carrosselGasesSeta {
+        top: 224px;
+        width: 64px;
+        height: 64px;
+    }
+
+    .carrosselGasesSetaEsq { left: calc(50% - 76px); }
+    .carrosselGasesSetaDir { left: calc(50% + 12px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cardGas,
+    .carrosselGasesSeta,
+    .carrosselGasesSeta svg {
+        transition: none;
+    }
+}
 
 
 /* ==========================================================================
@@ -1007,11 +1326,22 @@ body {
 }
 
 /* Acordeão de funcionalidades ------------------------------------------ */
+
 .agrupandoGrupo {
     position: absolute;
     left: 627px;
     top: 3243px;
     width: 627px;
+}
+
+.agrupandoGrupo {
+    position: absolute;
+    left: 627px;
+    top: 3243px;
+    width: 627px;
+
+    --duracao: 600ms;
+    --easing: ease-in-out;
 }
 
 .agrupandoGrupo details {
@@ -1024,8 +1354,13 @@ body {
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
+    user-select: none;
     padding: 20px 24px;
     list-style: none;
+    background-color: transparent;
+    color: #010205;
+    transition: background-color var(--duracao, 600ms) var(--easing, ease-in-out),
+    color var(--duracao, 600ms) var(--easing, ease-in-out);
 }
 
 .agrupandoGrupo summary::-webkit-details-marker {
@@ -1039,6 +1374,7 @@ body {
     letter-spacing: -0.5px;
     line-height: 1.5;
     color: #010205;
+    transition: color var(--duracao, 600ms) var(--easing, ease-in-out);
 }
 
 .agrupandoGrupo summary::after {
@@ -1051,13 +1387,19 @@ body {
     line-height: 24px;
 }
 
-.agrupandoGrupo details[open] summary::after {
-    content: "–";
-}
-
-.agrupandoGrupo details[open] summary {
+/* Opção selecionada (roxo) */
+.agrupandoGrupo details.ativo summary {
     background-color: #B99DF8;
     color: #6C51B0;
+}
+
+.agrupandoGrupo details.ativo summary .tipografiaMenuAbreEFechaTitulo,
+.agrupandoGrupo details.ativo summary.tipografiaMenuAbreEFechaTitulo {
+    color: #6C51B0;
+}
+
+.agrupandoGrupo details.ativo summary::after {
+    content: "–";
 }
 
 .tipografiaMenuAbreEFechaConteudo {
@@ -1117,6 +1459,7 @@ body {
     top: 4127px;
     width: 1282px;
     display: flex;
+    align-items: flex-start;
     gap: 8px;
 }
 
@@ -1124,6 +1467,8 @@ body {
     position: relative;
     width: 422px;
     height: 250px;
+    max-height: 250px; /* Trava rigorosamente a altura em 250px quando fechado */
+    box-sizing: border-box; /* Garante que o padding e a altura fiquem consistentes */
     padding: 22px 24px;
     border-radius: 20px;
     background: radial-gradient(350px 203px at 85% 6%, #5DDBA5 0%, #27AD73 100%);
@@ -1131,6 +1476,13 @@ body {
     outline-offset: -3px;
     color: #FFFFFF;
     margin-left: 8px;
+    transition: height 0.4s ease, max-height 0.4s ease;
+}
+
+.cardDados.aberto {
+    height: auto;
+    max-height: 600px; /* Permite expandir perfeitamente ao clicar */
+    padding-bottom: 92px;
 }
 
 .marcadorEtapa {
@@ -1168,37 +1520,66 @@ body {
 
 .tipografiaCardsConteudo {
     margin-top: 10px;
-    width: 250px;
-    max-height: 104px;
+    width: 52%;
     overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
     font-family: "Montserrat", sans-serif;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 500;
-    line-height: 1.35;
+    line-height: 24px;
     color: #E8ECF8;
+}
+
+.cardDados.aberto .tipografiaCardsConteudo {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
 }
 
 .saibaMais {
     position: absolute;
     left: 308.09px;
-    top: 180.09px;
-    padding: 8px 16px;
+    bottom: 14px;
+    padding: 16px 32px;
     border-radius: 70px;
     border: 2px solid #FFFFFF;
     font-family: "Montserrat", sans-serif;
     font-size: 24px;
     font-weight: 600;
     color: #FFFFFF;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.4s ease, transform 0.4s ease;
 }
 
 .seta-svg {
     width: 24px;
     height: 24px;
+    transition: transform 0.4s ease;
 }
 
-/* Opcional: Efeito básico ao passar o mouse */
-.saibaMais:hover {
-    transform: scale(1.05);
+.saibaMais[aria-expanded="true"] .seta-svg {
+    transform: rotate(180deg);
+}
+
+/* Hover (e foco por teclado): botão branco e seta preta */
+.saibaMais:hover,
+.saibaMais:focus-visible {
+    transform: scale(1.1);
+    background-color: #FFFFFF;
+}
+
+.seta-svg path {
+    transition: stroke 0.4s ease;
+}
+
+.saibaMais:hover .seta-svg path,
+.saibaMais:focus-visible .seta-svg path {
+    stroke: #000000;
 }
 
 .cardDados::after {
@@ -1223,8 +1604,6 @@ body {
     pointer-events: none;
 }
 
-
-
 /* ==========================================================================
    SETOR 6 — PLANOS   (NOVO)
    ========================================================================== */
@@ -1247,24 +1626,22 @@ body {
 
 .tituloPlanos {
     position: absolute;
-    left: 0;
+    left: 50%;
     top: 4742px;
-    width: 1440px;
-    text-align: center;
+    width: max-content;
+    transform: translateX(-50%);
 
     font-family: "Montserrat", sans-serif;
     font-size: 60px;
     font-weight: 700;
     line-height: 76px;
-    background: linear-gradient(90deg, #9A72F9 0%, #80B9E6 50%, #2DBD7E 100%);
+    text-align: center;
 
+    background: linear-gradient(90deg, #9A72F9 0%, #80B9E6 50%, #2DBD7E 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    color: transparent;
-
 }
-
 .divPlanos {
     position: absolute;
     left: 305px;
@@ -1274,7 +1651,13 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 40px;
+
+    /* Duração e suavização da troca (igual ao protótipo do Figma) */
+    --duracaoPlanos: 1000ms;
+    --suavizacaoPlanos: cubic-bezier(0.65, 0, 0.35, 1);
 }
+
+/* ---------- Alternador ---------- */
 
 .alternadorPeriodo {
     display: flex;
@@ -1287,28 +1670,36 @@ body {
     font-size: 20px;
     font-weight: 600;
     color: #7E8294;
-    transition: color 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.4s var(--suavizacaoPlanos);
 }
 
 .rotuloPeriodoAtivo {
     color: #2A2A2A;
 }
 
-.interruptorPeriodo[aria-checked="true"] {
+.interruptorPeriodo {
     position: relative;
     width: 49px;
     height: 27px;
+    padding: 0;
     border: none;
     border-radius: 40px;
+    cursor: pointer;
+    transition: background-color var(--duracaoPlanos) var(--suavizacaoPlanos);
+}
+
+.interruptorPeriodo:focus-visible {
+    outline: 2px solid #9A72F9;
+    outline-offset: 4px;
+}
+
+.interruptorPeriodo[aria-checked="true"] {
     background-color: #9A72F9;
 }
 
 .interruptorPeriodo[aria-checked="false"] {
-    position: relative;
-    width: 49px;
-    height: 27px;
-    border: none;
-    border-radius: 40px;
     background-color: #2DBD7E;
 }
 
@@ -1320,12 +1711,14 @@ body {
     height: 25px;
     border-radius: 50%;
     background-color: #FFFFFF;
-    transition: transform 0.25s ease;
+    transition: transform var(--duracaoPlanos) var(--suavizacaoPlanos);
 }
 
 .interruptorPeriodo[aria-checked="true"] .bolinhaInterruptor {
     transform: translateX(22px);
 }
+
+/* ---------- Grade e cards ---------- */
 
 .gradePlanos {
     display: flex;
@@ -1335,6 +1728,19 @@ body {
 }
 
 .cardPlano {
+    /* Estado padrão: card NÃO destacado (fundo branco) */
+    --corDestaque: #2DBD7E;
+    --fundoCard: #FFFFFF;
+    --textoCard: #000000;
+    --fundoBotao: var(--corDestaque);
+    --textoBotao: #FFFFFF;
+    --fundoIcone: #000000;
+    --opacidadeCheck: 0;
+    --sombraCard: 4px 6px 8px rgba(33, 131, 88, 0),
+    16px 24px 14.5px rgba(33, 131, 88, 0),
+    37px 54px 19.5px rgba(33, 131, 88, 0),
+    65px 97px 23.5px rgba(33, 131, 88, 0);
+
     position: relative;
     width: 400px;
     min-height: 459px;
@@ -1343,19 +1749,53 @@ body {
     display: flex;
     flex-direction: column;
     gap: 18px;
+
+    background-color: var(--fundoCard);
+    color: var(--textoCard);
+    box-shadow: var(--sombraCard);
+    transition:
+            background-color var(--duracaoPlanos) var(--suavizacaoPlanos),
+            color var(--duracaoPlanos) var(--suavizacaoPlanos),
+            box-shadow var(--duracaoPlanos) var(--suavizacaoPlanos);
 }
 
 .cardPlanoPulse {
-    background-color: #2DBD7E;
-    color: #FFFFFF;
+    --corDestaque: #2DBD7E;
 }
-
 
 .cardPlanoHorizon {
-    background-color: #9A72F9;
-    color: #FFFFFF;
+    --corDestaque: #9A72F9;
+    --sombraCard: 4px 7px 8.5px rgba(154, 114, 249, 0),
+    15px 26px 15px rgba(154, 114, 249, 0),
+    33px 59px 20.5px rgba(154, 114, 249, 0),
+    59px 105px 24px rgba(154, 114, 249, 0);
 }
 
+/* Estado destacado: card do plano selecionado */
+.cardPlanoAtivo {
+    --fundoCard: var(--corDestaque);
+    --textoCard: #FFFFFF;
+    --fundoBotao: #FFFFFF;
+    --textoBotao: #2A2A2A;
+    --fundoIcone: #FFFFFF;
+    --opacidadeCheck: 1;
+}
+
+.cardPlanoPulse.cardPlanoAtivo {
+    --sombraCard: 4px 6px 8px rgba(33, 131, 88, 0.18),
+    16px 24px 14.5px rgba(33, 131, 88, 0.15),
+    37px 54px 19.5px rgba(33, 131, 88, 0.09),
+    65px 97px 23.5px rgba(33, 131, 88, 0.03);
+}
+
+.cardPlanoHorizon.cardPlanoAtivo {
+    --sombraCard: 4px 7px 8.5px rgba(154, 114, 249, 0.14),
+    15px 26px 15px rgba(154, 114, 249, 0.12),
+    33px 59px 20.5px rgba(154, 114, 249, 0.07),
+    59px 105px 24px rgba(154, 114, 249, 0.02);
+}
+
+/* ---------- Conteúdo do card ---------- */
 
 .nomePlano {
     font-family: "Montserrat", sans-serif;
@@ -1389,17 +1829,27 @@ body {
     gap: 10px;
     padding: 15px 40px;
     border-radius: 20px;
-    background-color: #FFFFFF;
+    background-color: var(--fundoBotao);
 
     font-family: "Montserrat", sans-serif;
     font-size: 16px;
     font-weight: 500;
-    color: #2A2A2A;
+    color: var(--textoBotao);
+    text-decoration: none;
+    transition:
+            background-color var(--duracaoPlanos) var(--suavizacaoPlanos),
+            color var(--duracaoPlanos) var(--suavizacaoPlanos),
+            filter 0.2s ease;
 }
 
+/* Mantida por compatibilidade: a cor do botão agora vem da variável --corDestaque do card */
 .botaoAssinarRoxo {
-    background-color: #FFFFFF;
-    color: #000000;
+    --fundoBotao: var(--corDestaque);
+}
+
+.cardPlanoAtivo .botaoAssinarRoxo {
+    --fundoBotao: #FFFFFF;
+    --textoBotao: #000000;
 }
 
 .botaoAssinar:hover {
@@ -1413,6 +1863,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    list-style: none;
 }
 
 .listaBeneficios li {
@@ -1424,22 +1875,46 @@ body {
     font-weight: 400;
 }
 
+/* Bolinha: preta no card inativo, branca no card destacado */
 .listaBeneficios li::before {
     content: "";
     position: absolute;
-    left: 2px;
-    top: 4px;
-    width: 7px;
-    height: 13px;
-    border-right: 2.5px solid currentColor;
-    border-bottom: 2.5px solid currentColor;
-    transform: rotate(45deg);
+    left: 0;
+    top: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: var(--fundoIcone);
+    transition: background-color var(--duracaoPlanos) var(--suavizacaoPlanos);
 }
 
+/* Check: aparece só no card destacado, na cor do plano */
+.listaBeneficios li::after {
+    content: "";
+    position: absolute;
+    left: 5.5px;
+    top: 5px;
+    width: 4px;
+    height: 7px;
+    border-right: 1.8px solid var(--corDestaque);
+    border-bottom: 1.8px solid var(--corDestaque);
+    transform: rotate(45deg);
+    opacity: var(--opacidadeCheck);
+    transition: opacity var(--duracaoPlanos) var(--suavizacaoPlanos);
+}
+
+/* ---------- Acessibilidade ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .divPlanos {
+        --duracaoPlanos: 1ms;
+    }
+}
 
 /* ==========================================================================
    SETOR 7 — CADASTRO / LOGIN   (NOVO)
    ========================================================================== */
+
 #Aethercadastro {
     position: absolute;
     left: 132px;
@@ -1490,78 +1965,55 @@ body {
     color: #5B6473;
     line-height: 1;
 }
-
 .cardCadastroLogin {
     position: absolute;
+    z-index: 10;
     left: 675px;
     top: 5563px;
     width: 546px;
-    min-height: 716px;
-    padding: 130px 43px 40px;
+    box-sizing: border-box;
+    padding: 35px 42px 42px;
 
+    border: 1px solid #7E8294;
     border-radius: 30px;
-    background-color: rgba(218, 237, 229, 0.8);
-    outline: 2px solid rgba(37, 169, 100, 0.45);
-    outline-offset: -2px;
+    background-color: rgba(255, 255, 255, 0.75);
+}
+
+.formularioEmpresarial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    width: 100%;
 }
 
 .aekoCadastro {
-    position: absolute;
-    left: 212px;
-    top: 35px;
+    display: block;
     width: 122px;
     height: 82px;
+    margin-bottom: 1px;
 }
 
-.abasCadastro {
-    position: absolute;
-    left: 50px;
-    top: 146px;
+.tituloCadastro {
     display: flex;
-    gap: 38px;
-}
-
-.abaCadastro {
-    width: 195px;
+    align-items: center;
+    justify-content: center;
     height: 41px;
-    border: none;
+    margin: 0;
+    padding: 2px 33px 2px 27px;
     border-radius: 39px;
-    background-color: rgba(174, 197, 187, 0.2);
+    background-color: #2DBD7E;
 
     font-family: "Montserrat", sans-serif;
     font-size: 30px;
     font-weight: 500;
-    color: #1E0A4A;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.abaCadastroAtiva {
-    background-color: #2DBD7E;
+    line-height: normal;
+    white-space: nowrap;
     color: #FFFFFF;
 }
 
-.formularioCadastro {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.formularioOculto {
-    display: none;
-}
-
 .campoFormulario {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.rotuloCampo {
-    font-family: "Montserrat", sans-serif;
-    font-size: 28px;
-    font-weight: 500;
-    color: #1E0A4A;
+    width: 100%;
 }
 
 .rotuloCampoOculto {
@@ -1572,14 +2024,15 @@ body {
     clip-path: inset(50%);
 }
 
-.entradaCampo {
+.entradaEmpresarial {
+    display: block;
+    box-sizing: border-box;
     width: 100%;
-    height: 50px;
-    padding: 0 14px;
-    border: none;
-    border-radius: 10px;
+    height: 54px;
+    padding: 0 20px;
+    border: 1px solid #B3B7C9;
+    border-radius: 15px;
     background-color: #FFFFFF;
-    box-shadow: 7px 7px 6px rgba(148, 192, 173, 0.17);
 
     font-family: "Montserrat", sans-serif;
     font-size: 20px;
@@ -1587,28 +2040,172 @@ body {
     color: #1A5C4A;
 }
 
-.entradaCampo::placeholder {
-    color: rgba(26, 92, 74, 0.5);
+.entradaEmpresarial::placeholder {
+    color: #B3B7C9;
+    opacity: 0.8;
 }
 
-.entradaCampo:focus-visible {
+.entradaEmpresarial:focus-visible {
     outline: 2px solid #2DBD7E;
     outline-offset: 2px;
 }
 
-.entradaSelecao {
-    height: 48px;
-    background-color: rgba(255, 255, 255, 0.47);
-    border: 1px solid #B3B7C9;
-    color: #1A5C4A;
+/* ---------- Dropdown personalizado (Empresa, tamanho e Plano) ---------- */
+
+.dropdownPersonalizado {
+    position: relative;
+    width: 100%;
+    height: 64px; /* 10px do rótulo flutuante + 54px da caixa */
 }
 
+.dropdownPersonalizado.dropdownAberto {
+    z-index: 20;
+}
+
+.dropdownRotulo {
+    position: absolute;
+    top: 0;
+    left: 24px;
+    z-index: 2;
+    height: 20px;
+    padding: 0 6px;
+    line-height: 20px;
+    /* metade de cima transparente, metade de baixo branca: "corta" a borda */
+    background: linear-gradient(to bottom, transparent 50%, #FFFFFF 50%);
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: #B3B7C9;
+    pointer-events: none;
+}
+
+.dropdownCaixa {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    border: 1px solid #B3B7C9;
+    border-radius: 15px;
+    background-color: #FFFFFF;
+}
+
+.dropdownBotao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 52px;
+    padding: 0 22px 0 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #B3B7C9;
+}
+
+.dropdownBotao:focus-visible {
+    outline: 2px solid #2DBD7E;
+    outline-offset: -2px;
+    border-radius: 14px;
+}
+
+.dropdownSeta {
+    flex: none;
+    width: 20px;
+    height: 11px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='11' viewBox='0 0 20 11' fill='none'%3E%3Cpath d='M1 1l9 9 9-9' stroke='%237E8294' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+.dropdownAberto .dropdownSeta {
+    transform: rotate(180deg);
+}
+
+/* ---------- Lista animada ---------- */
+
+.dropdownLista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: max-height 0.3s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0.3s; /* só esconde depois da animação de fechar */
+}
+
+.dropdownAberto .dropdownLista {
+    max-height: 200px;
+    opacity: 1;
+    visibility: visible;
+    transition: max-height 0.3s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0s;
+}
+
+.dropdownOpcao {
+    display: flex;
+    align-items: center;
+    height: 30px;
+    padding: 0 20px;
+    border-top: 1px solid #B3B7C9;
+    cursor: pointer;
+
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #B3B7C9;
+
+    transform: translateY(-6px);
+    transition: transform 0.7s ease, background-color 0.15s ease;
+}
+
+.dropdownAberto .dropdownOpcao {
+    transform: translateY(0);
+}
+
+.dropdownOpcao[hidden] {
+    display: none;
+}
+
+.dropdownOpcao:hover,
+.dropdownOpcao:focus-visible {
+    background-color: rgba(45, 189, 126, 0.12);
+    outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dropdownLista,
+    .dropdownAberto .dropdownLista,
+    .dropdownOpcao,
+    .dropdownSeta {
+        transition: none;
+    }
+}
+
+/* ---------- Mensagem, botão e rodapé ---------- */
+
 .mensagemFormulario {
-    min-height: 20px;
+    min-height: 0;
+    margin: 0;
     font-family: "Montserrat", sans-serif;
     font-size: 15px;
     font-weight: 500;
     color: #B3261E;
+}
+
+.mensagemFormulario:empty {
+    display: none;
 }
 
 .mensagemFormularioSucesso {
@@ -1623,9 +2220,10 @@ body {
     background-color: #2DBD7E;
 
     font-family: "Montserrat", sans-serif;
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 600;
     color: #FFFFFF;
+    cursor: pointer;
 }
 
 .botaoEnviarFormulario:hover {
@@ -1633,12 +2231,13 @@ body {
 }
 
 .rodapeFormulario {
+    margin: 0;
     text-align: center;
     font-family: "Montserrat", sans-serif;
     font-size: 18px;
     font-weight: 500;
     color: #4A435E;
-    opacity: 0.8;
+    opacity: 0.7;
 }
 
 .linkTrocaAba {
@@ -1647,9 +2246,10 @@ body {
     padding: 0;
     font-family: "Montserrat", sans-serif;
     font-size: 18px;
-    font-weight: 600;
-    color: #7C3AED;
-    text-decoration: underline;
+    font-weight: 500;
+    color: #2DBD7E;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 
@@ -1657,104 +2257,149 @@ body {
    SETOR 8 — RODAPÉ   (NOVO)
    ========================================================================== */
 
-.rodape {
-    position: absolute;
-    left: 0;
-    top: 6441px;
-    width: 1440px;
-    height: 422px;
-    padding: 100px 112px 0;
+.rodapeAether {
+    --rodape-texto: #2A2A2A;
+    --rodape-texto-suave: #2A2A2A;
+    --rodape-paragrafo: #000000;
+    --rodape-fonte: "Montserrat", Helvetica, Arial, sans-serif;
 
-    background: linear-gradient(180deg, rgba(168, 240, 210, 0.45) 0%, rgba(215, 204, 255, 0.55) 100%);
-    border-top-left-radius: 45px;
-    border-top-right-radius: 45px;
-
-    display: grid;
-    grid-template-columns: 343px 185px 1fr 1fr;
-    column-gap: 60px;
+    position: relative;
+    width: 100%;
+    max-width: 1440px;
+    min-height: 422px;
+    top: 6100px;              /* era 6441px: base do card (≈6287) + 163 */
+    margin: 0 auto;
+    box-sizing: border-box;
+    font-family: var(--rodape-fonte);
+    color: var(--rodape-texto);
+    isolation: isolate;
 }
 
-.colunaRodape {
+.rodapeAether::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 50vw);
+    right: calc(50% - 50vw);
+    z-index: -1;
+    background: url("Imagens/NuvemFooter (1).svg") center / 100% 100% no-repeat;
+    pointer-events: none;
+}
+
+.rodapeAether a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.rodapeAether a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.rodapeAether a:focus-visible {
+    outline: 2px solid #4A90E2;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+.rodapeAetherConteudo {
+    display: grid;
+    grid-template-columns: 495fr 370fr 252fr 211fr;
+    column-gap: 0;
+    padding: 99px 0 60px 112px;
+    box-sizing: border-box;
+}
+
+.rodapeAetherMarca {
+    max-width: 330px;
+}
+
+.rodapeAetherLogo {
+    width: 240px;
+    height: auto;
+    margin: -3px 0 0 -8px;
+}
+
+.rodapeAetherDescricao {
+    margin: 22px 0 0;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 20px;
+    color: var(--rodape-paragrafo);
+}
+
+/* ----------------------------- Navegação ------------------------------ */
+.rodapeAetherNav ul,
+.rodapeAetherColuna ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rodapeAetherNav ul {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+    gap: 20px;
 }
 
-.colunaRodapeMarca {
-    gap: 30px;
-}
-
-.marcaRodape {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.marcaRodape img {
-    width: 100px;
-    height: 100px;
-}
-
-.aetherRodape {
-    font-family: "Comfortaa", sans-serif;
-    font-size: 40px;
-    font-weight: 600;
-    color: #5B6473;
-    margin: -20px;
-    margin-bottom: -2px;
-}
-
-.descricaoRodape {
-    width: 343px;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #000000;
-}
-
-.colunaRodapeLinks {
-    gap: 12px;
-}
-
-.linkRodape {
-    font-family: "Montserrat", sans-serif;
+.rodapeAetherNav a {
     font-size: 20px;
     font-weight: 500;
-    line-height: 30px;
-    color: #2A2A2A;
+    line-height: 24px;
 }
 
-.tituloColunaRodape {
-    font-family: "Montserrat", sans-serif;
+/* ------------------------ Colunas Recursos / Empresa ------------------ */
+.rodapeAetherColuna h2 {
+    margin: 0 0 14px;
     font-size: 32px;
     font-weight: 500;
-    color: #2A2A2A;
+    line-height: 38px;
+    color: var(--rodape-texto);
 }
 
-.linkRodapeSecundario {
-    font-family: "Montserrat", sans-serif;
+.rodapeAetherColuna ul {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.rodapeAetherColuna a {
     font-size: 22px;
     font-weight: 400;
-    color: #2A2A2A;
+    line-height: 24px;
+    color: var(--rodape-texto-suave);
 }
 
-.linkRodape:hover,
-.linkRodapeSecundario:hover {
-    color: #7C3AED;
+/* ------------------------------ Tablet -------------------------------- */
+@media (max-width: 1024px) {
+    .rodapeAetherConteudo {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px 32px;
+        padding: 64px 48px 48px;
+    }
+
+    .rodapeAetherMarca {
+        grid-column: 1 / -1;
+    }
 }
 
-.direitosRodape {
-    grid-column: 1 / -1;
-    margin-top: 40px;
-    font-family: "Montserrat", sans-serif;
-    font-size: 14px;
-    font-weight: 400;
-    color: #59546D;
+/* ------------------------------ Celular ------------------------------- */
+@media (max-width: 600px) {
+    .rodapeAetherConteudo {
+        grid-template-columns: 1fr;
+        padding: 48px 24px 40px;
+    }
+
+    .rodapeAetherColuna h2 {
+        font-size: 26px;
+        line-height: 32px;
+    }
+
+    .rodapeAetherColuna a {
+        font-size: 18px;
+    }
 }
-
-
 /* ==========================================================================
    UTILITÁRIOS E ACESSIBILIDADE
    ========================================================================== */
@@ -1769,17 +2414,15 @@ body {
         scroll-behavior: auto;
     }
 
-    .divCard,
     .bolinhaInterruptor {
         transition: none;
     }
 }
 
 /* ==========================================================================
-   PÁGINA DE CONTATO — cole este bloco no FINAL do style.css da landing.
+   PÁGINA DE CONTATO
    ========================================================================== */
 
-/* Variáveis com prefixo "contato" para não colidir com as da landing */
 html.paginaContato {
     --contato-fundo: #2A2A2A;
     --contato-texto: #A2A2A2;
@@ -1790,8 +2433,6 @@ html.paginaContato {
     -webkit-font-smoothing: antialiased;
 }
 
-/* A landing define o body com 1440 px de largura e 6863 px de altura;
-   aqui isso é desfeito só para a página de contato. */
 .paginaContato body {
     position: static;
     width: auto;
@@ -1819,7 +2460,6 @@ html.paginaContato {
     border-radius: 4px;
 }
 
-/* A tela de 1440 x 1024. O margin: auto centraliza sem cortar o lado esquerdo. */
 .paginaContato .desktop {
     position: relative;
     flex: none;
@@ -1857,6 +2497,7 @@ html.paginaContato {
 
 .paginaContato .grupoInstagram,
 .paginaContato .grupoEmail,
+.paginaContato .grupoTelefone,
 .paginaContato .grupoLocal {
     position: absolute;
     height: 40px;
@@ -1864,6 +2505,7 @@ html.paginaContato {
 
 .paginaContato .grupoInstagram { top: 4px; left: 0;     width: 200px; }
 .paginaContato .grupoEmail     { top: 4px; left: 296px; width: 355px; }
+.paginaContato .grupoTelefone  { top: 0;   left: 727px; width: 257px; height: 47px; }
 
 .paginaContato .grupoLocal {
     top: 838px;
@@ -1871,20 +2513,28 @@ html.paginaContato {
     width: 188px;
 }
 
-/* O ícone ocupa a caixa do grupo; o texto fica por cima, clicável. */
-.paginaContato .icone {
+.paginaContato .iconeInstagram {
     position: absolute;
     top: 0;
-    left: 0;
+    left: -80px;
     width: 100%;
     height: 100%;
     pointer-events: none;
 }
 
-.paginaContato .iconeTelefone {
-    top: 4px;
-    left: 747px;
-    width: 223px;
+.paginaContato .icone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;
+    max-width: 60px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.paginaContato .grupoTelefone .icone {
+    top: 2px;
     height: 43px;
 }
 
@@ -1906,8 +2556,8 @@ html.paginaContato {
 
 .paginaContato .textoInstagram { top: 9px;  left: 47px; }
 .paginaContato .textoEmail     { top: 9px;  left: 67px; text-decoration: underline; }
-.paginaContato .textoTelefone1 { top: 0;    left: 794px; }
-.paginaContato .textoTelefone2 { top: 25px; left: 794px; }
+.paginaContato .textoTelefone1 { top: 0;    left: 67px; }
+.paginaContato .textoTelefone2 { top: 25px; left: 67px; }
 .paginaContato .textoLocal     { top: 9px;  left: 37px; }
 
 /* ------------------------------ Botão fechar --------------------------- */

@@ -1,0 +1,194 @@
+body{
+    margin: 0;
+    padding: 0;
+    background-color: #EDEEF8;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden
+}
+
+.divLoginPrincipal{
+    position: absolute;
+    right: 110px;
+    top: 80px;
+    bottom: 80px;
+
+    width: 450px;
+
+    border-radius: 24px;
+    padding: 30px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 10;
+}
+
+.divLoginPrincipal form input,
+.divLoginPrincipal form select,
+.divLoginPrincipal form button,
+.divLoginPrincipal form a {
+    margin-bottom: 18px; /* Altere este valor para mais ou menos espaço conforme preferir */
+}
+
+.montserrat{
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+
+
+.comfortaa{
+    font-family: "Comfortaa", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+[class^="blur"] {
+    position: absolute;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    filter: blur(226.89999389648438px);
+    z-index: 1;
+}
+
+.blur1{
+    left: 48px;
+    top: -155px;
+    width: 708.554px;
+    height: 708.554px;
+    aspect-ratio: 1/1;
+    background: rgba(184, 255, 226, 0.75);
+    filter: blur(226.89999389648438px);
+    z-index: -1;
+
+}
+
+.blur2{
+    left: 843px;
+    top: -88px;
+    width: 708.554px;
+    height: 708.554px;
+    aspect-ratio: 1/1;
+    border-radius: 708.554px;
+    background: #D7CCFF;
+    filter: blur(226.89999389648438px);
+    z-index: -1;
+}
+
+.blur3{
+    left: -28px;
+    top: 413px;
+    width: 708.554px;
+    height: 708.554px;
+    aspect-ratio: 1/1;
+    border-radius: 708.554px;
+    background: #D7CCFF;
+    filter: blur(226.89999389648438px);
+    z-index: -1;
+
+}
+
+.blur4{
+    left: 755px;
+    top: 314px;
+    width: 708.554px;
+    height: 708.554px;
+    aspect-ratio: 1/1;
+    background: rgba(184, 255, 226, 0.75);
+    filter: blur(226.89999389648438px);
+    z-index: -1;
+
+}
+
+.divLogo{
+    position: absolute;
+    left: 110px;
+    top: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    align-items: center;
+    z-index: 10;
+}
+
+.logoCRUD{
+    width: 308px;
+    height: auto;
+    margin-bottom: -75px;
+}
+
+
+.logotipoAether{
+    color: #5B6473;
+    font-family: "Comfortaa", sans-serif;
+    font-size: 124.661px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    margin: 0;
+}
+
+.fraseLogo{
+    line-height: normal;
+    margin: 0;
+    color: #5B6473;
+    font-family: "Comfortaa", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+}
+
+.fraseFuturoLogo{
+    color: #2B8D76;
+    font-family: "Comfortaa", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.aekoCRUD{
+    width: 150px;
+    height: 150px;
+    filter: drop-shadow(0 3px 7px rgba(255, 255, 255, 0.10)) drop-shadow(0 12px 12px rgba(255, 255, 255, 0.09)) drop-shadow(0 27px 16px rgba(255, 255, 255, 0.05)) drop-shadow(0 48px 19px rgba(255, 255, 255, 0.01)) drop-shadow(0 75px 21px rgba(255, 255, 255, 0.00)) drop-shadow(3px 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+.botaoEnvioRoxo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 462px;
+    height: 55px;
+    border-radius: 60px;
+    background: #9A72F9;
+    cursor: pointer;
+}
+
+.botaoEnvioVerde{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 462px;
+    height: 55px;
+    border-radius: 60px;
+    background: #2DBD7E;
+    cursor: pointer;
+}
+
+.tipografiaEnvio{
+    color: #FFF;
+    font-family: "Montserrat", sans-serif;
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}

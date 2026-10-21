@@ -1,0 +1,106 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Tela de Cadastro Empresarial do Aether</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+
+    <link rel="stylesheet" href="global.css">
+    <link rel="stylesheet" href="verificacao.css">
+
+</head>
+<body>
+
+    <div class="blur1"></div>
+    <div class="blur2"></div>
+    <div class="blur3"></div>
+    <div class="blur4"></div>
+
+    <div>
+
+        <div>
+
+            <p>Aether Pulse</p>
+            <p><strong>R$3.300</strong>/por mês</p>
+
+            <ul class="listaCustomizada">
+                <li>Quantidade de cadastro limitada a 10 funcionários</li>
+                <li>Quantidade de analistas e administradores limitada a 2</li>
+                <li>Acompanhamento mensal</li>
+            </ul>
+
+        </div>
+
+        <div>
+
+            <p>Aether Horizon</p>
+            <p><strong>R$9.400</strong>/a cada 3 meses</p>
+
+            <ul class="listaCustomizada2">
+                <li>Tudo do plano aether Pulse</li>
+                <li>Quantidade de cadastro de funcionários ilimitada</li>
+                <li>Acompanhamento Trimestral</li>
+            </ul>
+
+        </div>
+
+    </div>
+
+    <div>
+
+        <img src="Imagens/AekoLogin.svg" alt="Aeko">
+        <div>Cadastro empresarial</div>
+
+        <fieldset>
+            <form action="empresass" method="post">
+
+                <label for="empresa"></label>
+                <input type="text" name="empresas" id="empresa"
+                       placeholder="Nome da empresa">
+
+                <label for="tamanho"></label>
+                <select name="tamanhos" id="tamanho" >
+                    <option value="" disabled selected hidden>Selecionar</option>
+                    <option value="pequena">Pequena Empresa</option>
+                    <option value="media">Média empresa</option>
+                    <option value="grande">Grande empresa</option>
+                </select>
+
+                <input type="text" id="cnpj" name="campoCNPJ" placeholder="CNPJ">
+                <label for="cnpj"></label>
+
+                <input type="email" id="email" name="campoEmail" placeholder="e-mail">
+                <label for="email"></label>
+
+                <input type="text" id="endereco" name="campoEndereco" placeholder="endereco">
+                <label for="endereco"></label>
+
+                <label for="plano"></label>
+                <select name="planos" id="plano" >
+                    <option value="" disabled selected hidden>Plano...</option>
+                    <option value="Aether Pulse">Aether Pulse</option>
+                    <option value="Aether Horizon">Aether Horizon</option>
+                </select>
+
+                <button type="submit" value="EnviarFormulárioCadastroEmpresarial">Cadastrar</button>
+
+            </form>
+            </fieldset>
+
+        <p>Já possui uma conta? <a href="login.jsp">clique aqui</a></p>
+
+    </div>
+
+</body>
+</html>
