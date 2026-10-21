@@ -1,3 +1,4 @@
+
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -10,245 +11,276 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, TelephoneCompaniesFilter> {
+public class TelephoneCompaniesDAO
+        implements DAOI<TelephoneCompanies, TelephoneCompaniesFilter> {
 
-    /**
-     * Metodo que busca os telefones ativos aplicando os filtros informados
-     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
-     * @param filter Objeto com os campos opcionais para filtrar a busca
-     * @return List<TelephoneCompanies> com os telefones encontrados
+    private Connection requireConnection() {
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            throw new IllegalStateException(
+                    "Não foi possível estabelecer conexão com o banco de dados."
+            );
+        }
+
+        return conn;
+    }
+
+    private static final String SELECT_TELEPHONES =
+            "SELECT tc.*, " +
+                    "tc.company_id AS companyId, " +
+                    "c.id AS idCompany, " +
+                    "c.name AS companyName " +
+                    "FROM telephone_companies tc " +
+                    "JOIN companies c ON c.id = tc.company_id ";
+
+    private TelephoneCompanies mapTelephone(ResultSet rs)
+            throws SQLException {
+
+        Companies company = new Companies(
+                rs.getInt("idCompany"),
+                rs.getString("companyName")
+        );
+
+        TelephoneCompanies telephoneCompany = new TelephoneCompanies(
+                rs.getString("telephone"),
+                rs.getInt("companyId"),
+                rs.getInt("id"),
+                company
+        );
+
+        telephoneCompany.setCreatedAt(
+                rs.getTimestamp("created_at")
+        );
+
+        telephoneCompany.setUpdatedAt(
+                rs.getTimestamp("updated_at")
+        );
+
+        return telephoneCompany;
+    }
+
+    /*
+     * Busca telefones ativos aplicando os filtros informados.
      */
     @Override
-    public List<TelephoneCompanies> searchAll(TelephoneCompaniesFilter filter){
+    public List<TelephoneCompanies> searchAll(
+            TelephoneCompaniesFilter filter) {
 
         List<TelephoneCompanies> telephones = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "select tc.*, tc.company_id as companyId, " +
-                        "c.id as idCompany, c.name as companyName " +
-                        "from telephone_companies tc " +
-                        "join companies c on c.id = tc.company_id " +
-                        "where tc.is_active = true"
+                SELECT_TELEPHONES + "WHERE tc.is_active = true"
         );
 
         List<Object> parametros = new ArrayList<>();
 
-        if (filter.getId() != null) {
-            sql.append(" and tc.id = ?");
-            parametros.add(filter.getId());
-        }
+        if (filter != null) {
+            if (filter.getId() != null) {
+                sql.append(" AND tc.id = ?");
+                parametros.add(filter.getId());
+            }
 
-        if (filter.getCompanyId() != null) {
-            sql.append(" and tc.company_id = ?");
-            parametros.add(filter.getCompanyId());
-        }
+            if (filter.getCompanyId() != null) {
+                sql.append(" AND tc.company_id = ?");
+                parametros.add(filter.getCompanyId());
+            }
 
-        if (filter.getCompanyName() != null && !filter.getCompanyName().isBlank()) {
-            sql.append(" and c.name ilike ?");
-            parametros.add("%" + filter.getCompanyName() + "%");
+            if (filter.getCompanyName() != null
+                    && !filter.getCompanyName().isBlank()) {
+
+                sql.append(" AND c.name ILIKE ?");
+                parametros.add(
+                        "%" + filter.getCompanyName() + "%"
+                );
+            }
         }
 
         try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
-        ){
-
+                Connection conn = requireConnection();
+                PreparedStatement pstmt =
+                        conn.prepareStatement(sql.toString())
+        ) {
             for (int i = 0; i < parametros.size(); i++) {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()){
-
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                TelephoneCompanies telephoneCompany = new TelephoneCompanies(
-                        rs.getString("telephone"),
-                        rs.getInt("companyId"),
-                        rs.getInt("id"),
-                        company
-                );
-
-                telephoneCompany.setCreatedAt(rs.getTimestamp("created_at"));
-                telephoneCompany.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-                telephones.add(telephoneCompany);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    telephones.add(mapTelephone(rs));
+                }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
             return telephones;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar telefones das empresas.", e
+            );
         }
     }
 
-    /**
-     * Metodo que busca o telefone por id (somente ativos)
-     * @param id O identificador do telefone para o buscar
-     * @return O telefone encontrado
+    /*
+     * Busca um telefone ativo pelo ID.
      */
     @Override
-    public TelephoneCompanies searchById(int id){
+    public TelephoneCompanies searchById(int id) {
 
-        TelephoneCompanies telephoneCompany = null;
+        String sql = SELECT_TELEPHONES
+                + "WHERE tc.id = ? AND tc.is_active = true";
 
         try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select tc.*, tc.company_id as companyId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from telephone_companies tc " +
-                                "join companies c on c.id = tc.company_id " +
-                                "where tc.id = ? and tc.is_active = true"
-                )
-        ){
-
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
             pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
-
-            if(rs.next()){
-
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                telephoneCompany = new TelephoneCompanies(
-                        rs.getString("telephone"),
-                        rs.getInt("companyId"),
-                        rs.getInt("id"),
-                        company
-                );
-
-                telephoneCompany.setCreatedAt(rs.getTimestamp("created_at"));
-                telephoneCompany.setUpdatedAt(rs.getTimestamp("updated_at"));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapTelephone(rs);
+                }
             }
 
+            return null;
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return telephoneCompany;
+            throw new RuntimeException(
+                    "Erro ao buscar telefone pelo ID: " + id, e
+            );
         }
     }
 
-    /**
-     * metodo para cadastrar novos telefones no banco
-     * @param telephoneCompany O telefone
-     * @return true se foi cadastrado e false caso tenha dado erro
+    /*
+     * Cadastra um telefone.
      */
     @Override
-    public boolean register(TelephoneCompanies telephoneCompany){
+    public boolean register(TelephoneCompanies telephoneCompany) {
 
-        if (!Validators.isMobilePhone(telephoneCompany.getTelephone())) {
+        if (telephoneCompany == null
+                || !Validators.isMobilePhone(
+                telephoneCompany.getTelephone())) {
             return false;
         }
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into telephone_companies (telephone, company_id) " +
-                                "values (?, ?)"
-                )
-        ){
+        String sql =
+                "INSERT INTO telephone_companies " +
+                        "(telephone, company_id) VALUES (?, ?)";
 
-            pstmt.setString(1, telephoneCompany.getTelephone());
-            pstmt.setInt(2, telephoneCompany.getCompanyId());
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+            pstmt.setString(
+                    1, telephoneCompany.getTelephone()
+            );
+
+            pstmt.setInt(
+                    2, telephoneCompany.getCompanyId()
+            );
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao cadastrar telefone.", e
+            );
         }
     }
 
-    /**
-     * metodo que desativa o telefone por id (is_active = false)
-     * @param id O id unico do telefone
-     * @return true se foi desativado e false caso tenha dado erro
+    /*
+     * Desativa um telefone pelo ID.
      */
     @Override
-    public boolean delete(int id){
+    public boolean delete(int id) {
 
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update telephone_companies set is_active = false, updated_at = current_timestamp where id = ?"
-                )
+        String sql =
+                "UPDATE telephone_companies " +
+                        "SET is_active = false, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
+                        "WHERE id = ? AND is_active = true";
+
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
-
             pstmt.setInt(1, id);
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao desativar telefone pelo ID: " + id, e
+            );
         }
     }
 
-    /**
-     * metodo que desativa os telefones de uma empresa (para quando uma empresa for desativada)
-     * @param companyId O id da empresa
-     * @return true se foi desativado e false caso tenha dado erro
+    /*
+     * Desativa os telefones ativos de uma empresa.
      */
-    public boolean deleteByCompanyId(int companyId){
+    public boolean deleteByCompanyId(int companyId) {
 
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update telephone_companies set is_active = false, updated_at = current_timestamp where company_id = ?"
-                )
+        String sql =
+                "UPDATE telephone_companies " +
+                        "SET is_active = false, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
+                        "WHERE company_id = ? AND is_active = true";
+
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
-
             pstmt.setInt(1, companyId);
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao desativar telefones da empresa: "
+                            + companyId, e
+            );
         }
     }
 
-    /**
-     * metodo que muda os values do telefone selecionado pelo id
-     * @param telephoneCompany O telefone com os novos valores
-     * @param id O id para buscar o telefone
-     * @return true se deu certo e false caso tenha algum erro
+    /*
+     * Atualiza os dados de um telefone.
      */
     @Override
-    public boolean update(TelephoneCompanies telephoneCompany, int id){
+    public boolean update(
+            TelephoneCompanies telephoneCompany, int id) {
 
-        if (!Validators.isMobilePhone(telephoneCompany.getTelephone())) {
+        if (telephoneCompany == null
+                || !Validators.isMobilePhone(
+                telephoneCompany.getTelephone())) {
             return false;
         }
 
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update telephone_companies set telephone = ?, " +
-                                "company_id = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where id = ?"
-                )
-        ){
+        String sql =
+                "UPDATE telephone_companies SET " +
+                        "telephone = ?, " +
+                        "company_id = ?, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
+                        "WHERE id = ?";
 
-            pstmt.setString(1, telephoneCompany.getTelephone());
-            pstmt.setInt(2, telephoneCompany.getCompanyId());
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+            pstmt.setString(
+                    1, telephoneCompany.getTelephone()
+            );
+
+            pstmt.setInt(
+                    2, telephoneCompany.getCompanyId()
+            );
+
             pstmt.setInt(3, id);
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao atualizar telefone pelo ID: " + id, e
+            );
         }
     }
-
 }

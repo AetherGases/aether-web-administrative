@@ -24,8 +24,9 @@ public class Companies {
         this.createdAt = createdAt;
     }
 
-    public Companies(String name, CompanySize size, String cnpj, String email) {
+    public Companies(String name, String tradeName, CompanySize size, String cnpj, String email) {
         this.name = name;
+        this.tradeName = tradeName;
         this.size = size;
         this.cnpj = cnpj;
         this.email = email;

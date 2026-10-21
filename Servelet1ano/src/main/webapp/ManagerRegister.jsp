@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Tela de Cadastro de Gerente do Aether</title>
@@ -16,8 +17,8 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="cadGerente.css">
+    <link rel="stylesheet" href="Global.css">
+    <link rel="stylesheet" href="ManagerRegister.css">
 
 </head>
 <body>
@@ -43,8 +44,11 @@
             </div>
 
 
-            <form action="cadastroEmpresarial.html" method="post">
-
+            <form
+                    action="${pageContext.request.contextPath}/managerregister"
+                    method="post"
+                    accept-charset="UTF-8"
+            >
                 <input class="campoNomeCG campoNomeCG2" type="text" id="nome" name="campoNome" placeholder="nome">
                 <label for="nome"></label>
 
@@ -65,12 +69,26 @@
 
                 <div class="setaParaBaixo"></div>
 
-                <label for="empresa"></label>
-                <select class="campoEmpresa2 campoEmpresaEmpresa2" name="empresas" id="empresa" >
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="" disabled selected hidden>Selecionar</option>
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="aas">Aurora Alimentos Sustentáveis S.A.</option>
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="hlil">Horizonte Logística Integrada Ltda.</option>
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="vci">Vale Circular Indústria S.A.</option>
+                <label for="empresa" class="visually-hidden">
+                    Empresa
+                </label>
+
+                <select
+                        class="campoEmpresa campoEmpresaEmpresa"
+                        name="empresas"
+                        id="empresa"
+                        required
+                >
+                    <option value="" disabled selected>
+                        Selecionar empresa
+                    </option>
+
+                    <c:forEach var="empresa" items="${empresas}">
+                        <option value="${empresa.id}">
+                            <c:out value="${empresa.name}"/>
+                        </option>
+                    </c:forEach>
+
                 </select>
 
                 <p class="campoCPF">CPF:</p>
@@ -82,7 +100,7 @@
 
             </form>
 
-            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="login.jsp">clique aqui</a></p>
+            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="Login.jsp">clique aqui</a></p>
 
         </div>
     </main>

@@ -1,9 +1,10 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Tela de Unidades do Aether</title>
+    <title>Tela de Setores do Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +46,7 @@
     </nav>
 
     <div>
-        <a href="login.jsp">Logout</a>
+        <a href="Login.jsp">Logout</a>
     </div>
 
 </aside>
@@ -53,7 +54,7 @@
 <div>
 
     <h2>Area restrista</h2>
-    <p>Unidades</p>
+    <p>Setores</p>
 
 </div>
 
@@ -62,33 +63,27 @@
     <img src="Imagens/Mais.svg" alt="Adicionar">
 </div>
 
-<div id="modalUnidades">
+<div id="modalSetores">
 
     <div>
-        <h2>Adicionar Unidade</h2>
+        <h2>Adicionar Setor</h2>
         <button id="btnFecharModal">✕</button>
 
-        <form action="AdicionarUnidade" method="post">
+        <form action="AdicionarSetor" method="post">
 
-            <input type="text" id="nomeUnidade" name="campoNomeUnidade" placeholder="nome">
-            <label for="nomeUnidade"></label>
+            <input type="text" id="nomeSetor" name="campoNomeSetor" placeholder="setor">
+            <label for="nomeSetor"></label>
 
-            <input type="text" id="id" name="campoId" placeholder="id">
-            <label for="id"></label>
+            <input type="text" id="subSetor" name="campoSubSetor" placeholder="subsetor">
+            <label for="subSetor"></label>
 
-            <input type="text" id="endereco" name="campoEndereco" placeholder="endereço">
-            <label for="endereco"></label>
+            <input type="text" id="idUnidade" name="campoidUnidade" placeholder="id unidade">
+            <label for="idUnidade"></label>
 
-            <input type="text" id="CNPJ" name="campoCNPJ" placeholder="CNPJ">
-            <label for="CNPJ"></label>
+            <input type="text" id="descricao" name="campoDescricao" placeholder="descricao">
+            <label for="descricao"></label>
 
-            <input type="text" id="CNAE" name="campoCNAE" placeholder="CNAE">
-            <label for="CNAE"></label>
-
-            <input type="text" id="empresaMatriz" name="campoEmpresaMatriz" placeholder="empresa matriz">
-            <label for="empresaMatriz"></label>
-
-            <button type="submit" value="enviarFormularioAdicionarUnidade">Adicionar</button>
+            <button type="submit" value="enviarFormularioAdicionarSetor">Adicionar</button>
 
         </form>
 
@@ -102,13 +97,11 @@
     <table>
         <thead>
         <tr>
-            <th>Nome</th>
+            <th>Setor</th>
             <th>ID</th>
-            <th>Endereço</th>
+            <th>Subsetor</th>
             <th>Status</th>
-            <th>CNPJ</th>
-            <th>CNAE</th>
-            <th>Empresa</th>
+            <th>Descrição</th>
         </tr>
         </thead>
         <tbody>
@@ -118,9 +111,7 @@
             <td>350</td>
             <td>sdmfdlfs</td>
             <td>Ativo</td>
-            <td>3232121</td>
-            <td>3213231</td>
-            <td>sla</td>
+            <td>legal</td>
 
 
             <td>
@@ -138,7 +129,7 @@
 <script>
     const btnAbrir = document.getElementById('btnAbrirModal');
     const btnFechar = document.getElementById('btnFecharModal');
-    const modal = document.getElementById('modalUnidades');
+    const modal = document.getElementById('modalSetores');
 
     btnAbrir.addEventListener('click', function() {
         modal.classList.add('ativo');
