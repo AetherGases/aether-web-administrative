@@ -14,24 +14,51 @@ import java.util.List;
 public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
-     * Valida os dados da empresa antes de gravar (cnpj e, se preenchido, email)
+     * Valida os dados da empresa antes de gravar (cnpj, porte e, se preenchido, email)
      * @param company A empresa a validar
-     * @return true se cnpj for valido e o email (quando informado) tambem
+     * @return true se cnpj, porte e o email (quando informado) forem validos
      */
     private boolean isValid(Companies company) {
+
+        if (company == null) {
+            return false;
+        }
+
         if (!Validators.isCnpj(company.getCnpj())) {
             return false;
         }
+
+        if (company.getSize() == null) {
+            return false;
+        }
+
         if (company.getEmail() != null && !company.getEmail().isBlank() && !Validators.isEmail(company.getEmail())) {
             return false;
         }
+
         return true;
+    }
+
+    /**
+     * Deixa so letras e numeros do cnpj, em maiusculo (tira pontos, barra, traco e espacos)
+     * Usado antes de gravar e antes de buscar, pra o cnpj ficar sempre no mesmo formato no banco
+     * @param cnpj O cnpj como foi digitado
+     * @return O cnpj so com letras e numeros, ou null se vier null
+     */
+    private String cleanCnpj(String cnpj) {
+
+        if (cnpj == null) {
+            return null;
+        }
+
+        return cnpj.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
     }
 
 
     /**
      * Metodo que busca as empresas ativas aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Se o filter vier null, busca sem filtro nenhum
      * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return List<Companies> com as empresas encontradas
      */
@@ -39,6 +66,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
     public List<Companies> searchAll(CompaniesFilter filter) {
 
         List<Companies> companies = new ArrayList<>();
+
+        if (filter == null) {
+            filter = new CompaniesFilter();
+        }
 
         StringBuilder sql = new StringBuilder(
                 "select c.*, c.address_id as addressId, " +
@@ -63,7 +94,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         if (filter.getCnpj() != null && !filter.getCnpj().isBlank()) {
             sql.append(" and c.cnpj = ?");
-            parametros.add(filter.getCnpj());
+            parametros.add(cleanCnpj(filter.getCnpj()));
         }
 
         if (filter.getCountry() != null && !filter.getCountry().isBlank()) {
@@ -76,8 +107,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             parametros.add(filter.getRegistrationDate());
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return companies;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
@@ -85,39 +122,40 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
 
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("idAddress"),
+                            rs.getString("addressZipCode"),
+                            rs.getString("addressStreet"),
+                            rs.getString("addressNumber"),
+                            rs.getString("addressComplement"),
+                            rs.getString("addressNeighborhood"),
+                            rs.getString("addressCity"),
+                            rs.getString("addressState"),
+                            rs.getString("addressCountry")
+                    );
 
-                Companies company = new Companies(
-                        rs.getInt("id"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("trade_name"),
-                        rs.getString("cnpj"),
-                        CompanySize.fromValor(rs.getString("size")),
-                        rs.getDate("registration_date"),
-                        rs.getString("email"),
-                        rs.getDate("created_at"),
-                        rs.getBoolean("is_active"),
-                        address
-                );
+                    Companies company = new Companies(
+                            rs.getInt("id"),
+                            rs.getInt("addressId"),
+                            rs.getString("name"),
+                            rs.getString("trade_name"),
+                            rs.getString("cnpj"),
+                            CompanySize.fromValor(rs.getString("size")),
+                            rs.getDate("registration_date"),
+                            rs.getString("email"),
+                            rs.getDate("created_at"),
+                            rs.getBoolean("is_active"),
+                            address
+                    );
 
-                company.setUpdatedAt(rs.getDate("updated_at"));
+                    company.setUpdatedAt(rs.getDate("updated_at"));
 
-                companies.add(company);
+                    companies.add(company);
+                }
             }
 
         } catch (SQLException e) {
@@ -137,8 +175,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         Companies company = null;
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select c.*, c.address_id as addressId, " +
                                 "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
@@ -151,37 +195,38 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
             pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            if (rs.next()) {
+                if (rs.next()) {
 
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("idAddress"),
+                            rs.getString("addressZipCode"),
+                            rs.getString("addressStreet"),
+                            rs.getString("addressNumber"),
+                            rs.getString("addressComplement"),
+                            rs.getString("addressNeighborhood"),
+                            rs.getString("addressCity"),
+                            rs.getString("addressState"),
+                            rs.getString("addressCountry")
+                    );
 
-                company = new Companies(
-                        rs.getInt("id"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("trade_name"),
-                        rs.getString("cnpj"),
-                        CompanySize.fromValor(rs.getString("size")),
-                        rs.getDate("registration_date"),
-                        rs.getString("email"),
-                        rs.getDate("created_at"),
-                        rs.getBoolean("is_active"),
-                        address
-                );
+                    company = new Companies(
+                            rs.getInt("id"),
+                            rs.getInt("addressId"),
+                            rs.getString("name"),
+                            rs.getString("trade_name"),
+                            rs.getString("cnpj"),
+                            CompanySize.fromValor(rs.getString("size")),
+                            rs.getDate("registration_date"),
+                            rs.getString("email"),
+                            rs.getDate("created_at"),
+                            rs.getBoolean("is_active"),
+                            address
+                    );
 
-                company.setUpdatedAt(rs.getDate("updated_at"));
+                    company.setUpdatedAt(rs.getDate("updated_at"));
+                }
             }
 
         } catch (SQLException e) {
@@ -203,8 +248,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into companies (name, trade_name, size, registration_date, cnpj, email, address_id) " +
                                 "values (?, ?, ?::company_size, ?, ?, ?, ?)"
@@ -215,7 +266,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             pstmt.setString(2, company.getTradeName());
             pstmt.setString(3, company.getSize().getValor());
             pstmt.setDate(4, company.getRegistrationDate());
-            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(5, cleanCnpj(company.getCnpj()));
             pstmt.setString(6, company.getEmail());
             pstmt.setInt(7, company.getAddressId());
 
@@ -243,38 +294,20 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         new PermissionGroupsDAO().deleteByCompanyId(id);
         new SubscriptionsDAO().deleteByCompanyId(id);
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set is_active = false, updated_at = current_timestamp where id = ?"
                 )
         ) {
 
             pstmt.setInt(1, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Metodo que desativa pelo nome
-     * @param name Nome da empresa
-     * @return true se foi desativada e false caso tenha dado erro
-     */
-    public boolean deleteByName(String name) {
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update companies set is_active = false, updated_at = current_timestamp where name ilike ?"
-                )
-        ) {
-
-            pstmt.setString(1, name);
 
             return pstmt.executeUpdate() > 0;
 
@@ -297,8 +330,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set name = ?, " +
                                 "trade_name = ?, " +
@@ -315,51 +354,9 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             pstmt.setString(2, company.getTradeName());
             pstmt.setString(3, company.getSize().getValor());
             pstmt.setDate(4, company.getRegistrationDate());
-            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(5, cleanCnpj(company.getCnpj()));
             pstmt.setString(6, company.getEmail());
             pstmt.setInt(7, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Metodo que atualiza a empresa pelo nome
-     * @param company Valores da empresa para atualizar
-     * @param name Nome da empresa que sera atualizada
-     * @return true se foi atualizada e false caso tenha dado erro
-     */
-    public boolean updateByName(Companies company, String name) {
-
-        if (!isValid(company)) {
-            return false;
-        }
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update companies set name = ?, " +
-                                "trade_name = ?, " +
-                                "size = ?::company_size, " +
-                                "registration_date = ?, " +
-                                "cnpj = ?, " +
-                                "email = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where name ilike ?"
-                )
-        ) {
-
-            pstmt.setString(1, company.getName());
-            pstmt.setString(2, company.getTradeName());
-            pstmt.setString(3, company.getSize().getValor());
-            pstmt.setDate(4, company.getRegistrationDate());
-            pstmt.setString(5, company.getCnpj());
-            pstmt.setString(6, company.getEmail());
-            pstmt.setString(7, name);
 
             return pstmt.executeUpdate() > 0;
 
