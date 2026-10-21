@@ -95,8 +95,7 @@ public class Validators {
 
     /**
      * Valida um CNPJ alfanumerico: confere o formato
-     * 12 caracteres alfanumericos + 2 digitos verificadores e os DVs pelo modulo 11.
-     * Tambem aceita CNPJ antigo so numerico, porque numero é um caso particular do alfanumerico.
+     * Tambem aceita CNPJ antigo so numerico, porque numero é um caso do alfanumerico.
      * @param cnpj O CNPJ a validar
      * @return true se for um CNPJ valido
      */
