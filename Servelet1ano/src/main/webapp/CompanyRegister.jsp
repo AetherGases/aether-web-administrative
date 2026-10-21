@@ -68,6 +68,11 @@
                 <input type="text" name="empresas" id="empresa"
                        placeholder="Nome da empresa">
 
+                <label for="razao"></label>
+                <input type="text" name="razoes" id="razao"
+                       placeholder="Razão social">
+
+
                 <label for="tamanho"></label>
                 <select name="tamanhos" id="tamanho" >
                     <option value="" disabled selected hidden>Selecionar</option>

@@ -44,8 +44,11 @@
             </div>
 
 
-            <form action="ManagerRegister.jsp" method="post">
-
+            <form
+                    action="${pageContext.request.contextPath}/managerregister"
+                    method="post"
+                    accept-charset="UTF-8"
+            >
                 <input class="campoNomeCG campoNomeCG2" type="text" id="nome" name="campoNome" placeholder="nome">
                 <label for="nome"></label>
 
@@ -66,12 +69,26 @@
 
                 <div class="setaParaBaixo"></div>
 
-                <label for="empresa"></label>
-                <select class="campoEmpresa2 campoEmpresaEmpresa2" name="empresas" id="empresa" >
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="" disabled selected hidden>Selecionar</option>
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="aas">Aurora Alimentos Sustentáveis S.A.</option>
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="hlil">Horizonte Logística Integrada Ltda.</option>
-                    <option class="campoEmpresaEmpresa2 campoEmpresaEmpresa2" value="vci">Vale Circular Indústria S.A.</option>
+                <label for="empresa" class="visually-hidden">
+                    Empresa
+                </label>
+
+                <select
+                        class="campoEmpresa campoEmpresaEmpresa"
+                        name="empresas"
+                        id="empresa"
+                        required
+                >
+                    <option value="" disabled selected>
+                        Selecionar empresa
+                    </option>
+
+                    <c:forEach var="empresa" items="${empresas}">
+                        <option value="${empresa.id}">
+                            <c:out value="${empresa.name}"/>
+                        </option>
+                    </c:forEach>
+
                 </select>
 
                 <p class="campoCPF">CPF:</p>

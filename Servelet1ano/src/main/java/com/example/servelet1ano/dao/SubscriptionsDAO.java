@@ -163,6 +163,31 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     }
 
     /*
+    * Cadasra uma assinatura usando connection como parâmetro, habilitando rollback
+    */
+    public boolean registerConn(Subscriptions subscription, Connection conn) {
+        String sql =
+                "INSERT INTO subscriptions " +
+                        "(company_id, plan_id, is_active, installments) " +
+                        "VALUES (?, ?, true, ?)";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, subscription.getCompanyId());
+            pstmt.setInt(2, subscription.getPlanId());
+            pstmt.setBoolean(3, subscription.isInstallments());
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao cadastrar assinatura.",
+                    e
+            );
+        }
+    }
+
+    /*
      * Desativa uma assinatura pelo ID.
      */
     @Override

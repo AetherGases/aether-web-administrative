@@ -20,18 +20,18 @@
     <!-- Recursos estáticos da aplicação -->
     <link
         rel="icon"
-        href="${pageContext.request.contextPath}/Imagens/LogoAether.svg"
+        href="/Imagens/LogoAether.svg"
         type="image/svg+xml"
     >
 
     <link
         rel="stylesheet"
-        href="${pageContext.request.contextPath}/global.css"
+        href="/global.css"
     >
 
     <link
         rel="stylesheet"
-        href="${pageContext.request.contextPath}/login.css"
+        href="/login.css"
     >
 </head>
 
@@ -48,7 +48,7 @@
 
         <img
             class="logoCRUD"
-            src="${pageContext.request.contextPath}/Imagens/LogoAethererdeEscuro.svg"
+            src="/Imagens/LogoAethererdeEscuro.svg"
             alt="Logo do Aether"
         >
 
@@ -67,7 +67,7 @@
 
             <img
                 class="aekoCRUD"
-                src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg"
+                src="/Imagens/AekoLogin.svg"
                 alt="Aeko, mascote do Aether"
             >
 

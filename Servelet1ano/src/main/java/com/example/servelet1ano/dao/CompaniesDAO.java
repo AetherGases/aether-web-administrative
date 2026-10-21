@@ -212,8 +212,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * Cadastra uma empresa e retorna o ID gerado.
      * Retorna -1 quando os dados não passam na validação.
      */
-    public int registerReturningId(Companies company) {
-
+    public int registerReturningId(
+            Companies company,
+            Connection conn
+    ) {
         if (!isValid(company)) {
             return -1;
         }
@@ -224,10 +226,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
                         "RETURNING id";
 
-        try (
-                Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, company.getName());
             pstmt.setString(2, company.getTradeName());
             pstmt.setString(3, company.getSize().getValor());
@@ -242,12 +242,12 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             }
 
             throw new IllegalStateException(
-                    "A empresa foi inserida, mas nenhum ID foi retornado."
+                    "Nenhum ID foi retornado ao cadastrar a empresa."
             );
 
         } catch (SQLException e) {
             throw new RuntimeException(
-                    "Erro ao cadastrar empresa e recuperar seu ID.",
+                    "Erro ao cadastrar empresa.",
                     e
             );
         }
