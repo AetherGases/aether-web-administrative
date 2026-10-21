@@ -18,72 +18,58 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
     /**
      * Valida os dados do funcionario antes de gravar (cpf e email)
-     * Se algum dado estiver errado, avisa qual foi
      * @param employee O funcionario a validar
      * @return true se cpf e email forem validos
      */
     private boolean isValid(Employees employee) {
 
         if (employee == null) {
-            System.out.println("Error: no employee was informed. Fill in the employee data before saving.");
             return false;
         }
 
         if (!Validators.isCpf(employee.getCpf())) {
-            System.out.println("Error: the CPF is not valid. It must have 11 digits and correct check digits.");
             return false;
         }
 
         if (!Validators.isEmail(employee.getEmail())) {
-            System.out.println("Error: the email is not valid. Use the format name@domain.com.");
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Deixa so os digitos do cpf (tira pontos, traco e espacos)
+     * Usado antes de gravar e antes de buscar, pra o cpf ficar sempre no mesmo formato no banco
+     * @param cpf O cpf como foi digitado
+     * @return O cpf so com os digitos, ou null se vier null
+     */
+    private String cleanCpf(String cpf) {
+
+        if (cpf == null) {
+            return null;
+        }
+
+        return cpf.replaceAll("\\D", "");
     }
 
     /**
      * Confere se o funcionario existe e se pertence a unidade informada (usado nos metodos PerUnit)
      * @param employee O funcionario encontrado na busca (pode ser null)
      * @param unitId O id da unidade do admin
-     * @return true se o funcionario existe e e da unidade
+     * @return true se o funcionario existe e eh da unidade
      */
     private boolean belongsToUnit(Employees employee, int unitId) {
 
         if (employee == null) {
-            System.out.println("Error: no active employee was found with the data informed.");
             return false;
         }
 
         if (employee.getUnitId() != unitId) {
-            System.out.println("Error: this employee does not belong to your unit, so you cannot change it.");
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Explica no console o erro que veio do banco, em linguagem clara
-     * Usa o codigo SQLSTATE do PostgreSQL pra saber o que aconteceu
-     * @param action O que estava sendo feito (ex: "register the employee")
-     * @param e O erro que o banco devolveu
-     */
-    private void printSqlError(String action, SQLException e) {
-
-        String state = e.getSQLState();
-
-        if ("23505".equals(state)) {
-            System.out.println("Error: could not " + action + " because some data that must be unique (like the CPF) already exists in the database.");
-        } else if ("23503".equals(state)) {
-            System.out.println("Error: could not " + action + " because the company, permission group, unit or sector informed does not exist.");
-        } else if ("23502".equals(state)) {
-            System.out.println("Error: could not " + action + " because a required field was left empty.");
-        } else {
-            System.out.println("Error: could not " + action + ". Check the database connection and try again.");
-        }
-
-        e.printStackTrace();
     }
 
 
@@ -134,7 +120,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
         if (filter.getCpf() != null && !filter.getCpf().isBlank()) {
             sql.append(" and e.cpf = ?");
-            parametros.add(filter.getCpf());
+            parametros.add(cleanCpf(filter.getCpf()));
         }
 
         if (filter.getStatus() != null) {
@@ -245,7 +231,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             }
 
         } catch (SQLException e) {
-            printSqlError("search the employees", e);
+            e.printStackTrace();
         } finally {
             return employees;
         }
@@ -336,7 +322,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             }
 
         } catch (SQLException e) {
-            printSqlError("search the employee by id", e);
+            e.printStackTrace();
         } finally {
             return employee;
         }
@@ -345,7 +331,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     /**
      * metodo para buscar o empregado pelo cpf (somente ativos)
      * O cpf é unico no banco, entao devolve só um registro
-     * @param cpf O cpf do empregado, somente com os digitos
+     * @param cpf O cpf do empregado (pode vir com ou sem pontuacao)
      * @return Retorna o empregado encontrado ou null caso nao exista
      */
     public Employees searchByCpf(String cpf) {
@@ -377,7 +363,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 )
         ) {
 
-            pstmt.setString(1, cpf);
+            pstmt.setString(1, cleanCpf(cpf));
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
@@ -427,7 +413,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             }
 
         } catch (SQLException e) {
-            printSqlError("search the employee by CPF", e);
+            e.printStackTrace();
         } finally {
             return employee;
         }
@@ -464,7 +450,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setInt(2, employee.getPermissionGroupId());
             pstmt.setInt(3, employee.getUnitId());
             pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
@@ -474,20 +460,20 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("register the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
      * metodo para registrar mais de um empregado
+     * Todos entram juntos: se algum der erro, nenhum fica salvo (transacao)
      * @param employees Uma lista de empregados
      * @return true se foi registrado e false caso tenha dado erro
      */
     public boolean registerLot(List<Employees> employees) {
 
         if (employees == null || employees.isEmpty()) {
-            System.out.println("Error: the list of employees is empty. Add at least one employee to register.");
             return false;
         }
 
@@ -505,33 +491,43 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 )
         ) {
 
-            for (int i = 0; i < employees.size(); i++) {
-                Employees employee = employees.get(i);
+            try {
+                // desliga o salvamento automatico pra tudo entrar junto (ou nada entrar)
+                conn.setAutoCommit(false);
 
-                if (!isValid(employee)) {
-                    System.out.println("Error: the employee at position " + (i + 1) + " of the list has invalid data, so no employee from the list was registered.");
-                    return false;
+                for (int i = 0; i < employees.size(); i++) {
+                    Employees employee = employees.get(i);
+
+                    if (!isValid(employee)) {
+                        return false;
+                    }
+
+                    pstmt.setInt(1, employee.getCompanyId());
+                    pstmt.setInt(2, employee.getPermissionGroupId());
+                    pstmt.setInt(3, employee.getUnitId());
+                    pstmt.setInt(4, employee.getSectorId());
+                    pstmt.setString(5, cleanCpf(employee.getCpf()));
+                    pstmt.setString(6, employee.getName());
+                    pstmt.setString(7, employee.getEmail());
+                    pstmt.setString(8, employee.getPhone());
+                    pstmt.setString(9, employee.getPasswordHash());
+                    pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+
+                    pstmt.addBatch();
                 }
 
-                pstmt.setInt(1, employee.getCompanyId());
-                pstmt.setInt(2, employee.getPermissionGroupId());
-                pstmt.setInt(3, employee.getUnitId());
-                pstmt.setInt(4, employee.getSectorId());
-                pstmt.setString(5, employee.getCpf());
-                pstmt.setString(6, employee.getName());
-                pstmt.setString(7, employee.getEmail());
-                pstmt.setString(8, employee.getPhone());
-                pstmt.setString(9, employee.getPasswordHash());
-                pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+                pstmt.executeBatch();
+                conn.commit();
+                return true;
 
-                pstmt.addBatch();
+            } catch (SQLException e) {
+                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
+                conn.rollback();
+                throw e;
             }
 
-            pstmt.executeBatch();
-            return true;
-
         } catch (SQLException e) {
-            printSqlError("register the list of employees", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -559,16 +555,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
             pstmt.setInt(1, id);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the id " + id + ", so nothing was deactivated.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("deactivate the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -599,7 +589,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("deactivate the employees of the company", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -630,7 +620,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("deactivate the employees of the unit", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -653,65 +643,23 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update employees e set status = 'INACTIVE', is_active = false, updated_at = current_timestamp " +
                                 "from units u " +
-                                "where e.unit_id = u.id and u.name ilike ?"
+                                "where e.unit_id = u.id and lower(u.name) = lower(?)"
                 )
         ) {
 
             pstmt.setString(1, name);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found in a unit with the name informed, so nothing was deactivated.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("deactivate the employees of the unit", e);
-            return false;
-        }
-    }
-
-    /**
-     * metodo que desativa pelo nome
-     * @param name O nome do funcionario
-     * @return true se foi atualizado e false caso tenha dado erro
-     */
-    public boolean deleteByName(String name) {
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update employees set status = 'INACTIVE', is_active = false, updated_at = current_timestamp where name ilike ?"
-                )
-        ) {
-
-            pstmt.setString(1, name);
-
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the name informed, so nothing was deactivated.");
-            }
-
-            return rows > 0;
-
-        } catch (SQLException e) {
-            printSqlError("deactivate the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
      * metodo que desativa pelo cpf
-     * @param cpf O cpf do funcionario, somente com os digitos
+     * @param cpf O cpf do funcionario (pode vir com ou sem pontuacao)
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean deleteByCpf(String cpf) {
@@ -729,18 +677,12 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 )
         ) {
 
-            pstmt.setString(1, cpf);
+            pstmt.setString(1, cleanCpf(cpf));
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the CPF informed, so nothing was deactivated.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("deactivate the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -785,80 +727,16 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setInt(2, employee.getPermissionGroupId());
             pstmt.setInt(3, employee.getUnitId());
             pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
             pstmt.setInt(9, id);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the id " + id + ", so nothing was updated.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("update the employee", e);
-            return false;
-        }
-    }
-
-    /**
-     * Metodo que muda os values do empregado selecionado pelo nome
-     * @param employee Os valores do empregado para ser atualizado
-     * @param name O nome para achar o funcionario
-     * @return true se foi atualizado e false caso tenha dado erro
-     */
-    public boolean updateByName(Employees employee, String name) {
-
-        if (!isValid(employee)) {
-            return false;
-        }
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update employees set company_id = ?, " +
-                                "permission_group_id = ?, " +
-                                "unit_id = ?, " +
-                                "sector_id = ?, " +
-                                "cpf = ?, " +
-                                "name = ?, " +
-                                "email = ?, " +
-                                "phone = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where name ilike ?"
-                )
-        ) {
-
-            pstmt.setInt(1, employee.getCompanyId());
-            pstmt.setInt(2, employee.getPermissionGroupId());
-            pstmt.setInt(3, employee.getUnitId());
-            pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
-            pstmt.setString(6, employee.getName());
-            pstmt.setString(7, employee.getEmail());
-            pstmt.setString(8, employee.getPhone());
-            pstmt.setString(9, name);
-
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the name informed, so nothing was updated.");
-            }
-
-            return rows > 0;
-
-        } catch (SQLException e) {
-            printSqlError("update the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -866,7 +744,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     /**
      * Metodo que muda os values do empregado selecionado pelo cpf
      * @param employee Os valores do empregado para ser atualizado
-     * @param cpf O cpf para achar o funcionario, somente com os digitos
+     * @param cpf O cpf para achar o funcionario (pode vir com ou sem pontuacao)
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean updateByCpf(Employees employee, String cpf) {
@@ -901,22 +779,16 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setInt(2, employee.getPermissionGroupId());
             pstmt.setInt(3, employee.getUnitId());
             pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
-            pstmt.setString(9, cpf);
+            pstmt.setString(9, cleanCpf(cpf));
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the CPF informed, so nothing was updated.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("update the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -931,7 +803,6 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     public boolean updatePasswordHash(int id, String passwordHash) {
 
         if (passwordHash == null || passwordHash.isBlank()) {
-            System.out.println("Error: the new password is empty. Generate the hash with the PasswordHasher before saving.");
             return false;
         }
 
@@ -951,16 +822,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setString(1, passwordHash);
             pstmt.setInt(2, id);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the id " + id + ", so the password was not changed.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("update the password of the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -987,16 +852,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
             pstmt.setInt(1, id);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the id " + id + ", so the status was not changed.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("change the status of the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -1023,16 +882,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
             pstmt.setInt(1, id);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the id " + id + ", so the status was not changed.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("change the status of the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -1053,7 +906,6 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
         }
 
         if (unitId != employee.getUnitId()) {
-            System.out.println("Error: the unit of the employee is different from your unit, so you cannot register them here.");
             return false;
         }
 
@@ -1075,7 +927,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setInt(2, employee.getPermissionGroupId());
             pstmt.setInt(3, employee.getUnitId());
             pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
@@ -1085,13 +937,14 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("register the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
      * metodo para registrar mais de um empregado numa unidade especifica
+     * Todos entram juntos: se algum der erro, nenhum fica salvo (transacao)
      * @param employees Uma lista de empregados
      * @param unitId O id da unidade para validacao
      * @return true se foi registrado e false caso tenha dado erro
@@ -1099,7 +952,6 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     public boolean registerLotPerUnit(List<Employees> employees, int unitId) {
 
         if (employees == null || employees.isEmpty()) {
-            System.out.println("Error: the list of employees is empty. Add at least one employee to register.");
             return false;
         }
 
@@ -1117,38 +969,47 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 )
         ) {
 
-            for (int i = 0; i < employees.size(); i++) {
-                Employees employee = employees.get(i);
+            try {
+                // desliga o salvamento automatico pra tudo entrar junto (ou nada entrar)
+                conn.setAutoCommit(false);
 
-                if (!isValid(employee)) {
-                    System.out.println("Error: the employee at position " + (i + 1) + " of the list has invalid data, so no employee from the list was registered.");
-                    return false;
+                for (int i = 0; i < employees.size(); i++) {
+                    Employees employee = employees.get(i);
+
+                    if (!isValid(employee)) {
+                        return false;
+                    }
+
+                    if (unitId != employee.getUnitId()) {
+                        return false;
+                    }
+
+                    pstmt.setInt(1, employee.getCompanyId());
+                    pstmt.setInt(2, employee.getPermissionGroupId());
+                    pstmt.setInt(3, employee.getUnitId());
+                    pstmt.setInt(4, employee.getSectorId());
+                    pstmt.setString(5, cleanCpf(employee.getCpf()));
+                    pstmt.setString(6, employee.getName());
+                    pstmt.setString(7, employee.getEmail());
+                    pstmt.setString(8, employee.getPhone());
+                    pstmt.setString(9, employee.getPasswordHash());
+                    pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+
+                    pstmt.addBatch();
                 }
 
-                if (unitId != employee.getUnitId()) {
-                    System.out.println("Error: the employee at position " + (i + 1) + " of the list is from another unit, so no employee from the list was registered.");
-                    return false;
-                }
+                pstmt.executeBatch();
+                conn.commit();
+                return true;
 
-                pstmt.setInt(1, employee.getCompanyId());
-                pstmt.setInt(2, employee.getPermissionGroupId());
-                pstmt.setInt(3, employee.getUnitId());
-                pstmt.setInt(4, employee.getSectorId());
-                pstmt.setString(5, employee.getCpf());
-                pstmt.setString(6, employee.getName());
-                pstmt.setString(7, employee.getEmail());
-                pstmt.setString(8, employee.getPhone());
-                pstmt.setString(9, employee.getPasswordHash());
-                pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
-
-                pstmt.addBatch();
+            } catch (SQLException e) {
+                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
+                conn.rollback();
+                throw e;
             }
 
-            pstmt.executeBatch();
-            return true;
-
         } catch (SQLException e) {
-            printSqlError("register the list of employees", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -1185,14 +1046,14 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("deactivate the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
      * metodo para desativar o empregado pelo cpf que esta na unidade
-     * @param cpf O cpf do empregado, somente com os digitos
+     * @param cpf O cpf do empregado (pode vir com ou sem pontuacao)
      * @param unitId Id da unidade para validacao
      * @return true se foi desativado e false caso tenha dado erro
      */
@@ -1217,18 +1078,19 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 )
         ) {
 
-            pstmt.setString(1, cpf);
+            pstmt.setString(1, cleanCpf(cpf));
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("deactivate the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
      * metodo que muda os values do empregado selecionado pelo id numa unidade especifica
+     * O funcionario nao pode ser mudado para outra unidade
      * @param employee Os valores do empregado para ser atualizado
      * @param id O valor unico do empregado que quer atualizar
      * @param unitId O id da unidade para validacao
@@ -1237,6 +1099,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     public boolean updateByIdPerUnit(Employees employee, int id, int unitId) {
 
         if (!isValid(employee)) {
+            return false;
+        }
+
+        if (unitId != employee.getUnitId()) {
             return false;
         }
 
@@ -1272,7 +1138,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setInt(2, employee.getPermissionGroupId());
             pstmt.setInt(3, employee.getUnitId());
             pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
@@ -1281,13 +1147,14 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("update the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
      * Metodo que muda os values do empregado selecionado pelo nome numa unidade especifica
+     * O funcionario nao pode ser mudado para outra unidade
      * @param employee Os valores do empregado para ser atualizado
      * @param name O nome para achar o funcionario
      * @param unitId O id da unidade para validacao
@@ -1296,6 +1163,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     public boolean updateByNamePerUnit(Employees employee, String name, int unitId) {
 
         if (!isValid(employee)) {
+            return false;
+        }
+
+        if (unitId != employee.getUnitId()) {
             return false;
         }
 
@@ -1317,7 +1188,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                                 "email = ?, " +
                                 "phone = ?, " +
                                 "updated_at = current_timestamp " +
-                                "where name ilike ? and unit_id = ?"
+                                "where lower(name) = lower(?) and unit_id = ?"
                 )
         ) {
 
@@ -1325,37 +1196,36 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setInt(2, employee.getPermissionGroupId());
             pstmt.setInt(3, employee.getUnitId());
             pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
             pstmt.setString(9, name);
             pstmt.setInt(10, unitId);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the name informed in your unit, so nothing was updated.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("update the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
 
     /**
      * Metodo que muda os values do empregado selecionado pelo cpf numa unidade especifica
+     * O funcionario nao pode ser mudado para outra unidade
      * @param employee Os valores do empregado para ser atualizado
-     * @param cpf O cpf para achar o funcionario, somente com os digitos
+     * @param cpf O cpf para achar o funcionario (pode vir com ou sem pontuacao)
      * @param unitId O id da unidade para validacao
      * @return true se foi atualizado e false caso tenha dado erro
      */
     public boolean updateByCpfPerUnit(Employees employee, String cpf, int unitId) {
 
         if (!isValid(employee)) {
+            return false;
+        }
+
+        if (unitId != employee.getUnitId()) {
             return false;
         }
 
@@ -1385,23 +1255,17 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             pstmt.setInt(2, employee.getPermissionGroupId());
             pstmt.setInt(3, employee.getUnitId());
             pstmt.setInt(4, employee.getSectorId());
-            pstmt.setString(5, employee.getCpf());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
-            pstmt.setString(9, cpf);
+            pstmt.setString(9, cleanCpf(cpf));
             pstmt.setInt(10, unitId);
 
-            int rows = pstmt.executeUpdate();
-
-            if (rows == 0) {
-                System.out.println("Error: no employee was found with the CPF informed in your unit, so nothing was updated.");
-            }
-
-            return rows > 0;
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("update the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -1416,7 +1280,6 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     public boolean updatePasswordHashPerUnit(int id, String passwordHash, int unitId) {
 
         if (passwordHash == null || passwordHash.isBlank()) {
-            System.out.println("Error: the new password is empty. Generate the hash with the PasswordHasher before saving.");
             return false;
         }
 
@@ -1445,7 +1308,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("update the password of the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -1482,7 +1345,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("change the status of the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -1519,7 +1382,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            printSqlError("change the status of the employee", e);
+            e.printStackTrace();
             return false;
         }
     }
