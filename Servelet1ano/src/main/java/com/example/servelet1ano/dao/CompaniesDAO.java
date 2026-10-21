@@ -251,20 +251,26 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return -1;
         }
 
-        String sql = "INSERT INTO companies " +
-                "(name, trade_name, size, registration_date, cnpj, email) " +
-                "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
-                "RETURNING id";
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return -1;
+        }
 
         try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "INSERT INTO companies " +
+                                "(name, trade_name, size, registration_date, cnpj, email) " +
+                                "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
+                                "RETURNING id"
+                )
         ) {
             pstmt.setString(1, company.getName());
             pstmt.setString(2, company.getTradeName());
             pstmt.setString(3, company.getSize().getValor());
             pstmt.setDate(4, company.getRegistrationDate());
-            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(5, cleanCnpj(company.getCnpj()));
             pstmt.setString(6, company.getEmail());
 
             try (ResultSet rs = pstmt.executeQuery()) {

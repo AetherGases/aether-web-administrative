@@ -13,8 +13,44 @@ import java.util.List;
 public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
+     * Valida os dados da unit antes de gravar (o cnpj é obrigatorio no banco)
+     * @param unit A unit a validar
+     * @return true se a unit existir e o cnpj estiver preenchido
+     */
+    private boolean isValid(Units unit) {
+
+        if (unit == null) {
+            return false;
+        }
+
+        String cnpj = cleanCnpj(unit.getCnpj());
+
+        if (cnpj == null || cnpj.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Deixa so letras e numeros do cnpj, em maiusculo (tira pontos, barra, traco e espacos)
+     * Usado antes de gravar e antes de buscar, pra o cnpj ficar sempre no mesmo formato no banco
+     * @param cnpj O cnpj como foi digitado
+     * @return O cnpj so com letras e numeros, ou null se vier null
+     */
+    private String cleanCnpj(String cnpj) {
+
+        if (cnpj == null) {
+            return null;
+        }
+
+        return cnpj.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
+    }
+
+    /**
      * Metodo que busca as units ativas aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Se o filter vier null, busca sem filtro nenhum
      * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return List<Units> com as units encontradas
      */
@@ -22,6 +58,10 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
     public List<Units> searchAll(UnitsFilter filter) {
 
         List<Units> units = new ArrayList<>();
+
+        if (filter == null) {
+            filter = new UnitsFilter();
+        }
 
         StringBuilder sql = new StringBuilder(
                 "select u.*, u.company_id as companyId, u.address_id as addressId, " +
@@ -58,7 +98,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
         if (filter.getCnpj() != null && !filter.getCnpj().isBlank()) {
             sql.append(" and u.cnpj = ?");
-            parametros.add(filter.getCnpj());
+            parametros.add(cleanCnpj(filter.getCnpj()));
         }
 
         if (filter.getCnae() != null && !filter.getCnae().isBlank()) {
@@ -66,8 +106,14 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             parametros.add(filter.getCnae());
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return units;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
@@ -75,43 +121,44 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
 
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
+                    Companies company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
 
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("idAddress"),
+                            rs.getString("addressZipCode"),
+                            rs.getString("addressStreet"),
+                            rs.getString("addressNumber"),
+                            rs.getString("addressComplement"),
+                            rs.getString("addressNeighborhood"),
+                            rs.getString("addressCity"),
+                            rs.getString("addressState"),
+                            rs.getString("addressCountry")
+                    );
 
-                Units unit = new Units(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("cnpj"),
-                        rs.getString("cnae"),
-                        rs.getBoolean("is_active"),
-                        company,
-                        address
-                );
+                    Units unit = new Units(
+                            rs.getInt("id"),
+                            rs.getInt("companyId"),
+                            rs.getInt("addressId"),
+                            rs.getString("name"),
+                            rs.getString("cnpj"),
+                            rs.getString("cnae"),
+                            rs.getBoolean("is_active"),
+                            company,
+                            address
+                    );
 
-                unit.setCreatedAt(rs.getTimestamp("created_at"));
-                unit.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    unit.setCreatedAt(rs.getTimestamp("created_at"));
+                    unit.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                units.add(unit);
+                    units.add(unit);
+                }
             }
 
         } catch (SQLException e) {
@@ -124,15 +171,21 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
     /**
      * metodo para buscar por Id (somente ativas)
      * @param id Numero unico da unit
-     * @return Retorna a unit encontrada
+     * @return Retorna a unit encontrada ou null caso nao exista
      */
     @Override
     public Units searchById(int id) {
 
         Units unit = null;
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select u.*, u.company_id as companyId, u.address_id as addressId, " +
                                 "c.name as companyName, c.id as idCompany, " +
@@ -147,41 +200,42 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
             pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            if (rs.next()) {
+                if (rs.next()) {
 
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
+                    Companies company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
 
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("idAddress"),
+                            rs.getString("addressZipCode"),
+                            rs.getString("addressStreet"),
+                            rs.getString("addressNumber"),
+                            rs.getString("addressComplement"),
+                            rs.getString("addressNeighborhood"),
+                            rs.getString("addressCity"),
+                            rs.getString("addressState"),
+                            rs.getString("addressCountry")
+                    );
 
-                unit = new Units(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("cnpj"),
-                        rs.getString("cnae"),
-                        rs.getBoolean("is_active"),
-                        company,
-                        address
-                );
+                    unit = new Units(
+                            rs.getInt("id"),
+                            rs.getInt("companyId"),
+                            rs.getInt("addressId"),
+                            rs.getString("name"),
+                            rs.getString("cnpj"),
+                            rs.getString("cnae"),
+                            rs.getBoolean("is_active"),
+                            company,
+                            address
+                    );
 
-                unit.setCreatedAt(rs.getTimestamp("created_at"));
-                unit.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    unit.setCreatedAt(rs.getTimestamp("created_at"));
+                    unit.setUpdatedAt(rs.getTimestamp("updated_at"));
+                }
             }
 
         } catch (SQLException e) {
@@ -199,8 +253,18 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
     @Override
     public boolean register(Units unit) {
 
+        if (!isValid(unit)) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into units (company_id, address_id, name, cnpj, cnae, is_active) " +
                                 "values (?, ?, ?, ?, ?, ?)"
@@ -210,7 +274,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             pstmt.setInt(1, unit.getCompanyId());
             pstmt.setInt(2, unit.getAddressId());
             pstmt.setString(3, unit.getName());
-            pstmt.setString(4, unit.getCnpj());
+            pstmt.setString(4, cleanCnpj(unit.getCnpj()));
             pstmt.setString(5, unit.getCnae());
             pstmt.setBoolean(6, true);
 
@@ -224,34 +288,60 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
      * metodo para registrar mais de uma unit (sempre ativas na criacao)
+     * Todas entram juntas: se alguma der erro, nenhuma fica salva (transacao)
      * @param units Uma lista de units
      * @return true se foi registrado e false caso tenha dado erro
      */
     public boolean registerLot(List<Units> units) {
 
+        if (units == null || units.isEmpty()) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into units (company_id, address_id, name, cnpj, cnae, is_active) " +
                                 "values (?, ?, ?, ?, ?, ?)"
                 )
         ) {
 
-            for (int i = 0; i < units.size(); i++) {
-                Units unit = units.get(i);
+            try {
+                // desliga o salvamento automatico pra tudo entrar junto (ou nada entrar)
+                conn.setAutoCommit(false);
 
-                pstmt.setInt(1, unit.getCompanyId());
-                pstmt.setInt(2, unit.getAddressId());
-                pstmt.setString(3, unit.getName());
-                pstmt.setString(4, unit.getCnpj());
-                pstmt.setString(5, unit.getCnae());
-                pstmt.setBoolean(6, true);
+                for (int i = 0; i < units.size(); i++) {
+                    Units unit = units.get(i);
 
-                pstmt.addBatch();
+                    if (!isValid(unit)) {
+                        return false;
+                    }
+
+                    pstmt.setInt(1, unit.getCompanyId());
+                    pstmt.setInt(2, unit.getAddressId());
+                    pstmt.setString(3, unit.getName());
+                    pstmt.setString(4, cleanCnpj(unit.getCnpj()));
+                    pstmt.setString(5, unit.getCnae());
+                    pstmt.setBoolean(6, true);
+
+                    pstmt.addBatch();
+                }
+
+                pstmt.executeBatch();
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
+                conn.rollback();
+                throw e;
             }
-
-            pstmt.executeBatch();
-            return true;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -271,8 +361,14 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
         new SectorsDAO().deleteByUnitId(id);
         new EmployeesDAO().deleteByIdUnit(id);
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update units set is_active = false, updated_at = current_timestamp where id = ?"
                 )
@@ -291,6 +387,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
     /**
      * metodo que desativa as units de uma empresa (para quando uma empresa for desativada)
      * Busca as units ativas da empresa via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os setores e funcionarios de cada unidade
+     * Se a empresa nao tiver units devolve true, e isso nao e um erro
      * @param companyId O id da empresa
      * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
      */
@@ -298,29 +395,6 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
         UnitsFilter filter = new UnitsFilter();
         filter.setCompanyId(companyId);
-
-        List<Units> units = searchAll(filter);
-        boolean allSuccess = true;
-
-        for (int i = 0; i < units.size(); i++) {
-            if (!delete(units.get(i).getId())) {
-                allSuccess = false;
-            }
-        }
-
-        return allSuccess;
-    }
-
-    /**
-     * metodo que desativa pelo nome
-     * Busca as units ativas pelo nome via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os setores e funcionarios de cada unidade
-     * @param name O nome da unit
-     * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
-     */
-    public boolean deleteByName(String name) {
-
-        UnitsFilter filter = new UnitsFilter();
-        filter.setName(name);
 
         List<Units> units = searchAll(filter);
         boolean allSuccess = true;
@@ -343,8 +417,18 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
     @Override
     public boolean update(Units unit, int id) {
 
+        if (!isValid(unit)) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update units set company_id = ?, " +
                                 "address_id = ?, " +
@@ -359,45 +443,9 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             pstmt.setInt(1, unit.getCompanyId());
             pstmt.setInt(2, unit.getAddressId());
             pstmt.setString(3, unit.getName());
-            pstmt.setString(4, unit.getCnpj());
+            pstmt.setString(4, cleanCnpj(unit.getCnpj()));
             pstmt.setString(5, unit.getCnae());
             pstmt.setInt(6, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
-     * Metodo que muda os values da unit selecionada pelo nome
-     * @param unit Os valores da unit para ser atualizada
-     * @param name O nome para achar a unit
-     * @return true se foi atualizado e false caso tenha dado erro
-     */
-    public boolean updateByName(Units unit, String name) {
-
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update units set company_id = ?, " +
-                                "address_id = ?, " +
-                                "name = ?, " +
-                                "cnpj = ?, " +
-                                "cnae = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where name ilike ?"
-                )
-        ) {
-
-            pstmt.setInt(1, unit.getCompanyId());
-            pstmt.setInt(2, unit.getAddressId());
-            pstmt.setString(3, unit.getName());
-            pstmt.setString(4, unit.getCnpj());
-            pstmt.setString(5, unit.getCnae());
-            pstmt.setString(6, name);
 
             return pstmt.executeUpdate() > 0;
 

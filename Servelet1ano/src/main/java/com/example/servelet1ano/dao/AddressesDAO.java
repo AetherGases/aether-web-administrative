@@ -14,21 +14,64 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
     /**
      * Valida os dados do endereco antes de gravar
+     * Rua, numero, bairro, cidade e estado sao obrigatorios no banco
      * O CEP é opcional no banco, entao so é validado quando vier preenchido
      * @param address O endereco a validar
-     * @return true se o CEP (quando informado) for valido
+     * @return true se os campos obrigatorios estiverem preenchidos e o CEP (quando informado) for valido
      */
     private boolean isValid(Addresses address) {
-        if (address.getZipCode() != null && !address.getZipCode().isBlank() && !Validators.isCep(address.getZipCode())) {
+
+        if (address == null) {
             return false;
         }
+
+        if (isEmpty(address.getStreet()) || isEmpty(address.getNumber()) || isEmpty(address.getNeighborhood())
+                || isEmpty(address.getCity()) || isEmpty(address.getState())) {
+            return false;
+        }
+
+        if (!isEmpty(address.getZipCode()) && !Validators.isCep(address.getZipCode())) {
+            return false;
+        }
+
         return true;
+    }
+
+    /**
+     * Confere se o texto esta nulo ou so com espacos
+     * @param text O texto a conferir
+     * @return true se estiver vazio
+     */
+    private boolean isEmpty(String text) {
+        return text == null || text.isBlank();
+    }
+
+    /**
+     * Deixa so os digitos do cep (tira hifen, pontos e espacos)
+     * Usado antes de gravar e antes de buscar, pra o cep ficar sempre no mesmo formato no banco (zip_code é CHAR(8))
+     * @param zipCode O cep como foi digitado
+     * @return O cep so com os digitos, ou null se vier null ou vazio
+     */
+    private String cleanCep(String zipCode) {
+
+        if (zipCode == null) {
+            return null;
+        }
+
+        String digits = zipCode.replaceAll("\\D", "");
+
+        if (digits.isEmpty()) {
+            return null;
+        }
+
+        return digits;
     }
 
 
     /**
      * Metodo que busca os enderecos ativos aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Se o filter vier null, busca sem filtro nenhum
      * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return List<Addresses> com os enderecos encontrados
      */
@@ -37,6 +80,10 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
     public List<Addresses> searchAll(AddressesFilter filter) {
 
         List<Addresses> addresses = new ArrayList<>();
+
+        if (filter == null) {
+            filter = new AddressesFilter();
+        }
 
         StringBuilder sql = new StringBuilder(
                 "select * from addresses where is_active = true"
@@ -51,7 +98,8 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         if (filter.getZipCode() != null && !filter.getZipCode().isBlank()) {
             sql.append(" and zip_code = ?");
-            parametros.add(filter.getZipCode());
+            String zipCode = cleanCep(filter.getZipCode());
+            parametros.add(zipCode == null ? "" : zipCode);
         }
 
         if (filter.getNeighborhood() != null && !filter.getNeighborhood().isBlank()) {
@@ -74,8 +122,14 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             parametros.add("%" + filter.getCountry() + "%");
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
@@ -83,26 +137,27 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
 
-                Addresses address = new Addresses(
-                        rs.getInt("id"),
-                        rs.getString("zip_code"),
-                        rs.getString("street"),
-                        rs.getString("number"),
-                        rs.getString("complement"),
-                        rs.getString("neighborhood"),
-                        rs.getString("city"),
-                        rs.getString("state"),
-                        rs.getString("country")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
 
-                address.setCreatedAt(rs.getTimestamp("created_at"));
-                address.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                addresses.add(address);
+                    addresses.add(address);
+                }
             }
 
         } catch (SQLException e) {
@@ -115,15 +170,21 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
     /**
      * metodo para buscar por Id (somente ativos)
      * @param id Numero unico do endereco
-     * @return Retorna o endereco encontrado
+     * @return Retorna o endereco encontrado ou null caso nao exista
      */
     @Override
     public Addresses searchById(int id) {
 
         Addresses address = null;
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select * from addresses where id = ? and is_active = true"
                 )
@@ -131,23 +192,24 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
             pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            if (rs.next()) {
-                address = new Addresses(
-                        rs.getInt("id"),
-                        rs.getString("zip_code"),
-                        rs.getString("street"),
-                        rs.getString("number"),
-                        rs.getString("complement"),
-                        rs.getString("neighborhood"),
-                        rs.getString("city"),
-                        rs.getString("state"),
-                        rs.getString("country")
-                );
+                if (rs.next()) {
+                    address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
 
-                address.setCreatedAt(rs.getTimestamp("created_at"));
-                address.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
+                }
             }
 
         } catch (SQLException e) {
@@ -166,8 +228,14 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         List<Addresses> addresses = new ArrayList<>();
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select * from addresses where city ilike ? and is_active = true"
                 )
@@ -175,26 +243,27 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
             pstmt.setString(1, city);
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
 
-                Addresses address = new Addresses(
-                        rs.getInt("id"),
-                        rs.getString("zip_code"),
-                        rs.getString("street"),
-                        rs.getString("number"),
-                        rs.getString("complement"),
-                        rs.getString("neighborhood"),
-                        rs.getString("city"),
-                        rs.getString("state"),
-                        rs.getString("country")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
 
-                address.setCreatedAt(rs.getTimestamp("created_at"));
-                address.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                addresses.add(address);
+                    addresses.add(address);
+                }
             }
 
         } catch (SQLException e) {
@@ -213,8 +282,14 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         List<Addresses> addresses = new ArrayList<>();
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select * from addresses where state ilike ? and is_active = true"
                 )
@@ -222,26 +297,27 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
             pstmt.setString(1, state);
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
 
-                Addresses address = new Addresses(
-                        rs.getInt("id"),
-                        rs.getString("zip_code"),
-                        rs.getString("street"),
-                        rs.getString("number"),
-                        rs.getString("complement"),
-                        rs.getString("neighborhood"),
-                        rs.getString("city"),
-                        rs.getString("state"),
-                        rs.getString("country")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
 
-                address.setCreatedAt(rs.getTimestamp("created_at"));
-                address.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                addresses.add(address);
+                    addresses.add(address);
+                }
             }
 
         } catch (SQLException e) {
@@ -260,8 +336,14 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         List<Addresses> addresses = new ArrayList<>();
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select * from addresses where country ilike ? and is_active = true"
                 )
@@ -269,26 +351,27 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
             pstmt.setString(1, country);
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()) {
+                while (rs.next()) {
 
-                Addresses address = new Addresses(
-                        rs.getInt("id"),
-                        rs.getString("zip_code"),
-                        rs.getString("street"),
-                        rs.getString("number"),
-                        rs.getString("complement"),
-                        rs.getString("neighborhood"),
-                        rs.getString("city"),
-                        rs.getString("state"),
-                        rs.getString("country")
-                );
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
 
-                address.setCreatedAt(rs.getTimestamp("created_at"));
-                address.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                addresses.add(address);
+                    addresses.add(address);
+                }
             }
 
         } catch (SQLException e) {
@@ -310,15 +393,21 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return false;
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into addresses (zip_code, street, number, complement, neighborhood, city, state, country) " +
                                 "values (?, ?, ?, ?, ?, ?, ?, ?)"
                 )
         ) {
 
-            pstmt.setString(1, address.getZipCode());
+            pstmt.setString(1, cleanCep(address.getZipCode()));
             pstmt.setString(2, address.getStreet());
             pstmt.setString(3, address.getNumber());
             pstmt.setString(4, address.getComplement());
@@ -349,8 +438,14 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return -1;
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return -1;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into addresses (zip_code, street, number, complement, neighborhood, city, state, country) " +
                                 "values (?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -358,7 +453,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 )
         ) {
 
-            pstmt.setString(1, address.getZipCode());
+            pstmt.setString(1, cleanCep(address.getZipCode()));
             pstmt.setString(2, address.getStreet());
             pstmt.setString(3, address.getNumber());
             pstmt.setString(4, address.getComplement());
@@ -367,10 +462,11 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             pstmt.setString(7, address.getState());
             pstmt.setString(8, address.getCountry());
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            if (rs.next()) {
-                return rs.getInt("id");
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
             }
 
             return -1;
@@ -390,8 +486,14 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
     @Override
     public boolean delete(int id) {
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update addresses set is_active = false, updated_at = current_timestamp where id = ?"
                 )
@@ -420,8 +522,14 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return false;
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update addresses set zip_code = ?, " +
                                 "street = ?, " +
@@ -436,7 +544,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 )
         ) {
 
-            pstmt.setString(1, address.getZipCode());
+            pstmt.setString(1, cleanCep(address.getZipCode()));
             pstmt.setString(2, address.getStreet());
             pstmt.setString(3, address.getNumber());
             pstmt.setString(4, address.getComplement());

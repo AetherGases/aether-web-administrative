@@ -45,10 +45,10 @@ public class CompanyRegisterServlet extends HttpServlet {
 
             switch (tamanho) {
                 case "pequena":
-                    tamanhoEmpresa = CompanySize.PEQUENA;
+                    tamanhoEmpresa = CompanySize.PEQUENO;
                     break;
                 case "media":
-                    tamanhoEmpresa = CompanySize.MEDIA;
+                    tamanhoEmpresa = CompanySize.MEDIO;
                     break;
                 case "grande":
                     tamanhoEmpresa = CompanySize.GRANDE;

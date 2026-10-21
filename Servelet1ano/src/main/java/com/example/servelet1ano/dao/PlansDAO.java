@@ -31,8 +31,14 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
 
         String name = (filter == null) ? null : filter.getName();
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return plans;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -84,8 +90,14 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
                         "from plans " +
                         "where id = ? and is_active = true";
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -140,8 +152,14 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
                         "where LOWER(name) = LOWER(?) " +
                         "and is_active = true";
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 

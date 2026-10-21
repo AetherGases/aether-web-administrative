@@ -12,8 +12,31 @@ import java.util.List;
 public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter> {
 
     /**
+     * Valida os dados da assinatura antes de gravar (empresa e plano precisam ser informados)
+     * @param subscription A assinatura a validar
+     * @return true se a assinatura existir e tiver o id da empresa e do plano
+     */
+    private boolean isValid(Subscriptions subscription) {
+
+        if (subscription == null) {
+            return false;
+        }
+
+        if (subscription.getCompanyId() <= 0) {
+            return false;
+        }
+
+        if (subscription.getPlanId() <= 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Metodo que busca as assinaturas ativas aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Se o filter vier null, busca sem filtro nenhum
      * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return List<Subscriptions> com as assinaturas encontradas
      */
@@ -21,6 +44,10 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     public List<Subscriptions> searchAll(SubscriptionsFilter filter){
 
         List<Subscriptions> subscriptions = new ArrayList<>();
+
+        if (filter == null) {
+            filter = new SubscriptionsFilter();
+        }
 
         StringBuilder sql = new StringBuilder(
                 "select s.*, s.company_id as companyId, s.plan_id as planId, " +
@@ -42,8 +69,14 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             parametros.add(filter.getCompanyId());
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return subscriptions;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ){
 
@@ -51,29 +84,30 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            while (rs.next()){
+                while (rs.next()){
 
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
+                    Companies company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
 
-                Subscriptions subscription = new Subscriptions(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("planId"),
-                        rs.getBoolean("is_active"),
-                        rs.getBoolean("installments"),
-                        company
-                );
+                    Subscriptions subscription = new Subscriptions(
+                            rs.getInt("id"),
+                            rs.getInt("companyId"),
+                            rs.getInt("planId"),
+                            rs.getBoolean("is_active"),
+                            rs.getBoolean("installments"),
+                            company
+                    );
 
-                subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
-                subscription.setCreatedAt(rs.getTimestamp("created_at"));
-                subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
+                    subscription.setCreatedAt(rs.getTimestamp("created_at"));
+                    subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                subscriptions.add(subscription);
+                    subscriptions.add(subscription);
+                }
             }
 
         } catch (SQLException e) {
@@ -88,15 +122,21 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     /**
      * metodo para buscar por Id (somente ativas)
      * @param id Numero unico da assinatura
-     * @return Retorna a assinatura encontrada
+     * @return Retorna a assinatura encontrada ou null caso nao exista
      */
     @Override
     public Subscriptions searchById(int id){
 
         Subscriptions subscription = null;
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select s.*, s.company_id as companyId, s.plan_id as planId, " +
                                 "c.id as idCompany, c.name as companyName " +
@@ -108,26 +148,27 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
 
             pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
+            try (ResultSet rs = pstmt.executeQuery()) {
 
-            if(rs.next()){
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
+                if(rs.next()){
+                    Companies company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
 
-                subscription = new Subscriptions(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("planId"),
-                        rs.getBoolean("is_active"),
-                        rs.getBoolean("installments"),
-                        company
-                );
+                    subscription = new Subscriptions(
+                            rs.getInt("id"),
+                            rs.getInt("companyId"),
+                            rs.getInt("planId"),
+                            rs.getBoolean("is_active"),
+                            rs.getBoolean("installments"),
+                            company
+                    );
 
-                subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
-                subscription.setCreatedAt(rs.getTimestamp("created_at"));
-                subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
+                    subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
+                    subscription.setCreatedAt(rs.getTimestamp("created_at"));
+                    subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
+                }
             }
 
         } catch (SQLException e) {
@@ -145,8 +186,18 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     @Override
     public boolean register(Subscriptions subscription){
 
+        if (!isValid(subscription)) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try (
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into subscriptions (company_id, plan_id, is_active, installments) " +
                                 "values (?, ?, ?, ?)"
@@ -175,8 +226,14 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     @Override
     public boolean delete(int id){
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try(
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
                 )
@@ -194,13 +251,20 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
 
     /**
      * metodo que desativa as assinaturas de uma empresa (para quando uma empresa for desativada)
+     * Se a empresa nao tiver assinaturas devolve false, e isso nao e um erro
      * @param companyId O id da empresa
      * @return true se foi desativada e false caso tenha dado erro
      */
     public boolean deleteByCompanyId(int companyId){
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try(
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where company_id = ?"
                 )
@@ -225,8 +289,18 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     @Override
     public boolean update(Subscriptions subscription, int id){
 
+        if (!isValid(subscription)) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try(
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update subscriptions set company_id = ?, " +
                                 "plan_id = ?, " +
@@ -256,8 +330,14 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
      */
     public boolean activateSubscription(int id){
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try(
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update subscriptions set is_active = true, deactivated_at = null, updated_at = current_timestamp where id = ?"
                 )
@@ -280,8 +360,14 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
      */
     public boolean deactivateSubscription(int id){
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
         try(
-                Connection conn = ConnectionFactory.connect();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
                 )
