@@ -15,8 +15,8 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="verificacao.css">
+    <link rel="stylesheet" href="Global.css">
+    <link rel="stylesheet" href="Verification.css">
 
 </head>
 <body>
@@ -62,7 +62,7 @@
         <div>Cadastro empresarial</div>
 
         <fieldset>
-            <form action="empresass" method="post">
+            <form action="${pageContext.request.contextPath}/empresas" method="post">
 
                 <label for="empresa"></label>
                 <input type="text" name="empresas" id="empresa"
@@ -97,7 +97,7 @@
             </form>
             </fieldset>
 
-        <p>Já possui uma conta? <a href="login.jsp">clique aqui</a></p>
+        <p>Já possui uma conta? <a href="Login.jsp">clique aqui</a></p>
 
     </div>
 

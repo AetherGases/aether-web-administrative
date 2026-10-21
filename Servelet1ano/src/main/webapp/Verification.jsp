@@ -1,5 +1,7 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Tela de Verificação do Aether</title>
@@ -15,8 +17,8 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="verificacao.css">
+    <link rel="stylesheet" href="Global.css">
+    <link rel="stylesheet" href="Verification.css">
 
 </head>
 <body>
@@ -45,7 +47,7 @@
                 <p class="tipografiaVerificacao">Verificação</p>
             </div>
 
-            <form action="funcionario.html" method="post">
+            <form action="Employee.jsp" method="post">
 
                 <div class="divQuadradinhos">
                     <input type="text" id="codigo1" aria-label="Primeiro dígito do código" name="codigo1" maxlength="1" required class="quadradinhoCod" autofocus oninput="moverProximo(this, 'codigo2')">
@@ -62,7 +64,7 @@
 
             <p class="divSubtexto1">Digite o código de 6 dígitos enviado para o seu email</p>
 
-            <p class="divSubtexto2"> Não recebeu o código? <a href="recSenha.css" class="divSubtexto2Reenviar">Reenviar </a> </p>
+            <p class="divSubtexto2"> Não recebeu o código? <a href="RecoverPassword.css" class="divSubtexto2Reenviar">Reenviar </a> </p>
 
             <p class="divSubTexto3">Colocou o E-mail errado? <a class="divSubTexto3Destaque"  href="recuperarSenha.html">altere aqui</a></p>
 

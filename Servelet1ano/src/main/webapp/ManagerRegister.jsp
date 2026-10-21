@@ -1,5 +1,7 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Tela de Cadastro de Gerente do Aether</title>
@@ -15,8 +17,8 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="cadGerente.css">
+    <link rel="stylesheet" href="Global.css">
+    <link rel="stylesheet" href="ManagerRegister.css">
 
 </head>
 <body>
@@ -42,7 +44,7 @@
             </div>
 
 
-            <form action="cadastroEmpresarial.html" method="post">
+            <form action="ManagerRegister.jsp" method="post">
 
                 <input class="campoNomeCG campoNomeCG2" type="text" id="nome" name="campoNome" placeholder="nome">
                 <label for="nome"></label>
@@ -81,7 +83,7 @@
 
             </form>
 
-            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="login.jsp">clique aqui</a></p>
+            <p class="naoPossuiConta2">Já possui uma conta? <a class="naoPossuiConta2Destaque" href="Login.jsp">clique aqui</a></p>
 
         </div>
     </main>

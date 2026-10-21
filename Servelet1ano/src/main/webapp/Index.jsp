@@ -1,5 +1,7 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,8 +10,8 @@
 
     <title>Landing Page Aether</title>
 
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="Footer.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,8 +48,8 @@
         </nav>
     </div>
 
-    <a class="botaoEntrar conteudoBotaoEntrar" href="login.jsp">Entrar</a>
-    <a class="botaoCadastrar conteudoBotaoCadastar" href="cadastroEmpresarial.html">Cadastrar-se</a>
+    <a class="botaoEntrar conteudoBotaoEntrar" href="Login.jsp">Entrar</a>
+    <a class="botaoCadastrar conteudoBotaoCadastar" href="CompanyRegister.jsp">Cadastrar-se</a>
 
     <h1 class="montserrat descarbonizando">DESCARBONIZANDO</h1>
     <p class="palavraFuturo">O FUTURO</p>
@@ -726,7 +728,7 @@
                 <li><a href="#quemSomos">Quem Somos</a></li>
                 <li><a href="#nossaSolucao">Nossa Solução</a></li>
                 <li><a href="#planos">Planos</a></li>
-                <li><a href="contato.html">Contatos</a></li>
+                <li><a href="Contact.jsp">Contatos</a></li>
             </ul>
         </nav>
 
@@ -741,14 +743,14 @@
             <h2 id="rodapeAetherEmpresa">Empresa</h2>
             <ul>
                 <li><a href="#quemSomos">Nossa equipe</a></li>
-                <li><a href="contato.html">Contato</a></li>
+                <li><a href="Contact.jsp">Contato</a></li>
             </ul>
         </section>
 
     </div>
 </footer>
 
-<script src="script.js"></script>
+<script src="Script.js"></script>
 
 
 </body>

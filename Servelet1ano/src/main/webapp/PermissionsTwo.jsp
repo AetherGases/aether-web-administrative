@@ -1,5 +1,7 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Tela de Permissões do Aether</title>
@@ -44,7 +46,7 @@
     </nav>
 
     <div>
-        <a href="login.jsp">Logout</a>
+        <a href="Login.jsp">Logout</a>
     </div>
 
 </aside>

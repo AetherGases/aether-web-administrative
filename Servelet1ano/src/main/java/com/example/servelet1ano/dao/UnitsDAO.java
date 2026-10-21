@@ -1,3 +1,4 @@
+
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -12,11 +13,76 @@ import java.util.List;
 
 public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
-    /**
-     * Metodo que busca as units ativas aplicando os filtros informados
-     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
-     * @param filter Objeto com os campos opcionais para filtrar a busca
-     * @return List<Units> com as units encontradas
+    private Connection requireConnection() {
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            throw new IllegalStateException(
+                    "Não foi possível estabelecer conexão com o banco de dados."
+            );
+        }
+
+        return conn;
+    }
+
+    private static final String SELECT_UNITS =
+            "SELECT u.*, " +
+                    "u.company_id AS companyId, " +
+                    "u.address_id AS addressId, " +
+                    "c.name AS companyName, " +
+                    "c.id AS idCompany, " +
+                    "a.id AS idAddress, " +
+                    "a.zip_code AS addressZipCode, " +
+                    "a.street AS addressStreet, " +
+                    "a.number AS addressNumber, " +
+                    "a.complement AS addressComplement, " +
+                    "a.neighborhood AS addressNeighborhood, " +
+                    "a.city AS addressCity, " +
+                    "a.state AS addressState, " +
+                    "a.country AS addressCountry " +
+                    "FROM units u " +
+                    "JOIN companies c ON u.company_id = c.id " +
+                    "JOIN addresses a ON a.id = u.address_id ";
+
+    private Units mapUnit(ResultSet rs) throws SQLException {
+
+        Companies company = new Companies(
+                rs.getInt("idCompany"),
+                rs.getString("companyName")
+        );
+
+        Addresses address = new Addresses(
+                rs.getInt("idAddress"),
+                rs.getString("addressZipCode"),
+                rs.getString("addressStreet"),
+                rs.getString("addressNumber"),
+                rs.getString("addressComplement"),
+                rs.getString("addressNeighborhood"),
+                rs.getString("addressCity"),
+                rs.getString("addressState"),
+                rs.getString("addressCountry")
+        );
+
+        Units unit = new Units(
+                rs.getInt("id"),
+                rs.getInt("companyId"),
+                rs.getInt("addressId"),
+                rs.getString("name"),
+                rs.getString("cnpj"),
+                rs.getString("cnae"),
+                rs.getBoolean("is_active"),
+                company,
+                address
+        );
+
+        unit.setCreatedAt(rs.getTimestamp("created_at"));
+        unit.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+        return unit;
+    }
+
+    /*
+     * Busca unidades ativas aplicando os filtros informados.
      */
     @Override
     public List<Units> searchAll(UnitsFilter filter) {
@@ -24,286 +90,263 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
         List<Units> units = new ArrayList<>();
 
         StringBuilder sql = new StringBuilder(
-                "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                        "c.name as companyName, c.id as idCompany, " +
-                        "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                        "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                        "from units u " +
-                        "join companies c on u.company_id = c.id " +
-                        "join addresses a on a.id = u.address_id " +
-                        "where u.is_active = true"
+                SELECT_UNITS + "WHERE u.is_active = true"
         );
 
         List<Object> parametros = new ArrayList<>();
 
-        if (filter.getId() != null) {
-            sql.append(" and u.id = ?");
-            parametros.add(filter.getId());
-        }
+        if (filter != null) {
 
-        if (filter.getCompanyId() != null) {
-            sql.append(" and u.company_id = ?");
-            parametros.add(filter.getCompanyId());
-        }
+            if (filter.getId() != null) {
+                sql.append(" AND u.id = ?");
+                parametros.add(filter.getId());
+            }
 
-        if (filter.getCompanyName() != null && !filter.getCompanyName().isBlank()) {
-            sql.append(" and c.name ilike ?");
-            parametros.add("%" + filter.getCompanyName() + "%");
-        }
+            if (filter.getCompanyId() != null) {
+                sql.append(" AND u.company_id = ?");
+                parametros.add(filter.getCompanyId());
+            }
 
-        if (filter.getName() != null && !filter.getName().isBlank()) {
-            sql.append(" and u.name ilike ?");
-            parametros.add("%" + filter.getName() + "%");
-        }
+            if (filter.getCompanyName() != null
+                    && !filter.getCompanyName().isBlank()) {
+                sql.append(" AND c.name ILIKE ?");
+                parametros.add("%" + filter.getCompanyName() + "%");
+            }
 
-        if (filter.getCnpj() != null && !filter.getCnpj().isBlank()) {
-            sql.append(" and u.cnpj = ?");
-            parametros.add(filter.getCnpj());
-        }
+            if (filter.getName() != null
+                    && !filter.getName().isBlank()) {
+                sql.append(" AND u.name ILIKE ?");
+                parametros.add("%" + filter.getName() + "%");
+            }
 
-        if (filter.getCnae() != null && !filter.getCnae().isBlank()) {
-            sql.append(" and u.cnae = ?");
-            parametros.add(filter.getCnae());
+            if (filter.getCnpj() != null
+                    && !filter.getCnpj().isBlank()) {
+                sql.append(" AND u.cnpj = ?");
+                parametros.add(filter.getCnpj());
+            }
+
+            if (filter.getCnae() != null
+                    && !filter.getCnae().isBlank()) {
+                sql.append(" AND u.cnae = ?");
+                parametros.add(filter.getCnae());
+            }
         }
 
         try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
+                Connection conn = requireConnection();
+                PreparedStatement pstmt =
+                        conn.prepareStatement(sql.toString())
         ) {
-
             for (int i = 0; i < parametros.size(); i++) {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                Units unit = new Units(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("cnpj"),
-                        rs.getString("cnae"),
-                        rs.getBoolean("is_active"),
-                        company,
-                        address
-                );
-
-                unit.setCreatedAt(rs.getTimestamp("created_at"));
-                unit.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-                units.add(unit);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    units.add(mapUnit(rs));
+                }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
             return units;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar unidades.", e
+            );
         }
     }
 
-    /**
-     * metodo para buscar por Id (somente ativas)
-     * @param id Numero unico da unit
-     * @return Retorna a unit encontrada
+    /*
+     * Busca uma unidade ativa pelo ID.
      */
     @Override
     public Units searchById(int id) {
 
-        Units unit = null;
+        String sql = SELECT_UNITS
+                + "WHERE u.id = ? AND u.is_active = true";
 
         try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select u.*, u.company_id as companyId, u.address_id as addressId, " +
-                                "c.name as companyName, c.id as idCompany, " +
-                                "a.id as idAddress, a.zip_code as addressZipCode, a.street as addressStreet, a.number as addressNumber, a.complement as addressComplement, " +
-                                "a.neighborhood as addressNeighborhood, a.city as addressCity, a.state as addressState, a.country as addressCountry " +
-                                "from units u " +
-                                "join companies c on u.company_id = c.id " +
-                                "join addresses a on a.id = u.address_id " +
-                                "where u.id = ? and u.is_active = true"
-                )
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
-
             pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                Addresses address = new Addresses(
-                        rs.getInt("idAddress"),
-                        rs.getString("addressZipCode"),
-                        rs.getString("addressStreet"),
-                        rs.getString("addressNumber"),
-                        rs.getString("addressComplement"),
-                        rs.getString("addressNeighborhood"),
-                        rs.getString("addressCity"),
-                        rs.getString("addressState"),
-                        rs.getString("addressCountry")
-                );
-
-                unit = new Units(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("addressId"),
-                        rs.getString("name"),
-                        rs.getString("cnpj"),
-                        rs.getString("cnae"),
-                        rs.getBoolean("is_active"),
-                        company,
-                        address
-                );
-
-                unit.setCreatedAt(rs.getTimestamp("created_at"));
-                unit.setUpdatedAt(rs.getTimestamp("updated_at"));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapUnit(rs);
+                }
             }
 
+            return null;
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return unit;
+            throw new RuntimeException(
+                    "Erro ao buscar unidade pelo ID: " + id, e
+            );
         }
     }
 
-    /**
-     * metodo para cadastrar novas units no banco (sempre ativa na criacao)
-     * @param unit A unit que sera cadastrada
-     * @return true se foi registrada e false caso tenha dado erro
+    /*
+     * Cadastra uma unidade ativa.
      */
     @Override
     public boolean register(Units unit) {
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into units (company_id, address_id, name, cnpj, cnae, is_active) " +
-                                "values (?, ?, ?, ?, ?, ?)"
-                )
-        ) {
+        if (unit == null) {
+            return false;
+        }
 
+        String sql =
+                "INSERT INTO units " +
+                        "(company_id, address_id, name, cnpj, cnae, is_active) " +
+                        "VALUES (?, ?, ?, ?, ?, true)";
+
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
             pstmt.setInt(1, unit.getCompanyId());
             pstmt.setInt(2, unit.getAddressId());
             pstmt.setString(3, unit.getName());
             pstmt.setString(4, unit.getCnpj());
             pstmt.setString(5, unit.getCnae());
-            pstmt.setBoolean(6, true);
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao cadastrar unidade.", e
+            );
         }
     }
 
-    /**
-     * metodo para registrar mais de uma unit (sempre ativas na criacao)
-     * @param units Uma lista de units
-     * @return true se foi registrado e false caso tenha dado erro
+    /*
+     * Cadastra várias unidades em uma única transação.
      */
     public boolean registerLot(List<Units> units) {
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into units (company_id, address_id, name, cnpj, cnae, is_active) " +
-                                "values (?, ?, ?, ?, ?, ?)"
-                )
-        ) {
+        if (units == null || units.isEmpty()) {
+            return false;
+        }
 
-            for (int i = 0; i < units.size(); i++) {
-                Units unit = units.get(i);
+        String sql =
+                "INSERT INTO units " +
+                        "(company_id, address_id, name, cnpj, cnae, is_active) " +
+                        "VALUES (?, ?, ?, ?, ?, true)";
 
-                pstmt.setInt(1, unit.getCompanyId());
-                pstmt.setInt(2, unit.getAddressId());
-                pstmt.setString(3, unit.getName());
-                pstmt.setString(4, unit.getCnpj());
-                pstmt.setString(5, unit.getCnae());
-                pstmt.setBoolean(6, true);
+        try (Connection conn = requireConnection()) {
 
-                pstmt.addBatch();
+            boolean originalAutoCommit = conn.getAutoCommit();
+
+            try {
+                conn.setAutoCommit(false);
+
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                    for (Units unit : units) {
+
+                        if (unit == null) {
+                            throw new IllegalArgumentException(
+                                    "A lista contém uma unidade nula."
+                            );
+                        }
+
+                        pstmt.setInt(1, unit.getCompanyId());
+                        pstmt.setInt(2, unit.getAddressId());
+                        pstmt.setString(3, unit.getName());
+                        pstmt.setString(4, unit.getCnpj());
+                        pstmt.setString(5, unit.getCnae());
+
+                        pstmt.addBatch();
+                    }
+
+                    pstmt.executeBatch();
+                }
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException | RuntimeException e) {
+
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
+
+                if (e instanceof SQLException) {
+                    throw new RuntimeException(
+                            "Erro ao cadastrar unidades em lote.", e
+                    );
+                }
+
+                throw e;
+
+            } finally {
+                try {
+                    conn.setAutoCommit(originalAutoCommit);
+                } catch (SQLException e) {
+                    throw new RuntimeException(
+                            "Erro ao restaurar a configuração da conexão.", e
+                    );
+                }
             }
 
-            pstmt.executeBatch();
-            return true;
-
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro na conexão ao cadastrar unidades em lote.", e
+            );
         }
     }
 
-    /**
-     * metodo para desativar a unit por id (is_active = false)
-     * Cascateia a desativacao para os setores e os funcionarios da unidade
-     * @param id Valor unico de cada unit
-     * @return true se foi desativada e false caso tenha dado erro
+    /*
+     * Desativa a unidade e solicita a desativação
+     * de seus setores e funcionários.
      */
     @Override
     public boolean delete(int id) {
 
+        // Se qualquer DAO lançar uma exceção, ela será propagada.
         new SectorsDAO().deleteByUnitId(id);
         new EmployeesDAO().deleteByIdUnit(id);
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update units set is_active = false, updated_at = current_timestamp where id = ?"
-                )
-        ) {
+        String sql =
+                "UPDATE units SET " +
+                        "is_active = false, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
+                        "WHERE id = ? AND is_active = true";
 
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
             pstmt.setInt(1, id);
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao desativar unidade pelo ID: " + id, e
+            );
         }
     }
 
-    /**
-     * metodo que desativa as units de uma empresa (para quando uma empresa for desativada)
-     * Busca as units ativas da empresa via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os setores e funcionarios de cada unidade
-     * @param companyId O id da empresa
-     * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
+    /*
+     * Desativa as unidades ativas de uma empresa.
      */
     public boolean deleteByCompanyId(int companyId) {
-
+        boolean allSuccess;
         UnitsFilter filter = new UnitsFilter();
         filter.setCompanyId(companyId);
 
         List<Units> units = searchAll(filter);
-        boolean allSuccess = true;
-
-        for (int i = 0; i < units.size(); i++) {
-            if (!delete(units.get(i).getId())) {
+        if (units.isEmpty()){
+            allSuccess = false;
+        } else {
+            allSuccess = true;
+        }
+        for (Units unit : units) {
+            if (!delete(unit.getId())) {
                 allSuccess = false;
             }
         }
@@ -311,51 +354,53 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
         return allSuccess;
     }
 
-    /**
-     * metodo que desativa pelo nome
-     * Busca as units ativas pelo nome via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os setores e funcionarios de cada unidade
-     * @param name O nome da unit
-     * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
+    /*
+     * Desativa unidades ativas pelo nome.
      */
     public boolean deleteByName(String name) {
+        boolean allSuccess;
 
         UnitsFilter filter = new UnitsFilter();
         filter.setName(name);
 
-        List<Units> units = searchAll(filter);
-        boolean allSuccess = true;
 
-        for (int i = 0; i < units.size(); i++) {
-            if (!delete(units.get(i).getId())) {
+        List<Units> units = searchAll(filter);
+        if (units.isEmpty()){
+            allSuccess = false;
+        } else {
+            allSuccess = true;
+        }
+        for (Units unit : units) {
+            if (!delete(unit.getId())) {
                 allSuccess = false;
             }
-        }
-
-        return allSuccess;
+        } return allSuccess;
     }
 
-    /**
-     * metodo que muda os values da unit selecionada pelo id
-     * @param unit Os valores da unit para ser atualizada
-     * @param id O valor unico da unit que quer atualizar
-     * @return true se foi mudado e false caso tenha dado erro
+    /*
+     * Atualiza uma unidade pelo ID.
      */
     @Override
     public boolean update(Units unit, int id) {
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update units set company_id = ?, " +
-                                "address_id = ?, " +
-                                "name = ?, " +
-                                "cnpj = ?, " +
-                                "cnae = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where id = ?"
-                )
-        ) {
+        if (unit == null) {
+            return false;
+        }
 
+        String sql =
+                "UPDATE units SET " +
+                        "company_id = ?, " +
+                        "address_id = ?, " +
+                        "name = ?, " +
+                        "cnpj = ?, " +
+                        "cnae = ?, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
+                        "WHERE id = ?";
+
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
             pstmt.setInt(1, unit.getCompanyId());
             pstmt.setInt(2, unit.getAddressId());
             pstmt.setString(3, unit.getName());
@@ -366,32 +411,35 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao atualizar unidade pelo ID: " + id, e
+            );
         }
     }
 
-    /**
-     * Metodo que muda os values da unit selecionada pelo nome
-     * @param unit Os valores da unit para ser atualizada
-     * @param name O nome para achar a unit
-     * @return true se foi atualizado e false caso tenha dado erro
+    /*
+     * Atualiza unidades encontradas pelo nome.
      */
     public boolean updateByName(Units unit, String name) {
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update units set company_id = ?, " +
-                                "address_id = ?, " +
-                                "name = ?, " +
-                                "cnpj = ?, " +
-                                "cnae = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where name ilike ?"
-                )
-        ) {
+        if (unit == null || name == null || name.isBlank()) {
+            return false;
+        }
 
+        String sql =
+                "UPDATE units SET " +
+                        "company_id = ?, " +
+                        "address_id = ?, " +
+                        "name = ?, " +
+                        "cnpj = ?, " +
+                        "cnae = ?, " +
+                        "updated_at = CURRENT_TIMESTAMP " +
+                        "WHERE name ILIKE ?";
+
+        try (
+                Connection conn = requireConnection();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
             pstmt.setInt(1, unit.getCompanyId());
             pstmt.setInt(2, unit.getAddressId());
             pstmt.setString(3, unit.getName());
@@ -402,9 +450,9 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao atualizar unidades pelo nome: " + name, e
+            );
         }
     }
-
 }
