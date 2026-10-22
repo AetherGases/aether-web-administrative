@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,13 +10,14 @@
 
     <title>Landing Page Aether</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="Footer.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap">
 
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg+xml">
+    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
 </head>
 <body>
@@ -445,7 +447,8 @@
         </details>
 
         <details name="menuFuncionalidades">
-            <summary class="tipografiaMenuAbreEFechaTitulo">Calculadora de CO<sub>2</sub></summary>
+            <!-- CORRIGIDO: "CO²" (potência) -> CO₂ (subscrito), a notação química correta. -->
+            <summary class="tipografiaMenuAbreEFechaTitulo"><p>Calculadora de CO<sup>2</sup></p></summary>
             <p class="tipografiaMenuAbreEFechaConteudo">Essa funcionalidade terá como principal função
                 calcular quantas toneladas de CO<sub>2</sub> será possível reduzir a partir da troca sugerida.</p>
         </details>
