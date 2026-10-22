@@ -1,7 +1,6 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,14 +9,13 @@
 
     <title>Landing Page Aether</title>
 
-    <link rel="stylesheet" href="Style.css">
-    <link rel="stylesheet" href="Footer.css">
+    <link rel="stylesheet" href="style.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;1,400;1,700&display=swap">
 
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg+xml">
 
 </head>
 <body>
@@ -39,7 +37,7 @@
 
     <div class="retanguloMenuInicial montserrat">
         <nav aria-label="Menu principal">
-            <ul class="listaDeOpçõesMenu">
+            <ul class="listaDeOpcoesMenu">
                 <li><a href="#quemSomos">QUEM SOMOS</a></li>
                 <li><a href="#gasesPoluentes">GASES POLUENTES</a></li>
                 <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
@@ -48,8 +46,8 @@
         </nav>
     </div>
 
-    <a class="botaoEntrar conteudoBotaoEntrar" href="Login.jsp">Entrar</a>
-    <a class="botaoCadastrar conteudoBotaoCadastar" href="CompanyRegister.jsp">Cadastrar-se</a>
+    <a class="botaoEntrar conteudoBotaoEntrar" href="login.jsp">Entrar</a>
+    <a class="botaoCadastrar conteudoBotaoCadastar" href="cadastroEmpresarial.jsp">Cadastrar-se</a>
 
     <h1 class="montserrat descarbonizando">DESCARBONIZANDO</h1>
     <p class="palavraFuturo">O FUTURO</p>
@@ -62,7 +60,7 @@
 
         menor potencial de aquecimento global.</p>
 
-    <a class="alinharPosiçaoComecarAgora" href="#cadastro" aria-label="Começar agora">
+    <a class="alinharPosicaoComecarAgora" href="#cadastro" aria-label="Começar agora">
         <span class="botaoComecarAgora">COMEÇAR AGORA</span>
         <span class="botaoRedondoComecarAgora"></span>
         <span class="setaComecarAgora"></span>
@@ -126,24 +124,25 @@
             sustentabilidade ao futuro.</p>
     </div>
 
-    <!-- BLOCO "ALUNOS" — permanece comentado (depende de 1anoFoto.jpg / 2anoFoto.png).
-         Para ativar, basta remover os marcadores de comentário.
+    <!-- BLOCO "ALUNOS" — carrossel 1º Médio / 2º Médio.
+             As fotos são definidas em carrosselAlunos.js (const FOTOS). -->
+    <div class="carrosselAlunos" id="carrosselAlunos" role="group" aria-label="Fotos das turmas">
 
-    <div class="alunos">
-<input type="radio" id="1ano" name="turma" checked>
-<input type="radio" id="2ano" name="turma">
+        <button type="button" class="retangulosRoxos" data-turma="0" aria-pressed="true">1º Médio</button>
+        <button type="button" class="retangulosRoxos2" data-turma="1" aria-pressed="false">2º Médio</button>
 
-        <div class="botoesAno">
-<label for="1ano" class="retangulosRoxos">1° Médio</label>
-<label for="2ano" class="retangulosRoxos2">2° Médio</label>
-</div>
+        <div class="carrosselAlunosQuadro" aria-hidden="true"></div>
 
-        <div class="cardFoto">
-<img src="Imagens/1anoFoto.jpg" alt="Foto 1º Médio" class="foto-1ano">
-<img src="Imagens/2anoFoto.png" alt="Foto 2º Médio" class="foto-2ano">
-</div>
-</div>
-    -->
+        <div class="carrosselAlunosFotos">
+            <div class="carrosselAlunosFoto visivel" role="img" aria-label="Foto do 1º Médio"></div>
+            <div class="carrosselAlunosFoto" role="img" aria-label="Foto do 2º Médio"></div>
+        </div>
+
+        <p class="carrosselAlunosLegenda" aria-live="polite">
+            <span class="carrosselAlunosLegendaTexto visivel">1º Médio</span>
+            <span class="carrosselAlunosLegendaTexto">2º Médio</span>
+        </p>
+    </div>
 </section>
 
 
@@ -218,7 +217,7 @@
         utilizado em cada setor de sua empresa. Essas categorias incluem os gases:
     </p>
 
-    <!-- ===== CARROSSEL DE GASES: substitua o antigo <div class="divCarrosselCards"> inteiro por este bloco ===== -->
+    <!-- ===== CARROSSEL DE GASES ===== -->
     <div class="carrosselGases" id="carrosselGases" role="region" aria-roledescription="carrossel" aria-label="Gases que procuramos substituir">
 
         <button id="gasesAnterior" class="carrosselGasesSeta carrosselGasesSetaEsq" type="button" data-cor="verde" aria-label="Gás anterior">
@@ -446,8 +445,7 @@
         </details>
 
         <details name="menuFuncionalidades">
-            <!-- CORRIGIDO: "CO²" (potência) -> CO₂ (subscrito), a notação química correta. -->
-            <summary class="tipografiaMenuAbreEFechaTitulo"><p>Calculadora de CO<sup>2</sup></p></summary>
+            <summary class="tipografiaMenuAbreEFechaTitulo">Calculadora de CO<sub>2</sub></summary>
             <p class="tipografiaMenuAbreEFechaConteudo">Essa funcionalidade terá como principal função
                 calcular quantas toneladas de CO<sub>2</sub> será possível reduzir a partir da troca sugerida.</p>
         </details>
@@ -489,43 +487,43 @@
             <span class="marcadorEtapa marcadorEtapa1"></span>
             <span class="tipografiaCardsEtapa">1ª Etapa</span>
             <h3 class="tipografiaCardsTitulos">Entrada de Dados</h3>
-            <p class="tipografiaCardsConteudo">A primeira etapa é onde armazenamos os dados, seja por
+            <p class="tipografiaCardsConteudo" id="textoEtapa1">A primeira etapa é onde armazenamos os dados, seja por
                 meio da leitura de relatórios, seja de modo manual pelo usuário.</p>
-            <a class="saibaMais" href="">
+            <button class="saibaMais" type="button" aria-expanded="false" aria-controls="textoEtapa1" aria-label="Saiba mais: Entrada de Dados">
                 <svg class="seta-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
                           stroke-linejoin="round"/>
                 </svg>
-            </a>
+            </button>
         </article>
 
         <article class="cardDados card2Dados">
             <span class="marcadorEtapa marcadorEtapa2"></span>
             <span class="tipografiaCardsEtapa">2ª Etapa</span>
             <h3 class="tipografiaCardsTitulos">Leitura de Dados</h3>
-            <p class="tipografiaCardsConteudo">Nessa etapa será feito o processamento e a leitura dos
+            <p class="tipografiaCardsConteudo" id="textoEtapa2">Nessa etapa será feito o processamento e a leitura dos
                 dados, para que possam ser transformados em relatórios com dados-chave para sua empresa.</p>
-            <a class="saibaMais" href="">
+            <button class="saibaMais" type="button" aria-expanded="false" aria-controls="textoEtapa2" aria-label="Saiba mais: Leitura de Dados">
                 <svg class="seta-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
                           stroke-linejoin="round"/>
                 </svg>
-            </a>
+            </button>
         </article>
 
         <article class="cardDados card3Dados">
             <span class="marcadorEtapa marcadorEtapa3"></span>
             <span class="tipografiaCardsEtapa">3ª Etapa</span>
             <h3 class="tipografiaCardsTitulos">Saída de Dados</h3>
-            <p class="tipografiaCardsConteudo">Os dados lidos viram relatórios-chave, que indicam sua
+            <p class="tipografiaCardsConteudo" id="textoEtapa3">Os dados lidos viram relatórios-chave, que indicam sua
                 categoria no Selo Clima Paraná, o retorno do investimento em 5 anos e quantas toneladas
                 de CO<sub>2</sub> a troca verde evita.</p>
-            <a class="saibaMais" href="">
+            <button class="saibaMais" type="button" aria-expanded="false" aria-controls="textoEtapa3" aria-label="Saiba mais: Saída de Dados">
                 <svg class="seta-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 5V19M12 19L5 12M12 19L19 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
                           stroke-linejoin="round"/>
                 </svg>
-            </a>
+            </button>
         </article>
 
     </div>
@@ -539,7 +537,6 @@
 
     <div class="Bola7"></div>
     <div class="Bola8"></div>
-
     <div class="linhasPlanos">
         <span class="basePraTexto">Planos</span>
     </div>
@@ -562,14 +559,13 @@
 
         <div class="gradePlanos">
 
-            <!-- Plano Pulse -->
-            <article class="cardPlano cardPlanoPulse">
+            <!-- Plano Pulse (destacado no plano mensal) -->
+            <article class="cardPlano cardPlanoPulse cardPlanoAtivo" data-periodo="mensal">
                 <h3 class="nomePlano">aether Pulse</h3>
                 <p class="subtituloPlano">For Industry Leaders</p>
 
                 <p class="precoPlano">
-                    <span class="valorPlano" data-mensal="R$3.300"></span><span
-                        class="periodoPlano" data-mensal="/por mês">/por mês</span>
+                    <span class="valorPlano">R$3.300</span><span class="periodoPlano">/por mês</span>
                 </p>
 
                 <a class="botaoAssinar" href="#cadastro">Assine agora <span class="setaAssinar">&rarr;</span></a>
@@ -581,14 +577,13 @@
                 </ul>
             </article>
 
-            <!-- Plano Horizon -->
-            <article class="cardPlano cardPlanoHorizon">
+            <!-- Plano Horizon (destacado no plano trimestral) -->
+            <article class="cardPlano cardPlanoHorizon" data-periodo="trimestral">
                 <h3 class="nomePlano">aether Horizon</h3>
                 <p class="subtituloPlano">For Bigger Industries</p>
 
                 <p class="precoPlano">
-                    <span class="valorPlano" data-trimestral="R$9.400">R$9.400</span><span
-                        class="periodoPlano" data-trimestral="/a cada 3 meses">/a cada 3 meses</span>
+                    <span class="valorPlano">R$9.400</span><span class="periodoPlano">/a cada 3 meses</span>
                 </p>
 
                 <a class="botaoAssinar botaoAssinarRoxo" href="#cadastro">Assine agora <span
@@ -624,79 +619,84 @@
 
     <div class="cardCadastroLogin">
 
-        <img class="aekoCadastro" src="Imagens/Aeko.svg" alt="">
+        <form id="formularioEmpresarial" class="formularioEmpresarial" novalidate>
 
-        <div class="abasCadastro" role="tablist">
-            <button id="abaLogin" class="abaCadastro" type="button" role="tab" aria-selected="false"
-                    aria-controls="formularioLogin">Login
-            </button>
-            <button id="abaCadastrar" class="abaCadastro abaCadastroAtiva" type="button" role="tab" aria-selected="true"
-                    aria-controls="formularioCadastro">Cadastro
-            </button>
-        </div>
+            <img class="aekoCadastro" src="Imagens/Aeko.svg" alt="">
 
-        <!-- Formulário de cadastro -->
-        <form id="formularioCadastro" class="formularioCadastro" role="tabpanel" aria-labelledby="abaCadastrar"
-              novalidate>
+            <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
+            <!-- Empresa -->
+            <div class="dropdownPersonalizado">
+                <span class="dropdownRotulo" id="rotuloEmpresa">Empresa</span>
+                <div class="dropdownCaixa">
+                    <button class="dropdownBotao" type="button" aria-haspopup="listbox" aria-expanded="false"
+                            aria-labelledby="rotuloEmpresa textoEmpresa">
+                        <span class="dropdownTexto" id="textoEmpresa">Selecionar</span>
+                        <span class="dropdownSeta" aria-hidden="true"></span>
+                    </button>
+                    <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloEmpresa">
+                        <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="empresa1">Empresa 1</li>
+                        <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="empresa2">Empresa 2</li>
+                    </ul>
+                    <input type="hidden" id="empresaTipo" name="empresa" value="">
+                </div>
+            </div>
+
+            <!-- Tamanho -->
+            <div class="dropdownPersonalizado">
+                <span class="dropdownRotulo" id="rotuloTamanho">tamanho</span>
+                <div class="dropdownCaixa">
+                    <button class="dropdownBotao" type="button" aria-haspopup="listbox" aria-expanded="false"
+                            aria-labelledby="rotuloTamanho textoTamanho">
+                        <span class="dropdownTexto" id="textoTamanho">Selecionar</span>
+                        <span class="dropdownSeta" aria-hidden="true"></span>
+                    </button>
+                    <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloTamanho">
+                        <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>grande</li>
+                        <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">média</li>
+                        <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">pequena</li>
+                    </ul>
+                    <input type="hidden" id="empresaTamanho" name="tamanho" value="">
+                </div>
+            </div>
+
+            <!-- CNPJ -->
             <div class="campoFormulario">
-                <label class="rotuloCampo" for="emailCadastro">Email:</label>
-                <input class="entradaCampo" type="email" id="emailCadastro" name="email"
-                       placeholder="Digite aqui..." autocomplete="email" required>
+                <label class="rotuloCampoOculto" for="empresaCnpj">CNPJ</label>
+                <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="cnpj"
+                       placeholder="CNPJ" inputmode="numeric" autocomplete="off" required>
             </div>
 
+            <!-- E-mail -->
             <div class="campoFormulario">
-                <label class="rotuloCampo" for="senhaCadastro">Senha:</label>
-                <input class="entradaCampo" type="password" id="senhaCadastro" name="senha"
-                       placeholder="Digite aqui..." autocomplete="new-password" minlength="8" required>
+                <label class="rotuloCampoOculto" for="empresaEmail">E-mail</label>
+                <input class="entradaEmpresarial" type="email" id="empresaEmail" name="email"
+                       placeholder="e-mail" autocomplete="email" required>
             </div>
 
-            <div class="campoFormulario">
-                <label class="rotuloCampo" for="confirmeSenha">Confirme sua senha:</label>
-                <input class="entradaCampo" type="password" id="confirmeSenha" name="confirmarSenha"
-                       placeholder="Digite aqui..." autocomplete="new-password" required>
+            <!-- Plano -->
+            <div class="dropdownPersonalizado">
+                <span class="dropdownRotulo" id="rotuloPlano">Plano</span>
+                <div class="dropdownCaixa">
+                    <button class="dropdownBotao" type="button" aria-haspopup="listbox" aria-expanded="false"
+                            aria-labelledby="rotuloPlano textoPlano">
+                        <span class="dropdownTexto" id="textoPlano">Selecionar</span>
+                        <span class="dropdownSeta" aria-hidden="true"></span>
+                    </button>
+                    <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloPlano">
+                        <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pulse">Aether Pulse</li>
+                        <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="horizon">Aether Horizon</li>
+                    </ul>
+                    <input type="hidden" id="empresaPlano" name="plano" value="">
+                </div>
             </div>
 
-            <div class="campoFormulario campoFormularioSelecao">
-                <label class="rotuloCampoOculto" for="planoEscolhido">Plano</label>
-                <select class="entradaCampo entradaSelecao" id="planoEscolhido" name="plano" required>
-                    <option value="" selected disabled>Plano...</option>
-                    <option value="pulse">aether Pulse</option>
-                    <option value="horizon">aether Horizon</option>
-                </select>
-            </div>
+            <p class="mensagemFormulario" id="mensagemEmpresarial" role="status" aria-live="polite"></p>
 
-            <p class="mensagemFormulario" id="mensagemCadastro" role="status" aria-live="polite"></p>
-
-            <button class="botaoEnviarFormulario" type="submit">Se cadastrar</button>
+            <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
             <p class="rodapeFormulario">Já possui uma conta?
                 <button class="linkTrocaAba" type="button" data-destino="login">clique aqui</button>
-            </p>
-        </form>
-
-        >
-        <form id="formularioLogin" class="formularioCadastro formularioOculto" role="tabpanel"
-              aria-labelledby="abaLogin" novalidate hidden>
-
-            <div class="campoFormulario">
-                <label class="rotuloCampo" for="emailLogin">Email:</label>
-                <input class="entradaCampo" type="email" id="emailLogin" name="email"
-                       placeholder="Digite aqui..." autocomplete="email" required>
-            </div>
-
-            <div class="campoFormulario">
-                <label class="rotuloCampo" for="senhaLogin">Senha:</label>
-                <input class="entradaCampo" type="password" id="senhaLogin" name="senha"
-                       placeholder="Digite aqui..." autocomplete="current-password" required>
-            </div>
-
-            <p class="mensagemFormulario" id="mensagemLogin" role="status" aria-live="polite"></p>
-
-            <button class="botaoEnviarFormulario" type="submit">Entrar</button>
-
-            <p class="rodapeFormulario">Ainda não tem conta?
-                <button class="linkTrocaAba" type="button" data-destino="cadastro">clique aqui</button>
             </p>
         </form>
 
@@ -705,7 +705,7 @@
 
 
 <!-- =========================================================
-     SETOR 8 — RODAPÉ (novo)
+     SETOR 8 — RODAPÉ
      ========================================================= -->
 <footer class="rodapeAether">
     <div class="rodapeAetherConteudo">
@@ -728,7 +728,7 @@
                 <li><a href="#quemSomos">Quem Somos</a></li>
                 <li><a href="#nossaSolucao">Nossa Solução</a></li>
                 <li><a href="#planos">Planos</a></li>
-                <li><a href="Contact.jsp">Contatos</a></li>
+                <li><a href="contato.jsp">Contatos</a></li>
             </ul>
         </nav>
 
@@ -743,14 +743,14 @@
             <h2 id="rodapeAetherEmpresa">Empresa</h2>
             <ul>
                 <li><a href="#quemSomos">Nossa equipe</a></li>
-                <li><a href="Contact.jsp">Contato</a></li>
+                <li><a href="contato.jsp">Contato</a></li>
             </ul>
         </section>
 
     </div>
 </footer>
 
-<script src="Script.js"></script>
+<script src="script.js"></script>
 
 
 </body>
