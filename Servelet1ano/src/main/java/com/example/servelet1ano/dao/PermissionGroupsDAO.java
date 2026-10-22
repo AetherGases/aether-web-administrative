@@ -101,9 +101,8 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        finally {
-            return permissionGroups;
-        }
+
+        return permissionGroups;
     }
 
     /**
@@ -144,9 +143,9 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return permissionGroup;
         }
+
+        return permissionGroup;
     }
 
     /**
@@ -246,8 +245,10 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
     /**
      * metodo para desativar o grupo de permissao por id (is_active = false)
+     * Nao desativa se algum funcionario ativo ainda estiver nesse grupo (a conferencia e a desativacao
+     * acontecem no mesmo comando, entao nao da pra um funcionario entrar no grupo no meio)
      * @param id Valor unico de cada grupo de permissao
-     * @return true se foi desativado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro ou o grupo ainda tenha funcionarios ativos
      */
     @Override
     public boolean delete(int id){
@@ -261,7 +262,9 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         try(
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update permission_groups set is_active = false, updated_at = current_timestamp where id = ?"
+                        "update permission_groups pg set is_active = false, updated_at = current_timestamp " +
+                                "where pg.id = ? and pg.is_active = true " +
+                                "and not exists (select 1 from employees e where e.permission_group_id = pg.id and e.is_active = true)"
                 )
         ) {
 
@@ -289,16 +292,9 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return false;
         }
 
-        try(
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update permission_groups set is_active = false, updated_at = current_timestamp where company_id = ?"
-                )
-        ) {
+        try(conn) {
 
-            pstmt.setInt(1, companyId);
-
-            return pstmt.executeUpdate() > 0;
+            return deleteByCompanyId(conn, companyId);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -307,7 +303,33 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
     }
 
     /**
+     * metodo que desativa os grupos de permissao de uma empresa dentro de uma transacao que ja esta aberta
+     * Nao abre nem fecha a conexao e nao faz commit nem rollback: quem chamou controla isso
+     * Se a empresa nao tiver grupos devolve false, e isso nao e um erro
+     * Desative os funcionarios da empresa antes de chamar esse metodo
+     * @param conn A conexao da transacao
+     * @param companyId O id da empresa
+     * @return true se algum grupo foi desativado
+     * @throws SQLException se o banco der erro, pra quem chamou desfazer a transacao (rollback)
+     */
+    public boolean deleteByCompanyId(Connection conn, int companyId) throws SQLException {
+
+        try(
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update permission_groups set is_active = false, updated_at = current_timestamp where company_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, companyId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
      * metodo que muda os values do grupo de permissao selecionado pelo id
+     * So muda o nome: o grupo nao pode ser levado pra outra empresa, porque os funcionarios dele continuariam nele
+     * Nao atualiza grupo que ja foi desativado
      * @param permissionGroup Os valores do grupo de permissao para ser atualizado
      * @param id O valor unico do grupo de permissao que quer atualizar
      * @return true se foi mudado e false caso tenha dado erro
@@ -329,15 +351,13 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update permission_groups set name = ?, " +
-                                "company_id = ?, " +
                                 "updated_at = current_timestamp " +
-                                "where id = ?"
+                                "where id = ? and is_active = true"
                 )
         ){
 
             pstmt.setString(1, permissionGroup.getName());
-            pstmt.setObject(2, permissionGroup.getCompanyId());
-            pstmt.setInt(3, id);
+            pstmt.setInt(2, id);
 
             return pstmt.executeUpdate() > 0;
 

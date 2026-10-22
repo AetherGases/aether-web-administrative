@@ -114,9 +114,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             e.printStackTrace();
         }
 
-        finally {
-            return subscriptions;
-        }
+        return subscriptions;
     }
 
     /**
@@ -173,13 +171,14 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return subscription;
         }
+
+        return subscription;
     }
 
     /**
      * metodo para cadastrar novas assinaturas no banco (sempre ativa na criacao)
+     * A empresa e o plano precisam existir e estar ativos (conferido no proprio comando)
      * @param subscription A assinatura que sera cadastrada
      * @return true se foi registrada e false caso tenha dado erro
      */
@@ -200,14 +199,16 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into subscriptions (company_id, plan_id, is_active, installments) " +
-                                "values (?, ?, ?, ?)"
+                                "select c.id, p.id, true, ? " +
+                                "from companies c, plans p " +
+                                "where c.id = ? and c.is_active = true " +
+                                "and p.id = ? and p.is_active = true"
                 )
         ){
 
-            pstmt.setInt(1, subscription.getCompanyId());
-            pstmt.setInt(2, subscription.getPlanId());
-            pstmt.setBoolean(3, true);
-            pstmt.setBoolean(4, subscription.isInstallments());
+            pstmt.setBoolean(1, subscription.isInstallments());
+            pstmt.setInt(2, subscription.getCompanyId());
+            pstmt.setInt(3, subscription.getPlanId());
 
             return pstmt.executeUpdate() > 0;
 
@@ -226,27 +227,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     @Override
     public boolean delete(int id){
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try(
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
-                )
-        ) {
-
-            pstmt.setInt(1, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return deactivateSubscription(id);
     }
 
     /**
@@ -263,16 +244,9 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             return false;
         }
 
-        try(
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where company_id = ?"
-                )
-        ) {
+        try(conn) {
 
-            pstmt.setInt(1, companyId);
-
-            return pstmt.executeUpdate() > 0;
+            return deleteByCompanyId(conn, companyId);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -281,7 +255,35 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
     }
 
     /**
+     * metodo que desativa as assinaturas de uma empresa dentro de uma transacao que ja esta aberta
+     * Nao abre nem fecha a conexao e nao faz commit nem rollback: quem chamou controla isso
+     * Nao mexe nas assinaturas que ja estavam desativadas (assim o deactivated_at delas nao é sobrescrito)
+     * Se a empresa nao tiver assinaturas ativas devolve false, e isso nao e um erro
+     * @param conn A conexao da transacao
+     * @param companyId O id da empresa
+     * @return true se alguma assinatura foi desativada
+     * @throws SQLException se o banco der erro, pra quem chamou desfazer a transacao (rollback)
+     */
+    public boolean deleteByCompanyId(Connection conn, int companyId) throws SQLException {
+
+        try(
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp " +
+                                "where company_id = ? and is_active = true"
+                )
+        ) {
+
+            pstmt.setInt(1, companyId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
      * metodo que muda os values da assinatura selecionada pelo id
+     * A assinatura nao pode ser levada pra outra empresa: o companyId da assinatura passada é usado pra conferir
+     * que a assinatura é mesmo daquela empresa
+     * Nao atualiza assinatura desativada, e o plano precisa existir e estar ativo
      * @param subscription Os valores da assinatura para ser atualizada
      * @param id O valor unico da assinatura que quer atualizar
      * @return true se foi mudada e false caso tenha dado erro
@@ -302,18 +304,19 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
         try(
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set company_id = ?, " +
-                                "plan_id = ?, " +
+                        "update subscriptions s set plan_id = ?, " +
                                 "installments = ?, " +
                                 "updated_at = current_timestamp " +
-                                "where id = ?"
+                                "where s.id = ? and s.company_id = ? and s.is_active = true " +
+                                "and exists (select 1 from plans p where p.id = ? and p.is_active = true)"
                 )
         ){
 
-            pstmt.setInt(1, subscription.getCompanyId());
-            pstmt.setInt(2, subscription.getPlanId());
-            pstmt.setBoolean(3, subscription.isInstallments());
-            pstmt.setInt(4, id);
+            pstmt.setInt(1, subscription.getPlanId());
+            pstmt.setBoolean(2, subscription.isInstallments());
+            pstmt.setInt(3, id);
+            pstmt.setInt(4, subscription.getCompanyId());
+            pstmt.setInt(5, subscription.getPlanId());
 
             return pstmt.executeUpdate() > 0;
 
@@ -325,6 +328,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
 
     /**
      * metodo para ativar uma assinatura
+     * So ativa se a empresa e o plano da assinatura estiverem ativos
      * @param id Id da assinatura
      * @return true se foi ativada e false caso tenha dado erro
      */
@@ -339,7 +343,10 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
         try(
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = true, deactivated_at = null, updated_at = current_timestamp where id = ?"
+                        "update subscriptions s set is_active = true, deactivated_at = null, updated_at = current_timestamp " +
+                                "where s.id = ? " +
+                                "and exists (select 1 from companies c where c.id = s.company_id and c.is_active = true) " +
+                                "and exists (select 1 from plans p where p.id = s.plan_id and p.is_active = true)"
                 )
         ){
 
@@ -355,6 +362,7 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
 
     /**
      * metodo para desativar uma assinatura
+     * Se a assinatura ja estava desativada nao faz nada (assim o deactivated_at dela nao é sobrescrito)
      * @param id Id da assinatura
      * @return true se foi desativada e false caso tenha dado erro
      */
@@ -369,7 +377,8 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
         try(
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
+                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp " +
+                                "where id = ? and is_active = true"
                 )
         ){
 

@@ -35,6 +35,21 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
     }
 
     /**
+     * Deixa so os digitos do telefone (tira parenteses, traco e espacos)
+     * Usado antes de gravar, pra o telefone ficar sempre no mesmo formato no banco
+     * @param telephone O telefone como foi digitado
+     * @return O telefone so com os digitos, ou null se vier null
+     */
+    private String cleanTelephone(String telephone) {
+
+        if (telephone == null) {
+            return null;
+        }
+
+        return telephone.replaceAll("\\D", "");
+    }
+
+    /**
      * Metodo que busca os telefones ativos aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
      * Se o filter vier null, busca sem filtro nenhum
@@ -115,9 +130,9 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return telephones;
         }
+
+        return telephones;
     }
 
     /**
@@ -172,13 +187,15 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return telephoneCompany;
         }
+
+        return telephoneCompany;
     }
 
     /**
      * metodo para cadastrar novos telefones no banco
+     * A empresa precisa existir e estar ativa, e nao cadastra se a empresa ja tiver esse telefone ativo
+     * (tudo conferido no proprio comando)
      * @param telephoneCompany O telefone
      * @return true se foi cadastrado e false caso tenha dado erro
      */
@@ -199,12 +216,15 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into telephone_companies (telephone, company_id) " +
-                                "values (?, ?)"
+                                "select ?, c.id from companies c " +
+                                "where c.id = ? and c.is_active = true " +
+                                "and not exists (select 1 from telephone_companies t where t.telephone = ? and t.company_id = c.id and t.is_active = true)"
                 )
         ){
 
-            pstmt.setString(1, telephoneCompany.getTelephone());
+            pstmt.setString(1, cleanTelephone(telephoneCompany.getTelephone()));
             pstmt.setInt(2, telephoneCompany.getCompanyId());
+            pstmt.setString(3, cleanTelephone(telephoneCompany.getTelephone()));
 
             return pstmt.executeUpdate() > 0;
 
@@ -231,7 +251,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
         try(
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update telephone_companies set is_active = false, updated_at = current_timestamp where id = ?"
+                        "update telephone_companies set is_active = false, updated_at = current_timestamp where id = ? and is_active = true"
                 )
         ) {
 
@@ -259,16 +279,9 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             return false;
         }
 
-        try(
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update telephone_companies set is_active = false, updated_at = current_timestamp where company_id = ?"
-                )
-        ) {
+        try(conn) {
 
-            pstmt.setInt(1, companyId);
-
-            return pstmt.executeUpdate() > 0;
+            return deleteByCompanyId(conn, companyId);
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -277,7 +290,33 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
     }
 
     /**
+     * metodo que desativa os telefones de uma empresa dentro de uma transacao que ja esta aberta
+     * Nao abre nem fecha a conexao e nao faz commit nem rollback: quem chamou controla isso
+     * Se a empresa nao tiver telefones devolve false, e isso nao e um erro
+     * @param conn A conexao da transacao
+     * @param companyId O id da empresa
+     * @return true se algum telefone foi desativado
+     * @throws SQLException se o banco der erro, pra quem chamou desfazer a transacao (rollback)
+     */
+    public boolean deleteByCompanyId(Connection conn, int companyId) throws SQLException {
+
+        try(
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update telephone_companies set is_active = false, updated_at = current_timestamp where company_id = ? and is_active = true"
+                )
+        ) {
+
+            pstmt.setInt(1, companyId);
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
+    /**
      * metodo que muda os values do telefone selecionado pelo id
+     * O telefone nao pode ser levado pra outra empresa: o companyId do telefone passado é usado pra conferir
+     * que o telefone é mesmo daquela empresa
+     * Nao atualiza telefone desativado e nao deixa ficar igual a outro telefone ativo da empresa
      * @param telephoneCompany O telefone com os novos valores
      * @param id O id para buscar o telefone
      * @return true se deu certo e false caso tenha algum erro
@@ -298,16 +337,17 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
         try(
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update telephone_companies set telephone = ?, " +
-                                "company_id = ?, " +
+                        "update telephone_companies t set telephone = ?, " +
                                 "updated_at = current_timestamp " +
-                                "where id = ?"
+                                "where t.id = ? and t.company_id = ? and t.is_active = true " +
+                                "and not exists (select 1 from telephone_companies o where o.telephone = ? and o.company_id = t.company_id and o.is_active = true and o.id <> t.id)"
                 )
         ){
 
-            pstmt.setString(1, telephoneCompany.getTelephone());
-            pstmt.setInt(2, telephoneCompany.getCompanyId());
-            pstmt.setInt(3, id);
+            pstmt.setString(1, cleanTelephone(telephoneCompany.getTelephone()));
+            pstmt.setInt(2, id);
+            pstmt.setInt(3, telephoneCompany.getCompanyId());
+            pstmt.setString(4, cleanTelephone(telephoneCompany.getTelephone()));
 
             return pstmt.executeUpdate() > 0;
 

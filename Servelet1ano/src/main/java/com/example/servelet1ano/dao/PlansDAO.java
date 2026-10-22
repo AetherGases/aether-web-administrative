@@ -11,8 +11,13 @@ import java.util.List;
 
 public class PlansDAO implements DAOI<Plans, PlansFilter>  {
     /**
-     * Metodo que busca todos os planos ativos no banco.
+     * Metodo que busca os planos ativos no banco aplicando os filtros informados.
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Se o filter vier null, busca sem filtro nenhum
+     * O nome é comparado inteiro, sem diferenciar maiusculas de minusculas,
+     * e o preco minimo e maximo entram na consulta (inclusive os valores informados)
      *
+     * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return Lista de Plans com os planos encontrados.
      * Retorna uma lista vazia caso nenhum plano seja encontrado
      * ou ocorra um erro na consulta.
@@ -23,13 +28,32 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
 
         List<Plans> plans = new ArrayList<>();
 
-        String sql =
+        if (filter == null) {
+            filter = new PlansFilter();
+        }
+
+        StringBuilder sql = new StringBuilder(
                 "select * " +
                         "from plans " +
-                        "where is_active = true " +
-                        "and (? is null or LOWER(name) = LOWER(?))";
+                        "where is_active = true"
+        );
 
-        String name = (filter == null) ? null : filter.getName();
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            sql.append(" and LOWER(name) = LOWER(?)");
+            parametros.add(filter.getName().trim());
+        }
+
+        if (filter.getMinPrice() != null) {
+            sql.append(" and price >= ?");
+            parametros.add(filter.getMinPrice());
+        }
+
+        if (filter.getMaxPrice() != null) {
+            sql.append(" and price <= ?");
+            parametros.add(filter.getMaxPrice());
+        }
 
         Connection conn = ConnectionFactory.connect();
 
@@ -39,11 +63,12 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
 
         try (
                 conn;
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
-            pstmt.setString(1, name);
-            pstmt.setString(2, name);
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             try (ResultSet rs = pstmt.executeQuery()) {
 

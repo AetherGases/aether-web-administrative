@@ -13,13 +13,17 @@ import java.util.List;
 public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
-     * Valida os dados da empresa antes de gravar (cnpj, porte e, se preenchido, email)
+     * Valida os dados da empresa antes de gravar (nome, cnpj, porte e, se preenchido, email)
      * @param company A empresa a validar
-     * @return true se cnpj, porte e o email (quando informado) forem validos
+     * @return true se nome, cnpj, porte e o email (quando informado) forem validos
      */
     private boolean isValid(Companies company) {
 
         if (company == null) {
+            return false;
+        }
+
+        if (company.getName() == null || company.getName().isBlank()) {
             return false;
         }
 
@@ -192,13 +196,15 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return company;
         }
+
+        return company;
     }
 
     /**
      * Metodo para cadastrar novas empresas no banco
+     * Nao cadastra se ja existir uma empresa ativa com o mesmo cnpj
+     * Se o cnpj for de uma empresa que foi desativada, o cadastro antigo é reativado com os dados novos
      * @param company Empresa que sera cadastrada
      * @return true se foi registrada e false caso tenha dado erro
      */
@@ -219,7 +225,15 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into companies (name, trade_name, size, registration_date, cnpj, email) " +
-                                "values (?, ?, ?::company_size, ?, ?, ?)"
+                                "values (?, ?, ?::company_size, ?, ?, ?) " +
+                                "on conflict (cnpj) do update set name = excluded.name, " +
+                                "trade_name = excluded.trade_name, " +
+                                "size = excluded.size, " +
+                                "registration_date = excluded.registration_date, " +
+                                "email = excluded.email, " +
+                                "is_active = true, " +
+                                "updated_at = current_timestamp " +
+                                "where companies.is_active = false"
                 )
         ) {
 
@@ -242,6 +256,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * metodo para cadastrar uma nova empresa e devolver o id gerado
      * Usado quando a empresa precisa ser vinculada a uma subscription
      * Usa o returning do PostgreSQL em vez de RETURN_GENERATED_KEYS
+     * Mesmas regras do register: se o cnpj for de uma empresa ativa nao cadastra e devolve -1,
+     * e se for de uma empresa desativada reativa o cadastro antigo e devolve o id dele
      * @param company A empresa que sera cadastrada
      * @return O id gerado, ou -1 caso tenha dado erro
      */
@@ -263,6 +279,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         "INSERT INTO companies " +
                                 "(name, trade_name, size, registration_date, cnpj, email) " +
                                 "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
+                                "ON CONFLICT (cnpj) DO UPDATE SET name = excluded.name, " +
+                                "trade_name = excluded.trade_name, " +
+                                "size = excluded.size, " +
+                                "registration_date = excluded.registration_date, " +
+                                "email = excluded.email, " +
+                                "is_active = true, " +
+                                "updated_at = current_timestamp " +
+                                "WHERE companies.is_active = false " +
                                 "RETURNING id"
                 )
         ) {
@@ -288,19 +312,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
      * Metodo para desativar a empresa por ID (is_active = false)
-     * Cascateia a desativacao para as units da empresa (que por sua vez cascateiam para setores e funcionarios),
-     * e tambem para setores, telefones, grupos de permissao e assinaturas da empresa
+     * Cascateia a desativacao para os funcionarios, setores e units da empresa,
+     * e tambem para telefones, grupos de permissao e assinaturas da empresa
+     * Tudo acontece numa transacao: se alguma parte der erro, nada fica desativado
      * @param id Valor unico de cada empresa
-     * @return true se foi desativada e false caso tenha dado erro
+     * @return true se foi desativada e false caso tenha dado erro ou a empresa nao exista (ou ja esteja desativada)
      */
     @Override
     public boolean delete(int id) {
-
-        new UnitsDAO().deleteByCompanyId(id);
-        new SectorsDAO().deleteByCompanyId(id);
-        new TelephoneCompaniesDAO().deleteByCompanyId(id);
-        new PermissionGroupsDAO().deleteByCompanyId(id);
-        new SubscriptionsDAO().deleteByCompanyId(id);
 
         Connection conn = ConnectionFactory.connect();
 
@@ -308,16 +327,46 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
 
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update companies set is_active = false, updated_at = current_timestamp where id = ?"
-                )
-        ) {
+        try (conn) {
 
-            pstmt.setInt(1, id);
+            // desliga o salvamento automatico pra tudo ser desativado junto (ou nada ser desativado)
+            conn.setAutoCommit(false);
 
-            return pstmt.executeUpdate() > 0;
+            try {
+                // os funcionarios saem antes dos setores, os setores antes das units
+                new EmployeesDAO().deleteByIdCompany(conn, id);
+                new SectorsDAO().deleteByCompanyId(conn, id);
+                new UnitsDAO().deleteByCompanyId(conn, id);
+                new TelephoneCompaniesDAO().deleteByCompanyId(conn, id);
+                new PermissionGroupsDAO().deleteByCompanyId(conn, id);
+                new SubscriptionsDAO().deleteByCompanyId(conn, id);
+
+                boolean deactivated;
+
+                try (
+                        PreparedStatement pstmt = conn.prepareStatement(
+                                "update companies set is_active = false, updated_at = current_timestamp where id = ? and is_active = true"
+                        )
+                ) {
+
+                    pstmt.setInt(1, id);
+
+                    deactivated = pstmt.executeUpdate() > 0;
+                }
+
+                if (deactivated) {
+                    conn.commit();
+                } else {
+                    conn.rollback();
+                }
+
+                return deactivated;
+
+            } catch (SQLException e) {
+                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
+                conn.rollback();
+                throw e;
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -327,6 +376,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
      * Metodo que atualiza a empresa pelo ID
+     * Nao atualiza empresa que ja foi desativada
      * @param company Valores da empresa para atualizar
      * @param id ID da empresa que sera atualizada
      * @return true se foi atualizada e false caso tenha dado erro
@@ -354,7 +404,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                                 "cnpj = ?, " +
                                 "email = ?, " +
                                 "updated_at = current_timestamp " +
-                                "where id = ?"
+                                "where id = ? and is_active = true"
                 )
         ) {
 

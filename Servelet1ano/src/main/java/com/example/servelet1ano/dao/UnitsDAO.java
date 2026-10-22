@@ -5,6 +5,7 @@ import com.example.servelet1ano.filter.UnitsFilter;
 import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Units;
+import com.example.servelet1ano.validation.Validators;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,9 +14,9 @@ import java.util.List;
 public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
-     * Valida os dados da unit antes de gravar (o cnpj é obrigatorio no banco)
+     * Valida os dados da unit antes de gravar (o cnpj é obrigatorio no banco e precisa ser valido)
      * @param unit A unit a validar
-     * @return true se a unit existir e o cnpj estiver preenchido
+     * @return true se a unit existir e o cnpj for valido
      */
     private boolean isValid(Units unit) {
 
@@ -23,9 +24,26 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return false;
         }
 
-        String cnpj = cleanCnpj(unit.getCnpj());
+        if (!Validators.isCnpj(unit.getCnpj())) {
+            return false;
+        }
 
-        if (cnpj == null || cnpj.isEmpty()) {
+        return true;
+    }
+
+    /**
+     * Confere se a unit tem a empresa e o endereco informados (os dois ids sao obrigatorios pra cadastrar ou atualizar)
+     * Sem isso o id ficaria 0 e o banco recusaria por causa da chave estrangeira
+     * @param unit A unit a conferir
+     * @return true se o id da empresa e o id do endereco forem maiores que zero
+     */
+    private boolean hasParents(Units unit) {
+
+        if (unit == null) {
+            return false;
+        }
+
+        if (unit.getCompanyId() <= 0 || unit.getAddressId() <= 0) {
             return false;
         }
 
@@ -163,9 +181,9 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return units;
         }
+
+        return units;
     }
 
     /**
@@ -240,9 +258,9 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return unit;
         }
+
+        return unit;
     }
 
     /**
@@ -254,6 +272,10 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
     public boolean register(Units unit) {
 
         if (!isValid(unit)) {
+            return false;
+        }
+
+        if (!hasParents(unit)) {
             return false;
         }
 
@@ -323,6 +345,10 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
                         return false;
                     }
 
+                    if (!hasParents(unit)) {
+                        return false;
+                    }
+
                     pstmt.setInt(1, unit.getCompanyId());
                     pstmt.setInt(2, unit.getAddressId());
                     pstmt.setString(3, unit.getName());
@@ -351,15 +377,13 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
      * metodo para desativar a unit por id (is_active = false)
-     * Cascateia a desativacao para os setores e os funcionarios da unidade
+     * Cascateia a desativacao para os funcionarios e os setores da unidade
+     * Tudo acontece numa transacao: se alguma parte der erro, nada fica desativado
      * @param id Valor unico de cada unit
      * @return true se foi desativada e false caso tenha dado erro
      */
     @Override
     public boolean delete(int id) {
-
-        new SectorsDAO().deleteByUnitId(id);
-        new EmployeesDAO().deleteByIdUnit(id);
 
         Connection conn = ConnectionFactory.connect();
 
@@ -367,16 +391,42 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return false;
         }
 
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update units set is_active = false, updated_at = current_timestamp where id = ?"
-                )
-        ) {
+        try (conn) {
 
-            pstmt.setInt(1, id);
+            // desliga o salvamento automatico pra tudo ser desativado junto (ou nada ser desativado)
+            conn.setAutoCommit(false);
 
-            return pstmt.executeUpdate() > 0;
+            try {
+                // os funcionarios saem antes dos setores, porque o setor com funcionario ativo nao pode ser desativado
+                new EmployeesDAO().deleteByIdUnit(conn, id);
+                new SectorsDAO().deleteByUnitId(conn, id);
+
+                boolean deactivated;
+
+                try (
+                        PreparedStatement pstmt = conn.prepareStatement(
+                                "update units set is_active = false, updated_at = current_timestamp where id = ?"
+                        )
+                ) {
+
+                    pstmt.setInt(1, id);
+
+                    deactivated = pstmt.executeUpdate() > 0;
+                }
+
+                if (deactivated) {
+                    conn.commit();
+                } else {
+                    conn.rollback();
+                }
+
+                return deactivated;
+
+            } catch (SQLException e) {
+                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
+                conn.rollback();
+                throw e;
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -386,26 +436,66 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
 
     /**
      * metodo que desativa as units de uma empresa (para quando uma empresa for desativada)
-     * Busca as units ativas da empresa via filtro e desativa uma por uma, reaproveitando delete() pra cascatear os setores e funcionarios de cada unidade
+     * Cascateia a desativacao para os funcionarios e os setores da empresa, tudo numa transacao
      * Se a empresa nao tiver units devolve true, e isso nao e um erro
      * @param companyId O id da empresa
-     * @return true se todas foram desativadas com sucesso e false caso alguma tenha dado erro
+     * @return true se tudo foi desativado com sucesso e false caso tenha dado erro
      */
     public boolean deleteByCompanyId(int companyId) {
 
-        UnitsFilter filter = new UnitsFilter();
-        filter.setCompanyId(companyId);
+        Connection conn = ConnectionFactory.connect();
 
-        List<Units> units = searchAll(filter);
-        boolean allSuccess = true;
-
-        for (int i = 0; i < units.size(); i++) {
-            if (!delete(units.get(i).getId())) {
-                allSuccess = false;
-            }
+        if (conn == null) {
+            return false;
         }
 
-        return allSuccess;
+        try (conn) {
+
+            // desliga o salvamento automatico pra tudo ser desativado junto (ou nada ser desativado)
+            conn.setAutoCommit(false);
+
+            try {
+                new EmployeesDAO().deleteByIdCompany(conn, companyId);
+                new SectorsDAO().deleteByCompanyId(conn, companyId);
+                deleteByCompanyId(conn, companyId);
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
+                conn.rollback();
+                throw e;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * metodo que desativa as units de uma empresa dentro de uma transacao que ja esta aberta
+     * Nao abre nem fecha a conexao e nao faz commit nem rollback: quem chamou controla isso
+     * Se a empresa nao tiver units devolve false, e isso nao e um erro
+     * Desative os funcionarios e os setores da empresa antes de chamar esse metodo
+     * @param conn A conexao da transacao
+     * @param companyId O id da empresa
+     * @return true se alguma unit foi desativada
+     * @throws SQLException se o banco der erro, pra quem chamou desfazer a transacao (rollback)
+     */
+    public boolean deleteByCompanyId(Connection conn, int companyId) throws SQLException {
+
+        try (
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update units set is_active = false, updated_at = current_timestamp where company_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, companyId);
+
+            return pstmt.executeUpdate() > 0;
+        }
     }
 
     /**
@@ -418,6 +508,10 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
     public boolean update(Units unit, int id) {
 
         if (!isValid(unit)) {
+            return false;
+        }
+
+        if (!hasParents(unit)) {
             return false;
         }
 

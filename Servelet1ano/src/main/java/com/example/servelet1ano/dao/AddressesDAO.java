@@ -162,9 +162,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return addresses;
         }
+
+        return addresses;
     }
 
     /**
@@ -214,9 +214,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return address;
         }
+
+        return address;
     }
 
     /**
@@ -268,9 +268,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return addresses;
         }
+
+        return addresses;
     }
 
     /**
@@ -322,9 +322,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return addresses;
         }
+
+        return addresses;
     }
 
     /**
@@ -376,9 +376,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            return addresses;
         }
+
+        return addresses;
     }
 
     /**
@@ -480,8 +480,10 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
     /**
      * metodo para desativar o endereco por id (is_active = false)
+     * Nao desativa se alguma unit ou empresa ativa ainda usar esse endereco (a conferencia e a desativacao
+     * acontecem no mesmo comando, entao nao da pra um vinculo novo entrar no meio)
      * @param id Valor unico de cada endereco
-     * @return true se foi desativado e false caso tenha dado erro
+     * @return true se foi desativado e false caso tenha dado erro ou o endereco ainda esteja em uso
      */
     @Override
     public boolean delete(int id) {
@@ -495,7 +497,10 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
         try (
                 conn;
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update addresses set is_active = false, updated_at = current_timestamp where id = ?"
+                        "update addresses a set is_active = false, updated_at = current_timestamp " +
+                                "where a.id = ? and a.is_active = true " +
+                                "and not exists (select 1 from units u where u.address_id = a.id and u.is_active = true) " +
+                                "and not exists (select 1 from companies c where c.address_id = a.id and c.is_active = true)"
                 )
         ) {
 
@@ -511,6 +516,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
     /**
      * metodo que muda os values do endereco selecionado pelo id
+     * Nao atualiza endereco que ja foi desativado
      * @param address Os valores do endereco para ser atualizado
      * @param id O valor unico do endereco que quer atualizar
      * @return true se foi mudado e false caso tenha dado erro
@@ -540,7 +546,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                                 "state = ?, " +
                                 "country = ?, " +
                                 "updated_at = current_timestamp " +
-                                "where id = ?"
+                                "where id = ? and is_active = true"
                 )
         ) {
 
