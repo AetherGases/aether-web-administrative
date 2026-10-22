@@ -1,6 +1,5 @@
 package com.example.servelet1ano.dao;
 
-import com.example.servelet1ano.dao.DAOI;
 import com.example.servelet1ano.filter.PlansFilter;
 import com.example.servelet1ano.model.Plans;
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -9,7 +8,47 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlansDAO implements DAOI<Plans, PlansFilter>  {
+public class PlansDAO implements DAOI<Plans, PlansFilter> {
+
+    /**
+     * Abre a conexao com o banco
+     * @return A conexao aberta
+     * @throws IllegalStateException se nao for possivel conectar
+     */
+    private Connection getConnection() {
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            throw new IllegalStateException(
+                    "Não foi possível estabelecer conexão com o banco de dados."
+            );
+        }
+
+        return conn;
+    }
+
+    /**
+     * Preenche um objeto Plans com os dados da linha atual do ResultSet
+     * @param rs O ResultSet posicionado na linha que sera lida
+     * @return O Plans com os dados da linha
+     */
+    private Plans mapPlan(ResultSet rs) throws SQLException {
+
+        Plans plan = new Plans();
+
+        plan.setId(rs.getInt("id"));
+        plan.setName(rs.getString("name"));
+        plan.setDescription(rs.getString("description"));
+        plan.setPrice(rs.getDouble("price"));
+        plan.setDurationDays(rs.getInt("duration_days"));
+        plan.setCurrency(rs.getString("currency"));
+        plan.setActive(rs.getBoolean("is_active"));
+        plan.setCreatedAt(rs.getDate("created_at"));
+        plan.setUpdatedAt(rs.getDate("updated_at"));
+
+        return plan;
+    }
+
     /**
      * Metodo que busca os planos ativos no banco aplicando os filtros informados.
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
@@ -20,11 +59,9 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
      * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return Lista de Plans com os planos encontrados.
      * Retorna uma lista vazia caso nenhum plano seja encontrado
-     * ou ocorra um erro na consulta.
      */
     @Override
     public List<Plans> searchAll(PlansFilter filter) {
-
 
         List<Plans> plans = new ArrayList<>();
 
@@ -55,14 +92,8 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             parametros.add(filter.getMaxPrice());
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return plans;
-        }
-
         try (
-                conn;
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
@@ -73,28 +104,18 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 while (rs.next()) {
-
-                    Plans plan = new Plans();
-
-                    plan.setId(rs.getInt("id"));
-                    plan.setName(rs.getString("name"));
-                    plan.setDescription(rs.getString("description"));
-                    plan.setPrice(rs.getDouble("price"));
-                    plan.setDurationDays(rs.getInt("duration_days"));
-                    plan.setCurrency(rs.getString("currency"));
-                    plan.setActive(rs.getBoolean("is_active"));
-                    plan.setCreatedAt(rs.getDate("created_at"));
-                    plan.setUpdatedAt(rs.getDate("updated_at"));
-
-                    plans.add(plan);
+                    plans.add(mapPlan(rs));
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return plans;
 
-        return plans;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar planos ativos.",
+                    e
+            );
+        }
     }
 
 
@@ -104,26 +125,16 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
      * @param id Identificador unico do plano.
      * @return Plans encontrado ou null caso nao exista.
      */
-
     @Override
     public Plans searchById(int id) {
 
-        Plans plan = null;
-
-        String sql =
-                "select * " +
-                        "from plans " +
-                        "where id = ? and is_active = true";
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return null;
-        }
-
         try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * " +
+                                "from plans " +
+                                "where id = ? and is_active = true"
+                )
         ) {
 
             pstmt.setInt(1, id);
@@ -131,26 +142,18 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()) {
-
-                    plan = new Plans();
-
-                    plan.setId(rs.getInt("id"));
-                    plan.setName(rs.getString("name"));
-                    plan.setDescription(rs.getString("description"));
-                    plan.setPrice(rs.getDouble("price"));
-                    plan.setDurationDays(rs.getInt("duration_days"));
-                    plan.setCurrency(rs.getString("currency"));
-                    plan.setActive(rs.getBoolean("is_active"));
-                    plan.setCreatedAt(rs.getDate("created_at"));
-                    plan.setUpdatedAt(rs.getDate("updated_at"));
+                    return mapPlan(rs);
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return null;
 
-        return plan;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar plano pelo ID.",
+                    e
+            );
+        }
     }
 
 
@@ -169,23 +172,14 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             return null;
         }
 
-        Plans plan = null;
-
-        String sql =
-                "select * " +
-                        "from plans " +
-                        "where LOWER(name) = LOWER(?) " +
-                        "and is_active = true";
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return null;
-        }
-
         try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * " +
+                                "from plans " +
+                                "where LOWER(name) = LOWER(?) " +
+                                "and is_active = true"
+                )
         ) {
 
             pstmt.setString(1, name.trim());
@@ -193,27 +187,23 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()) {
-
-                    plan = new Plans();
-
-                    plan.setId(rs.getInt("id"));
-                    plan.setName(rs.getString("name"));
-                    plan.setDescription(rs.getString("description"));
-                    plan.setPrice(rs.getDouble("price"));
-                    plan.setDurationDays(rs.getInt("duration_days"));
-                    plan.setCurrency(rs.getString("currency"));
-                    plan.setActive(rs.getBoolean("is_active"));
-                    plan.setCreatedAt(rs.getDate("created_at"));
-                    plan.setUpdatedAt(rs.getDate("updated_at"));
+                    return mapPlan(rs);
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return null;
 
-        return plan;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar plano pelo nome.",
+                    e
+            );
+        }
     }
+
+    /**
+     * O cadastro de planos nao é permitido.
+     */
     @Override
     public boolean register(Plans entity) {
         throw new UnsupportedOperationException(
@@ -221,6 +211,9 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
         );
     }
 
+    /**
+     * A atualizacao de planos nao é permitida.
+     */
     @Override
     public boolean update(Plans entity, int id) {
         throw new UnsupportedOperationException(
@@ -228,6 +221,9 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
         );
     }
 
+    /**
+     * A exclusao de planos nao é permitida.
+     */
     @Override
     public boolean delete(int id) {
         throw new UnsupportedOperationException(

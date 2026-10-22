@@ -13,6 +13,33 @@ import java.util.List;
 public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, TelephoneCompaniesFilter> {
 
     /**
+     * Select base dos telefones, com o join da empresa
+     * Termina com espaco, entao é so colocar o where depois
+     */
+    private static final String SELECT_TELEPHONES =
+            "select tc.*, tc.company_id as companyId, " +
+                    "c.id as idCompany, c.name as companyName " +
+                    "from telephone_companies tc " +
+                    "join companies c on c.id = tc.company_id ";
+
+    /**
+     * Abre a conexao com o banco
+     * @return A conexao aberta
+     * @throws IllegalStateException se nao for possivel conectar
+     */
+    private Connection requireConnection() {
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            throw new IllegalStateException(
+                    "Não foi possível estabelecer conexão com o banco de dados."
+            );
+        }
+
+        return conn;
+    }
+
+    /**
      * Valida os dados do telefone antes de gravar (celular valido e id da empresa informado)
      * @param telephoneCompany O telefone a validar
      * @return true se o telefone existir, for um celular valido e tiver o id da empresa
@@ -50,6 +77,32 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
     }
 
     /**
+     * Monta um objeto TelephoneCompanies a partir da linha atual do ResultSet (com a empresa)
+     * @param rs O ResultSet posicionado na linha que sera lida (vindo do SELECT_TELEPHONES)
+     * @return O TelephoneCompanies com os dados da linha
+     */
+    private TelephoneCompanies mapTelephone(ResultSet rs) throws SQLException {
+
+        Companies company = new Companies(
+                rs.getInt("idCompany"),
+                rs.getString("companyName")
+        );
+
+        TelephoneCompanies telephoneCompany = new TelephoneCompanies(
+                rs.getString("telephone"),
+                rs.getInt("companyId"),
+                rs.getInt("id"),
+                company
+        );
+
+        telephoneCompany.setCreatedAt(rs.getTimestamp("created_at"));
+        telephoneCompany.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+        return telephoneCompany;
+    }
+
+
+    /**
      * Metodo que busca os telefones ativos aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
      * Se o filter vier null, busca sem filtro nenhum
@@ -57,7 +110,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      * @return List<TelephoneCompanies> com os telefones encontrados
      */
     @Override
-    public List<TelephoneCompanies> searchAll(TelephoneCompaniesFilter filter){
+    public List<TelephoneCompanies> searchAll(TelephoneCompaniesFilter filter) {
 
         List<TelephoneCompanies> telephones = new ArrayList<>();
 
@@ -66,11 +119,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
         }
 
         StringBuilder sql = new StringBuilder(
-                "select tc.*, tc.company_id as companyId, " +
-                        "c.id as idCompany, c.name as companyName " +
-                        "from telephone_companies tc " +
-                        "join companies c on c.id = tc.company_id " +
-                        "where tc.is_active = true"
+                SELECT_TELEPHONES + "where tc.is_active = true"
         );
 
         List<Object> parametros = new ArrayList<>();
@@ -90,16 +139,10 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             parametros.add("%" + filter.getCompanyName() + "%");
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return telephones;
-        }
-
         try (
-                conn;
+                Connection conn = requireConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
-        ){
+        ) {
 
             for (int i = 0; i < parametros.size(); i++) {
                 pstmt.setObject(i + 1, parametros.get(i));
@@ -107,32 +150,19 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
-                while (rs.next()){
-
-                    Companies company = new Companies(
-                            rs.getInt("idCompany"),
-                            rs.getString("companyName")
-                    );
-
-                    TelephoneCompanies telephoneCompany = new TelephoneCompanies(
-                            rs.getString("telephone"),
-                            rs.getInt("companyId"),
-                            rs.getInt("id"),
-                            company
-                    );
-
-                    telephoneCompany.setCreatedAt(rs.getTimestamp("created_at"));
-                    telephoneCompany.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-                    telephones.add(telephoneCompany);
+                while (rs.next()) {
+                    telephones.add(mapTelephone(rs));
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return telephones;
 
-        return telephones;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar telefones das empresas.",
+                    e
+            );
+        }
     }
 
     /**
@@ -141,55 +171,32 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      * @return O telefone encontrado ou null caso nao exista
      */
     @Override
-    public TelephoneCompanies searchById(int id){
-
-        TelephoneCompanies telephoneCompany = null;
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return null;
-        }
+    public TelephoneCompanies searchById(int id) {
 
         try (
-                conn;
+                Connection conn = requireConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "select tc.*, tc.company_id as companyId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from telephone_companies tc " +
-                                "join companies c on c.id = tc.company_id " +
-                                "where tc.id = ? and tc.is_active = true"
+                        SELECT_TELEPHONES + "where tc.id = ? and tc.is_active = true"
                 )
-        ){
+        ) {
 
             pstmt.setInt(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
-                if(rs.next()){
-
-                    Companies company = new Companies(
-                            rs.getInt("idCompany"),
-                            rs.getString("companyName")
-                    );
-
-                    telephoneCompany = new TelephoneCompanies(
-                            rs.getString("telephone"),
-                            rs.getInt("companyId"),
-                            rs.getInt("id"),
-                            company
-                    );
-
-                    telephoneCompany.setCreatedAt(rs.getTimestamp("created_at"));
-                    telephoneCompany.setUpdatedAt(rs.getTimestamp("updated_at"));
+                if (rs.next()) {
+                    return mapTelephone(rs);
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return null;
 
-        return telephoneCompany;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar telefone pelo ID: " + id,
+                    e
+            );
+        }
     }
 
     /**
@@ -197,30 +204,24 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      * A empresa precisa existir e estar ativa, e nao cadastra se a empresa ja tiver esse telefone ativo
      * (tudo conferido no proprio comando)
      * @param telephoneCompany O telefone
-     * @return true se foi cadastrado e false caso tenha dado erro
+     * @return true se foi cadastrado e false se os dados forem invalidos ou alguma regra acima nao passar
      */
     @Override
-    public boolean register(TelephoneCompanies telephoneCompany){
+    public boolean register(TelephoneCompanies telephoneCompany) {
 
         if (!isValid(telephoneCompany)) {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
         try (
-                conn;
+                Connection conn = requireConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into telephone_companies (telephone, company_id) " +
                                 "select ?, c.id from companies c " +
                                 "where c.id = ? and c.is_active = true " +
                                 "and not exists (select 1 from telephone_companies t where t.telephone = ? and t.company_id = c.id and t.is_active = true)"
                 )
-        ){
+        ) {
 
             pstmt.setString(1, cleanTelephone(telephoneCompany.getTelephone()));
             pstmt.setInt(2, telephoneCompany.getCompanyId());
@@ -229,27 +230,23 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao cadastrar telefone.",
+                    e
+            );
         }
     }
 
     /**
      * metodo que desativa o telefone por id (is_active = false)
      * @param id O id unico do telefone
-     * @return true se foi desativado e false caso tenha dado erro
+     * @return true se foi desativado e false caso o telefone nao exista ou ja esteja desativado
      */
     @Override
-    public boolean delete(int id){
+    public boolean delete(int id) {
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try(
-                conn;
+        try (
+                Connection conn = requireConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update telephone_companies set is_active = false, updated_at = current_timestamp where id = ? and is_active = true"
                 )
@@ -260,8 +257,10 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao desativar telefone pelo ID: " + id,
+                    e
+            );
         }
     }
 
@@ -269,23 +268,19 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      * metodo que desativa os telefones de uma empresa (para quando uma empresa for desativada)
      * Se a empresa nao tiver telefones devolve false, e isso nao e um erro
      * @param companyId O id da empresa
-     * @return true se foi desativado e false caso tenha dado erro
+     * @return true se foi desativado e false caso a empresa nao tenha telefones ativos
      */
-    public boolean deleteByCompanyId(int companyId){
+    public boolean deleteByCompanyId(int companyId) {
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try(conn) {
+        try (Connection conn = requireConnection()) {
 
             return deleteByCompanyId(conn, companyId);
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao desativar telefones da empresa: " + companyId,
+                    e
+            );
         }
     }
 
@@ -300,7 +295,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      */
     public boolean deleteByCompanyId(Connection conn, int companyId) throws SQLException {
 
-        try(
+        try (
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update telephone_companies set is_active = false, updated_at = current_timestamp where company_id = ? and is_active = true"
                 )
@@ -319,30 +314,24 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
      * Nao atualiza telefone desativado e nao deixa ficar igual a outro telefone ativo da empresa
      * @param telephoneCompany O telefone com os novos valores
      * @param id O id para buscar o telefone
-     * @return true se deu certo e false caso tenha algum erro
+     * @return true se foi atualizado e false se os dados forem invalidos ou alguma regra acima nao passar
      */
     @Override
-    public boolean update(TelephoneCompanies telephoneCompany, int id){
+    public boolean update(TelephoneCompanies telephoneCompany, int id) {
 
         if (!isValid(telephoneCompany)) {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try(
-                conn;
+        try (
+                Connection conn = requireConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update telephone_companies t set telephone = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where t.id = ? and t.company_id = ? and t.is_active = true " +
                                 "and not exists (select 1 from telephone_companies o where o.telephone = ? and o.company_id = t.company_id and o.is_active = true and o.id <> t.id)"
                 )
-        ){
+        ) {
 
             pstmt.setString(1, cleanTelephone(telephoneCompany.getTelephone()));
             pstmt.setInt(2, id);
@@ -352,8 +341,10 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao atualizar telefone pelo ID: " + id,
+                    e
+            );
         }
     }
 

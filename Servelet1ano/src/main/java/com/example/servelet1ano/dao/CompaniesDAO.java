@@ -13,6 +13,23 @@ import java.util.List;
 public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
+     * Abre a conexao com o banco
+     * @return A conexao aberta
+     * @throws IllegalStateException se nao for possivel conectar
+     */
+    private Connection getConnection() {
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            throw new IllegalStateException(
+                    "Não foi possível estabelecer conexão com o banco de dados."
+            );
+        }
+
+        return conn;
+    }
+
+    /**
      * Valida os dados da empresa antes de gravar (nome, cnpj, porte e, se preenchido, email)
      * @param company A empresa a validar
      * @return true se nome, cnpj, porte e o email (quando informado) forem validos
@@ -62,6 +79,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * Metodo que busca as empresas ativas aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
      * Se o filter vier null, busca sem filtro nenhum
+     * O resultado vem ordenado pelo nome da empresa
      * @param filter Objeto com os campos opcionais para filtrar a busca
      * @return List<Companies> com as empresas encontradas
      */
@@ -90,7 +108,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         if (filter.getName() != null && !filter.getName().isBlank()) {
             sql.append(" and c.name ilike ?");
-            parametros.add("%" + filter.getName() + "%");
+            parametros.add("%" + filter.getName().trim() + "%");
         }
 
         if (filter.getCnpj() != null && !filter.getCnpj().isBlank()) {
@@ -103,14 +121,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             parametros.add(filter.getRegistrationDate());
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return companies;
-        }
+        sql.append(" order by c.name asc");
 
         try (
-                conn;
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
@@ -140,11 +154,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return companies;
 
-        return companies;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar empresas.",
+                    e
+            );
+        }
     }
 
     /**
@@ -155,16 +172,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
     @Override
     public Companies searchById(int id) {
 
-        Companies company = null;
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return null;
-        }
-
         try (
-                conn;
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select c.* " +
                                 "from companies c " +
@@ -178,7 +187,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
                 if (rs.next()) {
 
-                    company = new Companies(
+                    Companies company = new Companies(
                             rs.getInt("id"),
                             rs.getString("name"),
                             rs.getString("trade_name"),
@@ -191,14 +200,19 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                     );
 
                     company.setUpdatedAt(rs.getDate("updated_at"));
+
+                    return company;
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return null;
 
-        return company;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar empresa pelo ID.",
+                    e
+            );
+        }
     }
 
     /**
@@ -206,7 +220,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * Nao cadastra se ja existir uma empresa ativa com o mesmo cnpj
      * Se o cnpj for de uma empresa que foi desativada, o cadastro antigo é reativado com os dados novos
      * @param company Empresa que sera cadastrada
-     * @return true se foi registrada e false caso tenha dado erro
+     * @return true se foi registrada e false se os dados forem invalidos ou o cnpj ja for de uma empresa ativa
      */
     @Override
     public boolean register(Companies company) {
@@ -215,14 +229,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
         try (
-                conn;
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "insert into companies (name, trade_name, size, registration_date, cnpj, email) " +
                                 "values (?, ?, ?::company_size, ?, ?, ?) " +
@@ -247,8 +255,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao cadastrar empresa.",
+                    e
+            );
         }
     }
 
@@ -259,7 +269,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * Mesmas regras do register: se o cnpj for de uma empresa ativa nao cadastra e devolve -1,
      * e se for de uma empresa desativada reativa o cadastro antigo e devolve o id dele
      * @param company A empresa que sera cadastrada
-     * @return O id gerado, ou -1 caso tenha dado erro
+     * @return O id gerado, ou -1 se os dados forem invalidos ou o cnpj ja for de uma empresa ativa
      */
     public int registerReturningId(Companies company) {
 
@@ -267,14 +277,33 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return -1;
         }
 
-        Connection conn = ConnectionFactory.connect();
+        try (Connection conn = getConnection()) {
 
-        if (conn == null) {
+            return registerReturningId(company, conn);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao cadastrar empresa.",
+                    e
+            );
+        }
+    }
+
+    /**
+     * metodo para cadastrar uma nova empresa e devolver o id gerado, usando uma conexao que ja foi aberta
+     * Usado quando o cadastro faz parte de uma transacao maior (a conexao nao é fechada aqui, quem chamou fecha)
+     * Mesmas regras do registerReturningId sem a conexao
+     * @param company A empresa que sera cadastrada
+     * @param conn A conexao ja aberta que sera usada
+     * @return O id gerado, ou -1 se os dados forem invalidos ou o cnpj ja for de uma empresa ativa
+     */
+    public int registerReturningId(Companies company, Connection conn) {
+
+        if (!isValid(company)) {
             return -1;
         }
 
         try (
-                conn;
                 PreparedStatement pstmt = conn.prepareStatement(
                         "INSERT INTO companies " +
                                 "(name, trade_name, size, registration_date, cnpj, email) " +
@@ -303,11 +332,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return -1;
 
-        return -1;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao cadastrar empresa.",
+                    e
+            );
+        }
     }
 
     /**
@@ -316,18 +348,12 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * e tambem para telefones, grupos de permissao e assinaturas da empresa
      * Tudo acontece numa transacao: se alguma parte der erro, nada fica desativado
      * @param id Valor unico de cada empresa
-     * @return true se foi desativada e false caso tenha dado erro ou a empresa nao exista (ou ja esteja desativada)
+     * @return true se foi desativada e false caso a empresa nao exista (ou ja esteja desativada)
      */
     @Override
     public boolean delete(int id) {
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (conn) {
+        try (Connection conn = getConnection()) {
 
             // desliga o salvamento automatico pra tudo ser desativado junto (ou nada ser desativado)
             conn.setAutoCommit(false);
@@ -369,8 +395,39 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao desativar empresa pelo ID.",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Metodo para desativar empresas pelo nome (is_active = false)
+     * Atencao: so desativa a empresa, nao cascateia para setores, units etc. como o delete por ID
+     * @param name Nome da empresa
+     * @return true se alguma empresa foi desativada e false caso nenhuma seja encontrada
+     */
+    public boolean deleteByName(String name) {
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update companies " +
+                                "set is_active = false, updated_at = current_timestamp " +
+                                "where name ilike ?"
+                )
+        ) {
+
+            pstmt.setString(1, name);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao desativar empresa pelo nome.",
+                    e
+            );
         }
     }
 
@@ -379,7 +436,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
      * Nao atualiza empresa que ja foi desativada
      * @param company Valores da empresa para atualizar
      * @param id ID da empresa que sera atualizada
-     * @return true se foi atualizada e false caso tenha dado erro
+     * @return true se foi atualizada e false se os dados forem invalidos ou a empresa nao existir/estiver desativada
      */
     @Override
     public boolean update(Companies company, int id) {
@@ -388,14 +445,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
         try (
-                conn;
+                Connection conn = getConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set name = ?, " +
                                 "trade_name = ?, " +
@@ -419,8 +470,55 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(
+                    "Erro ao atualizar empresa pelo ID.",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Metodo que atualiza a empresa pelo nome atual
+     * Nao atualiza empresa que ja foi desativada
+     * @param company Valores da empresa para atualizar
+     * @param name Nome atual da empresa que sera atualizada
+     * @return true se foi atualizada e false se os dados forem invalidos ou a empresa nao existir/estiver desativada
+     */
+    public boolean updateByName(Companies company, String name) {
+
+        if (!isValid(company)) {
             return false;
+        }
+
+        try (
+                Connection conn = getConnection();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update companies set name = ?, " +
+                                "trade_name = ?, " +
+                                "size = ?::company_size, " +
+                                "registration_date = ?, " +
+                                "cnpj = ?, " +
+                                "email = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where name ilike ? and is_active = true"
+                )
+        ) {
+
+            pstmt.setString(1, company.getName());
+            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(3, company.getSize().getValor());
+            pstmt.setDate(4, company.getRegistrationDate());
+            pstmt.setString(5, cleanCnpj(company.getCnpj()));
+            pstmt.setString(6, company.getEmail());
+            pstmt.setString(7, name);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao atualizar empresa pelo nome.",
+                    e
+            );
         }
     }
 

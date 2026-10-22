@@ -11,6 +11,31 @@ import java.util.List;
 public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGroupsFilter> {
 
     /**
+     * Interface usada pra passar os parametros do PreparedStatement para os metodos auxiliares
+     */
+    @FunctionalInterface
+    private interface StatementBinder {
+        void bind(PreparedStatement pstmt) throws SQLException;
+    }
+
+    /**
+     * Abre a conexao com o banco
+     * @return A conexao aberta
+     * @throws IllegalStateException se nao for possivel conectar
+     */
+    private Connection requireConnection() throws SQLException {
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            throw new IllegalStateException(
+                    "Não foi possível estabelecer conexão com o banco de dados."
+            );
+        }
+
+        return conn;
+    }
+
+    /**
      * Valida os dados do grupo de permissao antes de gravar (o nome é obrigatorio no banco)
      * @param permissionGroup O grupo de permissao a validar
      * @return true se o grupo existir e o nome estiver preenchido
@@ -28,6 +53,42 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         return true;
     }
 
+    /**
+     * Executa um insert/update/delete e diz se alguma linha foi afetada
+     * @param sql O comando SQL
+     * @param binder Quem preenche os parametros do comando
+     * @param errorMessage Mensagem da excecao caso de erro
+     * @return true se alguma linha foi afetada
+     * @throws RuntimeException se ocorrer erro de SQL
+     */
+    private boolean executeUpdate(String sql, StatementBinder binder, String errorMessage) {
+
+        try (Connection conn = requireConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            binder.bind(pstmt);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(errorMessage, e);
+        }
+    }
+
+    /**
+     * Monta um objeto PermissionGroups a partir da linha atual do ResultSet
+     * @param rs O ResultSet posicionado na linha que sera lida
+     * @return O PermissionGroups com os dados da linha
+     */
+    private PermissionGroups mapPermissionGroup(ResultSet rs) throws SQLException {
+
+        return new PermissionGroups(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getObject("company_id", Integer.class)
+        );
+    }
+
 
     /**
      * Metodo que busca os grupos de permissao ativos aplicando os filtros informados
@@ -38,7 +99,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
      * @return List<PermissionGroups> com os grupos encontrados
      */
     @Override
-    public List<PermissionGroups> searchAll(PermissionGroupsFilter filter){
+    public List<PermissionGroups> searchAll(PermissionGroupsFilter filter) {
 
         List<PermissionGroups> permissionGroups = new ArrayList<>();
 
@@ -69,16 +130,10 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             parametros.add("%" + filter.getName() + "%");
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return permissionGroups;
-        }
-
         try (
-                conn;
+                Connection conn = requireConnection();
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
-        ){
+        ) {
 
             for (int i = 0; i < parametros.size(); i++) {
                 pstmt.setObject(i + 1, parametros.get(i));
@@ -86,23 +141,19 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
-                while (rs.next()){
-
-                    permissionGroups.add(
-                            new PermissionGroups(
-                                    rs.getInt("id"),
-                                    rs.getString("name"),
-                                    rs.getObject("company_id", Integer.class)
-                            )
-                    );
+                while (rs.next()) {
+                    permissionGroups.add(mapPermissionGroup(rs));
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return permissionGroups;
 
-        return permissionGroups;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar grupos de permissão.",
+                    e
+            );
+        }
     }
 
     /**
@@ -111,116 +162,88 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
      * @return Retorna o grupo de permissao encontrado ou null caso nao exista
      */
     @Override
-    public PermissionGroups searchById(int id){
-
-        PermissionGroups permissionGroup = null;
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return null;
-        }
+    public PermissionGroups searchById(int id) {
 
         try (
-                conn;
+                Connection conn = requireConnection();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select * from permission_groups where id = ? and is_active = true"
                 )
-        ){
+        ) {
 
             pstmt.setInt(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
-                if(rs.next()){
-                    permissionGroup = new PermissionGroups(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getObject("company_id", Integer.class)
-                    );
+                if (rs.next()) {
+                    return mapPermissionGroup(rs);
                 }
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            return null;
 
-        return permissionGroup;
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar grupo de permissão por ID.",
+                    e
+            );
+        }
     }
 
     /**
      * metodo para cadastrar novos grupos de permissao no banco
      * O companyId pode vir nulo, quando o grupo for global (da Aether)
      * @param permissionGroup O grupo de permissao que sera cadastrado
-     * @return true se foi registrado e false caso tenha dado erro
+     * @return true se foi registrado e false se os dados forem invalidos
      */
     @Override
-    public boolean register(PermissionGroups permissionGroup){
+    public boolean register(PermissionGroups permissionGroup) {
 
         if (!isValid(permissionGroup)) {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into permission_groups (name, company_id) values (?, ?)"
-                )
-        ){
-
-            pstmt.setString(1, permissionGroup.getName());
-            pstmt.setObject(2, permissionGroup.getCompanyId());
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return executeUpdate(
+                "insert into permission_groups (name, company_id) values (?, ?)",
+                pstmt -> {
+                    pstmt.setString(1, permissionGroup.getName());
+                    pstmt.setObject(2, permissionGroup.getCompanyId());
+                },
+                "Erro ao cadastrar grupo de permissão."
+        );
     }
 
     /**
      * metodo para registrar mais de um grupo de permissao
      * Todos entram juntos: se algum der erro, nenhum fica salvo (transacao)
      * @param permissionGroups Uma lista de grupos de permissao
-     * @return true se foi registrado e false caso tenha dado erro
+     * @return true se foi registrado e false se algum dos grupos for invalido
      */
-    public boolean registerLot(List<PermissionGroups> permissionGroups){
+    public boolean registerLot(List<PermissionGroups> permissionGroups) {
 
         if (permissionGroups == null || permissionGroups.isEmpty()) {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
+        for (PermissionGroups permissionGroup : permissionGroups) {
 
-        if (conn == null) {
-            return false;
+            if (!isValid(permissionGroup)) {
+                return false;
+            }
         }
 
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into permission_groups (name, company_id) values (?, ?)"
-                )
-        ){
+        try (Connection conn = requireConnection()) {
 
-            try {
-                // desliga o salvamento automatico pra tudo entrar junto (ou nada entrar)
-                conn.setAutoCommit(false);
+            // desliga o salvamento automatico pra tudo entrar junto (ou nada entrar)
+            conn.setAutoCommit(false);
 
-                for (int i = 0; i < permissionGroups.size(); i++) {
-                    PermissionGroups permissionGroup = permissionGroups.get(i);
+            try (
+                    PreparedStatement pstmt = conn.prepareStatement(
+                            "insert into permission_groups (name, company_id) values (?, ?)"
+                    )
+            ) {
 
-                    if (!isValid(permissionGroup)) {
-                        return false;
-                    }
-
+                for (PermissionGroups permissionGroup : permissionGroups) {
                     pstmt.setString(1, permissionGroup.getName());
                     pstmt.setObject(2, permissionGroup.getCompanyId());
 
@@ -233,13 +256,23 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
             } catch (SQLException e) {
                 // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
-                conn.rollback();
-                throw e;
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackError) {
+                    e.addSuppressed(rollbackError);
+                }
+
+                throw new RuntimeException(
+                        "Erro ao cadastrar grupos de permissão em lote.",
+                        e
+                );
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao executar cadastro em lote.",
+                    e
+            );
         }
     }
 
@@ -248,57 +281,55 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
      * Nao desativa se algum funcionario ativo ainda estiver nesse grupo (a conferencia e a desativacao
      * acontecem no mesmo comando, entao nao da pra um funcionario entrar no grupo no meio)
      * @param id Valor unico de cada grupo de permissao
-     * @return true se foi desativado e false caso tenha dado erro ou o grupo ainda tenha funcionarios ativos
+     * @return true se foi desativado e false caso o grupo ainda tenha funcionarios ativos (ou nao exista)
      */
     @Override
-    public boolean delete(int id){
+    public boolean delete(int id) {
 
-        Connection conn = ConnectionFactory.connect();
+        return executeUpdate(
+                "update permission_groups pg set is_active = false, updated_at = current_timestamp " +
+                        "where pg.id = ? and pg.is_active = true " +
+                        "and not exists (select 1 from employees e where e.permission_group_id = pg.id and e.is_active = true)",
+                pstmt -> pstmt.setInt(1, id),
+                "Erro ao desativar grupo de permissão por ID."
+        );
+    }
 
-        if (conn == null) {
-            return false;
-        }
+    /**
+     * metodo para desativar grupos de permissao pelo nome (is_active = false)
+     * Mesma regra do delete por id: nao desativa o grupo que ainda tenha funcionarios ativos
+     * Atencao: desativa todos os grupos com esse nome, de qualquer empresa
+     * @param name O nome do grupo de permissao
+     * @return true se algum grupo foi desativado e false caso nenhum seja desativado
+     */
+    public boolean deleteByName(String name) {
 
-        try(
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update permission_groups pg set is_active = false, updated_at = current_timestamp " +
-                                "where pg.id = ? and pg.is_active = true " +
-                                "and not exists (select 1 from employees e where e.permission_group_id = pg.id and e.is_active = true)"
-                )
-        ) {
-
-            pstmt.setInt(1, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return executeUpdate(
+                "update permission_groups pg set is_active = false, updated_at = current_timestamp " +
+                        "where pg.name ilike ? and pg.is_active = true " +
+                        "and not exists (select 1 from employees e where e.permission_group_id = pg.id and e.is_active = true)",
+                pstmt -> pstmt.setString(1, name),
+                "Erro ao desativar grupo de permissão por nome."
+        );
     }
 
     /**
      * metodo que desativa os grupos de permissao de uma empresa (para quando uma empresa for desativada)
      * Se a empresa nao tiver grupos devolve false, e isso nao e um erro
      * @param companyId O id da empresa
-     * @return true se foi desativado e false caso tenha dado erro
+     * @return true se foi desativado e false caso a empresa nao tenha grupos
      */
-    public boolean deleteByCompanyId(int companyId){
+    public boolean deleteByCompanyId(int companyId) {
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try(conn) {
+        try (Connection conn = requireConnection()) {
 
             return deleteByCompanyId(conn, companyId);
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException(
+                    "Erro ao desativar grupos de permissão da empresa.",
+                    e
+            );
         }
     }
 
@@ -314,7 +345,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
      */
     public boolean deleteByCompanyId(Connection conn, int companyId) throws SQLException {
 
-        try(
+        try (
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update permission_groups set is_active = false, updated_at = current_timestamp where company_id = ?"
                 )
@@ -332,39 +363,51 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
      * Nao atualiza grupo que ja foi desativado
      * @param permissionGroup Os valores do grupo de permissao para ser atualizado
      * @param id O valor unico do grupo de permissao que quer atualizar
-     * @return true se foi mudado e false caso tenha dado erro
+     * @return true se foi mudado e false se os dados forem invalidos ou o grupo nao existir/estiver desativado
      */
     @Override
-    public boolean update(PermissionGroups permissionGroup, int id){
+    public boolean update(PermissionGroups permissionGroup, int id) {
 
         if (!isValid(permissionGroup)) {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
+        return executeUpdate(
+                "update permission_groups set name = ?, " +
+                        "updated_at = current_timestamp " +
+                        "where id = ? and is_active = true",
+                pstmt -> {
+                    pstmt.setString(1, permissionGroup.getName());
+                    pstmt.setInt(2, id);
+                },
+                "Erro ao atualizar grupo de permissão por ID."
+        );
+    }
 
-        if (conn == null) {
+    /**
+     * metodo que muda o nome do grupo de permissao selecionado pelo nome atual
+     * Mesmas regras do update por id: so muda o nome e nao atualiza grupo desativado
+     * Atencao: atualiza todos os grupos ativos com esse nome, de qualquer empresa
+     * @param permissionGroup Os valores do grupo de permissao para ser atualizado
+     * @param name O nome atual para achar o grupo
+     * @return true se foi mudado e false se os dados forem invalidos ou nenhum grupo for encontrado
+     */
+    public boolean updateByName(PermissionGroups permissionGroup, String name) {
+
+        if (!isValid(permissionGroup)) {
             return false;
         }
 
-        try(
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update permission_groups set name = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where id = ? and is_active = true"
-                )
-        ){
-
-            pstmt.setString(1, permissionGroup.getName());
-            pstmt.setInt(2, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return executeUpdate(
+                "update permission_groups set name = ?, " +
+                        "updated_at = current_timestamp " +
+                        "where name ilike ? and is_active = true",
+                pstmt -> {
+                    pstmt.setString(1, permissionGroup.getName());
+                    pstmt.setString(2, name);
+                },
+                "Erro ao atualizar grupo de permissão por nome."
+        );
     }
 
 }
