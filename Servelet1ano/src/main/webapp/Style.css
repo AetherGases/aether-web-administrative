@@ -1,7 +1,7 @@
 @charset "UTF-8";
 /* ----------------------------- RESET ----------------------------------- */
 *,
-
+*::before,
 *::after {
     margin: 0;
     padding: 0;
@@ -338,7 +338,13 @@ body {
 
 .botaoComecarAgora {
     position: absolute;
-    inset: 0;
+    /* Proteção: mesmo que o container perca a classe, o botão não cobre a página */
+    inset: auto;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
     display: flex;
     align-items: center;
     padding-left: 13px;
@@ -1332,13 +1338,6 @@ body {
     left: 627px;
     top: 3243px;
     width: 627px;
-}
-
-.agrupandoGrupo {
-    position: absolute;
-    left: 627px;
-    top: 3243px;
-    width: 627px;
 
     --duracao: 600ms;
     --easing: ease-in-out;
@@ -1452,7 +1451,7 @@ body {
     color: #7E8294;
 }
 
-/* NOVO: cards das três etapas. */
+/* Cards das três etapas ------------------------------------------------- */
 .secaoCards {
     position: absolute;
     left: 77px;
@@ -1605,7 +1604,7 @@ body {
 }
 
 /* ==========================================================================
-   SETOR 6 — PLANOS   (NOVO)
+   SETOR 6 — PLANOS
    ========================================================================== */
 
 .Bola7 {
@@ -1912,7 +1911,7 @@ body {
 }
 
 /* ==========================================================================
-   SETOR 7 — CADASTRO / LOGIN   (NOVO)
+   SETOR 7 — CADASTRO / LOGIN
    ========================================================================== */
 
 #Aethercadastro {
@@ -2254,7 +2253,7 @@ body {
 
 
 /* ==========================================================================
-   SETOR 8 — RODAPÉ   (NOVO)
+   SETOR 8 — RODAPÉ
    ========================================================================== */
 
 .rodapeAether {
