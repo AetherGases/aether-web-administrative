@@ -9,24 +9,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
-
-    @FunctionalInterface
-    private interface StatementBinder {
-        void bind(PreparedStatement pstmt) throws SQLException;
-    }
-
-    private Connection requireConnection() throws SQLException {
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            throw new IllegalStateException(
-                    "Não foi possível estabelecer conexão com o banco de dados."
-            );
-        }
-
-        return conn;
-    }
 
     /**
      * Valida os dados do endereco antes de gravar
@@ -83,200 +67,325 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
         return digits;
     }
 
-    private Addresses mapAddress(ResultSet rs) throws SQLException {
-        Addresses address = new Addresses(
-                rs.getInt("id"),
-                rs.getString("zip_code"),
-                rs.getString("street"),
-                rs.getString("number"),
-                rs.getString("complement"),
-                rs.getString("neighborhood"),
-                rs.getString("city"),
-                rs.getString("state"),
-                rs.getString("country")
-        );
 
-        address.setCreatedAt(rs.getTimestamp("created_at"));
-        address.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-        return address;
-    }
-
-    private boolean executeUpdate(
-            String sql,
-            StatementBinder binder,
-            String errorMessage
-    ) {
-        try (Connection conn = requireConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            binder.bind(pstmt);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(errorMessage, e);
-        }
-    }
-
-    private List<Addresses> executeQueryList(
-            String sql,
-            StatementBinder binder,
-            String errorMessage
-    ) {
-        List<Addresses> addresses = new ArrayList<>();
-
-        try (Connection conn = requireConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            binder.bind(pstmt);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    addresses.add(mapAddress(rs));
-                }
-            }
-
-            return addresses;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(errorMessage, e);
-        }
-    }
+    /**
+     * Metodo que busca os enderecos ativos aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Se o filter vier null, busca sem filtro nenhum
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Addresses> com os enderecos encontrados
+     */
 
     @Override
     public List<Addresses> searchAll(AddressesFilter filter) {
 
+        List<Addresses> addresses = new ArrayList<>();
+
+        if (filter == null) {
+            filter = new AddressesFilter();
+        }
+
         StringBuilder sql = new StringBuilder(
-                "SELECT * FROM addresses WHERE is_active = true"
+                "select * from addresses where is_active = true"
         );
 
         List<Object> parametros = new ArrayList<>();
 
-        if (filter != null && filter.getId() != null) {
-            sql.append(" AND id = ?");
+        if (filter.getId() != null) {
+            sql.append(" and id = ?");
             parametros.add(filter.getId());
         }
 
-        if (filter != null
-                && filter.getZipCode() != null
-                && !filter.getZipCode().isBlank()) {
-
-            sql.append(" AND zip_code = ?");
+        if (filter.getZipCode() != null && !filter.getZipCode().isBlank()) {
+            sql.append(" and zip_code = ?");
             String zipCode = cleanCep(filter.getZipCode());
             parametros.add(zipCode == null ? "" : zipCode);
         }
 
-        if (filter != null
-                && filter.getNeighborhood() != null
-                && !filter.getNeighborhood().isBlank()) {
-
-            sql.append(" AND neighborhood ILIKE ?");
+        if (filter.getNeighborhood() != null && !filter.getNeighborhood().isBlank()) {
+            sql.append(" and neighborhood ilike ?");
             parametros.add("%" + filter.getNeighborhood() + "%");
         }
 
-        if (filter != null
-                && filter.getCity() != null
-                && !filter.getCity().isBlank()) {
-
-            sql.append(" AND city ILIKE ?");
+        if (filter.getCity() != null && !filter.getCity().isBlank()) {
+            sql.append(" and city ilike ?");
             parametros.add("%" + filter.getCity() + "%");
         }
 
-        if (filter != null
-                && filter.getState() != null
-                && !filter.getState().isBlank()) {
-
-            sql.append(" AND state ILIKE ?");
+        if (filter.getState() != null && !filter.getState().isBlank()) {
+            sql.append(" and state ilike ?");
             parametros.add("%" + filter.getState() + "%");
         }
 
-        if (filter != null
-                && filter.getCountry() != null
-                && !filter.getCountry().isBlank()) {
-
-            sql.append(" AND country ILIKE ?");
+        if (filter.getCountry() != null && !filter.getCountry().isBlank()) {
+            sql.append(" and country ilike ?");
             parametros.add("%" + filter.getCountry() + "%");
         }
 
-        return executeQueryList(
-                sql.toString(),
-                pstmt -> {
-                    for (int i = 0; i < parametros.size(); i++) {
-                        pstmt.setObject(i + 1, parametros.get(i));
-                    }
-                },
-                "Erro ao buscar endereços com filtros."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
+        ) {
+
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
+
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                    addresses.add(address);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return addresses;
     }
 
+    /**
+     * metodo para buscar por Id (somente ativos)
+     * @param id Numero unico do endereco
+     * @return Retorna o endereco encontrado ou null caso nao exista
+     */
     @Override
     public Addresses searchById(int id) {
 
-        String sql =
-                "SELECT * FROM addresses " +
-                        "WHERE id = ? AND is_active = true";
+        Addresses address = null;
 
-        try (Connection conn = requireConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where id = ? and is_active = true"
+                )
+        ) {
 
             pstmt.setInt(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
+
                 if (rs.next()) {
-                    return mapAddress(rs);
+                    address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
+
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
                 }
             }
 
-            return null;
-
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao buscar endereço por ID.",
-                    e
-            );
+            e.printStackTrace();
         }
+
+        return address;
     }
 
+    /**
+     * metodo para buscar enderecos pela cidade (somente ativos)
+     * @param city A cidade do endereco
+     * @return List<Addresses> com os enderecos encontrados
+     */
     public List<Addresses> searchByCity(String city) {
 
-        String sql =
-                "SELECT * FROM addresses " +
-                        "WHERE city ILIKE ? AND is_active = true";
+        List<Addresses> addresses = new ArrayList<>();
 
-        return executeQueryList(
-                sql,
-                pstmt -> pstmt.setString(1, city),
-                "Erro ao buscar endereços por cidade."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where city ilike ? and is_active = true"
+                )
+        ) {
+
+            pstmt.setString(1, city);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
+
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                    addresses.add(address);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return addresses;
     }
 
+    /**
+     * metodo para buscar enderecos pelo estado (somente ativos)
+     * @param state O estado do endereco
+     * @return List<Addresses> com os enderecos encontrados
+     */
     public List<Addresses> searchByState(String state) {
 
-        String sql =
-                "SELECT * FROM addresses " +
-                        "WHERE state ILIKE ? AND is_active = true";
+        List<Addresses> addresses = new ArrayList<>();
 
-        return executeQueryList(
-                sql,
-                pstmt -> pstmt.setString(1, state),
-                "Erro ao buscar endereços por estado."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where state ilike ? and is_active = true"
+                )
+        ) {
+
+            pstmt.setString(1, state);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
+
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                    addresses.add(address);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return addresses;
     }
 
+    /**
+     * metodo para buscar enderecos pelo pais (somente ativos)
+     * @param country O pais do endereco
+     * @return List<Addresses> com os enderecos encontrados
+     */
     public List<Addresses> searchByCountry(String country) {
 
-        String sql =
-                "SELECT * FROM addresses " +
-                        "WHERE country ILIKE ? AND is_active = true";
+        List<Addresses> addresses = new ArrayList<>();
 
-        return executeQueryList(
-                sql,
-                pstmt -> pstmt.setString(1, country),
-                "Erro ao buscar endereços por país."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return addresses;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * from addresses where country ilike ? and is_active = true"
+                )
+        ) {
+
+            pstmt.setString(1, country);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+
+                    Addresses address = new Addresses(
+                            rs.getInt("id"),
+                            rs.getString("zip_code"),
+                            rs.getString("street"),
+                            rs.getString("number"),
+                            rs.getString("complement"),
+                            rs.getString("neighborhood"),
+                            rs.getString("city"),
+                            rs.getString("state"),
+                            rs.getString("country")
+                    );
+
+                    address.setCreatedAt(rs.getTimestamp("created_at"));
+                    address.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                    addresses.add(address);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return addresses;
     }
 
+    /**
+     * metodo para cadastrar novos enderecos no banco
+     * @param address O endereco que sera cadastrado
+     * @return true se foi registrado e false caso tenha dado erro
+     */
     @Override
     public boolean register(Addresses address) {
 
@@ -284,36 +393,77 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return false;
         }
 
-        String sql =
-                "INSERT INTO addresses " +
-                        "(zip_code, street, number, complement, neighborhood, city, state, country) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        Connection conn = ConnectionFactory.connect();
 
-        return executeUpdate(
-                sql,
-                pstmt -> bindAddress(pstmt, address),
-                "Erro ao cadastrar endereço."
-        );
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into addresses (zip_code, street, number, complement, neighborhood, city, state, country) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?)"
+                )
+        ) {
+
+            pstmt.setString(1, cleanCep(address.getZipCode()));
+            pstmt.setString(2, address.getStreet());
+            pstmt.setString(3, address.getNumber());
+            pstmt.setString(4, address.getComplement());
+            pstmt.setString(5, address.getNeighborhood());
+            pstmt.setString(6, address.getCity());
+            pstmt.setString(7, address.getState());
+            pstmt.setString(8, address.getCountry());
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
+
+    /**
+     * metodo para cadastrar um novo endereco e devolver o id gerado
+     * Usado quando o endereco precisa ser vinculado na hora a uma empresa ou unit
+     * Usa o returning do PostgreSQL em vez de RETURN_GENERATED_KEYS
+     * @param address O endereco que sera cadastrado
+     * @return O id gerado, ou -1 caso tenha dado erro
+     */
     public int registerReturningId(Addresses address) {
 
         if (!isValid(address)) {
             return -1;
         }
 
-        String sql =
-                "INSERT INTO addresses " +
-                        "(zip_code, street, number, complement, neighborhood, city, state, country) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
-                        "RETURNING id";
+        Connection conn = ConnectionFactory.connect();
 
-        try (Connection conn = requireConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        if (conn == null) {
+            return -1;
+        }
 
-            bindAddress(pstmt, address);
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into addresses (zip_code, street, number, complement, neighborhood, city, state, country) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?) " +
+                                "returning id"
+                )
+        ) {
+
+            pstmt.setString(1, cleanCep(address.getZipCode()));
+            pstmt.setString(2, address.getStreet());
+            pstmt.setString(3, address.getNumber());
+            pstmt.setString(4, address.getComplement());
+            pstmt.setString(5, address.getNeighborhood());
+            pstmt.setString(6, address.getCity());
+            pstmt.setString(7, address.getState());
+            pstmt.setString(8, address.getCountry());
 
             try (ResultSet rs = pstmt.executeQuery()) {
+
                 if (rs.next()) {
                     return rs.getInt("id");
                 }
@@ -322,50 +472,46 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return -1;
 
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao cadastrar endereço e obter seu ID.",
-                    e
-            );
+            e.printStackTrace();
+            return -1;
         }
     }
 
-    private void bindAddress(
-            PreparedStatement pstmt,
-            Addresses address
-    ) throws SQLException {
-
-        pstmt.setString(1, cleanCep(address.getZipCode()));
-        pstmt.setString(2, address.getStreet());
-        pstmt.setString(3, address.getNumber());
-        pstmt.setString(4, address.getComplement());
-        pstmt.setString(5, address.getNeighborhood());
-        pstmt.setString(6, address.getCity());
-        pstmt.setString(7, address.getState());
-        pstmt.setString(8, address.getCountry());
-    }
 
     /**
      * metodo para desativar o endereco por id (is_active = false)
      * Nao desativa se alguma unit ou empresa ativa ainda usar esse endereco (a conferencia e a desativacao
      * acontecem no mesmo comando, entao nao da pra um vinculo novo entrar no meio)
      * @param id Valor unico de cada endereco
-     * @return true se foi desativado e false caso o endereco ainda esteja em uso ou nao exista
+     * @return true se foi desativado e false caso tenha dado erro ou o endereco ainda esteja em uso
      */
     @Override
     public boolean delete(int id) {
 
-        String sql =
-                "UPDATE addresses a " +
-                        "SET is_active = false, updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE a.id = ? AND a.is_active = true " +
-                        "AND NOT EXISTS (SELECT 1 FROM units u WHERE u.address_id = a.id AND u.is_active = true) " +
-                        "AND NOT EXISTS (SELECT 1 FROM companies c WHERE c.address_id = a.id AND c.is_active = true)";
+        Connection conn = ConnectionFactory.connect();
 
-        return executeUpdate(
-                sql,
-                pstmt -> pstmt.setInt(1, id),
-                "Erro ao desativar endereço."
-        );
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update addresses a set is_active = false, updated_at = current_timestamp " +
+                                "where a.id = ? and a.is_active = true " +
+                                "and not exists (select 1 from units u where u.address_id = a.id and u.is_active = true) " +
+                                "and not exists (select 1 from companies c where c.address_id = a.id and c.is_active = true)"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /**
@@ -373,7 +519,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
      * Nao atualiza endereco que ja foi desativado
      * @param address Os valores do endereco para ser atualizado
      * @param id O valor unico do endereco que quer atualizar
-     * @return true se foi mudado e false caso o endereco nao exista ou esteja desativado
+     * @return true se foi mudado e false caso tenha dado erro
      */
     @Override
     public boolean update(Addresses address, int id) {
@@ -382,26 +528,44 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return false;
         }
 
-        String sql =
-                "UPDATE addresses SET " +
-                        "zip_code = ?, " +
-                        "street = ?, " +
-                        "number = ?, " +
-                        "complement = ?, " +
-                        "neighborhood = ?, " +
-                        "city = ?, " +
-                        "state = ?, " +
-                        "country = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ? AND is_active = true";
+        Connection conn = ConnectionFactory.connect();
 
-        return executeUpdate(
-                sql,
-                pstmt -> {
-                    bindAddress(pstmt, address);
-                    pstmt.setInt(9, id);
-                },
-                "Erro ao atualizar endereço."
-        );
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update addresses set zip_code = ?, " +
+                                "street = ?, " +
+                                "number = ?, " +
+                                "complement = ?, " +
+                                "neighborhood = ?, " +
+                                "city = ?, " +
+                                "state = ?, " +
+                                "country = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ? and is_active = true"
+                )
+        ) {
+
+            pstmt.setString(1, cleanCep(address.getZipCode()));
+            pstmt.setString(2, address.getStreet());
+            pstmt.setString(3, address.getNumber());
+            pstmt.setString(4, address.getComplement());
+            pstmt.setString(5, address.getNeighborhood());
+            pstmt.setString(6, address.getCity());
+            pstmt.setString(7, address.getState());
+            pstmt.setString(8, address.getCountry());
+            pstmt.setInt(9, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+
 }
