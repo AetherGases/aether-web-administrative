@@ -8,12 +8,10 @@
     box-sizing: border-box;
 }
 
-/* Remove as margens padrão do navegador e centraliza o container */
-
 body {
     position: relative;
     width: 1440px;
-    min-height: 6400px;       /* era 6863px */
+    min-height: 6400px;
     margin: 0 auto;
 }
 
@@ -53,7 +51,7 @@ html {
 
 body {
     position: relative;
-    min-height: 6400px;       /* era 6863px */
+    min-height: 6400px;
     margin: 0 auto;
 }
 
@@ -114,7 +112,7 @@ body {
     transform: translateX(-50%);
     top: 20px;
     width: 725px;
-    height: var(--altura-aberto);        /* área de hover fixa */
+    height: var(--altura-aberto);
 
     display: flex;
     justify-content: center;
@@ -126,7 +124,6 @@ body {
     z-index: 100;
 }
 
-/* Barra visível: começa fechada (fina, mesma cor da aberta) */
 .retanguloMenuInicial::before {
     content: "";
     position: absolute;
@@ -144,7 +141,6 @@ body {
     transition: height var(--duracao-nav) var(--easing-nav);
 }
 
-/* Aberta: mouse em cima ou foco por teclado */
 .retanguloMenuInicial:hover::before,
 .retanguloMenuInicial:focus-within::before {
     height: var(--altura-aberto);
@@ -158,7 +154,7 @@ body {
 .listaDeOpcoesMenu {
     list-style: none;
     display: flex;
-    gap: 24px;
+    gap: 50px;
     color: #59546D;
 
     opacity: 0;
@@ -177,7 +173,6 @@ body {
     color: #7C3AED;
 }
 
-/* Celular/tablet não tem hover: sempre aberta */
 @media (hover: none) {
     .retanguloMenuInicial::before {
         height: var(--altura-aberto);
@@ -317,8 +312,6 @@ body {
     color: #7C3AED;
 }
 
-/* Botão "Começar agora" ------------------------------------------------- */
-
 .alinharPosicaoComecarAgora {
     position: absolute;
     left: 49px;
@@ -338,7 +331,6 @@ body {
 
 .botaoComecarAgora {
     position: absolute;
-    /* Proteção: mesmo que o container perca a classe, o botão não cobre a página */
     inset: auto;
     top: 0;
     left: 0;
@@ -401,7 +393,6 @@ body {
     transform: rotate(45deg);
 }
 
-/* Carrossel de celulares ------------------------------------------------ */
 .fundoVerde {
     position: absolute;
     left: 854px;
@@ -473,7 +464,6 @@ body {
     pointer-events: none;
 }
 
-/* Círculos desfocados de fundo ----------------------------------------- */
 .Bola1,
 .Bola2,
 .Bola3,
@@ -849,7 +839,6 @@ body {
     color: #4A435E;
 }
 
-/* Cards de escopo ------------------------------------------------------- */
 @property --corInicio {
     syntax: "<color>";
     inherits: false;
@@ -1009,7 +998,6 @@ body {
     font-family: "Montserrat", Helvetica, Arial, sans-serif;
 }
 
-/* ------------------------------- Card -------------------------------- */
 .cardGas {
     position: absolute;
     top: 0;
@@ -1032,7 +1020,6 @@ body {
     z-index: 3;
     transition: left 0.5s ease, transform 0.5s ease, opacity 0.5s ease;
 
-    /* 4 sombras empilhadas do design */
     box-shadow:
             0 4px 10px rgba(var(--gas-sombra), 0.1),
             0 17px 17px rgba(var(--gas-sombra), 0.1),
@@ -1049,7 +1036,6 @@ body {
     border-color: var(--gas-verde-borda);
 }
 
-/* --------------------------- Posições (JS) ---------------------------- */
 .cardGas[data-pos="esq"] {
     left: calc(50% - 1004px);
     transform: scale(0.8);
@@ -1064,7 +1050,6 @@ body {
     z-index: 2;
 }
 
-/* Cards de espera: fora da tela e invisíveis */
 .cardGas[data-pos="esq2"] {
     left: calc(50% - 1600px);
     transform: scale(0.8);
@@ -1088,7 +1073,6 @@ body {
     pointer-events: none;
 }
 
-/* ------------------------------ Textos -------------------------------- */
 .cardGasRisco {
     grid-column: 1 / -1;
     margin: 0 0 20px;
@@ -1148,7 +1132,6 @@ body {
     margin-top: 0;
 }
 
-/* Valor grande (273, N₂O, CO CO₂...) */
 .cardGasItem dd.cardGasNumero {
     margin-top: 2px;
     font-size: 28px;
@@ -1157,7 +1140,6 @@ body {
     color: var(--gas-texto-suave);
 }
 
-/* Unidade e textos pequenos */
 .cardGasItem dd.cardGasUnidade {
     margin-top: 0;
     line-height: 20px;
@@ -1222,7 +1204,6 @@ body {
     outline-offset: 4px;
 }
 
-/* ----------------------------- Telas menores --------------------------- */
 @media (max-width: 780px) {
     .carrosselGases { height: 420px; }
 
@@ -1331,7 +1312,6 @@ body {
     height: 707px;
 }
 
-/* Acordeão de funcionalidades ------------------------------------------ */
 
 .agrupandoGrupo {
     position: absolute;
@@ -1386,7 +1366,6 @@ body {
     line-height: 24px;
 }
 
-/* Opção selecionada (roxo) */
 .agrupandoGrupo details.ativo summary {
     background-color: #B99DF8;
     color: #6C51B0;
@@ -1410,7 +1389,6 @@ body {
     color: #4A435E;
 }
 
-/* Análise de dados ------------------------------------------------------ */
 .divTituloAnaliseDeDados {
     position: absolute;
     left: 80px;
@@ -1451,7 +1429,6 @@ body {
     color: #7E8294;
 }
 
-/* Cards das três etapas ------------------------------------------------- */
 .secaoCards {
     position: absolute;
     left: 77px;
@@ -1466,8 +1443,8 @@ body {
     position: relative;
     width: 422px;
     height: 250px;
-    max-height: 250px; /* Trava rigorosamente a altura em 250px quando fechado */
-    box-sizing: border-box; /* Garante que o padding e a altura fiquem consistentes */
+    max-height: 250px;
+    box-sizing: border-box;
     padding: 22px 24px;
     border-radius: 20px;
     background: radial-gradient(350px 203px at 85% 6%, #5DDBA5 0%, #27AD73 100%);
@@ -1480,7 +1457,7 @@ body {
 
 .cardDados.aberto {
     height: auto;
-    max-height: 600px; /* Permite expandir perfeitamente ao clicar */
+    max-height: 600px;
     padding-bottom: 92px;
 }
 
@@ -1565,7 +1542,6 @@ body {
     transform: rotate(180deg);
 }
 
-/* Hover (e foco por teclado): botão branco e seta preta */
 .saibaMais:hover,
 .saibaMais:focus-visible {
     transform: scale(1.1);
@@ -1643,20 +1619,17 @@ body {
 }
 .divPlanos {
     position: absolute;
-    left: 305px;
+    left: 98px;
     top: 4844px;
-    width: 821px;
+    width: 1243px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 40px;
 
-    /* Duração e suavização da troca (igual ao protótipo do Figma) */
     --duracaoPlanos: 1000ms;
     --suavizacaoPlanos: cubic-bezier(0.65, 0, 0.35, 1);
 }
-
-/* ---------- Alternador ---------- */
 
 .alternadorPeriodo {
     display: flex;
@@ -1717,17 +1690,15 @@ body {
     transform: translateX(22px);
 }
 
-/* ---------- Grade e cards ---------- */
-
 .gradePlanos {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     gap: 21px;
+    margin-top: -16px;
 }
 
 .cardPlano {
-    /* Estado padrão: card NÃO destacado (fundo branco) */
     --corDestaque: #2DBD7E;
     --fundoCard: #FFFFFF;
     --textoCard: #000000;
@@ -1741,6 +1712,7 @@ body {
     65px 97px 23.5px rgba(33, 131, 88, 0);
 
     position: relative;
+    box-sizing: border-box;
     width: 400px;
     min-height: 459px;
     padding: 37px 40px 40px 59px;
@@ -1770,7 +1742,6 @@ body {
     59px 105px 24px rgba(154, 114, 249, 0);
 }
 
-/* Estado destacado: card do plano selecionado */
 .cardPlanoAtivo {
     --fundoCard: var(--corDestaque);
     --textoCard: #FFFFFF;
@@ -1793,8 +1764,6 @@ body {
     33px 59px 20.5px rgba(154, 114, 249, 0.07),
     59px 105px 24px rgba(154, 114, 249, 0.02);
 }
-
-/* ---------- Conteúdo do card ---------- */
 
 .nomePlano {
     font-family: "Montserrat", sans-serif;
@@ -1841,7 +1810,6 @@ body {
             filter 0.2s ease;
 }
 
-/* Mantida por compatibilidade: a cor do botão agora vem da variável --corDestaque do card */
 .botaoAssinarRoxo {
     --fundoBotao: var(--corDestaque);
 }
@@ -1874,7 +1842,6 @@ body {
     font-weight: 400;
 }
 
-/* Bolinha: preta no card inativo, branca no card destacado */
 .listaBeneficios li::before {
     content: "";
     position: absolute;
@@ -1887,7 +1854,6 @@ body {
     transition: background-color var(--duracaoPlanos) var(--suavizacaoPlanos);
 }
 
-/* Check: aparece só no card destacado, na cor do plano */
 .listaBeneficios li::after {
     content: "";
     position: absolute;
@@ -1902,12 +1868,195 @@ body {
     transition: opacity var(--duracaoPlanos) var(--suavizacaoPlanos);
 }
 
-/* ---------- Acessibilidade ---------- */
-
 @media (prefers-reduced-motion: reduce) {
     .divPlanos {
         --duracaoPlanos: 1ms;
     }
+}
+
+.tabelaPlanos,
+.tabelaPlanos * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.tabelaPlanos {
+    --destaqueX: 0px;
+    --destaqueCor: #F1ECFF;
+    --negritoPulse: 0;
+    --negritoHorizon: 1;
+
+    position: relative;
+    flex: none;
+    width: 401px;
+    height: 491px;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+    font-family: "Montserrat", sans-serif;
+    color: #2B2B2B;
+}
+
+.tabelaPlanos[data-periodo="mensal"] {
+    --destaqueX: -106px;
+    --destaqueCor: #E5F1ED;
+    --negritoPulse: 1;
+    --negritoHorizon: 0;
+}
+
+.tabelaPlanosDestaque {
+    position: absolute;
+    left: 278px;
+    top: 70px;
+    width: 108px;
+    height: 369px;
+    border-radius: 14px;
+    background-color: var(--destaqueCor);
+    transform: translateX(var(--destaqueX));
+    transition:
+            transform var(--duracaoPlanos) var(--suavizacaoPlanos),
+            background-color var(--duracaoPlanos) var(--suavizacaoPlanos);
+}
+
+.tabelaPlanosTitulo {
+    position: absolute;
+    left: 22px;
+    top: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+    color: #2B2B2B;
+}
+
+.tabelaPlanosSubtitulo {
+    position: absolute;
+    left: 22px;
+    top: 46.5px;
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1;
+    color: #5A5A66;
+}
+
+.tabelaPlanosNota {
+    position: absolute;
+    left: 22px;
+    top: 455.5px;
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1;
+    color: #5A5A66;
+}
+
+.tabelaPlanosGrade {
+    position: absolute;
+    left: 22px;
+    top: 74px;
+    width: 363px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.colLabelTabela { width: 151px; }
+.colValorTabela { width: 106px; }
+
+.tabelaPlanosGrade thead tr {
+    height: 42px;
+}
+
+.tabelaPlanosGrade thead th {
+    vertical-align: top;
+    font-weight: 400;
+}
+
+.pilulaTabela {
+    display: block;
+    width: 100px;
+    height: 30px;
+    margin: 0 auto;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 30px;
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.pilulaPulse { background-color: #248463; }
+.pilulaHorizon { background-color: #6649CD; }
+
+.tabelaPlanosGrade tbody tr {
+    height: 29px;
+    background: linear-gradient(#E6E6EE, #E6E6EE) left bottom / calc(100% - 7px) 1px no-repeat;
+}
+
+.tabelaPlanosGrade tbody tr:last-child {
+    background: none;
+}
+
+.tabelaPlanosGrade tbody th,
+.tabelaPlanosGrade tbody td {
+    padding-bottom: 1px;
+    vertical-align: middle;
+    font-size: 12px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.tabelaPlanosGrade tbody th {
+    text-align: left;
+    font-weight: 600;
+    color: #2B2B2B;
+}
+
+.tabelaPlanosGrade tbody td {
+    text-align: center;
+}
+
+.colunaPulse { --negrito: var(--negritoPulse); }
+.colunaHorizon { --negrito: var(--negritoHorizon); }
+
+.valorTabela {
+    display: inline-grid;
+}
+
+.valorNormal,
+.valorNegrito {
+    grid-area: 1 / 1;
+    text-align: center;
+    white-space: nowrap;
+    transition: opacity var(--duracaoPlanos) var(--suavizacaoPlanos);
+}
+
+.valorNormal {
+    font-weight: 400;
+    color: #2B2B2B;
+    opacity: calc(1 - var(--negrito));
+}
+
+.valorNegrito {
+    font-weight: 700;
+    opacity: var(--negrito);
+}
+
+.colunaPulse .valorNegrito { color: #1B6F50; }
+.colunaHorizon .valorNegrito { color: #4B33A8; }
+
+.iconeTabela {
+    display: block;
+    width: 17px;
+    height: 17px;
+    margin: 0 auto;
+}
+
+.tabelaPlanosSomenteLeitor {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -2049,12 +2198,10 @@ body {
     outline-offset: 2px;
 }
 
-/* ---------- Dropdown personalizado (Empresa, tamanho e Plano) ---------- */
-
 .dropdownPersonalizado {
     position: relative;
     width: 100%;
-    height: 64px; /* 10px do rótulo flutuante + 54px da caixa */
+    height: 64px;
 }
 
 .dropdownPersonalizado.dropdownAberto {
@@ -2069,7 +2216,6 @@ body {
     height: 20px;
     padding: 0 6px;
     line-height: 20px;
-    /* metade de cima transparente, metade de baixo branca: "corta" a borda */
     background: linear-gradient(to bottom, transparent 50%, #FFFFFF 50%);
 
     font-family: "Montserrat", sans-serif;
@@ -2127,8 +2273,6 @@ body {
     transform: rotate(180deg);
 }
 
-/* ---------- Lista animada ---------- */
-
 .dropdownLista {
     margin: 0;
     padding: 0;
@@ -2140,7 +2284,7 @@ body {
     overflow: hidden;
     transition: max-height 0.3s ease,
     opacity 0.25s ease,
-    visibility 0s linear 0.3s; /* só esconde depois da animação de fechar */
+    visibility 0s linear 0.3s;
 }
 
 .dropdownAberto .dropdownLista {
@@ -2191,8 +2335,6 @@ body {
         transition: none;
     }
 }
-
-/* ---------- Mensagem, botão e rodapé ---------- */
 
 .mensagemFormulario {
     min-height: 0;
@@ -2266,7 +2408,7 @@ body {
     width: 100%;
     max-width: 1440px;
     min-height: 422px;
-    top: 6100px;              /* era 6441px: base do card (≈6287) + 163 */
+    top: 6100px;
     margin: 0 auto;
     box-sizing: border-box;
     font-family: var(--rodape-fonte);
@@ -2282,7 +2424,7 @@ body {
     left: calc(50% - 50vw);
     right: calc(50% - 50vw);
     z-index: -1;
-    background: url("Imagens/NuvemFooter (1).svg") center / 100% 100% no-repeat;
+    background: url("Imagens/NuvemFooter.svg") center / 100% 100% no-repeat;
     pointer-events: none;
 }
 
@@ -2328,7 +2470,6 @@ body {
     color: var(--rodape-paragrafo);
 }
 
-/* ----------------------------- Navegação ------------------------------ */
 .rodapeAetherNav ul,
 .rodapeAetherColuna ul {
     list-style: none;
@@ -2348,7 +2489,6 @@ body {
     line-height: 24px;
 }
 
-/* ------------------------ Colunas Recursos / Empresa ------------------ */
 .rodapeAetherColuna h2 {
     margin: 0 0 14px;
     font-size: 32px;
@@ -2370,7 +2510,6 @@ body {
     color: var(--rodape-texto-suave);
 }
 
-/* ------------------------------ Tablet -------------------------------- */
 @media (max-width: 1024px) {
     .rodapeAetherConteudo {
         grid-template-columns: 1fr 1fr;
@@ -2383,7 +2522,6 @@ body {
     }
 }
 
-/* ------------------------------ Celular ------------------------------- */
 @media (max-width: 600px) {
     .rodapeAetherConteudo {
         grid-template-columns: 1fr;
@@ -2467,7 +2605,6 @@ html.paginaContato {
     margin: auto;
 }
 
-/* ---------------------------- Logo e divisor --------------------------- */
 .paginaContato .logo {
     position: absolute;
     top: 333px;
@@ -2484,7 +2621,6 @@ html.paginaContato {
     height: 6px;
 }
 
-/* ------------------------------- Contatos ------------------------------ */
 .paginaContato .contatos {
     position: absolute;
     top: 694px;
@@ -2559,7 +2695,6 @@ html.paginaContato {
 .paginaContato .textoTelefone2 { top: 25px; left: 67px; }
 .paginaContato .textoLocal     { top: 9px;  left: 37px; }
 
-/* ------------------------------ Botão fechar --------------------------- */
 .paginaContato .fechar {
     position: absolute;
     top: 28px;

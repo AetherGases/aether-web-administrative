@@ -11,7 +11,6 @@
     <title>Landing Page Aether</title>
 
     <link rel="stylesheet" href="Style.css">
-    <link rel="stylesheet" href="Footer.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,7 +40,7 @@
         <nav aria-label="Menu principal">
             <ul class="listaDeOpcoesMenu">
                 <li><a href="#quemSomos">QUEM SOMOS</a></li>
-                <li><a href="#gasesPoluentes">GASES POLUENTES</a></li>
+                <li><a href="#gasesPoluentes">GEE</a></li>
                 <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
                 <li><a href="#planos">PLANOS</a></li>
             </ul>
@@ -126,8 +125,6 @@
             sustentabilidade ao futuro.</p>
     </div>
 
-    <!-- BLOCO "ALUNOS" — carrossel 1º Médio / 2º Médio.
-             As fotos são definidas em carrosselAlunos.js (const FOTOS). -->
     <div class="carrosselAlunos" id="carrosselAlunos" role="group" aria-label="Fotos das turmas">
 
         <button type="button" class="retangulosRoxos" data-turma="0" aria-pressed="true">1º Médio</button>
@@ -447,7 +444,6 @@
         </details>
 
         <details name="menuFuncionalidades">
-            <!-- CORRIGIDO: "CO²" (potência) -> CO₂ (subscrito), a notação química correta. -->
             <summary class="tipografiaMenuAbreEFechaTitulo"><p>Calculadora de CO<sup>2</sup></p></summary>
             <p class="tipografiaMenuAbreEFechaConteudo">Essa funcionalidade terá como principal função
                 calcular quantas toneladas de CO<sub>2</sub> será possível reduzir a partir da troca sugerida.</p>
@@ -540,6 +536,7 @@
 
     <div class="Bola7"></div>
     <div class="Bola8"></div>
+
     <div class="linhasPlanos">
         <span class="basePraTexto">Planos</span>
     </div>
@@ -548,24 +545,24 @@
 
     <div class="divPlanos">
 
-        <!-- Alternador mensal / trimestral -->
+        <!-- Alternador mensal / trimestral (começa no trimestral) -->
         <div class="alternadorPeriodo">
-            <span class="rotuloPeriodo rotuloPeriodoAtivo" data-periodo="mensal">Plano mensal</span>
+            <span class="rotuloPeriodo" data-periodo="mensal">Plano mensal</span>
 
             <button id="botaoAlternarPeriodo" class="interruptorPeriodo" type="button"
-                    role="switch" aria-checked="false" aria-label="Alternar entre plano mensal e trimestral">
+                    role="switch" aria-checked="true" aria-label="Alternar entre plano mensal e trimestral">
                 <span class="bolinhaInterruptor"></span>
             </button>
 
-            <span class="rotuloPeriodo" data-periodo="trimestral">Plano trimestral</span>
+            <span class="rotuloPeriodo rotuloPeriodoAtivo" data-periodo="trimestral">Plano trimestral</span>
         </div>
 
         <div class="gradePlanos">
 
             <!-- Plano Pulse (destacado no plano mensal) -->
-            <article class="cardPlano cardPlanoPulse cardPlanoAtivo" data-periodo="mensal">
+            <article class="cardPlano cardPlanoPulse" data-periodo="mensal">
                 <h3 class="nomePlano">aether Pulse</h3>
-                <p class="subtituloPlano">For Industry Leaders</p>
+                <p class="subtituloPlano">For Industries</p>
 
                 <p class="precoPlano">
                     <span class="valorPlano">R$3.300</span><span class="periodoPlano">/por mês</span>
@@ -581,7 +578,7 @@
             </article>
 
             <!-- Plano Horizon (destacado no plano trimestral) -->
-            <article class="cardPlano cardPlanoHorizon" data-periodo="trimestral">
+            <article class="cardPlano cardPlanoHorizon cardPlanoAtivo" data-periodo="trimestral">
                 <h3 class="nomePlano">aether Horizon</h3>
                 <p class="subtituloPlano">For Bigger Industries</p>
 
@@ -595,9 +592,90 @@
                 <ul class="listaBeneficios">
                     <li>Tudo do plano aether Pulse</li>
                     <li>Quantidade de cadastro de funcionários ilimitada</li>
-                    <li>Acompanhamento trimestral</li>
+                    <li>Acompanhamento Trimestral</li>
                 </ul>
             </article>
+
+            <div class="tabelaPlanos" data-periodo="trimestral">
+                <div class="tabelaPlanosDestaque" aria-hidden="true"></div>
+
+                <h3 class="tabelaPlanosTitulo" id="tituloTabelaPlanos">Compare os planos</h3>
+                <p class="tabelaPlanosSubtitulo">O Horizon inclui tudo do Pulse e mais</p>
+
+                <table class="tabelaPlanosGrade" aria-labelledby="tituloTabelaPlanos">
+                    <colgroup>
+                        <col class="colLabelTabela">
+                        <col class="colValorTabela">
+                        <col class="colValorTabela">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th scope="col"><span class="tabelaPlanosSomenteLeitor">Recurso</span></th>
+                        <th scope="col"><span class="pilulaTabela pilulaPulse">Pulse</span></th>
+                        <th scope="col"><span class="pilulaTabela pilulaHorizon">Horizon</span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row">Custo por mês</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">R$3.300</span><span class="valorNegrito" aria-hidden="true">R$3.300</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">R$3.133</span><span class="valorNegrito" aria-hidden="true">R$3.133</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Funcionários</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">Até 10</span><span class="valorNegrito" aria-hidden="true">Até 10</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">Ilimitado</span><span class="valorNegrito" aria-hidden="true">Ilimitado</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Gerentes</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">Até 2</span><span class="valorNegrito" aria-hidden="true">Até 2</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">Ilimitados</span><span class="valorNegrito" aria-hidden="true">Ilimitados</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Acompanhamento</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">Mensal</span><span class="valorNegrito" aria-hidden="true">Mensal</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">Trimestral</span><span class="valorNegrito" aria-hidden="true">Trimestral</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Troca simulada</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">Até 3</span><span class="valorNegrito" aria-hidden="true">Até 3</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">Ilimitada</span><span class="valorNegrito" aria-hidden="true">Ilimitada</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Plano de melhoria (IA)</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">Básico</span><span class="valorNegrito" aria-hidden="true">Básico</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">Completo</span><span class="valorNegrito" aria-hidden="true">Completo</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Alertas no app</th>
+                        <td class="colunaPulse"><svg class="iconeTabela" viewBox="0 0 17 17" role="img" aria-label="Não incluído"><circle cx="8.5" cy="8.5" r="8.5" fill="#E5586F"/><path d="M5.3 5.3L11.7 11.7M11.7 5.3L5.3 11.7" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></td>
+                        <td class="colunaHorizon"><svg class="iconeTabela" viewBox="0 0 17 17" role="img" aria-label="Incluído"><circle cx="8.5" cy="8.5" r="8.5" fill="#2A9170"/><path d="M4.5 8.9L7.2 11.6L13 5.6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Metas de redução</th>
+                        <td class="colunaPulse"><svg class="iconeTabela" viewBox="0 0 17 17" role="img" aria-label="Não incluído"><circle cx="8.5" cy="8.5" r="8.5" fill="#E5586F"/><path d="M5.3 5.3L11.7 11.7M11.7 5.3L5.3 11.7" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg></td>
+                        <td class="colunaHorizon"><svg class="iconeTabela" viewBox="0 0 17 17" role="img" aria-label="Incluído"><circle cx="8.5" cy="8.5" r="8.5" fill="#2A9170"/><path d="M4.5 8.9L7.2 11.6L13 5.6" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Permissões</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">Padrão</span><span class="valorNegrito" aria-hidden="true">Padrão</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">Por usuário</span><span class="valorNegrito" aria-hidden="true">Por usuário</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Relatórios</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">PDF</span><span class="valorNegrito" aria-hidden="true">PDF</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">PDF e Excel</span><span class="valorNegrito" aria-hidden="true">PDF e Excel</span></span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Suporte no app</th>
+                        <td class="colunaPulse"><span class="valorTabela"><span class="valorNormal">Até 48 h</span><span class="valorNegrito" aria-hidden="true">Até 48 h</span></span></td>
+                        <td class="colunaHorizon"><span class="valorTabela"><span class="valorNormal">Até 8 h</span><span class="valorNegrito" aria-hidden="true">Até 8 h</span></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <p class="tabelaPlanosNota">Custo mensal: Horizon R$9.400 por trimestre ÷ 3.</p>
+            </div>
 
         </div>
     </div>
@@ -753,7 +831,7 @@
     </div>
 </footer>
 
-<script src="script.js"></script>
+<script src="Script.js"></script>
 
 
 </body>
