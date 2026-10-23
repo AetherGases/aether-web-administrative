@@ -786,7 +786,7 @@
                 <li><a href="#quemSomos">Quem Somos</a></li>
                 <li><a href="#nossaSolucao">Nossa Solução</a></li>
                 <li><a href="#planos">Planos</a></li>
-                <li><a href="contato.jsp">Contatos</a></li>
+                <li><a href="Contact.jsp">Contatos</a></li>
             </ul>
         </nav>
 
@@ -801,7 +801,7 @@
             <h2 id="rodapeAetherEmpresa">Empresa</h2>
             <ul>
                 <li><a href="#quemSomos">Nossa equipe</a></li>
-                <li><a href="contato.jsp">Contato</a></li>
+                <li><a href="Contact.jsp">Contato</a></li>
             </ul>
         </section>
 
