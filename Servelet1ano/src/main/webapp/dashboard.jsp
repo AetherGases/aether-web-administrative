@@ -15,6 +15,7 @@
             </div>
 
             <div>
+                <img src="Imagens/AekoLogin.svg">
                 <p>ADMIN</p>
             </div>
 

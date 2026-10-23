@@ -20,141 +20,190 @@
 </head>
 <body>
 
-<aside>
+    <aside>
 
 
-    <div >
-        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-        <p>aether</p>
-    </div>
+        <div>
+            <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+            <p>aether</p>
+        </div>
+
+        <div>
+            <img src="Imagens/AekoLogin.svg">
+            <p>ADMIN</p>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <div>
+                        <a href="Dashboard.jsp">Dashboards</a>
+                        <img src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Employee.jsp">Funcionários</a>
+                        <img src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Sectors.jsp">Setores</a>
+                        <img src="Imagens/setores.svg" alt="Imagem de setor">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Units.jsp">Unidades</a>
+                        <img src="Imagens/unidade.svg" alt="Imagem de prédios">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Company.jsp">Empresas</a>
+                        <img src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="PermissionsOne.jsp">Permissões</a>
+                        <img src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="PermissionsOne.jsp">Permissões</a>
+                        <img src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <div>
+            <a href="Login.jsp">Logout</a>
+            <img src="Imagens/logout.svg" alt="Logout">
+        </div>
+
+    </aside>
 
     <div>
-        <h3>Giulia Cacá</h3>
-        <p>ADMIN</p>
+
+        <h2>Area restrista</h2>
+        <p>Empresas</p>
+
     </div>
 
-    <nav>
-        <ul>
-            <li><a href="">Dashboards</a></li>
-            <li><a href="">Funcionários</a></li>
-            <li><a href="">Setores</a></li>
-            <li><a href="">Unidades</a></li>
-            <li><a href="">Empresas</a></li>
-            <li><a href="">Permissões</a></li>
-            <li><a href="">Permissões</a></li>
-        </ul>
-    </nav>
+        <div>
+            <p>Pesquisar</p>
+            <img src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
+        </div>
+
+        <div>
+            <p>Filtro</p>
+        </div>
 
     <div>
-        <a href="Login.jsp">Logout</a>
+        <button id="btnAbrirModal">Adicionar novo</button>
+        <img src="Imagens/Mais.svg" alt="Adicionar">
     </div>
 
-</aside>
+    <div id="modalEmpresa">
 
-<div>
+        <div>
+            <h2>Adicionar empresa</h2>
+            <button id="btnFecharModal">✕</button>
 
-    <h2>Area restrista</h2>
-    <p>Empresas</p>
+            <form action="AdicionarEmpresa" method="post">
 
-</div>
+                <input type="text" id="nomeEmpresa" name="campoNomeEmpresa" placeholder="nome">
+                <label for="nomeEmpresa"></label>
 
-<div>
-    <button id="btnAbrirModal">Adicionar novo</button>
-    <img src="Imagens/Mais.svg" alt="Adicionar">
-</div>
+                <input type="text" id="taxID" name="campoTaxID" placeholder="tax ID">
+                <label for="taxID"></label>
 
-<div id="modalEmpresa">
+                <input type="text" id="setor" name="campoSetor" placeholder="setor">
+                <label for="setor"></label>
 
-    <div>
-        <h2>Adicionar empresa</h2>
-        <button id="btnFecharModal">✕</button>
+                <input type="date" id="dtRegistro" name="campoDataRegistro" placeholder="data registro">
+                <label for="dtRegistro"></label>
 
-        <form action="AdicionarEmpresa" method="post">
+                <label for="status"></label>
+                <select name="status" id="status" >
+                    <option value="" disabled selected hidden>ativo</option>
+                    <option value="inativo">inativo</option>
+                    <option value="ativo">ativo</option>
+                </select>
 
-            <input type="text" id="nomeEmpresa" name="campoNomeEmpresa" placeholder="nome">
-            <label for="nomeEmpresa"></label>
+                <label for="tamanho"></label>
+                <select name="tamanhos" id="tamanho" >
+                    <option value="" disabled selected hidden>grande</option>
+                    <option value="inativo">média</option>
+                    <option value="recessa">pequena</option>
+                    <option value="licenca">grande</option>
+                </select>
 
-            <input type="text" id="taxID" name="campoTaxID" placeholder="tax ID">
-            <label for="taxID"></label>
+                <button type="submit" value="enviarFormularioAdicionarEmpresa">Adicionar</button>
 
-            <input type="text" id="setor" name="campoSetor" placeholder="setor">
-            <label for="setor"></label>
+            </form>
 
-            <input type="date" id="dtRegistro" name="campoDataRegistro" placeholder="data registro">
-            <label for="dtRegistro"></label>
-
-            <label for="status"></label>
-            <select name="status" id="status" >
-                <option value="" disabled selected hidden>ativo</option>
-                <option value="inativo">inativo</option>
-                <option value="ativo">ativo</option>
-            </select>
-
-            <label for="tamanho"></label>
-            <select name="tamanhos" id="tamanho" >
-                <option value="" disabled selected hidden>grande</option>
-                <option value="inativo">média</option>
-                <option value="recessa">pequena</option>
-                <option value="licenca">grande</option>
-            </select>
-
-            <button type="submit" value="enviarFormularioAdicionarEmpresa">Adicionar</button>
-
-        </form>
+        </div>
 
     </div>
 
-</div>
 
 
+    <section>
+        <table>
+            <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Tamanho</th>
+                <th>Data de Registro</th>
+                <th>Tax ID</th>
+                <th>E-mail</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
 
-<section>
-    <table>
-        <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Tamanho</th>
-            <th>Data de Registro</th>
-            <th>Tax ID</th>
-            <th>E-mail</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
+            <tr>
+                <td>Caio Campelo Rocha</td>
+                <td>350</td>
+                <td>05/02/2029</td>
+                <td>19090938208</td>
+                <td>jbs@gmail.com</td>
+                <td>Ativo</td>
 
-        <tr>
-            <td>Caio Campelo Rocha</td>
-            <td>350</td>
-            <td>05/02/2029</td>
-            <td>19090938208</td>
-            <td>jbs@gmail.com</td>
-            <td>Ativo</td>
+                <td>
+                    <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
+                    <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
+                    <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
+                </td>
 
-            <td>
-                <button></button>
-                <button></button>
-                <button></button>
-            </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 
-        </tr>
-        </tbody>
-    </table>
-</section>
+    <button></button>
+    <div>1</div>
+    <button></button>
 
 
-<script>
-    const btnAbrir = document.getElementById('btnAbrirModal');
-    const btnFechar = document.getElementById('btnFecharModal');
-    const modal = document.getElementById('modalEmpresa');
+    <script>
+        const btnAbrir = document.getElementById('btnAbrirModal');
+        const btnFechar = document.getElementById('btnFecharModal');
+        const modal = document.getElementById('modalEmpresa');
 
-    btnAbrir.addEventListener('click', function() {
-        modal.classList.add('ativo');
-    });
+        btnAbrir.addEventListener('click', function() {
+            modal.classList.add('ativo');
+        });
 
-    btnFechar.addEventListener('click', function() {
-        modal.classList.remove('ativo');
-    });
-</script>
+        btnFechar.addEventListener('click', function() {
+            modal.classList.remove('ativo');
+        });
+    </script>
 
 </body>
 </html>

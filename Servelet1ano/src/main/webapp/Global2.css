@@ -1,0 +1,341 @@
+.body{
+    display: flex;
+    margin: 0;
+    padding: 0;
+    background-color: #EDEEF8;
+    font-family: "Montserrat", sans-serif;
+}
+
+.aside{
+    width: 284px;
+    height: 100vh;
+    fill: #FFF;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.logoAether{
+    width: 177.24px;
+    height: 46.601px;
+}
+
+.aeko{
+    width: 240px;
+    height: 158px;
+}
+
+.tipografiaAdmin{
+    fill: #2DBD7E;
+    width: 71.412px;
+    height: 14px;
+    font-family: "Montserrat", sans-serif;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.tipografiaOpcoesTela{
+    width: 114.474px;
+    color: #1E6B56;
+    font-family: "Montserrat", sans-serif;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.imagemDashboard{
+    width: 16.89px;
+    height: 18.027px;
+}
+
+.imagemFuncionario{
+    width: 16.21px;
+    height: 17.126px;
+}
+
+.imagemSetores{
+    width: 16.238px;
+    height: 16.206px;
+    aspect-ratio: 16.24/16.21;
+}
+
+.imagemUnidade{
+    width: 16.233px;
+    height: 16.229px;
+    aspect-ratio: 16.23/16.23;
+}
+
+.imagemEmpresas{
+    width: 16.208px;
+    height: 16.201px;
+    aspect-ratio: 16.21/16.20;
+}
+
+.imagemPermissoes1{
+    width: 16.212px;
+    height: 18.928px;
+    transform: rotate(0.309deg);
+}
+
+.imagemPermissoes2{
+    width: 27px;
+    height: 17px;
+}
+
+.tipografiaLogout{
+    width: 92px;
+    height: 33px;
+    color: #FB324C;
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.imagemLogout{
+    width: 27.313px;
+    height: 23px;
+    fill: #FB324C;
+}
+
+.tipografiaAreaRestrita{
+    color: #1E0A4A;
+    font-family: "Montserrat", sans-serif;
+    font-size: 50px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.tipografiaNomeDaAba{
+    color: #7E8294;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.botaoSelecionar{
+    display: inline-flex;
+    height: 44px;
+    padding: 12px 11px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 15px;
+    background: #39BD83;
+}
+
+.botaoAdicionar{
+    display: flex;
+    width: 170px;
+    height: 44px;
+    padding: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    border-radius: 15px;
+    background: linear-gradient(264deg, #3EBC85 -7.91%, #2DBD7E 50.26%);
+}
+
+.tipografiaBotoesAdicionar{
+    color: #FFF;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.barraPesquisar{
+    width: 455px;
+    height: 44px;
+    border-radius: 15px;
+    border: 2px solid #D8DAE3;
+    background: #FFF;
+    box-shadow: 0 313px 88px 0 rgba(133, 144, 157, 0.00), 0 200px 80px 0 rgba(133, 144, 157, 0.01), 0 113px 68px 0 rgba(133, 144, 157, 0.05), 0 50px 50px 0 rgba(133, 144, 157, 0.09), 0 13px 28px 0 rgba(133, 144, 157, 0.10);
+}
+
+.imagemPesquisar{
+    width: 26px;
+    height: 26px;
+}
+
+.tipografiaPesquisar{
+    width: 90.53px;
+    height: 23.347px;
+    color: #7E8294;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.barraFiltros{
+    display: inline-flex;
+    height: 44px;
+    padding: 10px 11px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+
+    border-radius: 15px;
+    border: 2px solid rgba(179, 183, 201, 0.50);
+    background: #FFF;
+    box-shadow: 0 65px 18px 0 rgba(170, 181, 192, 0.00), 0 42px 17px 0 rgba(170, 181, 192, 0.01), 0 23px 14px 0 rgba(170, 181, 192, 0.05), 0 10px 10px 0 rgba(170, 181, 192, 0.09), 0 3px 6px 0 rgba(170, 181, 192, 0.10);
+}
+
+.imagemBarraBaixo{
+    width: 28px;
+    height: 28px;
+    transform: scaleY(-1);
+    aspect-ratio: 1/1;
+}
+
+.tabela{
+    width: 1061px;
+    height: 680px;
+    border-radius: 30px;
+    background: #FFF;
+    box-shadow: 0 309px 87px 0 rgba(156, 156, 156, 0.00), 0 198px 79px 0 rgba(156, 156, 156, 0.01), 0 111px 67px 0 rgba(156, 156, 156, 0.05), 0 50px 50px 0 rgba(156, 156, 156, 0.09), 0 12px 27px 0 rgba(156, 156, 156, 0.10);
+}
+
+.tabelaThread{
+    width: 1051px;
+    height: 44px;
+    background-color: #D4FFEB;
+    border-radius: 25px 25px 5px 5px;
+}
+
+.tabelaLinhas{
+    width: 1013px;
+    height: 0;
+    stroke-width: 2px;
+    stroke: #F3F0FF;
+}
+
+.tabelaSelecionar{
+    width: 20px;
+    height: 20px;
+    stroke-width: 2px;
+    stroke: #2DBD7E;
+}
+
+.tipografiaTopoTabela{
+    color: #1E6B56;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.tipografiaTabelaGeral{
+    width: 120px;
+    height: 18px;
+    overflow: hidden;
+    color: #161C2D;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.tabelaImagemStatus{
+    width: 20px;
+    height: 20px;
+}
+
+.tabelaImagemVizualizar{
+    width: 25.615px;
+    height: 17.931px;
+    aspect-ratio: 10/7;
+}
+
+.tabelaImagemEditar{
+    width: 22px;
+    height: 22px;
+}
+
+.tabelaImagemExcluir{
+    width: 19.8px;
+    height: 22px;
+    aspect-ratio: 9/10;
+}
+
+.tipografiaNumeroDePaginas{
+    width: 189px;
+    height: 18px;
+    color: #4A435E;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.tabelaBotaoEsquerdo{
+    width: 43px;
+    height: 43px;
+    border-radius: 10px;
+    background: radial-gradient(84.96% 84.96% at 74.42% 0%, #5DDBA5 0%, #2DBD7E 100%);
+}
+
+.tabelaSetaEsquerda{
+    width: 18.121px;
+    height: 19.027px;
+    transform: scaleX(-1);
+    stroke-width: 3px;
+    stroke: #FFF;
+}
+
+.tabelaBotaoDireito{
+    width: 43px;
+    height: 43px;
+    border-radius: 10px;
+    background: radial-gradient(84.96% 84.96% at 74.42% 0%, #5DDBA5 0%, #2DBD7E 100%);
+}
+
+.tabelaSetaDireito{
+    width: 18.121px;
+    height: 19.027px;
+    transform: scaleX(-1);
+    stroke-width: 3px;
+    stroke: #FFF;
+}
+
+.indicadorDaPagina{
+    width: 41.315px;
+    height: 41.315px;
+    aspect-ratio: 1/1;
+    fill: #FFF;
+    stroke-width: 1.425px;
+    stroke: #B3B7C9;
+}
+
+.tipografiaPagina{
+    width: 10px;
+    height: 28.999px;
+    color: #7E8294;
+    font-family: "Montserrat", sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}

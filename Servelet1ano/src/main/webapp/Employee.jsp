@@ -33,27 +33,63 @@
             <p>ADMIN</p>
         </div>
 
-        <nav >
+        <nav>
             <ul>
-                <li><a href="">Dashboards</a></li>
-                <li><a href="">Funcionários</a></li>
-                <li><a href="">Setores</a></li>
-                <li><a href="">Unidades</a></li>
-                <li><a href="">Empresas</a></li>
-                <li><a href="">Permissões</a></li>
-                <li><a href="">Permissões</a></li>
+                <li>
+                    <div>
+                        <a href="Dashboard.jsp">Dashboards</a>
+                        <img src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Employee.jsp">Funcionários</a>
+                        <img src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Sectors.jsp">Setores</a>
+                        <img src="Imagens/setores.svg" alt="Imagem de setor">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Units.jsp">Unidades</a>
+                        <img src="Imagens/unidade.svg" alt="Imagem de prédios">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="Company.jsp">Empresas</a>
+                        <img src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="PermissionsOne.jsp">Permissões</a>
+                        <img src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a href="PermissionsOne.jsp">Permissões</a>
+                        <img src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                    </div>
+                </li>
             </ul>
         </nav>
 
         <div>
             <a href="Login.jsp">Logout</a>
+            <img src="Imagens/logout.svg" alt="Logout">
         </div>
 
     </aside>
 
     <div>
 
-        <h2>Area restrista</h2>
+        <h3>Area restrista</h3>
         <p>Funcionários</p>
 
     </div>
