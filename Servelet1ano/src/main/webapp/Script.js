@@ -1,42 +1,18 @@
 /* ==========================================================================
-
-   AETHER — Script.js
+   AETHER — script.js
 
    Módulos:
-
      1. carrosselCelulares()     — carrossel de telas do app
-
-     2. carrosselCards()         — carrossel de gases
-
+     2. carrosselGases()         — carrossel de cards de gases
      3. menuFuncionalidades()    — acordeão exclusivo
-
      4. alternarPlanos()         — mensal / trimestral
-
-     5. abasCadastroLogin()      — alternância entre os formulários
-
+     5. dropdownsCadastro()      — dropdowns personalizados do cadastro
      6. validarFormularios()     — validação básica no cliente
-
-   Todos os módulos verificam a existência dos elementos antes de agir,
-
-   para que o arquivo possa ser reutilizado em páginas parciais.
+     7. cardsEtapas()            — cards da análise de dados (saiba mais)
+     8. animarCardsEscopo()      — animação dos cards de escopo
+     9. carrosselAlunos()        — fotos 1º / 2º Médio
 
    ========================================================================== */
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    carrosselCelulares();
-
-    carrosselCards();
-
-    menuFuncionalidades();
-
-    alternarPlanos();
-
-    abasCadastroLogin();
-
-    validarFormularios();
-
-});
 
 
 /* --------------------------------------------------------------------------
@@ -198,6 +174,7 @@ function carrosselCelulares() {
 
     renderizar(false);
 
+    // Pré-carrega as imagens
     celulares.forEach(function (caminho) {
         const previa = new Image();
         previa.src = caminho;
@@ -211,15 +188,21 @@ function carrosselCelulares() {
 
    -------------------------------------------------------------------------- */
 
-(function () {
-    var palco = document.getElementById("carrosselGases");
+function carrosselGases() {
+    const palco = document.getElementById("carrosselGases");
     if (!palco) return;
 
-    var cards = Array.prototype.slice.call(palco.querySelectorAll(".cardGas"));
-    var botaoAnterior = document.getElementById("gasesAnterior");
-    var botaoProximo = document.getElementById("gasesProximo");
-    var total = cards.length;
-    var ativo = 0;
+    const cards = Array.prototype.slice.call(palco.querySelectorAll(".cardGas"));
+    const botaoAnterior = document.getElementById("gasesAnterior");
+    const botaoProximo = document.getElementById("gasesProximo");
+
+    if (cards.length === 0 || !botaoAnterior || !botaoProximo) return;
+
+    if (palco.dataset.iniciado === "true") return;
+    palco.dataset.iniciado = "true";
+
+    const total = cards.length;
+    let ativo = 0;
 
     function posicao(deslocamento) {
         if (deslocamento === 0) return "ativo";
@@ -232,7 +215,7 @@ function carrosselCelulares() {
 
     function atualizar() {
         cards.forEach(function (card, i) {
-            var pos = posicao((i - ativo + total) % total);
+            const pos = posicao((i - ativo + total) % total);
             card.dataset.pos = pos;
             card.setAttribute("aria-hidden", pos === "ativo" ? "false" : "true");
         });
@@ -249,7 +232,6 @@ function carrosselCelulares() {
     botaoAnterior.addEventListener("click", function () { mover(-1); });
     botaoProximo.addEventListener("click", function () { mover(1); });
 
-    // Clicar num card lateral também navega
     cards.forEach(function (card) {
         card.addEventListener("click", function () {
             if (card.dataset.pos === "esq") mover(-1);
@@ -263,7 +245,8 @@ function carrosselCelulares() {
     });
 
     atualizar();
-})();
+}
+
 
 /* --------------------------------------------------------------------------
 
@@ -279,7 +262,6 @@ function menuFuncionalidades() {
     const itens = Array.from(document.querySelectorAll(".agrupandoGrupo details"));
 
     if (itens.length === 0) {
-        console.warn("menuFuncionalidades: nenhum <details> encontrado dentro de .agrupandoGrupo");
         return;
     }
 
@@ -429,11 +411,6 @@ function menuFuncionalidades() {
     });
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", menuFuncionalidades);
-} else {
-    menuFuncionalidades();
-}
 
 /* --------------------------------------------------------------------------
 
@@ -449,11 +426,14 @@ function alternarPlanos() {
 
     const cards = document.querySelectorAll(".cardPlano");
 
+    const tabela = document.querySelector(".tabelaPlanos");
+
     if (!interruptor || cards.length === 0) {
 
         return;
 
     }
+
     if (interruptor.getAttribute("data-iniciado") === "true") {
 
         return;
@@ -476,7 +456,12 @@ function alternarPlanos() {
 
         });
 
-        // Destaca o rótulo do período escolhido
+        if (tabela) {
+
+            tabela.setAttribute("data-periodo", periodo);
+
+        }
+
         rotulos.forEach(function (rotulo) {
 
             rotulo.classList.toggle(
@@ -525,7 +510,7 @@ function alternarPlanos() {
 
     });
 
-    aplicarPeriodo("mensal");
+    aplicarPeriodo("trimestral");
 
 }
 
@@ -539,24 +524,18 @@ if (document.readyState === "loading") {
 
 }
 
+
 /* --------------------------------------------------------------------------
 
-   5. ABAS CADASTRO / LOGIN
+   5. DROPDOWNS PERSONALIZADOS DO CADASTRO
 
    -------------------------------------------------------------------------- */
 
-function abasCadastroLogin() {
-
-    if (abasCadastroLogin.iniciado) {
+function dropdownsCadastro() {
+    if (dropdownsCadastro.iniciado) {
         return;
     }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", abasCadastroLogin);
-        return;
-    }
-
-    abasCadastroLogin.iniciado = true;
+    dropdownsCadastro.iniciado = true;
 
     function todosDropdowns() {
         return document.querySelectorAll(".dropdownPersonalizado");
@@ -638,11 +617,12 @@ function abasCadastroLogin() {
     });
 
     document.addEventListener("keydown", function (evento) {
-        const opcao = evento.target.closest ? evento.target.closest(".dropdownOpcao") : null;
-        const botao = evento.target.closest ? evento.target.closest(".dropdownBotao") : null;
+        const alvo = evento.target;
+        const opcao = alvo.closest ? alvo.closest(".dropdownOpcao") : null;
+        const botao = alvo.closest ? alvo.closest(".dropdownBotao") : null;
 
         if (evento.key === "Escape") {
-            const ddAtual = evento.target.closest ? evento.target.closest(".dropdownPersonalizado") : null;
+            const ddAtual = alvo.closest ? alvo.closest(".dropdownPersonalizado") : null;
             fecharTodos();
             if (ddAtual) {
                 ddAtual.querySelector(".dropdownBotao").focus();
@@ -678,138 +658,75 @@ function abasCadastroLogin() {
             }
         }
     });
-
 }
-
-abasCadastroLogin();
 
 
 /* --------------------------------------------------------------------------
 
-   6. VALIDAÇÃO DOS FORMULÁRIOS
+   6. VALIDAÇÃO DO FORMULÁRIO DE CADASTRO EMPRESARIAL
 
    -------------------------------------------------------------------------- */
 
 function validarFormularios() {
+    const formulario = document.getElementById("formularioEmpresarial");
+    if (!formulario) {
+        return;
+    }
 
-    const formularioCadastro = document.getElementById("formularioCadastro");
+    if (formulario.dataset.iniciado === "true") {
+        return;
+    }
+    formulario.dataset.iniciado = "true";
 
-    const formularioLogin = document.getElementById("formularioLogin");
+    const mensagem = document.getElementById("mensagemEmpresarial");
 
-    function escrever(elemento, texto, sucesso) {
-
-        if (!elemento) {
-
+    function escrever(texto, sucesso) {
+        if (!mensagem) {
             return;
+        }
+        mensagem.textContent = texto;
+        mensagem.classList.toggle("mensagemFormularioSucesso", Boolean(sucesso));
+    }
 
+    formulario.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+
+        const empresa = document.getElementById("empresaTipo");
+        const tamanho = document.getElementById("empresaTamanho");
+        const cnpj = document.getElementById("empresaCnpj");
+        const email = document.getElementById("empresaEmail");
+        const plano = document.getElementById("empresaPlano");
+
+        if (!empresa.value) {
+            escrever("Selecione a empresa.", false);
+            return;
         }
 
-        elemento.textContent = texto;
+        if (!tamanho.value) {
+            escrever("Selecione o tamanho da empresa.", false);
+            return;
+        }
 
-        elemento.classList.toggle("mensagemFormularioSucesso", Boolean(sucesso));
+        const cnpjNumeros = cnpj.value.replace(/\D/g, "");
+        if (cnpjNumeros.length !== 14) {
+            escrever("Informe um CNPJ válido (14 dígitos).", false);
+            cnpj.focus();
+            return;
+        }
 
-    }
+        if (!email.value.trim() || !email.checkValidity()) {
+            escrever("Informe um e-mail válido.", false);
+            email.focus();
+            return;
+        }
 
-    if (formularioCadastro) {
+        if (!plano.value) {
+            escrever("Selecione um plano.", false);
+            return;
+        }
 
-        formularioCadastro.addEventListener("submit", function (evento) {
-
-            evento.preventDefault();
-
-            const mensagem = document.getElementById("mensagemCadastro");
-
-            const email = document.getElementById("emailCadastro");
-
-            const senha = document.getElementById("senhaCadastro");
-
-            const confirmacao = document.getElementById("confirmeSenha");
-
-            const plano = document.getElementById("planoEscolhido");
-
-            if (!email.value.trim() || !email.checkValidity()) {
-
-                escrever(mensagem, "Informe um e-mail válido.", false);
-
-                email.focus();
-
-                return;
-
-            }
-
-            if (senha.value.length < 8) {
-
-                escrever(mensagem, "A senha deve ter ao menos 8 caracteres.", false);
-
-                senha.focus();
-
-                return;
-
-            }
-
-            if (senha.value !== confirmacao.value) {
-
-                escrever(mensagem, "As senhas não coincidem.", false);
-
-                confirmacao.focus();
-
-                return;
-
-            }
-
-            if (!plano.value) {
-
-                escrever(mensagem, "Selecione um plano.", false);
-
-                plano.focus();
-
-                return;
-
-            }
-
-            escrever(mensagem, "Cadastro validado. Falta conectar o envio ao servidor.", true);
-
-        });
-
-    }
-
-    if (formularioLogin) {
-
-        formularioLogin.addEventListener("submit", function (evento) {
-
-            evento.preventDefault();
-
-            const mensagem = document.getElementById("mensagemLogin");
-
-            const email = document.getElementById("emailLogin");
-
-            const senha = document.getElementById("senhaLogin");
-
-            if (!email.value.trim() || !email.checkValidity()) {
-
-                escrever(mensagem, "Informe um e-mail válido.", false);
-
-                email.focus();
-
-                return;
-
-            }
-
-            if (!senha.value) {
-
-                escrever(mensagem, "Informe sua senha.", false);
-
-                senha.focus();
-
-                return;
-
-            }
-
-            escrever(mensagem, "Dados validados. Falta conectar a autenticação ao servidor.", true);
-
-        });
-
-    }
-
+        escrever("Cadastro validado. Falta conectar o envio ao servidor.", true);
+    });
 }
 
 
@@ -819,24 +736,27 @@ function validarFormularios() {
 
    -------------------------------------------------------------------------- */
 
-(function () {
-    var ALTURA_FECHADO = 250;
-    var ALTURA_MIN_ABERTO = 432;
+function cardsEtapas() {
+    const ALTURA_FECHADO = 250;
+    const ALTURA_MIN_ABERTO = 432;
 
-    var cards = document.querySelectorAll(".cardDados");
+    const cards = document.querySelectorAll(".cardDados");
     if (cards.length === 0) return;
 
     cards.forEach(function (card) {
-        var botao = card.querySelector(".saibaMais");
+        const botao = card.querySelector(".saibaMais");
         if (!botao) return;
 
+        if (botao.dataset.iniciado === "true") return;
+        botao.dataset.iniciado = "true";
+
         botao.addEventListener("click", function () {
-            var abrir = botao.getAttribute("aria-expanded") !== "true";
+            const abrir = botao.getAttribute("aria-expanded") !== "true";
 
             if (abrir) {
                 card.classList.add("aberto");
                 card.style.height = "auto";
-                var alvo = Math.max(card.offsetHeight, ALTURA_MIN_ABERTO);
+                const alvo = Math.max(card.offsetHeight, ALTURA_MIN_ABERTO);
                 card.style.height = ALTURA_FECHADO + "px";
                 void card.offsetHeight;
                 card.style.height = alvo + "px";
@@ -848,17 +768,33 @@ function validarFormularios() {
             botao.setAttribute("aria-expanded", String(abrir));
         });
     });
-})();
+}
 
-window.addEventListener("load", () => {
+
+/* --------------------------------------------------------------------------
+
+   8. CARDS DE ESCOPO
+
+   -------------------------------------------------------------------------- */
+
+function animarCardsEscopo() {
     document
         .querySelectorAll(".cardEscopo1, .cardEscopo2, .cardEscopo3")
-        .forEach((card) => card.classList.add("ativo"));
-});
+        .forEach(function (card) {
+            card.classList.add("ativo");
+        });
+}
+
+
+/* --------------------------------------------------------------------------
+
+   9. CARROSSEL DE ALUNOS (1º Médio / 2º Médio)
+
+   -------------------------------------------------------------------------- */
 
 function carrosselAlunos() {
     const FOTOS = [
-        "Imagens/1anoFoto.jpg",
+        "Imagens/1anoFoto.jpeg",
         "Imagens/2anoFoto.png"
     ];
 
@@ -911,8 +847,36 @@ function carrosselAlunos() {
     });
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", carrosselAlunos);
-} else {
-    carrosselAlunos();
+
+/* ==========================================================================
+
+   INICIALIZAÇÃO
+
+   ========================================================================== */
+
+function iniciar() {
+    [
+        carrosselCelulares,
+        carrosselGases,
+        menuFuncionalidades,
+        alternarPlanos,
+        dropdownsCadastro,
+        validarFormularios,
+        cardsEtapas,
+        carrosselAlunos
+    ].forEach(function (modulo) {
+        try {
+            modulo();
+        } catch (erro) {
+            console.error("Erro no módulo " + modulo.name + ":", erro);
+        }
+    });
 }
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", iniciar);
+} else {
+    iniciar();
+}
+
+window.addEventListener("load", animarCardsEscopo);
