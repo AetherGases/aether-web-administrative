@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Tela de Recuperação de Senha do Aether</title>
@@ -16,8 +17,8 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="recSenha.css">
+    <link rel="stylesheet" href="Global.css">
+    <link rel="stylesheet" href="RecoverPassword.css">
 
 </head>
 <body>
@@ -44,7 +45,7 @@
                 <p class="tipografiaRecSenha">Recuperar senha</p>
             </div>
 
-            <form action="verificacao.jsp" method="post">
+            <form action="Verification.jsp" method="post">
 
                 <input class="campoEmail campoEmailtipografia" type="email" id="email" name="campoEmail" placeholder="e-mail">
                 <label for="email"></label>
@@ -53,7 +54,7 @@
 
             </form>
 
-            <p class="naoPossuirConta">Não possui uma conta? <a class="naoPossuirContaClicavel" href="cadastroEmpresarial.html">clique aqui</a></p>
+            <p class="naoPossuirConta">Não possui uma conta? <a class="naoPossuirContaClicavel" href="CompanyRegister.jsp">clique aqui</a></p>
         </div>
 
     </main>

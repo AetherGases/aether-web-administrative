@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,8 @@
 
     <title>Landing Page Aether</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Style.css">
+    <link rel="stylesheet" href="Footer.css">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +39,7 @@
 
     <div class="retanguloMenuInicial montserrat">
         <nav aria-label="Menu principal">
-            <ul class="listaDeOpçõesMenu">
+            <ul class="listaDeOpcoesMenu">
                 <li><a href="#quemSomos">QUEM SOMOS</a></li>
                 <li><a href="#gasesPoluentes">GASES POLUENTES</a></li>
                 <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
@@ -60,7 +62,7 @@
 
         menor potencial de aquecimento global.</p>
 
-    <a class="alinharPosiçaoComecarAgora" href="#cadastro" aria-label="Começar agora">
+    <a class="alinharPosicaoComecarAgora" href="#cadastro" aria-label="Começar agora">
         <span class="botaoComecarAgora">COMEÇAR AGORA</span>
         <span class="botaoRedondoComecarAgora"></span>
         <span class="setaComecarAgora"></span>
@@ -217,7 +219,7 @@
         utilizado em cada setor de sua empresa. Essas categorias incluem os gases:
     </p>
 
-    <!-- ===== CARROSSEL DE GASES: substitua o antigo <div class="divCarrosselCards"> inteiro por este bloco ===== -->
+    <!-- ===== CARROSSEL DE GASES ===== -->
     <div class="carrosselGases" id="carrosselGases" role="region" aria-roledescription="carrossel" aria-label="Gases que procuramos substituir">
 
         <button id="gasesAnterior" class="carrosselGasesSeta carrosselGasesSetaEsq" type="button" data-cor="verde" aria-label="Gás anterior">
@@ -706,7 +708,7 @@
 
 
 <!-- =========================================================
-     SETOR 8 — RODAPÉ (novo)
+     SETOR 8 — RODAPÉ
      ========================================================= -->
 <footer class="rodapeAether">
     <div class="rodapeAetherConteudo">

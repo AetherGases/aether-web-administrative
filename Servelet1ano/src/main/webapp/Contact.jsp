@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="pt-BR" class="paginaContato">
 <head>
@@ -9,13 +10,13 @@
 
     <title>Contato — Aether</title>
 
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+    <link rel="icon" type="image/svg+xml" href="Imagens/Logo.svg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400&display=swap">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="Style.css">
 </head>
 <body>
 
@@ -49,7 +50,7 @@
         <p class="texto textoLocal">São Paulo - SP</p>
     </div>
 
-    <a class="fechar" href="index.jsp" aria-label="Fechar e voltar para a página inicial">
+    <a class="fechar" href="Index.jsp" aria-label="Fechar e voltar para a página inicial">
         <span class="fecharTraco fecharTraco1" aria-hidden="true"></span>
         <span class="fecharTraco fecharTraco2" aria-hidden="true"></span>
     </a>
