@@ -2,7 +2,7 @@
 FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /app
 COPY pom.xml .
-COPY Servelet1ano/src/main ./src/main
+COPY Servelet1ano ./Servelet1ano
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run on Tomcat (Jakarta Servlet), served at the root context
