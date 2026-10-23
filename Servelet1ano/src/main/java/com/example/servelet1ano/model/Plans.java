@@ -13,7 +13,7 @@ public class Plans {
     private Date updatedAt;
 
     public Plans(){}
-    public Plans(int id, String name, Double price, int durationDays) {
+    public Plans(int id, String name, double price, int durationDays) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -44,11 +44,11 @@ public class Plans {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
