@@ -231,10 +231,9 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employees;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return employees;
     }
 
     /**
@@ -322,10 +321,9 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employee;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return employee;
     }
 
     /**
@@ -413,10 +411,9 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return employee;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return employee;
     }
 
     /**
@@ -460,8 +457,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -521,14 +517,12 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 return true;
 
             } catch (SQLException e) {
-                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
                 conn.rollback();
-                throw e;
+                throw new RuntimeException("Erro ao registrar.", e);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -558,8 +552,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -589,8 +582,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -620,8 +612,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -682,8 +673,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -736,8 +726,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -788,8 +777,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -825,8 +813,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -885,8 +872,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -937,8 +923,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1003,14 +988,12 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 return true;
 
             } catch (SQLException e) {
-                // o rollback fica aqui dentro porque o catch de fora so roda depois da conexao fechada
                 conn.rollback();
-                throw e;
+                throw new RuntimeException("Erro ao registrar.", e);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1046,8 +1029,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1083,8 +1065,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1147,8 +1128,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1206,8 +1186,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1265,8 +1244,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1308,8 +1286,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1345,8 +1322,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -1382,8 +1358,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
