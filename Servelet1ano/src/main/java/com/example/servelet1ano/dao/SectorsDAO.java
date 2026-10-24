@@ -103,12 +103,9 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
-        finally {
-            return sectors;
-        }
+        return sectors;
     }
 
     /**
@@ -166,10 +163,9 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return sector;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return sector;
     }
 
     /**
@@ -196,8 +192,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -231,8 +226,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -256,8 +250,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -280,8 +273,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -304,8 +296,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -328,8 +319,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -363,8 +353,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -397,8 +386,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -431,8 +419,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -471,8 +458,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -502,8 +488,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -542,8 +527,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -578,8 +562,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 

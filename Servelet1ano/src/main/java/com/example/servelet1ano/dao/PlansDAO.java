@@ -60,9 +60,8 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
         return plans;
     }
 
@@ -110,9 +109,8 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
         return plan;
     }
 
@@ -166,9 +164,8 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
         return plan;
     }
     @Override
