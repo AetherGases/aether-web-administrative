@@ -17,6 +17,9 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
+    <link rel="stylesheet" href="Global2.css">
+
+
 </head>
 <body>
 
@@ -29,7 +32,7 @@
         </div>
 
         <div>
-            <img src="Imagens/AekoLogin.svg">
+            <img src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
             <p>ADMIN</p>
         </div>
 
@@ -94,14 +97,15 @@
 
     </div>
 
-        <div>
-            <p>Pesquisar</p>
-            <img src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
-        </div>
+    <div>
+        <p>Pesquisar</p>
+        <img src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
+    </div>
 
-        <div>
-            <p>Filtro</p>
-        </div>
+    <div>
+        <p>Filtro</p>
+        <img src="Imagens/setaBaixo.svg" alt="Seta para Baixo">
+    </div>
 
     <div>
         <button id="btnAbrirModal">Adicionar novo</button>
@@ -156,32 +160,32 @@
     <section>
         <table>
             <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Tamanho</th>
-                <th>Data de Registro</th>
-                <th>Tax ID</th>
-                <th>E-mail</th>
-                <th>Status</th>
-            </tr>
+                <tr>
+                    <th>Nome</th>
+                    <th>Tamanho</th>
+                    <th>Data de Registro</th>
+                    <th>Tax ID</th>
+                    <th>E-mail</th>
+                    <th>Status</th>
+                </tr>
             </thead>
             <tbody>
 
-            <tr>
-                <td>Caio Campelo Rocha</td>
-                <td>350</td>
-                <td>05/02/2029</td>
-                <td>19090938208</td>
-                <td>jbs@gmail.com</td>
-                <td>Ativo</td>
+                <tr>
+                    <td>Caio Campelo Rocha</td>
+                    <td>350</td>
+                    <td>05/02/2029</td>
+                    <td>19090938208</td>
+                    <td>jbs@gmail.com</td>
+                    <td>Ativo</td>
 
-                <td>
-                    <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
-                    <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
-                    <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
-                </td>
+                    <td>
+                        <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
+                        <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
+                        <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
+                    </td>
 
-            </tr>
+                </tr>
             </tbody>
         </table>
     </section>

@@ -17,6 +17,9 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
+    <link rel="stylesheet" href="Global2.css">
+
+
 </head>
 <body>
 
@@ -29,7 +32,7 @@
         </div>
 
         <div>
-            <h3>Giulia Cacá</h3>
+            <img src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
             <p>ADMIN</p>
         </div>
 
@@ -94,84 +97,94 @@
 
     </div>
 
-        <div>
+    <div>
+        <p>Pesquisar</p>
+        <img src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
+    </div>
+
+    <div>
+        <p>Filtro</p>
+        <img src="Imagens/setaBaixo.svg" alt="Seta para Baixo">
+    </div>
+
+    <div>
         <button id="btnAbrirModal">Adicionar novo</button>
         <img src="Imagens/Mais.svg" alt="Adicionar">
-        </div>
+    </div>
 
-        <div id="modalFuncionario">
+    <div id="modalFuncionario">
 
-            <div>
-                <h2>Adicionar funcionário</h2>
-                <button id="btnFecharModal">✕</button>
+        <div>
+            <h2>Adicionar funcionário</h2>
+            <button id="btnFecharModal">✕</button>
 
-                <form action="AdicionarFuncionario" method="post">
+            <form action="AdicionarFuncionario" method="post">
 
-                <input type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
-                <label for="nomeFuncionario"></label>
+            <input type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
+            <label for="nomeFuncionario"></label>
 
-                <input type="email" id="email" name="campoEmail" placeholder="e-mail">
-                <label for="email"></label>
+            <input type="email" id="email" name="campoEmail" placeholder="e-mail">
+            <label for="email"></label>
 
-                <input type="text" id="setor" name="campoSetor" placeholder="setor">
-                <label for="setor"></label>
+            <input type="text" id="setor" name="campoSetor" placeholder="setor">
+            <label for="setor"></label>
 
-                <input type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
-                <label for="dtAdmissao"></label>
+            <input type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
+            <label for="dtAdmissao"></label>
 
-                <input type="password" id="senha" name="campoSenha" placeholder="senha">
-                <label for="senha"></label>
+            <input type="password" id="senha" name="campoSenha" placeholder="senha">
+            <label for="senha"></label>
 
-                <input type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
-                <label for="confirmarSenha"></label>
+            <input type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
+            <label for="confirmarSenha"></label>
 
-                <label for="status"></label>
-                <select name="status" id="status" >
-                    <option value="" disabled selected hidden>ativo</option>
-                    <option value="inativo">inativo</option>
-                    <option value="recessa">recessa</option>
-                    <option value="licenca">licença</option>
-                </select>
+            <label for="status"></label>
+            <select name="status" id="status" >
+                <option value="" disabled selected hidden>ativo</option>
+                <option value="inativo">inativo</option>
+                <option value="recessa">recessa</option>
+                <option value="licenca">licença</option>
+            </select>
 
-                <button type="submit" value="enviarFormularioAdicionarFuncionario">Adicionar</button>
+            <button type="submit" value="enviarFormularioAdicionarFuncionario">Adicionar</button>
 
-                </form>
-
-            </div>
+            </form>
 
         </div>
+
+    </div>
 
 
 
     <section>
         <table>
             <thead>
-            <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Status</th>
-                <th>Senha</th>
-                <th>Setor</th>
-                <th>Data de admissão</th>
-            </tr>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Status</th>
+                    <th>Senha</th>
+                    <th>Setor</th>
+                    <th>Data de admissão</th>
+                </tr>
             </thead>
             <tbody>
 
-            <tr>
-                <td>Caio Campelo Rocha</td>
-                <td>caio.rocha@gmail.com</td>
-                <td>Ativo</td>
-                <td>@AmoMUITO</td>
-                <td>I. Têxtil</td>
-                <td>03-05-2016</td>
+                <tr>
+                    <td>Caio Campelo Rocha</td>
+                    <td>caio.rocha@gmail.com</td>
+                    <td>Ativo</td>
+                    <td>@AmoMUITO</td>
+                    <td>I. Têxtil</td>
+                    <td>03-05-2016</td>
 
-                <td>
-                    <button></button>
-                    <button></button>
-                    <button></button>
-                </td>
+                    <td>
+                        <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
+                        <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
+                        <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
+                    </td>
 
-            </tr>
+                </tr>
             </tbody>
         </table>
     </section>
