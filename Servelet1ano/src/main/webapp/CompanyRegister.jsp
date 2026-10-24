@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,103 +11,157 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
+    <link rel="icon" href="${pageContext.request.contextPath}/Imagens/LogoAether.svg" type="image/svg+xml">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
-
-    <link rel="stylesheet" href="Global.css">
-    <link rel="stylesheet" href="Verification.css">
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Global.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Verification.css">
 </head>
+
 <body>
 
-    <div class="blur1"></div>
-    <div class="blur2"></div>
-    <div class="blur3"></div>
-    <div class="blur4"></div>
+<div class="blur1"></div>
+<div class="blur2"></div>
+<div class="blur3"></div>
+<div class="blur4"></div>
 
+<div>
     <div>
+        <p>Aether Pulse</p>
+        <p><strong>R$3.300</strong>/por mês</p>
 
-        <div>
-
-            <p>Aether Pulse</p>
-            <p><strong>R$3.300</strong>/por mês</p>
-
-            <ul class="listaCustomizada">
-                <li>Quantidade de cadastro limitada a 10 funcionários</li>
-                <li>Quantidade de analistas e administradores limitada a 2</li>
-                <li>Acompanhamento mensal</li>
-            </ul>
-
-        </div>
-
-        <div>
-
-            <p>Aether Horizon</p>
-            <p><strong>R$9.400</strong>/a cada 3 meses</p>
-
-            <ul class="listaCustomizada2">
-                <li>Tudo do plano aether Pulse</li>
-                <li>Quantidade de cadastro de funcionários ilimitada</li>
-                <li>Acompanhamento Trimestral</li>
-            </ul>
-
-        </div>
-
+        <ul class="listaCustomizada">
+            <li>Quantidade de cadastro limitada a 10 funcionários</li>
+            <li>Quantidade de analistas e administradores limitada a 2</li>
+            <li>Acompanhamento mensal</li>
+        </ul>
     </div>
 
     <div>
+        <p>Aether Horizon</p>
+        <p><strong>R$9.400</strong>/a cada 3 meses</p>
 
-        <img src="Imagens/AekoLogin.svg" alt="Aeko">
-        <div>Cadastro empresarial</div>
-
-        <fieldset>
-            <form action="${pageContext.request.contextPath}/empresas" method="post">
-
-                <label for="empresa"></label>
-                <input type="text" name="empresas" id="empresa"
-                       placeholder="Nome da empresa">
-
-                <label for="razao"></label>
-                <input type="text" name="razoes" id="razao"
-                       placeholder="Razão social">
-
-
-                <label for="tamanho"></label>
-                <select name="tamanhos" id="tamanho" >
-                    <option value="" disabled selected hidden>Selecionar</option>
-                    <option value="pequena">Pequena Empresa</option>
-                    <option value="media">Média empresa</option>
-                    <option value="grande">Grande empresa</option>
-                </select>
-
-                <input type="text" id="cnpj" name="campoCNPJ" placeholder="CNPJ">
-                <label for="cnpj"></label>
-
-                <input type="email" id="email" name="campoEmail" placeholder="e-mail">
-                <label for="email"></label>
-
-                <input type="text" id="endereco" name="campoEndereco" placeholder="endereco">
-                <label for="endereco"></label>
-
-                <label for="plano"></label>
-                <select name="planos" id="plano" >
-                    <option value="" disabled selected hidden>Plano...</option>
-                    <option value="Aether Pulse">Aether Pulse</option>
-                    <option value="Aether Horizon">Aether Horizon</option>
-                </select>
-
-                <button type="submit" value="EnviarFormulárioCadastroEmpresarial">Cadastrar</button>
-
-            </form>
-            </fieldset>
-
-        <p>Já possui uma conta? <a href="Login.jsp">clique aqui</a></p>
-
+        <ul class="listaCustomizada2">
+            <li>Tudo do plano Aether Pulse</li>
+            <li>Quantidade de cadastro de funcionários ilimitada</li>
+            <li>Acompanhamento trimestral</li>
+        </ul>
     </div>
+</div>
+
+<div>
+    <img src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg" alt="Aeko">
+    <div>Cadastro empresarial</div>
+
+    <%-- Exibe as mensagens enviadas pelo Servlet. --%>
+    <c:if test="${not empty requestScope.sucesso}">
+        <div class="mensagem-sucesso" role="status">
+            <p><c:out value="${requestScope.sucesso}" /></p>
+
+            <c:if test="${not empty requestScope.companyId}">
+                <p>
+                    Código da empresa:
+                    <c:out value="${requestScope.companyId}" />
+                </p>
+            </c:if>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty requestScope.erro}">
+        <div class="mensagem-erro" role="alert">
+            <p><c:out value="${requestScope.erro}" /></p>
+        </div>
+    </c:if>
+
+    <fieldset>
+        <form action="${pageContext.request.contextPath}/empresas" method="post">
+
+            <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
+            <label for="empresa"></label>
+            <input
+                    type="text"
+                    name="empresas"
+                    id="empresa"
+                    placeholder="Nome da empresa"
+                    value="<c:out value='${requestScope.empresas}' />"
+                    required>
+
+            <label for="razao"></label>
+            <input
+                    type="text"
+                    name="razoes"
+                    id="razao"
+                    placeholder="Razão social"
+                    value="<c:out value='${requestScope.razoes}' />"
+                    required>
+
+            <label for="tamanho"></label>
+            <select name="tamanhos" id="tamanho" required>
+                <option value="" disabled hidden
+                        <c:if test="${empty requestScope.tamanhos}">selected</c:if>>
+                    Selecionar
+                </option>
+
+                <option value="pequena"
+                        <c:if test="${requestScope.tamanhos eq 'pequena'}">selected</c:if>>
+                    Pequena empresa
+                </option>
+
+                <option value="media"
+                        <c:if test="${requestScope.tamanhos eq 'media'}">selected</c:if>>
+                    Média empresa
+                </option>
+
+                <option value="grande"
+                        <c:if test="${requestScope.tamanhos eq 'grande'}">selected</c:if>>
+                    Grande empresa
+                </option>
+            </select>
+
+            <label for="cnpj"></label>
+            <input
+                    type="text"
+                    id="cnpj"
+                    name="campoCNPJ"
+                    placeholder="CNPJ"
+                    value="<c:out value='${requestScope.campoCNPJ}' />"
+                    required>
+
+            <label for="email"></label>
+            <input
+                    type="email"
+                    id="email"
+                    name="campoEmail"
+                    placeholder="E-mail"
+                    value="<c:out value='${requestScope.campoEmail}' />"
+                    required>
+
+            <label for="plano"></label>
+            <select name="planos" id="plano" required>
+                <option value="" disabled hidden
+                        <c:if test="${empty requestScope.planos}">selected</c:if>>
+                    Plano...
+                </option>
+
+                <option value="Aether Pulse"
+                        <c:if test="${requestScope.planos eq 'Aether Pulse'}">selected</c:if>>
+                    Aether Pulse
+                </option>
+
+                <option value="Aether Horizon"
+                        <c:if test="${requestScope.planos eq 'Aether Horizon'}">selected</c:if>>
+                    Aether Horizon
+                </option>
+            </select>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+    </fieldset>
+
+    <p>
+        Já possui uma conta?
+        <a href="${pageContext.request.contextPath}/Login.jsp">Clique aqui</a>
+    </p>
+</div>
 
 </body>
 </html>

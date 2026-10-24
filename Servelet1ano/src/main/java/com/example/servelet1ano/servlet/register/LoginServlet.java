@@ -1,3 +1,4 @@
+
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
@@ -27,13 +28,10 @@ public class LoginServlet extends HttpServlet {
     private static final Logger LOGGER =
             Logger.getLogger(LoginServlet.class.getName());
 
+    private static final String CADASTRO = "/Login.jsp";
+
     /**
-     * Carrega as empresas disponíveis para o formulário de login.
-     *
-     * @param request requisição HTTP recebida
-     * @param response resposta HTTP enviada ao cliente
-     * @throws ServletException caso ocorra uma falha no processamento do Servlet
-     * @throws IOException caso ocorra uma falha de entrada ou saída
+     * Carrega as empresas disponíveis e exibe o formulário de login.
      */
     @Override
     protected void doGet(
@@ -42,14 +40,9 @@ public class LoginServlet extends HttpServlet {
     ) throws ServletException, IOException {
 
         try {
-            CompaniesDAO companiesDAO = new CompaniesDAO();
+            carregarEmpresas(request);
 
-            List<Companies> empresas =
-                    companiesDAO.searchAll(new CompaniesFilter());
-
-            request.setAttribute("empresas", empresas);
-
-            request.getRequestDispatcher("/Login.jsp")
+            request.getRequestDispatcher(CADASTRO)
                     .forward(request, response);
 
         } catch (RuntimeException e) {
@@ -61,18 +54,16 @@ public class LoginServlet extends HttpServlet {
 
             response.sendError(
                     HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Não foi possível carregar as empresas."
+                    "Não foi possível carregar o formulário de login."
             );
         }
     }
 
-    /**
-     * Valida as credenciais do funcionário e inicia sua sessão autenticada.
+    /** LOGIN DOPOST
      *
-     * @param request requisição HTTP contendo as credenciais
-     * @param response resposta HTTP enviada ao cliente
-     * @throws ServletException caso ocorra uma falha no processamento do Servlet
-     * @throws IOException caso ocorra uma falha de entrada ou saída
+     * Valida as credenciais e inicia a sessão do funcionário.
+     *
+     * Se houver algum erro por runtime, é tratado por um try/catch.
      */
     @Override
     protected void doPost(
@@ -81,7 +72,6 @@ public class LoginServlet extends HttpServlet {
     ) throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
-
 
         String empresaParam = request.getParameter("empresas");
         String nome = request.getParameter("campoNome");
@@ -94,13 +84,13 @@ public class LoginServlet extends HttpServlet {
                 || empresaParam == null || empresaParam.isBlank()
                 || nome == null || nome.isBlank()) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
+            exibirErro(
+                    request,
+                    response,
                     "Todos os campos são obrigatórios."
             );
             return;
         }
-
 
         nome = nome.trim();
         email = email.trim();
@@ -110,13 +100,13 @@ public class LoginServlet extends HttpServlet {
                 || senha.length() > 1024
                 || !Validators.isEmail(email)) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
+            exibirErro(
+                    request,
+                    response,
                     "Os dados informados são inválidos."
             );
             return;
         }
-
 
         final int companyId;
 
@@ -130,51 +120,49 @@ public class LoginServlet extends HttpServlet {
             }
 
         } catch (NumberFormatException e) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
+            exibirErro(
+                    request,
+                    response,
                     "A empresa selecionada não está disponível."
             );
             return;
         }
 
         try {
-
             CompaniesDAO companiesDAO = new CompaniesDAO();
 
             Companies empresaSelecionada =
                     companiesDAO.searchById(companyId);
 
             if (empresaSelecionada == null) {
-                response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "E-mail, senha ou empresa inválidos."
+                exibirErro(
+                        request,
+                        response,
+                        "Nome, e-mail, senha ou empresa inválidos."
                 );
                 return;
             }
-
 
             EmployeesFilter filterEmployee = new EmployeesFilter();
             filterEmployee.setEmail(email);
             filterEmployee.setCompanyId(companyId);
             filterEmployee.setName(nome);
 
-
             EmployeesDAO employeesDAO = new EmployeesDAO();
 
             List<Employees> employees =
                     employeesDAO.searchAll(filterEmployee);
 
-
             if (employees == null || employees.size() != 1) {
-                response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "E-mail, senha ou empresa inválidos."
+                exibirErro(
+                        request,
+                        response,
+                        "Nome, e-mail, senha ou empresa inválidos."
                 );
                 return;
             }
 
             Employees employee = employees.getFirst();
-
 
             String passwordHash = employee.getPasswordHash();
 
@@ -183,37 +171,31 @@ public class LoginServlet extends HttpServlet {
                         "Funcionário sem hash de senha cadastrado."
                 );
 
-                response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "E-mail, senha ou empresa inválidos."
+                exibirErro(
+                        request,
+                        response,
+                        "Nome, e-mail, senha ou empresa inválidos."
                 );
                 return;
             }
-
 
             boolean senhaCorreta =
                     PasswordHasher.verify(passwordHash, senha);
 
             if (!senhaCorreta) {
-                response.sendError(
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "E-mail, senha ou empresa inválidos."
+                exibirErro(
+                        request,
+                        response,
+                        "Nome, e-mail, senha ou empresa inválidos."
                 );
                 return;
             }
 
-            /*
-             * Inicia a sessão autenticada.
-             * A troca do identificador ajuda a prevenir session fixation.
-             */
             HttpSession session = request.getSession();
-
             request.changeSessionId();
-
 
             session.setAttribute("employeeId", employee.getId());
             session.setAttribute("companyId", companyId);
-
 
             response.sendRedirect(request.getContextPath() + "/");
 
@@ -224,10 +206,55 @@ public class LoginServlet extends HttpServlet {
                     e
             );
 
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            exibirErro(
+                    request,
+                    response,
                     "Não foi possível concluir o login. Tente novamente mais tarde."
             );
         }
+    }
+
+    /**
+     * Carrega as empresas para preencher o seletor do formulário.
+     */
+    private void carregarEmpresas(HttpServletRequest request) {
+        CompaniesDAO companiesDAO = new CompaniesDAO();
+
+        List<Companies> empresas =
+                companiesDAO.searchAll(new CompaniesFilter());
+
+        request.setAttribute("empresas", empresas);
+    }
+
+    /**
+     * Retorna ao formulário com a mensagem de erro e as empresas carregadas.
+     */
+    private void exibirErro(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            String mensagem
+    ) throws ServletException, IOException {
+
+        request.setAttribute("erro", mensagem);
+
+        try {
+            carregarEmpresas(request);
+
+        } catch (RuntimeException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao recarregar empresas após falha no login.",
+                    e
+            );
+
+            response.sendError(
+                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Não foi possível carregar o formulário de login."
+            );
+            return;
+        }
+
+        request.getRequestDispatcher(CADASTRO)
+                .forward(request, response);
     }
 }
