@@ -52,20 +52,13 @@
     <img src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg" alt="Aeko">
     <div>Cadastro empresarial</div>
 
-    <%-- Exibe as mensagens enviadas pelo Servlet. --%>
+    <%-- Exibe a mensagem de sucesso enviada pelo CompanyRegisterServlet. --%>
     <c:if test="${not empty requestScope.sucesso}">
         <div class="mensagem-sucesso" role="status">
             <p><c:out value="${requestScope.sucesso}" /></p>
-
-            <c:if test="${not empty requestScope.companyId}">
-                <p>
-                    Código da empresa:
-                    <c:out value="${requestScope.companyId}" />
-                </p>
-            </c:if>
         </div>
     </c:if>
-
+    <%-- Exibe a mensagem de erro enviada pelo CompanyRegisterServlet. --%>
     <c:if test="${not empty requestScope.erro}">
         <div class="mensagem-erro" role="alert">
             <p><c:out value="${requestScope.erro}" /></p>

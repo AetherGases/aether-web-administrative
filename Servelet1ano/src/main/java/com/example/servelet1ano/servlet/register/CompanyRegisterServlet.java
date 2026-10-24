@@ -29,8 +29,7 @@ public class CompanyRegisterServlet extends HttpServlet {
     private static final Logger LOGGER =
             Logger.getLogger(CompanyRegisterServlet.class.getName());
 
-    private static final String CADASTRO =
-            "/webapp/CompanyRegister.jsp";
+    private static final String CADASTRO = "/CompanyRegister.jsp";
 
     @Override
     protected void doPost(
@@ -46,6 +45,13 @@ public class CompanyRegisterServlet extends HttpServlet {
         String cnpj = request.getParameter("campoCNPJ");
         String email = request.getParameter("campoEmail");
         String plano = request.getParameter("planos");
+
+        request.setAttribute("empresas", empresa);
+        request.setAttribute("razoes", razao);
+        request.setAttribute("tamanhos", tamanho);
+        request.setAttribute("campoCNPJ", cnpj);
+        request.setAttribute("campoEmail", email);
+        request.setAttribute("planos", plano);
 
 
         if (empresa == null || empresa.isBlank()
@@ -131,7 +137,7 @@ public class CompanyRegisterServlet extends HttpServlet {
                 return;
             }
 
-            // Prepara a empresa para o cadastro.
+
             Companies novaEmpresa = new Companies(
                     empresa,
                     razao,
@@ -144,23 +150,21 @@ public class CompanyRegisterServlet extends HttpServlet {
                     Date.valueOf(LocalDate.now())
             );
 
-            // Prepara a assinatura vinculada ao plano escolhido.
+
             Subscriptions subscription = new Subscriptions();
             subscription.setPlanId(planoSelecionado.getId());
             subscription.setInstallments(true);
 
-            // O serviço registra a empresa e a assinatura na mesma transação.
+
             CompanyRegistrationService service =
                     new CompanyRegistrationService();
 
-            int companyId = service.register(novaEmpresa, subscription);
+            service.register(novaEmpresa, subscription);
 
             request.setAttribute(
                     "sucesso",
                     "Cadastro realizado com sucesso!"
             );
-            request.setAttribute("companyId", companyId);
-
             request.getRequestDispatcher(CADASTRO)
                     .forward(request, response);
 
@@ -180,7 +184,15 @@ public class CompanyRegisterServlet extends HttpServlet {
         }
     }
 
-
+    /*
+     * EXIBIÇÃO DE ERROS
+     *
+     * Recebe a mensagem que deverá ser apresentada ao usuário,
+     * disponibiliza-a pelo atributo "erro".
+     *
+     * O forward encaminha a requisição atual ao JSP, permitindo
+     * que a mensagem seja exibida na mesma página do formulário.
+     */
 
     private void exibirErro(
             HttpServletRequest request,

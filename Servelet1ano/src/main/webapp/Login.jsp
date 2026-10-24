@@ -9,31 +9,18 @@
 
     <title>Login | Aether</title>
 
-    <!-- Fontes utilizadas na identidade visual do Aether -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link
-            href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-            rel="stylesheet"
-    >
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-    <!-- Recursos estáticos da aplicação -->
-    <link
-            rel="icon"
-            href="${pageContext.request.contextPath}/Imagens/LogoAether.svg"
-            type="image/svg+xml"
-    >
 
-    <link
-            rel="stylesheet"
-            href="${pageContext.request.contextPath}/global.css"
-    >
+    <link rel="icon" href="${pageContext.request.contextPath}/Imagens/LogoAether.svg" type="image/svg+xml">
 
-    <link
-            rel="stylesheet"
-            href="${pageContext.request.contextPath}/login.css"
-    >
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/global.css">
+
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/login.css">
 </head>
 
 <body>
@@ -44,21 +31,14 @@
 <div class="blur3" aria-hidden="true"></div>
 <div class="blur4" aria-hidden="true"></div>
 
-<!-- Identidade visual da aplicação -->
+
 <header class="divLogo">
 
-    <img
-            class="logoCRUD"
-            src="${pageContext.request.contextPath}/Imagens/LogoAethererdeEscuro.svg"
-            alt="Logo do Aether"
-    >
+    <img class="logoCRUD" src="${pageContext.request.contextPath}/Imagens/LogoAethererdeEscuro.svg" alt="Logo do Aether">
 
     <h1 class="logotipoAether">aether</h1>
 
-    <p class="fraseLogo">
-        Pense no presente e mude seu
-        <span class="fraseFuturoLogo">futuro</span>
-    </p>
+    <p class="fraseLogo">Pense no presente e mude seu<span class="fraseFuturoLogo">futuro</span></p>
 
 </header>
 
@@ -66,11 +46,7 @@
 
     <section class="divCaixaForm" aria-labelledby="tituloLogin">
 
-        <img
-                class="aekoCRUD"
-                src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg"
-                alt="Aeko, mascote do Aether"
-        >
+        <img class="aekoCRUD" src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg" alt="Aeko, mascote do Aether">
 
         <div class="retanguloLogin">
             <h2 class="loginPessoalTexto" id="tituloLogin">
@@ -91,8 +67,6 @@
                 method="post"
                 accept-charset="UTF-8"
         >
-
-            <!-- Seleção da empresa cadastrada no banco -->
             <label for="empresa" class="visually-hidden">
                 Empresa
             </label>
@@ -139,44 +113,19 @@
             >
 
             <!-- E-mail do funcionário -->
-            <label for="email" class="visually-hidden">
-                E-mail
-            </label>
+            <label for="email" class="visually-hidden">E-mail</label>
 
-            <input
-                    class="campoEmail campoEmailEmail"
-                    type="email"
-                    id="email"
-                    name="campoEmail"
-                    placeholder="E-mail"
-                    autocomplete="email"
-                    maxlength="255"
-                    required
-            >
+            <input class="campoEmail campoEmailEmail" type="email" id="email" name="campoEmail" placeholder="E-mail" autocomplete="email" maxlength="255" required>
 
             <!-- Senha da conta -->
             <label for="senha" class="visually-hidden">
                 Senha
             </label>
 
-            <input
-                    class="campoSenha campoSenhaSenha"
-                    type="password"
-                    id="senha"
-                    name="campoSenha"
-                    placeholder="Senha"
-                    autocomplete="current-password"
-                    maxlength="1024"
-                    required
-            >
+            <input class="campoSenha campoSenhaSenha" type="password" id="senha" name="campoSenha" placeholder="Senha" autocomplete="current-password" maxlength="1024" required>
 
-            <!-- Envio das credenciais -->
-            <button
-                    class="botaoEnvioRoxo tipografiaEnvio"
-                    type="submit"
-            >
-                Entrar
-            </button>
+
+            <button class="botaoEnvioRoxo tipografiaEnvio" type="submit">Entrar</button>
 
         </form>
 

@@ -40,14 +40,14 @@
             <li><a href="#gasesPoluentes">GEE</a></li>
             <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
             <li><a href="#planos">PLANOS</a></li>
-            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="login.jsp">Entrar</a></li>
-            <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="cadastroEmpresarial.jsp">Cadastrar-se</a></li>
+            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="Login.jsp">Entrar</a></li>
+            <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="CompanyRegister.jsp">Cadastrar-se</a></li>
         </ul>
     </nav>
 
     <div class="acoesCabecalho">
-        <a class="botaoEntrar conteudoBotaoEntrar" href="login.jsp">Entrar</a>
-        <a class="botaoCadastrar conteudoBotaoCadastar" href="cadastroEmpresarial.jsp">Cadastrar-se</a>
+        <a class="botaoEntrar conteudoBotaoEntrar" href="Login.jsp">Entrar</a>
+        <a class="botaoCadastrar conteudoBotaoCadastar" href="CompanyRegister.jsp">Cadastrar-se</a>
     </div>
 </header>
 

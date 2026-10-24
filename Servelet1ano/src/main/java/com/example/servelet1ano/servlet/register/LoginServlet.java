@@ -78,6 +78,11 @@ public class LoginServlet extends HttpServlet {
         String email = request.getParameter("campoEmail");
         String senha = request.getParameter("campoSenha");
 
+        request.setAttribute("empresaParam", empresaParam);
+        request.setAttribute("nome", nome);
+        request.setAttribute("email", email);
+        request.setAttribute("senha", senha);
+
 
         if (email == null || email.isBlank()
                 || senha == null || senha.isBlank()

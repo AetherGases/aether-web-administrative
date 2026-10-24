@@ -28,7 +28,7 @@ public class ManagerRegisterServlet extends HttpServlet {
     private static final Logger LOGGER =
             Logger.getLogger(ManagerRegisterServlet.class.getName());
 
-    private static final String CADASTRO = "Servelet1ano/src/main/webapp/ManagerRegister.jsp";
+    private static final String CADASTRO = "/ManagerRegister.jsp";
 
     /*
      * ============================================================
