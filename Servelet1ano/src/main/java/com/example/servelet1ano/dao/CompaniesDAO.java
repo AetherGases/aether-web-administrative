@@ -137,9 +137,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
         return companies;
     }
 
@@ -191,10 +190,9 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return company;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return company;
     }
 
     /**
@@ -233,17 +231,18 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
     /**
-     * metodo para cadastrar uma nova empresa e devolver o id gerado
-     * Usado quando a empresa precisa ser vinculada a uma subscription
-     * Usa o returning do PostgreSQL em vez de RETURN_GENERATED_KEYS
-     * @param company A empresa que sera cadastrada
-     * @return O id gerado, ou -1 caso tenha dado erro
+     * Cadastra uma empresa e retorna o ID gerado pelo banco.
+     *
+     * Utiliza uma conexão própria quando o cadastro não faz parte
+     * de uma transação externa.
+     *
+     * @param company empresa que será cadastrada
+     * @return ID gerado ou -1 caso os dados sejam inválidos
      */
     public int registerReturningId(Companies company) {
 
@@ -251,33 +250,75 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return -1;
         }
 
-        String sql = "INSERT INTO companies " +
-                "(name, trade_name, size, registration_date, cnpj, email) " +
-                "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
-                "RETURNING id";
+        try (Connection conn = ConnectionFactory.connect()) {
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+            if (conn == null) {
+                throw new IllegalStateException(
+                        "Não foi possível estabelecer conexão com o banco."
+                );
+            }
+
+            return registerReturningId(company, conn);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao cadastrar empresa e recuperar seu ID.",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Cadastra uma empresa utilizando uma conexão compartilhada.
+     *
+     * Não abre nem fecha a conexão recebida, permitindo que o service
+     * controle a transação e reverta o cadastro caso outra operação falhe.
+     *
+     * @param company empresa que será cadastrada
+     * @param conn conexão pertencente à transação externa
+     * @return ID gerado ou -1 caso os dados sejam inválidos
+     * @throws SQLException caso ocorra um erro durante a operação SQL
+     */
+    public int registerReturningId(Companies company, Connection conn) {
+
+        if (!isValid(company)) {
+            return -1;
+        }
+
+        if (conn == null) {
+            throw new IllegalArgumentException(
+                    "A conexão com o banco não pode ser nula."
+            );
+        }
+
+        String sql =
+                "INSERT INTO companies " +
+                        "(name, trade_name, size, registration_date, cnpj, email) " +
+                        "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
+                        "RETURNING id";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setString(1, company.getName());
             pstmt.setString(2, company.getTradeName());
             pstmt.setString(3, company.getSize().getValor());
             pstmt.setDate(4, company.getRegistrationDate());
-            pstmt.setString(5, company.getCnpj());
+            pstmt.setString(5, cleanCnpj(company.getCnpj()));
             pstmt.setString(6, company.getEmail());
 
             try (ResultSet rs = pstmt.executeQuery()) {
+
                 if (rs.next()) {
                     return rs.getInt("id");
                 }
+
+                return -1;
+            } catch (SQLException e) {
+                throw new RuntimeException("Erro ao acessar o banco de dados.", e);
             }
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
-        return -1;
     }
 
     /**
@@ -314,8 +355,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -363,9 +403,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
-
 }

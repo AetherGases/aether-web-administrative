@@ -67,12 +67,9 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("ERRO searchAll permission_groups: " + e.getMessage());
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-        finally {
-            return permissionGroups;
-        }
+        return permissionGroups;
     }
 
     /**
@@ -105,10 +102,9 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return permissionGroup;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return permissionGroup;
     }
 
     /**
@@ -133,8 +129,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -165,8 +160,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -190,8 +184,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -214,8 +207,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -238,8 +230,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -269,8 +260,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -299,8 +289,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 

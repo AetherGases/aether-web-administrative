@@ -80,10 +80,9 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return telephones;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return telephones;
     }
 
     /**
@@ -130,10 +129,9 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return telephoneCompany;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return telephoneCompany;
     }
 
     /**
@@ -162,8 +160,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -210,9 +207,8 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
 
             return pstmt.executeUpdate() > 0;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+        }catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -246,8 +242,7 @@ public class TelephoneCompaniesDAO implements DAOI<TelephoneCompanies, Telephone
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 

@@ -106,10 +106,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return addresses;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return addresses;
     }
 
     /**
@@ -151,10 +150,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return address;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return address;
     }
 
     /**
@@ -198,10 +196,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return addresses;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+            return addresses;
     }
 
     /**
@@ -245,10 +242,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return addresses;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return addresses;
     }
 
     /**
@@ -292,10 +288,9 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return addresses;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return addresses;
     }
 
     /**
@@ -330,8 +325,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -376,8 +370,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return -1;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return -1;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -402,56 +395,54 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
-    /**
-     * metodo que muda os values do endereco selecionado pelo id
-     * @param address Os valores do endereco para ser atualizado
-     * @param id O valor unico do endereco que quer atualizar
-     * @return true se foi mudado e false caso tenha dado erro
-     */
-    @Override
-    public boolean update(Addresses address, int id) {
+        /**
+         * metodo que muda os values do endereco selecionado pelo id
+         * @param address Os valores do endereco para ser atualizado
+         * @param id O valor unico do endereco que quer atualizar
+         * @return true se foi mudado e false caso tenha dado erro
+         */
+        @Override
+        public boolean update (Addresses address,int id){
 
-        if (!isValid(address)) {
-            return false;
+            if (!isValid(address)) {
+                return false;
+            }
+
+            try (
+                    Connection conn = ConnectionFactory.connect();
+                    PreparedStatement pstmt = conn.prepareStatement(
+                            "update addresses set zip_code = ?, " +
+                                    "street = ?, " +
+                                    "number = ?, " +
+                                    "complement = ?, " +
+                                    "neighborhood = ?, " +
+                                    "city = ?, " +
+                                    "state = ?, " +
+                                    "country = ?, " +
+                                    "updated_at = current_timestamp " +
+                                    "where id = ?"
+                    )
+            ) {
+
+                pstmt.setString(1, address.getZipCode());
+                pstmt.setString(2, address.getStreet());
+                pstmt.setString(3, address.getNumber());
+                pstmt.setString(4, address.getComplement());
+                pstmt.setString(5, address.getNeighborhood());
+                pstmt.setString(6, address.getCity());
+                pstmt.setString(7, address.getState());
+                pstmt.setString(8, address.getCountry());
+                pstmt.setInt(9, id);
+
+                return pstmt.executeUpdate() > 0;
+
+            } catch (SQLException e) {
+                throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+            }
         }
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update addresses set zip_code = ?, " +
-                                "street = ?, " +
-                                "number = ?, " +
-                                "complement = ?, " +
-                                "neighborhood = ?, " +
-                                "city = ?, " +
-                                "state = ?, " +
-                                "country = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where id = ?"
-                )
-        ) {
-
-            pstmt.setString(1, address.getZipCode());
-            pstmt.setString(2, address.getStreet());
-            pstmt.setString(3, address.getNumber());
-            pstmt.setString(4, address.getComplement());
-            pstmt.setString(5, address.getNeighborhood());
-            pstmt.setString(6, address.getCity());
-            pstmt.setString(7, address.getState());
-            pstmt.setString(8, address.getCountry());
-            pstmt.setInt(9, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
-
-}
