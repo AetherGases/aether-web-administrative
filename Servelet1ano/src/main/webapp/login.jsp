@@ -1,79 +1,172 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Tela de Login do Aether</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <title>Login | Aether</title>
+
+    <!-- Fontes utilizadas na identidade visual do Aether -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
+    <link
+        href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet"
+    >
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Recursos estáticos da aplicação -->
+    <link
+        rel="icon"
+        href="/Imagens/LogoAether.svg"
+        type="image/svg+xml"
+    >
 
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+    <link
+        rel="stylesheet"
+        href="/global.css"
+    >
 
-    <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="login.css">
-
+    <link
+        rel="stylesheet"
+        href="/login.css"
+    >
 </head>
+
 <body>
 
-    <div class="blur1"></div>
-    <div class="blur2"></div>
-    <div class="blur3"></div>
-    <div class="blur4"></div>
+    <!-- Elementos decorativos de fundo -->
+    <div class="blur1" aria-hidden="true"></div>
+    <div class="blur2" aria-hidden="true"></div>
+    <div class="blur3" aria-hidden="true"></div>
+    <div class="blur4" aria-hidden="true"></div>
 
+    <!-- Identidade visual da aplicação -->
+    <header class="divLogo">
 
-    <div class="divLogo">
-        <img class="logoCRUD" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+        <img
+            class="logoCRUD"
+            src="/Imagens/LogoAethererdeEscuro.svg"
+            alt="Logo do Aether"
+        >
+
         <h1 class="logotipoAether">aether</h1>
-        <p class="fraseLogo">Pense no presente e mude seu <span class="fraseFuturoLogo">futuro</span></p>
-    </div>
 
+        <p class="fraseLogo">
+            Pense no presente e mude seu
+            <span class="fraseFuturoLogo">futuro</span>
+        </p>
+
+    </header>
 
     <main class="divLoginPrincipal">
 
-        <div class="divCaixaForm">
+        <section class="divCaixaForm" aria-labelledby="tituloLogin">
 
-            <img class="aekoCRUD" src="Imagens/AekoLogin.svg" alt="Aeko">
+            <img
+                class="aekoCRUD"
+                src="/Imagens/AekoLogin.svg"
+                alt="Aeko, mascote do Aether"
+            >
 
             <div class="retanguloLogin">
-                <p class="loginPessoalTexto">Login pessoal</p>
+                <h2 class="loginPessoalTexto" id="tituloLogin">
+                    Login pessoal
+                </h2>
             </div>
 
-            <form action="${pageContext.request.contextPath}/login"
-                  method="post">
+            <!-- Formulário processado pelo LoginServlet -->
+            <form
+                action="${pageContext.request.contextPath}/login"
+                method="post"
+                accept-charset="UTF-8"
+            >
 
-                <label for="empresa"></label>
+                <!-- Seleção da empresa cadastrada no banco -->
+                <label for="empresa" class="visually-hidden">
+                    Empresa
+                </label>
 
+                <select
+                    class="campoEmpresa campoEmpresaEmpresa"
+                    name="empresas"
+                    id="empresa"
+                    required
+                >
+                    <option value="" disabled selected>
+                        Selecionar empresa
+                    </option>
 
-                <select class="campoEmpresa campoEmpresaEmpresa" name="empresas" id="empresa" required>
-                    <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="" disabled selected hidden>Selecionar</option>
-                    <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="aas">Aurora Alimentos Sustentáveis S.A.</option>
-                    <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="hlil">Horizonte Logística Integrada Ltda.</option>
-                    <option class="campoEmpresaEmpresa campoEmpresaEmpresa" value="vci">Vale Circular Indústria S.A.</option>
+                    <c:forEach var="empresa" items="${empresas}">
+                        <option value="${empresa.id}">
+                            <c:out value="${empresa.name}"/>
+                        </option>
+                    </c:forEach>
+
                 </select>
 
-                <input class="campoNome campoNomeNome"  type="text" id="nome" name="campoNome" placeholder="nome" required>
-                <label for="nome"></label>
+                <!-- Identificação do funcionário -->
+                <label for="nome" class="visually-hidden">
+                    Nome
+                </label>
 
-                <input class="campoEmail campoEmailEmail" type="email" id="email" name="campoEmail" placeholder="e-mail" required>
-                <label for="email"></label>
+                <input
+                    class="campoNome campoNomeNome"
+                    type="text"
+                    id="nome"
+                    name="campoNome"
+                    placeholder="Nome"
+                    autocomplete="username"
+                    maxlength="255"
+                    required
+                >
 
-                <input class="campoSenha campoSenhaSenha" type="password" id="senha" name="campoSenha" placeholder="senha" required>
-                <label for="senha"></label>
+                <!-- E-mail do funcionário -->
+                <label for="email" class="visually-hidden">
+                    E-mail
+                </label>
 
+                <input
+                    class="campoEmail campoEmailEmail"
+                    type="email"
+                    id="email"
+                    name="campoEmail"
+                    placeholder="E-mail"
+                    autocomplete="email"
+                    maxlength="255"
+                    required
+                >
 
-                <button class="botaoEnvioRoxo tipografiaEnvio" type="submit" value="enviarFormulárioLogin">Entrar</button>
+                <!-- Senha da conta -->
+                <label for="senha" class="visually-hidden">
+                    Senha
+                </label>
+
+                <input
+                    class="campoSenha campoSenhaSenha"
+                    type="password"
+                    id="senha"
+                    name="campoSenha"
+                    placeholder="Senha"
+                    autocomplete="current-password"
+                    maxlength="1024"
+                    required
+                >
+
+                <!-- Envio das credenciais -->
+                <button
+                    class="botaoEnvioRoxo tipografiaEnvio"
+                    type="submit"
+                >
+                    Entrar
+                </button>
 
             </form>
 
+        </section>
 
-        </div>
     </main>
 
 </body>
