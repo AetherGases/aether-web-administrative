@@ -752,7 +752,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <button class="linkTrocaAba" type="button" data-destino="login">clique aqui</button>
+                        <a class="linkTrocaAba" href="login.jsp">clique aqui</a>
                     </p>
                 </form>
             </div>
