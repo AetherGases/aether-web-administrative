@@ -24,6 +24,12 @@
     height: 46.601px;
 }
 
+.tipografiaLogo{
+    width: 95px;
+    height: 95px;
+    fill: #5B6473;
+}
+
 .aeko{
     width: 240px;
     height: 158px;
@@ -196,6 +202,15 @@
     border: 2px solid rgba(179, 183, 201, 0.50);
     background: #FFF;
     box-shadow: 0 65px 18px 0 rgba(170, 181, 192, 0.00), 0 42px 17px 0 rgba(170, 181, 192, 0.01), 0 23px 14px 0 rgba(170, 181, 192, 0.05), 0 10px 10px 0 rgba(170, 181, 192, 0.09), 0 3px 6px 0 rgba(170, 181, 192, 0.10);
+}
+
+.tipografiaFiltro{
+    color: #7E8294;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }
 
 .imagemBarraBaixo{
