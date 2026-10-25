@@ -675,29 +675,15 @@
             </div>
 
             <div class="cardCadastroLogin">
-                <form id="formularioEmpresarial" class="formularioEmpresarial" novalidate>
+                <form id="formularioEmpresarial" class="formularioEmpresarial" action="${pageContext.request.contextPath}/empresas" method="post" accept-charset="UTF-8">
 
                     <img class="aekoCadastro" src="Imagens/Aeko.svg" alt="" loading="lazy">
 
                     <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
                     <!-- Empresa -->
-                    <div class="dropdownPersonalizado">
-                        <span class="dropdownRotulo" id="rotuloEmpresa">Empresa</span>
-                        <div class="dropdownCaixa">
-                            <button class="dropdownBotao" type="button" aria-haspopup="listbox" aria-expanded="false"
-                                    aria-labelledby="rotuloEmpresa textoEmpresa">
-                                <span class="dropdownTexto" id="textoEmpresa">Selecionar</span>
-                                <span class="dropdownSeta" aria-hidden="true"></span>
-                            </button>
-                            <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloEmpresa">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="empresa1">Empresa 1</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="empresa2">Empresa 2</li>
-                            </ul>
-                            <input type="hidden" id="empresaTipo" name="empresa" value="">
-                        </div>
-                    </div>
-
+                    <label for="empresa">e</label>
+                    <input type="text" name="empresas" id="empresaTipo" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
                     <!-- Tamanho -->
                     <div class="dropdownPersonalizado">
                         <span class="dropdownRotulo" id="rotuloTamanho">tamanho</span>
@@ -712,7 +698,7 @@
                                 <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">média</li>
                                 <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">pequena</li>
                             </ul>
-                            <input type="hidden" id="empresaTamanho" name="tamanho" value="">
+                            <input type="hidden" id="empresaTamanho" name="tamanhos" value="">
                         </div>
                     </div>
 
@@ -747,7 +733,26 @@
                         </div>
                     </div>
 
-                    <p class="mensagemFormulario" id="mensagemEmpresarial" role="status" aria-live="polite"></p>
+                    <c:if test="${not empty requestScope.erro}">
+                        <p class="mensagemFormulario mensagemErro"
+                           role="alert">
+                            <c:out value="${requestScope.erro}"/>
+                        </p>
+                    </c:if>
+
+                    <c:if test="${not empty requestScope.sucesso}">
+                        <div class="mensagemFormulario mensagemSucesso"
+                             role="status">
+                            <p><c:out value="${requestScope.sucesso}"/></p>
+
+                            <c:if test="${not empty requestScope.companyId}">
+                                <p>
+                                    Código da empresa:
+                                    <c:out value="${requestScope.companyId}"/>
+                                </p>
+                            </c:if>
+                        </div>
+                    </c:if>
 
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 

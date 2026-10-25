@@ -70,13 +70,7 @@
 
             <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
             <label for="empresa"></label>
-            <input
-                    type="text"
-                    name="empresas"
-                    id="empresa"
-                    placeholder="Nome da empresa"
-                    value="<c:out value='${requestScope.empresas}' />"
-                    required>
+            <input type="text" name="empresas" id="empresa" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
 
             <label for="razao"></label>
             <input

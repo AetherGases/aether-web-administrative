@@ -30,8 +30,13 @@ public class LoginServlet extends HttpServlet {
 
     private static final String CADASTRO = "/Login.jsp";
 
-    /**
-     * Carrega as empresas disponíveis e exibe o formulário de login.
+    /*
+     *CARREGAMENTO DE EMPRESA.
+     *
+     *Recupera a sessão do gerente para relacionar a empresa do employee
+     *
+     * Se não conseguiR, trata o erro RunTimeException pelo método exibirErros()
+     *
      */
     @Override
     protected void doGet(
@@ -196,13 +201,16 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
+
             HttpSession session = request.getSession();
             request.changeSessionId();
 
             session.setAttribute("employeeId", employee.getId());
             session.setAttribute("companyId", companyId);
 
-            response.sendRedirect(request.getContextPath() + "/");
+            response.sendRedirect(
+                    request.getContextPath() + "/dashboard"
+            );
 
         } catch (RuntimeException e) {
             LOGGER.log(
@@ -219,9 +227,16 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Carrega as empresas para preencher o seletor do formulário.
+    /*
+     * CARREGAMENTO DAS EMPRESAS
+     *
+     * Consulta as empresas disponíveis e disponibiliza a lista
+     * ao JSP pelo atributo "empresas".
+     *
+     * Caso a consulta falhe, a exceção é propagada para o método
+     * responsável por tratar a falha.
      */
+
     private void carregarEmpresas(HttpServletRequest request) {
         CompaniesDAO companiesDAO = new CompaniesDAO();
 
@@ -231,9 +246,20 @@ public class LoginServlet extends HttpServlet {
         request.setAttribute("empresas", empresas);
     }
 
-    /**
-     * Retorna ao formulário com a mensagem de erro e as empresas carregadas.
+    /*
+     * EXIBIÇÃO DE ERROS
+     *
+     * Recebe a mensagem que deverá ser apresentada ao usuário,
+     * disponibiliza-a pelo atributo "erro" e carrega novamente
+     * as empresas para que o formulário possa ser renderizado.
+     *
+     * Se ocorrer uma falha ao carregar as empresas, uma lista
+     * vazia é disponibilizada e a exceção é registrada.
+     *
+     * O forward encaminha a requisição atual ao JSP, permitindo
+     * que a mensagem seja exibida na mesma página do formulário.
      */
+
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
