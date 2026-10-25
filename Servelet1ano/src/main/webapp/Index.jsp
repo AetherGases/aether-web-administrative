@@ -675,7 +675,7 @@
             </div>
 
             <div class="cardCadastroLogin">
-                <form id="formularioEmpresarial" class="formularioEmpresarial" novalidate>
+                <form id="formularioEmpresarial" class="formularioEmpresarial" novalidate method="post">
 
                     <img class="aekoCadastro" src="Imagens/Aeko.svg" alt="" loading="lazy">
 
@@ -752,7 +752,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <button class="linkTrocaAba" type="button" data-destino="login">clique aqui</button>
+                        <a href="Login.jsp" class="linkTrocaAba" type="button" data-destino="l">clique aqui</a>
                     </p>
                 </form>
             </div>
