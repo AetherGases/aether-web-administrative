@@ -76,7 +76,7 @@
             </a>
 
             <p class="tipografiaFraseInicial">Pense no presente e mude seu futuro, <br>
-                ajudando empresas para um<span class="tipografiaFraseInicialDestaque"> futuro <br>mais sustentável!</span></p>
+                ajudando empresas a construir<span class="tipografiaFraseInicialDestaque"> um mundo mais sustentável!</span></p>
         </div>
 
         <div class="heroVisual">
@@ -208,7 +208,7 @@
         <h2 class="tituloSobreSubstituicaoDeGases">Mas... quais <span class="gasesDestacado">gases</span>
             substituímos?</h2>
 
-        <p class="descricaoSubstituicao">Então, o Aether deseja sugerir à sua empresa um substituto verde para gases
+        <p class="descricaoSubstituicao">Então, o Aether sugere à sua empresa um substituto verde para gases
             poluentes de Escopo 1, 2 e 3, utilizado em cada setor de sua empresa. Essas categorias incluem os gases:</p>
 
         <!-- ===== CARROSSEL DE GASES ===== -->
@@ -752,7 +752,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <button class="linkTrocaAba" type="button" data-destino="login">clique aqui</button>
+                        <button class="linkTrocaAba" type="button" href="Login.jsp">clique aqui</button>
                     </p>
                 </form>
             </div>
