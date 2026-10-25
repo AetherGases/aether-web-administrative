@@ -205,8 +205,8 @@
          ========================================================= -->
     <section class="setor setorGases">
 
-        <h2 class="tituloSobreSubstituicaoDeGases">Mas... quais <span class="gasesDestacado">gases</span> procuramos
-            substituir?</h2>
+        <h2 class="tituloSobreSubstituicaoDeGases">Mas... quais <span class="gasesDestacado">gases</span>
+            substituímos?</h2>
 
         <p class="descricaoSubstituicao">Então, o Aether deseja sugerir à sua empresa um substituto verde para gases
             poluentes de Escopo 1, 2 e 3, utilizado em cada setor de sua empresa. Essas categorias incluem os gases:</p>
@@ -456,7 +456,7 @@
             <div class="divTituloAnaliseDeDados">
                 <h2 class="tituloAnalise">Análise de <span class="tituloDadosDestacado">Dados</span></h2>
                 <p class="textoAnaliseDados">
-                    Nossa empresa busca trazer a melhor solução para a sua em 3 etapas
+                    Nossa empresa traz a melhor solução para a sua em 3 etapas
                     principais. Analisamos dados e relatórios a partir de diversos critérios
                     para sugerir as melhores alternativas renováveis aos gases poluentes.
                 </p>
