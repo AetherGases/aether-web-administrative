@@ -1,141 +1,210 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tela de Setores do Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
 
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
-
+    <link rel="icon"
+          href="${pageContext.request.contextPath}/Imagens/LogoAether.svg"
+          type="image/svg+xml">
 </head>
+
 <body>
 
 <aside>
-
-
-    <div >
-        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+    <div>
+        <img src="${pageContext.request.contextPath}/Imagens/LogoAethererdeEscuro.svg"
+             alt="Logo Aether">
         <p>aether</p>
     </div>
 
     <div>
-        <h3>Giulia Cacá</h3>
+        <h3>Área administrativa</h3>
         <p>ADMIN</p>
     </div>
 
     <nav>
         <ul>
-            <li><a href="">Dashboards</a></li>
-            <li><a href="">Funcionários</a></li>
-            <li><a href="">Setores</a></li>
-            <li><a href="">Unidades</a></li>
-            <li><a href="">Empresas</a></li>
-            <li><a href="">Permissões</a></li>
-            <li><a href="">Permissões</a></li>
+            <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/funcionarios">Funcionários</a></li>
+            <li><a href="${pageContext.request.contextPath}/setores">Setores</a></li>
+            <li><a href="${pageContext.request.contextPath}/unidades">Unidades</a></li>
+            <li><a href="${pageContext.request.contextPath}/empresas">Empresas</a></li>
+            <li><a href="${pageContext.request.contextPath}/permissoes">Permissões</a></li>
         </ul>
     </nav>
-
-    <div>
-        <a href="Login.jsp">Logout</a>
-    </div>
-
 </aside>
 
-<div>
-
-    <h2>Area restrista</h2>
-    <p>Setores</p>
-
-</div>
-
-<div>
-    <button id="btnAbrirModal">Adicionar novo</button>
-    <img src="Imagens/Mais.svg" alt="Adicionar">
-</div>
-
-<div id="modalSetores">
-
+<main>
     <div>
-        <h2>Adicionar Setor</h2>
-        <button id="btnFecharModal">✕</button>
-
-        <form action="AdicionarSetor" method="post">
-
-            <input type="text" id="nomeSetor" name="campoNomeSetor" placeholder="setor">
-            <label for="nomeSetor"></label>
-
-            <input type="text" id="subSetor" name="campoSubSetor" placeholder="subsetor">
-            <label for="subSetor"></label>
-
-            <input type="text" id="idUnidade" name="campoidUnidade" placeholder="id unidade">
-            <label for="idUnidade"></label>
-
-            <input type="text" id="descricao" name="campoDescricao" placeholder="descricao">
-            <label for="descricao"></label>
-
-            <button type="submit" value="enviarFormularioAdicionarSetor">Adicionar</button>
-
-        </form>
-
+        <h2>Área restrita</h2>
+        <p>Setores</p>
     </div>
 
-</div>
+    <c:if test="${not empty erro}">
+        <div role="alert">
+            <c:out value="${erro}"/>
+        </div>
+    </c:if>
 
+    <c:if test="${not empty sucesso}">
+        <div role="status">
+            <c:out value="${sucesso}"/>
+        </div>
+    </c:if>
 
+    <div>
+        <button type="button" id="btnAbrirModal">Adicionar novo</button>
+        <img src="${pageContext.request.contextPath}/Imagens/Mais.svg"
+             alt="Adicionar">
+    </div>
 
-<section>
-    <table>
-        <thead>
-        <tr>
-            <th>Setor</th>
-            <th>ID</th>
-            <th>Subsetor</th>
-            <th>Status</th>
-            <th>Descrição</th>
-        </tr>
-        </thead>
-        <tbody>
+    <div id="modalSetores" class="${not empty erro ? 'ativo' : ''}">
+        <div>
+            <h2>Adicionar Setor</h2>
 
-        <tr>
-            <td>Caio Campelo Rocha</td>
-            <td>350</td>
-            <td>sdmfdlfs</td>
-            <td>Ativo</td>
-            <td>legal</td>
+            <button type="button" id="btnFecharModal" aria-label="Fechar">
+                ✕
+            </button>
 
+            <form action="${pageContext.request.contextPath}/setores"
+                  method="post">
 
-            <td>
-                <button></button>
-                <button></button>
-                <button></button>
-            </td>
+                <label for="nomeSetor">Nome do setor *</label>
+                <input type="text"
+                       id="nomeSetor"
+                       name="campoNomeSetor"
+                       placeholder="Nome do setor"
+                       maxlength="255"
+                       value="<c:out value='${campoNomeSetor}'/>"
+                       required>
 
-        </tr>
-        </tbody>
-    </table>
-</section>
+                <label for="idUnidade">Unidade *</label>
+                <select id="idUnidade"
+                        name="campoIdUnidade"
+                        required>
+                    <option value="">Selecione uma unidade</option>
 
+                    <c:forEach var="unidade" items="${unidades}">
+                        <option value="${unidade.id}"
+                                <c:if test="${campoIdUnidade == unidade.id}">
+                                    selected
+                                </c:if>>
+                            <c:out value="${unidade.name}"/>
+                        </option>
+                    </c:forEach>
+                </select>
+
+                <label for="descricao">Descrição *</label>
+                <textarea id="descricao"
+                          name="campoDescricao"
+                          placeholder="Descrição do setor"
+                          required><c:out value="${campoDescricao}"/></textarea>
+
+                <button type="submit">Adicionar</button>
+            </form>
+        </div>
+    </div>
+
+    <section>
+        <table>
+            <thead>
+            <tr>
+                <th>Setor</th>
+                <th>ID</th>
+                <th>Unidade</th>
+                <th>Status</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <c:choose>
+                <c:when test="${not empty setores}">
+                    <c:forEach var="setor" items="${setores}">
+                        <tr>
+                            <td>
+                                <c:out value="${setor.name}"/>
+                            </td>
+
+                            <td>
+                                <c:out value="${setor.id}"/>
+                            </td>
+
+                            <td>
+                                <c:out value="${setor.unit.name}"/>
+                            </td>
+
+                            <td>
+                                <c:choose>
+                                    <c:when test="${setor.active}">
+                                        Ativo
+                                    </c:when>
+                                    <c:otherwise>
+                                        Inativo
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+
+                            <td>
+                                <c:out value="${setor.description}"/>
+                            </td>
+                            <td>
+                                <a href="">Visualizar</a>
+                                <a href="">Editar</a>
+
+                                <c:if test="${setor.active}">
+                                    <form action="${pageContext.request.contextPath}/setores"
+                                          method="post">
+
+                                        <input type="hidden" name="acao" value="excluir">
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="<c:out value='${setor.id}'/>">
+
+                                        <button type="submit"
+                                                onclick="return confirm('Tem certeza de que deseja desativar este setor?')">
+                                            Desativar
+                                        </button>
+                                    </form>
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </c:when>
+
+                <c:otherwise>
+                    <tr>
+                        <td colspan="6">Nenhum setor encontrado.</td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
+            </tbody>
+        </table>
+    </section>
+</main>
 
 <script>
     const btnAbrir = document.getElementById('btnAbrirModal');
     const btnFechar = document.getElementById('btnFecharModal');
     const modal = document.getElementById('modalSetores');
 
-    btnAbrir.addEventListener('click', function() {
+    btnAbrir.addEventListener('click', function () {
         modal.classList.add('ativo');
     });
 
-    btnFechar.addEventListener('click', function() {
+    btnFechar.addEventListener('click', function () {
         modal.classList.remove('ativo');
     });
 </script>

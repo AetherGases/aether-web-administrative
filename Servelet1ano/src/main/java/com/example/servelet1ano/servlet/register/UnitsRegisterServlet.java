@@ -171,6 +171,15 @@ public class UnitsRegisterServlet extends HttpServlet {
             return;
         }
 
+        if (!Validators.isCep(cep)) {
+            exibirErro(
+                    request, response, companyId,
+                    "O CEP informado não é válido."
+            );
+            return;
+        }
+
+
         try {
             Companies empresa =
                     new CompaniesDAO().searchById(companyId);
@@ -203,6 +212,32 @@ public class UnitsRegisterServlet extends HttpServlet {
                         "Não foi possível cadastrar o endereço. Confira o CEP."
                 );
                 return;
+            }
+            UnitsFilter filter = new UnitsFilter();
+            filter.setName(nome);
+            filter.setCompanyId(companyId);
+            try {
+                List<Units> existe = new UnitsDAO().searchAll(filter);
+                if (!existe.isEmpty()){
+                    exibirErro(
+                            request,
+                            response,
+                            companyId,
+                            "A unidade já foi cadastrada anteriormente."
+                    );
+                    return;
+                }
+            } catch (RuntimeException e) {
+                LOGGER.log(
+                        Level.SEVERE,
+                        "Erro ao conectar com o banco"
+                );
+                exibirErro(
+                        request,
+                        response,
+                        companyId,
+                        "Não foi possível concluir o cadastro. Tente novamente mais tarde."
+                );
             }
 
             Units unidade = new Units(nome, cnpj, cnae, true);
@@ -250,11 +285,10 @@ public class UnitsRegisterServlet extends HttpServlet {
         Companies empresa =
                 new CompaniesDAO().searchById(companyId);
 
-        UnitsFilter filtro = new UnitsFilter();
-        filtro.setCompanyId(companyId);
+        UnitsFilter unitsFilter = new UnitsFilter();
+        unitsFilter.setCompanyId(companyId);
 
-        List<Units> unidades =
-                new UnitsDAO().searchAll(filtro);
+        List<Units> unidades = new UnitsDAO().searchAll(unitsFilter);
 
         request.setAttribute("empresa", empresa);
         request.setAttribute("unidades", unidades);

@@ -33,7 +33,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                         "from sectors s " +
                         "join companies c on c.id = s.company_id " +
                         "join units u on u.id = s.unit_id " +
-                        "where s.is_active = true"
+                        "where 1=1"
         );
 
         List<Object> parametros = new ArrayList<>();
@@ -93,7 +93,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                         rs.getString("name"),
                         rs.getString("description"),
                         company,
-                        unit
+                        unit,
+                        rs.getBoolean("is_active")
                 );
 
                 sector.setCreatedAt(rs.getTimestamp("created_at"));
@@ -165,6 +166,64 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return sector;
+    }
+
+    /**
+     * metodo para buscar por Id (ativos e inativos)
+     * @param id Numero unico do setor
+     * @return Retorna o setor encontrado
+     */
+
+    public Sectors searchByIdIncludingInactive(int id) {
+        Sectors sector = null;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where s.id = ?"
+                )
+        ) {
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Companies company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
+
+                    Units unit = new Units(
+                            rs.getInt("idUnit"),
+                            rs.getString("unitName")
+                    );
+
+                    sector = new Sectors(
+                            rs.getInt("id"),
+                            rs.getInt("unit_id"),
+                            rs.getInt("company_id"),
+                            rs.getString("name"),
+                            rs.getString("description"),
+                            company,
+                            unit,
+                            rs.getBoolean("is_active")
+                    );
+
+                    sector.setCreatedAt(rs.getTimestamp("created_at"));
+                    sector.setUpdatedAt(rs.getTimestamp("updated_at"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+
         return sector;
     }
 
@@ -241,7 +300,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         try(
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update sectors set is_active = false, updated_at = current_timestamp where id = ?"
+                        "update sectors set is_active = false, updated_at = current_timestamp where id = ? and is_active = true"
                 )
         ) {
 

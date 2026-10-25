@@ -33,9 +33,9 @@ public class ManagerRegisterServlet extends HttpServlet {
     private static final String CADASTRO = "/ManagerRegister.jsp";
 
     /*
-     * ============================================================
+     *
      * EXIBIÇÃO DO FORMULÁRIO
-     * ============================================================
+     *
      *
      * O método doGet é executado quando o usuário acessa a página
      * de cadastro de gerente.
@@ -48,10 +48,6 @@ public class ManagerRegisterServlet extends HttpServlet {
      * redirecionado para esta página, o parâmetro "sucesso" permite
      * exibir uma mensagem de confirmação.
      *
-     * Se ocorrer uma falha ao consultar as empresas, o Servlet
-     * registra a exceção e apresenta uma mensagem amigável.
-     *
-     * ============================================================
      */
 
     @Override
