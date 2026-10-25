@@ -1,135 +1,206 @@
+
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
+import com.example.servelet1ano.dao.PlansDAO;
+import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
-import com.example.servelet1ano.dao.PlansDAO;
 import com.example.servelet1ano.model.Plans;
 import com.example.servelet1ano.model.Subscriptions;
-import com.example.servelet1ano.dao.SubscriptionsDAO;
+import com.example.servelet1ano.service.CompanyRegistrationService;
 
-
-import jakarta.servlet.*;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet("/empresas")
-
 public class CompanyRegisterServlet extends HttpServlet {
-        @Override
-        protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            request.setCharacterEncoding("UTF-8");
-            String empresa = request.getParameter("empresas");
-            String tamanho = request.getParameter("tamanhos");
-            String cnpj = request.getParameter("campoCNPJ");
-            String email = request.getParameter("campoEmail");
-            String plano = request.getParameter("planos");
 
-            if (empresa == null || empresa.isBlank()
-                    || tamanho == null || tamanho.isBlank()
-                    || cnpj == null || cnpj.isBlank()
-                    || email == null || email.isBlank()
-                    || plano == null || plano.isBlank()) {
+    private static final Logger LOGGER =
+            Logger.getLogger(CompanyRegisterServlet.class.getName());
 
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Todos os campos são obrigatórios."
+    private static final String CADASTRO = "/CompanyRegister.jsp";
+
+    @Override
+    protected void doPost(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+
+        String empresa = request.getParameter("empresas");
+        String razao = request.getParameter("razoes");
+        String tamanho = request.getParameter("tamanhos");
+        String cnpj = request.getParameter("campoCNPJ");
+        String email = request.getParameter("campoEmail");
+        String plano = request.getParameter("planos");
+
+        request.setAttribute("empresas", empresa);
+        request.setAttribute("razoes", razao);
+        request.setAttribute("tamanhos", tamanho);
+        request.setAttribute("campoCNPJ", cnpj);
+        request.setAttribute("campoEmail", email);
+        request.setAttribute("planos", plano);
+
+
+        if (empresa == null || empresa.isBlank()
+                || razao == null || razao.isBlank()
+                || tamanho == null || tamanho.isBlank()
+                || cnpj == null || cnpj.isBlank()
+                || email == null || email.isBlank()
+                || plano == null || plano.isBlank()) {
+
+            exibirErro(
+                    request,
+                    response,
+                    "Preencha todos os campos obrigatórios."
+            );
+            return;
+        }
+
+        empresa = empresa.trim();
+        razao = razao.trim();
+        tamanho = tamanho.trim();
+        cnpj = cnpj.trim();
+        email = email.trim();
+        plano = plano.trim();
+
+
+        CompanySize tamanhoEmpresa;
+
+        switch (tamanho) {
+            case "pequena":
+                tamanhoEmpresa = CompanySize.PEQUENA;
+                break;
+
+            case "media":
+                tamanhoEmpresa = CompanySize.MEDIA;
+                break;
+
+            case "grande":
+                tamanhoEmpresa = CompanySize.GRANDE;
+                break;
+
+            default:
+                exibirErro(
+                        request,
+                        response,
+                        "Selecione um tamanho de empresa válido."
                 );
                 return;
-            }
-            CompanySize tamanhoEmpresa;
+        }
 
-            switch (tamanho) {
-                case "pequena":
-                    tamanhoEmpresa = CompanySize.PEQUENO;
-                    break;
-                case "media":
-                    tamanhoEmpresa = CompanySize.MEDIO;
-                    break;
-                case "grande":
-                    tamanhoEmpresa = CompanySize.GRANDE;
-                    break;
-                default:
-                    response.sendError(
-                            HttpServletResponse.SC_BAD_REQUEST,
-                            "Tamanho de empresa inválido"
-                    );
-                    return;
-            }
+        try {
+
             PlansDAO plansDAO = new PlansDAO();
-
             Plans planoSelecionado = plansDAO.searchByName(plano);
 
             if (planoSelecionado == null) {
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Plano inválido ou indisponível."
+                exibirErro(
+                        request,
+                        response,
+                        "O plano selecionado não existe ou está indisponível."
                 );
                 return;
             }
 
+
+            CompaniesDAO companiesDAO = new CompaniesDAO();
+            CompaniesFilter filter = new CompaniesFilter();
+
+            filter.setName(empresa);
+            filter.setCnpj(cnpj);
+
+            List<Companies> empresasEncontradas =
+                    companiesDAO.searchAll(filter);
+
+            if (empresasEncontradas != null
+                    && !empresasEncontradas.isEmpty()) {
+
+                exibirErro(
+                        request,
+                        response,
+                        "Esta empresa já está cadastrada. "
+                                + "Verifique os dados ou faça login."
+                );
+                return;
+            }
+
+
             Companies novaEmpresa = new Companies(
-                    empresa.trim(),
+                    empresa,
+                    razao,
                     tamanhoEmpresa,
-                    cnpj.trim(),
-                    email.trim()
+                    cnpj,
+                    email
             );
-
-            novaEmpresa.setTradeName(empresa.trim());
-
 
             novaEmpresa.setRegistrationDate(
                     Date.valueOf(LocalDate.now())
             );
 
 
-            CompaniesDAO companiesDAO = new CompaniesDAO();
-
-            int companyId = companiesDAO.registerReturningId(novaEmpresa);
-
-            if (companyId == -1) {
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
-                        "Não foi possível cadastrar a empresa. "
-                                + "Verifique o CNPJ e os dados informados."
-                );
-                return;
-            }
-
-
             Subscriptions subscription = new Subscriptions();
-
-            subscription.setCompanyId(companyId);
             subscription.setPlanId(planoSelecionado.getId());
             subscription.setInstallments(true);
 
 
-            SubscriptionsDAO subscriptionsDAO = new SubscriptionsDAO();
+            CompanyRegistrationService service =
+                    new CompanyRegistrationService();
 
-            boolean cadastro =
-                    subscriptionsDAO.register(subscription);
+            service.register(novaEmpresa, subscription);
 
-            if (!cadastro) {
-                response.sendError(
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Empresa cadastrada, mas houve um erro "
-                                + "ao cadastrar a assinatura."
-                );
-                return;
-            }
+            request.setAttribute(
+                    "sucesso",
+                    "Cadastro realizado com sucesso!"
+            );
+            request.getRequestDispatcher(CADASTRO)
+                    .forward(request, response);
 
-
-            response.setContentType("text/html;charset=UTF-8");
-
-            response.getWriter().println(
-                    "<h1>Cadastro realizado com sucesso!</h1>"
+        } catch (RuntimeException e) {
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao realizar o cadastro da empresa.",
+                    e
             );
 
+            exibirErro(
+                    request,
+                    response,
+                    "Não foi possível concluir o cadastro. "
+                            + "Tente novamente mais tarde."
+            );
         }
     }
 
+    /*
+     * EXIBIÇÃO DE ERROS
+     *
+     * Recebe a mensagem que deverá ser apresentada ao usuário,
+     * disponibiliza-a pelo atributo "erro".
+     *
+     * O forward encaminha a requisição atual ao JSP, permitindo
+     * que a mensagem seja exibida na mesma página do formulário.
+     */
 
+    private void exibirErro(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            String mensagem
+    ) throws ServletException, IOException {
+        request.setAttribute("erro", mensagem);
+        request.getRequestDispatcher(CADASTRO)
+                .forward(request, response);
+    }
+}

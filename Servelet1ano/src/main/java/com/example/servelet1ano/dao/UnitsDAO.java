@@ -115,10 +115,9 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return units;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return units;
     }
 
     /**
@@ -185,10 +184,9 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return unit;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return unit;
     }
 
     /**
@@ -217,8 +215,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -254,8 +251,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return true;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -283,8 +279,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -366,8 +361,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
@@ -402,8 +396,7 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
