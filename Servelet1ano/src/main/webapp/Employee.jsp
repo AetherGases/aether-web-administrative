@@ -18,6 +18,7 @@
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
     <link rel="stylesheet" href="Global2.css">
+    <link rel="stylesheet" href="Employee.css">
 
 
 </head>
@@ -114,39 +115,42 @@
 
     <div id="modalFuncionario">
 
-        <div>
-            <h2>Adicionar funcionário</h2>
-            <button id="btnFecharModal">✕</button>
+        <div class="quadradoAdicionarFuncionarioTopo quadradoAdicionarFuncionario">
+            <h2 class="tipografiaAdicionarFuncionarioTopo">Adicionar funcionário</h2>
+            <img src="Imagens/AdicionarFuncionario.svg" alt="Imagem de Mais">
+            <button id="btnFecharModal" class="sairDaTelaAddFuncionario"></button>
 
             <form action="AdicionarFuncionario" method="post">
 
-            <input type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
-            <label for="nomeFuncionario"></label>
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
+                <label for="nomeFuncionario"></label>
 
-            <input type="email" id="email" name="campoEmail" placeholder="e-mail">
-            <label for="email"></label>
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="email" id="email" name="campoEmail" placeholder="e-mail">
+                <label for="email"></label>
 
-            <input type="text" id="setor" name="campoSetor" placeholder="setor">
-            <label for="setor"></label>
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="setor" name="campoSetor" placeholder="setor">
+                <label for="setor"></label>
 
-            <input type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
-            <label for="dtAdmissao"></label>
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
+                <label for="dtAdmissao"></label>
 
-            <input type="password" id="senha" name="campoSenha" placeholder="senha">
-            <label for="senha"></label>
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="senha" name="campoSenha" placeholder="senha">
+                <label for="senha"></label>
 
-            <input type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
-            <label for="confirmarSenha"></label>
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
+                <label for="confirmarSenha"></label>
 
-            <label for="status"></label>
-            <select name="status" id="status" >
-                <option value="" disabled selected hidden>ativo</option>
-                <option value="inativo">inativo</option>
-                <option value="recessa">recessa</option>
-                <option value="licenca">licença</option>
-            </select>
+                <label for="status"></label>
+                <select class="campoStatus tipografiaCamposAdicionarFuncionario" name="status" id="status" >
+                    <option value="" disabled selected hidden>ativo</option>
+                    <option value="inativo">inativo</option>
+                    <option value="recessa">recessa</option>
+                    <option value="licenca">licença</option>
+                </select>
 
-            <button type="submit" value="enviarFormularioAdicionarFuncionario">Adicionar</button>
+                <button class="botaoAdicionar tipografiaBotao" type="submit" value="enviarFormularioAdicionarFuncionario">Adicionar</button>
+
+                <div class="linha"></div>
 
             </form>
 
@@ -187,6 +191,101 @@
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <div>
+
+        <div class="quadradoAdicionarFuncionarioTopo quadradoAdicionarFuncionario">
+            <h2 class="tipografiaAdicionarFuncionarioTopo">Alterar funcionário</h2>
+            <img class="imagemAdicionarFuncionario" src="Imagens/AlterarFuncionario.svg" alt="Imagem de um Lápis">
+            <button class="sairDaTelaAddFuncionario"></button>
+
+            <form action="AlterarFuncionario" method="post">
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
+                <label for="nomeFuncionario"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="email" id="email" name="campoEmail" placeholder="e-mail">
+                <label for="email"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="setor" name="campoSetor" placeholder="setor">
+                <label for="setor"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
+                <label for="dtAdmissao"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="senha" name="campoSenha" placeholder="senha">
+                <label for="senha"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
+                <label for="confirmarSenha"></label>
+
+                <label for="status"></label>
+                <select class="campoStatus tipografiaCamposAdicionarFuncionario" name="status" id="status" >
+                    <option value="" disabled selected hidden>ativo</option>
+                    <option value="inativo">inativo</option>
+                    <option value="recessa">recessa</option>
+                    <option value="licenca">licença</option>
+                </select>
+
+                <button class="botaoAlterar tipografiaBotao" type="submit" value="enviarFormularioAdicionarFuncionario">Alterar</button>
+
+                <div class="linha"></div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div>
+
+        <p>nome</p>
+        <div>
+            <p>nome</p>
+        </div>
+
+        <p>e-mail</p>
+        <div>
+            <p>e-mail</p>
+        </div>
+
+        <p>setor</p>
+        <div>
+            <p>setor</p>
+        </div>
+
+        <p>data admissão</p>
+        <div>
+            <p>data admissão</p>
+        </div>
+
+        <p>senha atual</p>
+        <div>
+            <p>senha atual</p>
+        </div>
+
+        <p>status</p>
+        <div>
+            <p>ativo</p>
+        </div>
+
+    </div>
+
+    <div>
+
+        <div>
+            <p>Deletar</p>
+            <div></div>
+            <img src="Imagens/lixeira.svg" alt="Imagem de Lixeira">
+        </div>
+
+        <img src="Imagens/perigo.svg" alt="Imagem indicando Atenção">
+        <p>Tem certeza que deseja deletar o(s) registro(s) selecionado(s)?</p>
+        <p>Essa ação não podera ser desfeita.</p>
+
+        <button>Cancelar</button>
+        <button>Deletar</button>
+
     </div>
 
 
