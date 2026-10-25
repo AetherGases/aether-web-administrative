@@ -40,7 +40,7 @@ build/
 .DS_Store
 
 ### Env ###
-Servelet1ano/src/main/resources/.env
+.env
 
 ### Removing IntelliJ files ###
 .idea/

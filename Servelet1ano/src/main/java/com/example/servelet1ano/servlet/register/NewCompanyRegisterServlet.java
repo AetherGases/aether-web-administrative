@@ -8,7 +8,7 @@ import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
 import com.example.servelet1ano.model.Plans;
 import com.example.servelet1ano.model.Subscriptions;
-import com.example.servelet1ano.service.CompanyRegistrationService;
+import com.example.servelet1ano.util.service.CompanyRegistrationService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

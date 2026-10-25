@@ -1,5 +1,5 @@
 
-package com.example.servelet1ano.service;
+package com.example.servelet1ano.util.service;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.dao.CompaniesDAO;
