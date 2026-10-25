@@ -35,25 +35,25 @@
 
     <nav>
         <ul>
-            <li><a href="">Dashboards</a></li>
-            <li><a href="">Funcionários</a></li>
-            <li><a href="">Setores</a></li>
-            <li><a href="">Unidades</a></li>
-            <li><a href="">Empresas</a></li>
-            <li><a href="">Permissões</a></li>
-            <li><a href="">Permissões</a></li>
+            <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/funcionarios">Funcionários</a></li>
+            <li><a href="${pageContext.request.contextPath}/setores">Setores</a></li>
+            <li><a href="${pageContext.request.contextPath}/unidades">Unidades</a></li>
+            <li><a href="${pageContext.request.contextPath}/empresas">Empresas</a></li>
+            <li><a href="${pageContext.request.contextPath}/permissoes">Permissões</a></li>
         </ul>
+
+        <div>
+            <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
+        </div>
     </nav>
 
-    <div>
-        <a href="Login.jsp">Logout</a>
-    </div>
 
 </aside>
 
 <div>
 
-    <h2>Area restrista</h2>
+    <h2>Area restrita</h2>
     <p>Empresas</p>
 
 </div>

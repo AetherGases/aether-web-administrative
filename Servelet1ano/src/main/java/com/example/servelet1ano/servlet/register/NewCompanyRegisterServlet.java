@@ -24,10 +24,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet("/empresa")
-public class CompanyRegisterServlet extends HttpServlet {
+public class NewCompanyRegisterServlet extends HttpServlet {
 
     private static final Logger LOGGER =
-            Logger.getLogger(CompanyRegisterServlet.class.getName());
+            Logger.getLogger(NewCompanyRegisterServlet.class.getName());
 
     private static final String CADASTRO = "/CompanyRegister.jsp";
 

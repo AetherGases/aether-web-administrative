@@ -42,7 +42,14 @@
             <li><a href="${pageContext.request.contextPath}/permissoes">Permissões</a></li>
         </ul>
     </nav>
+
+    <div>
+        <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
+    </div>
+
 </aside>
+
+
 
 <main>
     <div>
