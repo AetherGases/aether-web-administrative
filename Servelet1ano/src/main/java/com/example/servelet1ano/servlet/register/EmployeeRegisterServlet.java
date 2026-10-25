@@ -7,7 +7,12 @@ import com.example.servelet1ano.dao.UnitsDAO;
 import com.example.servelet1ano.filter.EmployeesFilter;
 import com.example.servelet1ano.filter.SectorsFilter;
 import com.example.servelet1ano.filter.UnitsFilter;
-import com.example.servelet1ano.model.*;
+import com.example.servelet1ano.model.Companies;
+import com.example.servelet1ano.model.StatusEmployee;
+import com.example.servelet1ano.model.Units;
+import com.example.servelet1ano.model.Sectors;
+import com.example.servelet1ano.model.PermissionGroups;
+import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
 
@@ -79,7 +84,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
             if ("true".equals(request.getParameter("sucesso"))) {
                 request.setAttribute(
                         "sucesso",
-                        "Funcionário cadastrado com sucesso."
+                        "Dados carregados com sucesso."
                 );
             }
 

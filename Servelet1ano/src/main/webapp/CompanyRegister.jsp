@@ -66,7 +66,7 @@
     </c:if>
 
     <fieldset>
-        <form action="${pageContext.request.contextPath}/empresas" method="post">
+        <form action="${pageContext.request.contextPath}/empresa" method="post">
 
             <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
             <label for="empresa"></label>

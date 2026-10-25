@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/empresas")
+@WebServlet("/empresa")
 public class CompanyRegisterServlet extends HttpServlet {
 
     private static final Logger LOGGER =
