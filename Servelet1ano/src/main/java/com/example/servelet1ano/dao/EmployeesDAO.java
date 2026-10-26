@@ -1291,6 +1291,53 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     }
 
     /**
+     * Busca os IDs de funcionários ativos associados ao e-mail informado.
+     * Retorna uma lista para permitir detectar e tratar e-mails duplicados.
+     *
+     * @param email E-mail informado na recuperação de senha
+     * @return Lista de IDs encontrados
+     */
+    public List<Integer> findActiveEmployeeIdsByEmail(String email) {
+
+        List<Integer> employeeIds = new ArrayList<>();
+
+        if (email == null || email.isBlank()) {
+            return employeeIds;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return employeeIds;
+        }
+
+        String sql =
+                "SELECT id FROM employees WHERE LOWER(TRIM(email)) = LOWER(TRIM(?)) AND is_active = TRUE";
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setString(1, email.trim());
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+                    employeeIds.add(rs.getInt("id"));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao consultar funcionários para recuperação de senha.", e
+            );
+        }
+
+        return employeeIds;
+    }
+
+    /**
      * Metodo que altera o status do empregado para 'IN_VACATION' (scoped per unit)
      * @param id O id do empregado
      * @param unitId O id da unidade para validacao

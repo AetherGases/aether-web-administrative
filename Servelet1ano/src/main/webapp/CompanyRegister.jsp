@@ -50,117 +50,92 @@
                 <li>Acompanhamento trimestral</li>
             </ul>
         </div>
-    </div>
+    </c:if>
 
-    <div>
-        <img class="aekoCRUD" src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg" alt="Aeko">
-        <div class="cadastroEmpresarial tipografiaCadastroEmpresarial">Cadastro empresarial</div>
+    <fieldset>
+        <form action="${pageContext.request.contextPath}/empresa" method="post">
 
-        <%-- Exibe a mensagem de sucesso enviada pelo CompanyRegisterServlet. --%>
-        <c:if test="${not empty requestScope.sucesso}">
-            <div class="mensagem-sucesso" role="status">
-                <p><c:out value="${requestScope.sucesso}" /></p>
-            </div>
-        </c:if>
-        <%-- Exibe a mensagem de erro enviada pelo CompanyRegisterServlet. --%>
-        <c:if test="${not empty requestScope.erro}">
-            <div class="mensagem-erro" role="alert">
-                <p><c:out value="${requestScope.erro}" /></p>
-            </div>
-        </c:if>
+            <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
+            <label for="empresa"></label>
+            <input type="text" name="empresas" id="empresa" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
 
-        <fieldset>
-            <form action="${pageContext.request.contextPath}/empresas" method="post">
+            <label for="razao"></label>
+            <input
+                    type="text"
+                    name="razoes"
+                    id="razao"
+                    placeholder="Razão social"
+                    value="<c:out value='${requestScope.razoes}' />"
+                    required>
 
-                <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
-                <label for="empresa"></label>
-                <input
-                        type="text"
-                        name="empresas"
-                        id="empresa"
-                        placeholder="Nome da empresa"
-                        value="<c:out value='${requestScope.empresas}' />"
-                        required>
+            <label for="tamanho"></label>
+            <select name="tamanhos" id="tamanho" required>
+                <option value="" disabled hidden
+                        <c:if test="${empty requestScope.tamanhos}">selected</c:if>>
+                    Selecionar
+                </option>
 
-                <label for="razao"></label>
-                <input
-                        type="text"
-                        name="razoes"
-                        id="razao"
-                        placeholder="Razão social"
-                        value="<c:out value='${requestScope.razoes}' />"
-                        required>
+                <option value="pequena"
+                        <c:if test="${requestScope.tamanhos eq 'pequena'}">selected</c:if>>
+                    Pequena empresa
+                </option>
 
-                <label for="tamanho"></label>
-                <select class="campoTamanhoCE tipografiaCamposCE" name="tamanhos" id="tamanho" required>
-                    <option value="" disabled hidden
-                            <c:if test="${empty requestScope.tamanhos}">selected</c:if>>
-                        Selecionar
-                    </option>
+                <option value="media"
+                        <c:if test="${requestScope.tamanhos eq 'media'}">selected</c:if>>
+                    Média empresa
+                </option>
 
-                    <option value="pequena"
-                            <c:if test="${requestScope.tamanhos eq 'pequena'}">selected</c:if>>
-                        Pequena empresa
-                    </option>
+                <option value="grande"
+                        <c:if test="${requestScope.tamanhos eq 'grande'}">selected</c:if>>
+                    Grande empresa
+                </option>
+            </select>
 
-                    <option value="media"
-                            <c:if test="${requestScope.tamanhos eq 'media'}">selected</c:if>>
-                        Média empresa
-                    </option>
+            <label for="cnpj"></label>
+            <input
+                    type="text"
+                    id="cnpj"
+                    name="campoCNPJ"
+                    placeholder="CNPJ"
+                    value="<c:out value='${requestScope.campoCNPJ}' />"
+                    required>
 
-                    <option value="grande"
-                            <c:if test="${requestScope.tamanhos eq 'grande'}">selected</c:if>>
-                        Grande empresa
-                    </option>
-                </select>
+            <label for="email"></label>
+            <input
+                    type="email"
+                    id="email"
+                    name="campoEmail"
+                    placeholder="E-mail"
+                    value="<c:out value='${requestScope.campoEmail}' />"
+                    required>
 
-                <label for="cnpj"></label>
-                <input
-                        class="campoCNPJ tipografiaCamposCE"
-                        type="text"
-                        id="cnpj"
-                        name="campoCNPJ"
-                        placeholder="CNPJ"
-                        value="<c:out value='${requestScope.campoCNPJ}' />"
-                        required>
+            <label for="plano"></label>
+            <select name="planos" id="plano" required>
+                <option value="" disabled hidden
+                        <c:if test="${empty requestScope.planos}">selected</c:if>>
+                    Plano...
+                </option>
 
-                <label for="email"></label>
-                <input
-                        class="tipografiaCamposCE campoEmailCE"
-                        type="email"
-                        id="email"
-                        name="campoEmail"
-                        placeholder="E-mail"
-                        value="<c:out value='${requestScope.campoEmail}' />"
-                        required>
+                <option value="Aether Pulse"
+                        <c:if test="${requestScope.planos eq 'Aether Pulse'}">selected</c:if>>
+                    Aether Pulse
+                </option>
 
-                <label for="plano"></label>
-                <select class="campoPlano tipografiaCamposCE" name="planos" id="plano" required>
-                    <option value="" disabled hidden
-                            <c:if test="${empty requestScope.planos}">selected</c:if>>
-                        Plano...
-                    </option>
+                <option value="Aether Horizon"
+                        <c:if test="${requestScope.planos eq 'Aether Horizon'}">selected</c:if>>
+                    Aether Horizon
+                </option>
+            </select>
 
-                    <option value="Aether Pulse"
-                            <c:if test="${requestScope.planos eq 'Aether Pulse'}">selected</c:if>>
-                        Aether Pulse
-                    </option>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </fieldset>
 
-                    <option value="Aether Horizon"
-                            <c:if test="${requestScope.planos eq 'Aether Horizon'}">selected</c:if>>
-                        Aether Horizon
-                    </option>
-                </select>
-
-                <button class="botaoEnvioVerde tipografiaEnvio" type="submit">Cadastrar</button>
-            </form>
-        </fieldset>
-
-        <p class="tipografiaPossuirConta">
-            Já possui uma conta?
-            <a class="cliqueAqui" href="${pageContext.request.contextPath}/Login.jsp">Clique aqui</a>
-        </p>
-    </div>
+    <p>
+        Já possui uma conta?
+        <a href="${pageContext.request.contextPath}/Login.jsp">Clique aqui</a>
+    </p>
+</div>
 
 </body>
 </html>

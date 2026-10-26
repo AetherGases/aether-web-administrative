@@ -1,193 +1,220 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tela de Setores do Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
 
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
-
-    <link rel="stylesheet" href="Global2.css">
-
-
+    <link rel="icon"
+          href="${pageContext.request.contextPath}/Imagens/LogoAether.svg"
+          type="image/svg+xml">
 </head>
+
 <body>
 
-    <aside class="aside">
-
-
-        <div >
-            <img  class="logoAether" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-            <p class="tipografiaLogo">aether</p>
-        </div>
-
-        <div>
-            <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
-            <p class="tipografiaAdmin">ADMIN</p>
-        </div>
-
-        <nav>
-            <ul>
-                <li>
-                    <div>
-                        <a class="tipografiaOpcoesTela" href="Dashboard.jsp">Dashboards</a>
-                        <img class="imagemDashboard" src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <a class="tipografiaOpcoesTela" href="Employee.jsp">Funcionários</a>
-                        <img  class="imagemFuncionario" src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <a class="tipografiaOpcoesTela" href="Sectors.jsp">Setores</a>
-                        <img class="imagemSetores" src="Imagens/setores.svg" alt="Imagem de setor">
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <a class="tipografiaOpcoesTela" href="Units.jsp">Unidades</a>
-                        <img class="imagemUnidade" src="Imagens/unidade.svg" alt="Imagem de prédios">
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <a class="tipografiaOpcoesTela" href="Company.jsp">Empresas</a>
-                        <img class="imagemEmpresas" src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
-                        <img class="imagemPermissoes1" src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
-                    </div>
-                </li>
-                <li>
-                    <div>
-                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
-                        <img class="imagemPermissoes2" src="Imagens/permissao2.svg" alt="Imagem de nuvem">
-                    </div>
-                </li>
-            </ul>
-        </nav>
-
-        <div>
-            <a class="tipografiaLogout" href="Login.jsp">Logout</a>
-            <img class="imagemLogout" src="Imagens/logout.svg" alt="Logout">
-        </div>
-
-    </aside>
-
+<aside>
     <div>
-
-        <h2 class="tipografiaAreaRestrita">Area restrista</h2>
-        <p class="tipografiaNomeDaAba">Setores</p>
-
-    </div>
-
-    <div class="barraPesquisar">
-        <p class="tipografiaPesquisar">Pesquisar</p>
-        <img class="imagemPesquisar" src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
-    </div>
-
-    <div class="barraFiltros">
-        <p class="tipografiaFiltro">Filtro</p>
-        <img class="imagemBarraBaixo" src="Imagens/setaBaixo.svg" alt="Seta para Baixo">
+        <img src="${pageContext.request.contextPath}/Imagens/LogoAethererdeEscuro.svg"
+             alt="Logo Aether">
+        <p>aether</p>
     </div>
 
     <div>
-        <button class="botaoAdicionar" id="btnAbrirModal">Adicionar novo</button>
-        <img src="Imagens/Mais.svg" alt="Adicionar">
+        <h3>Área administrativa</h3>
+        <p>ADMIN</p>
     </div>
 
-    <div id="modalSetores">
+    <nav>
+        <ul>
+            <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/funcionarios">Funcionários</a></li>
+            <li><a href="${pageContext.request.contextPath}/setores">Setores</a></li>
+            <li><a href="${pageContext.request.contextPath}/unidades">Unidades</a></li>
+            <li><a href="${pageContext.request.contextPath}/empresas">Empresas</a></li>
+            <li><a href="${pageContext.request.contextPath}/permissoes">Permissões</a></li>
+        </ul>
+    </nav>
 
+    <div>
+        <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
+    </div>
+
+</aside>
+
+
+
+<main>
+    <div>
+        <h2>Área restrita</h2>
+        <p>Setores</p>
+    </div>
+
+    <c:if test="${not empty erro}">
+        <div role="alert">
+            <c:out value="${erro}"/>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty sucesso}">
+        <div role="status">
+            <c:out value="${sucesso}"/>
+        </div>
+    </c:if>
+
+    <div>
+        <button type="button" id="btnAbrirModal">Adicionar novo</button>
+        <img src="${pageContext.request.contextPath}/Imagens/Mais.svg"
+             alt="Adicionar">
+    </div>
+
+    <div id="modalSetores" class="${not empty erro ? 'ativo' : ''}">
         <div>
             <h2>Adicionar Setor</h2>
-            <button id="btnFecharModal">✕</button>
 
-            <form action="AdicionarSetor" method="post">
+            <button type="button" id="btnFecharModal" aria-label="Fechar">
+                ✕
+            </button>
 
-                <input type="text" id="nomeSetor" name="campoNomeSetor" placeholder="setor">
-                <label for="nomeSetor"></label>
+            <form action="${pageContext.request.contextPath}/setores"
+                  method="post">
 
-                <input type="text" id="subSetor" name="campoSubSetor" placeholder="subsetor">
-                <label for="subSetor"></label>
+                <label for="nomeSetor">Nome do setor *</label>
+                <input type="text"
+                       id="nomeSetor"
+                       name="campoNomeSetor"
+                       placeholder="Nome do setor"
+                       maxlength="255"
+                       value="<c:out value='${campoNomeSetor}'/>"
+                       required>
 
-                <input type="text" id="idUnidade" name="campoidUnidade" placeholder="id unidade">
-                <label for="idUnidade"></label>
+                <label for="idUnidade">Unidade *</label>
+                <select id="idUnidade"
+                        name="campoIdUnidade"
+                        required>
+                    <option value="">Selecione uma unidade</option>
 
-                <input type="text" id="descricao" name="campoDescricao" placeholder="descricao">
-                <label for="descricao"></label>
+                    <c:forEach var="unidade" items="${unidades}">
+                        <option value="${unidade.id}"
+                                <c:if test="${campoIdUnidade == unidade.id}">
+                                    selected
+                                </c:if>>
+                            <c:out value="${unidade.name}"/>
+                        </option>
+                    </c:forEach>
+                </select>
 
-                <button type="submit" value="enviarFormularioAdicionarSetor">Adicionar</button>
+                <label for="descricao">Descrição *</label>
+                <textarea id="descricao"
+                          name="campoDescricao"
+                          placeholder="Descrição do setor"
+                          required><c:out value="${campoDescricao}"/></textarea>
 
+                <button type="submit">Adicionar</button>
             </form>
-
         </div>
-
     </div>
 
-
-
-    <div class="tabela">
+    <section>
         <table>
-            <thead class="tabelaThread">
-                <tr class="tabelaLinhas">
-                    <th class="tipografiaTopoTabela">Setor</th>
-                    <th class="tipografiaTopoTabela">ID</th>
-                    <th class="tipografiaTopoTabela">Subsetor</th>
-                    <th class="tipografiaTopoTabela">Status</th>
-                    <th class="tipografiaTopoTabela">Descrição</th>
-                </tr>
+            <thead>
+            <tr>
+                <th>Setor</th>
+                <th>ID</th>
+                <th>Unidade</th>
+                <th>Status</th>
+                <th>Descrição</th>
+                <th>Ações</th>
+            </tr>
             </thead>
+
             <tbody>
+            <c:choose>
+                <c:when test="${not empty setores}">
+                    <c:forEach var="setor" items="${setores}">
+                        <tr>
+                            <td>
+                                <c:out value="${setor.name}"/>
+                            </td>
 
-                <tr class="tabelaLinhas">
-                    <td class="tipografiaTabelaGeral">Caio Campelo Rocha</td>
-                    <td class="tipografiaTabelaGeral">350</td>
-                    <td class="tipografiaTabelaGeral">sdmfdlfs</td>
-                    <td class="tipografiaTabelaGeral">Ativo</td>
-                    <td class="tipografiaTabelaGeral">legal</td>
+                            <td>
+                                <c:out value="${setor.id}"/>
+                            </td>
 
+                            <td>
+                                <c:out value="${setor.unit.name}"/>
+                            </td>
 
-                    <td>
-                        <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
-                        <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
-                        <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
-                    </td>
+                            <td>
+                                <c:choose>
+                                    <c:when test="${setor.active}">
+                                        Ativo
+                                    </c:when>
+                                    <c:otherwise>
+                                        Inativo
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
 
-                </tr>
+                            <td>
+                                <c:out value="${setor.description}"/>
+                            </td>
+                            <td>
+                                <a href="">Visualizar</a>
+                                <a href="">Editar</a>
+
+                                <c:if test="${setor.active}">
+                                    <form action="${pageContext.request.contextPath}/setores"
+                                          method="post">
+
+                                        <input type="hidden" name="acao" value="excluir">
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="<c:out value='${setor.id}'/>">
+
+                                        <button type="submit"
+                                                onclick="return confirm('Tem certeza de que deseja desativar este setor?')">
+                                            Desativar
+                                        </button>
+                                    </form>
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </c:when>
+
+                <c:otherwise>
+                    <tr>
+                        <td colspan="6">Nenhum setor encontrado.</td>
+                    </tr>
+                </c:otherwise>
+            </c:choose>
             </tbody>
         </table>
-    </div>
-
+    </section>
+</main>
 
     <script>
         const btnAbrir = document.getElementById('btnAbrirModal');
         const btnFechar = document.getElementById('btnFecharModal');
         const modal = document.getElementById('modalSetores');
 
-        btnAbrir.addEventListener('click', function() {
-            modal.classList.add('ativo');
-        });
+    btnAbrir.addEventListener('click', function () {
+        modal.classList.add('ativo');
+    });
 
-        btnFechar.addEventListener('click', function() {
-            modal.classList.remove('ativo');
-        });
-    </script>
+    btnFechar.addEventListener('click', function () {
+        modal.classList.remove('ativo');
+    });
+</script>
 
 </body>
 </html>

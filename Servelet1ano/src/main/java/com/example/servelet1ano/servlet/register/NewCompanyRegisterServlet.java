@@ -8,7 +8,7 @@ import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
 import com.example.servelet1ano.model.Plans;
 import com.example.servelet1ano.model.Subscriptions;
-import com.example.servelet1ano.service.CompanyRegistrationService;
+import com.example.servelet1ano.util.service.CompanyRegistrationService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/empresas")
-public class CompanyRegisterServlet extends HttpServlet {
+@WebServlet("/empresa")
+public class NewCompanyRegisterServlet extends HttpServlet {
 
     private static final Logger LOGGER =
-            Logger.getLogger(CompanyRegisterServlet.class.getName());
+            Logger.getLogger(NewCompanyRegisterServlet.class.getName());
 
     private static final String CADASTRO = "/CompanyRegister.jsp";
 

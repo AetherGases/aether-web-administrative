@@ -102,15 +102,21 @@
         <img class="imagemPesquisar" src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
     </div>
 
-    <div class="barraFiltros">
-        <p class="tipografiaFiltro">Filtro</p>
-        <img class="imagemBarraBaixo" src="Imagens/setaBaixo.svg" alt="Seta para Baixo">
-    </div>
+    <nav>
+        <ul>
+            <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/funcionarios">Funcionários</a></li>
+            <li><a href="${pageContext.request.contextPath}/setores">Setores</a></li>
+            <li><a href="${pageContext.request.contextPath}/unidades">Unidades</a></li>
+            <li><a href="${pageContext.request.contextPath}/empresas">Empresas</a></li>
+            <li><a href="${pageContext.request.contextPath}/permissoes">Permissões</a></li>
+        </ul>
 
-    <div>
-        <button class="botaoAdicionar" id="btnAbrirModal">Adicionar novo</button>
-        <img src="Imagens/Mais.svg" alt="Adicionar">
-    </div>
+        <div>
+            <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
+        </div>
+    </nav>
+
 
     <div id="modalEmpresa">
 
@@ -118,7 +124,8 @@
             <h2>Adicionar empresa</h2>
             <button id="btnFecharModal">✕</button>
 
-            <form action="AdicionarEmpresa" method="post">
+    <h2>Area restrita</h2>
+    <p>Empresas</p>
 
                 <input type="text" id="nomeEmpresa" name="campoNomeEmpresa" placeholder="nome">
                 <label for="nomeEmpresa"></label>

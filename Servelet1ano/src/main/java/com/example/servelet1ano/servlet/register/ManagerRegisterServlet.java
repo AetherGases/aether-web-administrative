@@ -10,12 +10,14 @@ import com.example.servelet1ano.model.PermissionGroups;
 import com.example.servelet1ano.model.StatusEmployee;
 import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
+import com.example.servelet1ano.filter.EmployeesFilter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,9 +33,9 @@ public class ManagerRegisterServlet extends HttpServlet {
     private static final String CADASTRO = "/ManagerRegister.jsp";
 
     /*
-     * ============================================================
+     *
      * EXIBIÇÃO DO FORMULÁRIO
-     * ============================================================
+     *
      *
      * O método doGet é executado quando o usuário acessa a página
      * de cadastro de gerente.
@@ -46,10 +48,6 @@ public class ManagerRegisterServlet extends HttpServlet {
      * redirecionado para esta página, o parâmetro "sucesso" permite
      * exibir uma mensagem de confirmação.
      *
-     * Se ocorrer uma falha ao consultar as empresas, o Servlet
-     * registra a exceção e apresenta uma mensagem amigável.
-     *
-     * ============================================================
      */
 
     @Override
@@ -87,29 +85,13 @@ public class ManagerRegisterServlet extends HttpServlet {
 
 
     /*
-     * ============================================================
      * PROCESSAMENTO DO CADASTRO
-     * ============================================================
      *
      * O método doPost recebe os dados enviados pelo formulário.
-     *
-     * O processamento é dividido em etapas:
-     *
-     * 1. Recuperação dos campos enviados pelo formulário.
-     * 2. Verificação dos campos obrigatórios.
-     * 3. Normalização e validação dos dados.
-     * 4. Conversão e verificação do identificador da empresa.
-     * 5. Consulta da empresa selecionada.
-     * 6. Criação do hash da senha.
-     * 7. Construção e persistência do funcionário.
      *
      * Quando uma validação falha, o método exibirErro encaminha
      * a requisição ao formulário com uma mensagem apropriada.
      *
-     * As exceções inesperadas são registradas no log, sem expor
-     * detalhes internos do sistema ao usuário.
-     *
-     * ============================================================
      */
 
     @Override
@@ -118,31 +100,22 @@ public class ManagerRegisterServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
-
-        /*
-         * Recupera os valores enviados pelo formulário.
-         * As strings podem ser null caso algum campo não tenha
-         * sido enviado na requisição.
-         */
-
         String nome = request.getParameter("campoNome");
         String email = request.getParameter("campoEmail");
         String telefone = request.getParameter("campoTelefone");
         String senha = request.getParameter("campoSenha");
-        String confirmarSenha =
-                request.getParameter("campoConfirmarSenha");
+        String confirmarSenha = request.getParameter("campoConfirmarSenha");
         String empresaParam = request.getParameter("empresas");
         String cpf = request.getParameter("campoCPF");
 
+        request.setAttribute("campoNome", nome);
+        request.setAttribute("campoEmail", email);
+        request.setAttribute("campoTelefone", telefone);
+        request.setAttribute("campoSenha", senha);
+        request.setAttribute("campoConfirmarSenha", confirmarSenha);
+        request.setAttribute("empresas", empresaParam);
+        request.setAttribute("campoCPF", cpf);
 
-        /*
-         * Verifica se todos os campos obrigatórios foram enviados
-         * e possuem algum conteúdo.
-         *
-         * A senha não é removida de espaços nas extremidades,
-         * pois isso alteraria a senha informada pelo usuário.
-         */
 
         if (nome == null || nome.isBlank()
                 || email == null || email.isBlank()
@@ -160,15 +133,6 @@ public class ManagerRegisterServlet extends HttpServlet {
             return;
         }
 
-
-        /*
-         * Remove espaços desnecessários dos campos textuais que
-         * não representam senhas.
-         *
-         * A normalização acontece antes das validações para evitar
-         * que espaços acidentais prejudiquem a verificação dos dados.
-         */
-
         nome = nome.trim();
         email = email.trim();
         telefone = telefone.trim();
@@ -177,10 +141,10 @@ public class ManagerRegisterServlet extends HttpServlet {
 
 
         /*
-         * VALIDAÇÃO DO E-MAIL
+         * VALIDAÇÃO DE DADOS
          *
-         * O email, cpf e telefone seguem os padrões impostos pela classe validator.
-         * A senha segue uma definição máxima padrão de 1024 caractéres.
+         * Verifica email, cpf e telefone de acordo com os validators
+         * Verifica senha de acordo com uma validação básica (1024 caracteres)
          *
          */
 
@@ -234,14 +198,6 @@ public class ManagerRegisterServlet extends HttpServlet {
             return;
         }
 
-
-        /*
-         * CONVERSÃO DO IDENTIFICADOR DA EMPRESA
-         *
-         * O valor recebido do formulário é uma String.
-         * Ele precisa ser convertido para int e deve ser positivo.
-         */
-
         final int companyId;
 
         try {
@@ -261,21 +217,6 @@ public class ManagerRegisterServlet extends HttpServlet {
             );
             return;
         }
-
-
-        /*
-         * CADASTRO DO FUNCIONÁRIO
-         *
-         * Nesta etapa, o Servlet consulta a empresa selecionada,
-         * prepara os dados do gerente, gera o hash da senha e
-         * solicita ao DAO que persista o funcionário.
-         *
-         * A senha em texto puro não deve ser armazenada no banco.
-         *
-         * O ID do grupo de permissões abaixo segue o valor usado
-         * anteriormente no projeto. Confirme se o ID 1 corresponde
-         * ao grupo correto no banco de dados.
-         */
 
         try {
             CompaniesDAO companiesDAO = new CompaniesDAO();
@@ -319,18 +260,31 @@ public class ManagerRegisterServlet extends HttpServlet {
             employeesDAO.register(employee);
 
 
-            /*
-             * REDIRECIONAMENTO APÓS O SUCESSO
-             *
-             * Após a persistência, o redirecionamento inicia uma
-             * nova requisição GET.
-             *
-             * Isso evita que uma atualização da página tente
-             * reenviar os dados do formulário.
-             */
+            EmployeesFilter filterEmployee = new EmployeesFilter();
+            filterEmployee.setEmail(email);
+            filterEmployee.setCompanyId(companyId);
+            filterEmployee.setName(nome);
+
+            List<Employees> employees = employeesDAO.searchAll(filterEmployee);
+
+            if (employees == null || employees.size() != 1) {
+                throw new RuntimeException(
+                        "Não foi possível recuperar o funcionário cadastrado."
+                );
+            }
+
+            HttpSession session = request.getSession();
+            request.changeSessionId();
+
+            session.setAttribute(
+                    "employeeId",
+                    employees.getFirst().getId()
+            );
+
+            session.setAttribute("companyId", companyId);
 
             response.sendRedirect(
-                    request.getContextPath() + "/gerente?sucesso=1"
+                    request.getContextPath() + "/dashboard"
             );
 
         } catch (RuntimeException e) {
@@ -347,18 +301,6 @@ public class ManagerRegisterServlet extends HttpServlet {
             );
         }
     }
-
-
-    /*
-     * ============================================================
-     * MÉTODOS AUXILIARES
-     * ============================================================
-     *
-     * Os métodos auxiliares centralizam operações repetidas e
-     * mantêm os métodos doGet e doPost mais legíveis.
-     *
-     * ============================================================
-     */
 
 
     /*

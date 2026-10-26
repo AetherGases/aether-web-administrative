@@ -12,6 +12,7 @@ public class Sectors {
     private Date updatedAt;
     private Companies company;
     private Units unit;
+    private boolean isActive;
 
     public Sectors(int id, int unitId, int companyId, String name, String description, Date createdAt) {
         this.id = id;
@@ -20,6 +21,13 @@ public class Sectors {
         this.name = name;
         this.description = description;
         this.createdAt = createdAt;
+    }
+
+    public Sectors(int unitId, int companyId, String name, String description) {
+        this.unitId = unitId;
+        this.companyId = companyId;
+        this.name = name;
+        this.description = description;
     }
 
     public Sectors(int id, String name) {
@@ -33,6 +41,17 @@ public class Sectors {
     }
 
     public Sectors() {
+    }
+
+    public Sectors(int id, int unitId, int companyId, String name, String description, Companies company, Units unit,  boolean isActive) {
+        this.id = id;
+        this.unitId = unitId;
+        this.companyId = companyId;
+        this.name = name;
+        this.description = description;
+        this.company = company;
+        this.unit = unit;
+        this.isActive = isActive;
     }
 
     public Sectors(int id, int unitId, int companyId, String name, String description, Companies company, Units unit) {
@@ -117,6 +136,14 @@ public class Sectors {
 
     public void setUnit(Units unit) {
         this.unit = unit;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 
     @Override
