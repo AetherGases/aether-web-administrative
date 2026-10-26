@@ -229,7 +229,7 @@ function carrosselGases() {
 
     botaoAnterior.addEventListener("click", function () { mover(-1); });
     botaoProximo.addEventListener("click", function () { mover(1); });
-F
+   
     cards.forEach(function (card) {
         card.addEventListener("click", function () {
             if (card.dataset.pos === "esq") mover(-1);
