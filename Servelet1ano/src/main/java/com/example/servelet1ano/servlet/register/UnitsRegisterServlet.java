@@ -278,6 +278,19 @@ public class UnitsRegisterServlet extends HttpServlet {
         }
     }
 
+    /*
+     * CARREGAMENTO DAS UNIDADES E EMPRESAS
+     *
+     * Consulta as empresas disponíveis e disponibiliza a lista
+     * ao JSP pelo atributo "empresa".
+     *
+     * Consulta as unidades disponíveis e disponibiliza a lista
+     * ao JSP pelo atributo "unidades".
+     *
+     * Caso a consulta falhe, a exceção é propagada para o método
+     * responsável por tratar a falha.
+     */
+
     private void carregarDados(
             HttpServletRequest request,
             int companyId
@@ -293,6 +306,16 @@ public class UnitsRegisterServlet extends HttpServlet {
         request.setAttribute("empresa", empresa);
         request.setAttribute("unidades", unidades);
     }
+
+    /*
+     * EXIBIÇÃO DE ERROS
+     *
+     * Recebe a mensagem que deverá ser apresentada ao usuário,
+     * disponibiliza-a pelo atributo "erro".
+     *
+     * O forward encaminha a requisição atual ao JSP, permitindo
+     * que a mensagem seja exibida na mesma página do formulário.
+     */
 
     private void exibirErro(
             HttpServletRequest request,

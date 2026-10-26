@@ -40,13 +40,13 @@
             <li><a href="#gasesPoluentes">GEE</a></li>
             <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
             <li><a href="#planos">PLANOS</a></li>
-            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="Login.jsp">Entrar</a></li>
+            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="login.jsp">Entrar</a></li>
             <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="CompanyRegister.jsp">Cadastrar-se</a></li>
         </ul>
     </nav>
 
     <div class="acoesCabecalho">
-        <a class="botaoEntrar conteudoBotaoEntrar" href="Login.jsp">Entrar</a>
+        <a class="botaoEntrar conteudoBotaoEntrar" href="login.jsp">Entrar</a>
         <a class="botaoCadastrar conteudoBotaoCadastar" href="CompanyRegister.jsp">Cadastrar-se</a>
     </div>
 </header>
@@ -757,7 +757,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <a href="Login.jsp" class="linkTrocaAba" type="button" data-destino="l">clique aqui</a>
+                        <a href="login.jsp" class="linkTrocaAba" type="button" data-destino="l">clique aqui</a>
                     </p>
                 </form>
             </div>

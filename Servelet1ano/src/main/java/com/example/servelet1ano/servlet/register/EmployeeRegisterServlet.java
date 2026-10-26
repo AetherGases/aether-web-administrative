@@ -401,7 +401,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
     }
 
     /*
-     * CARREGA OS SETORES ATIVOS DA EMPRESA.
+     * CARREGAMENTO DOS SETORES
+     *
+     * Consulta os setores disponíveis e disponibiliza a lista
+     * ao JSP pelo atributo "setores".
+     *
+     * Caso a consulta falhe, a exceção é propagada para o método
+     * responsável por tratar a falha.
      */
 
     private void carregarSetores(
@@ -418,7 +424,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
     }
 
     /*
-     * EXIBE UMA MENSAGEM E RECARREGA OS DADOS DO FORMULÁRIO.
+     * EXIBIÇÃO DE ERROS
+     *
+     * Recebe a mensagem que deverá ser apresentada ao usuário,
+     * disponibiliza-a pelo atributo "erro".
+     *
+     * O forward encaminha a requisição atual ao JSP, permitindo
+     * que a mensagem seja exibida na mesma página do formulário.
      */
 
     private void exibirErro(

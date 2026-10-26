@@ -330,6 +330,19 @@ public class SectorRegisterServlet extends HttpServlet {
         }
     }
 
+    /*
+     * CARREGAMENTO DAS UNIDADES E DOS SETORES
+     *
+     * Consulta os setores disponíveis e disponibiliza a lista
+     * ao JSP pelo atributo "setores".
+     *
+     * Consulta as unidades disponíveis e disponibiliza a lista
+     * ao JSP pelo atributo "unidades".
+     *
+     * Caso a consulta falhe, a exceção é propagada para o método
+     * responsável por tratar a falha.
+     */
+
     private void carregarDados(
             HttpServletRequest request,
             int companyId
@@ -349,6 +362,16 @@ public class SectorRegisterServlet extends HttpServlet {
         request.setAttribute("setores", setores);
         request.setAttribute("unidades", unidades);
     }
+
+    /*
+     * EXIBIÇÃO DE ERROS
+     *
+     * Recebe a mensagem que deverá ser apresentada ao usuário,
+     * disponibiliza-a pelo atributo "erro".
+     *
+     * O forward encaminha a requisição atual ao JSP, permitindo
+     * que a mensagem seja exibida na mesma página do formulário.
+     */
 
     private void exibirErro(
             HttpServletRequest request,

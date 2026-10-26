@@ -66,7 +66,7 @@
 
             <p class="divSubtexto2"> Não recebeu o código? <a href="RecoverPassword.css" class="divSubtexto2Reenviar">Reenviar </a> </p>
 
-            <p class="divSubTexto3">Colocou o E-mail errado? <a class="divSubTexto3Destaque"  href="recuperarSenha.html">altere aqui</a></p>
+            <p class="divSubTexto3">Colocou o E-mail errado? <a class="divSubTexto3Destaque"  href="RecoverPassword.jsp">altere aqui</a></p>
 
 
             <script>

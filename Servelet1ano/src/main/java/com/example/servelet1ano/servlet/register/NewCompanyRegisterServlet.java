@@ -162,10 +162,9 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             service.register(novaEmpresa, subscription);
 
             response.sendRedirect(
-                    request.getContextPath() + "/gerente"
+                    request.getContextPath() + "/gerente?sucesso=1"
             );
             return;
-
         } catch (RuntimeException e) {
             LOGGER.log(
                     Level.SEVERE,
