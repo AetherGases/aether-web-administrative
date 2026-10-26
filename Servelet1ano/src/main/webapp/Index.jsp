@@ -76,7 +76,7 @@
             </a>
 
             <p class="tipografiaFraseInicial">Pense no presente e mude seu futuro, <br>
-                ajudando empresas para um<span class="tipografiaFraseInicialDestaque"> futuro <br>mais sustentável!</span></p>
+                ajudando empresas a construir<span class="tipografiaFraseInicialDestaque"> um mundo mais sustentável!</span></p>
         </div>
 
         <div class="heroVisual">
@@ -205,10 +205,10 @@
          ========================================================= -->
     <section class="setor setorGases">
 
-        <h2 class="tituloSobreSubstituicaoDeGases">Mas... quais <span class="gasesDestacado">gases</span> procuramos
-            substituir?</h2>
+        <h2 class="tituloSobreSubstituicaoDeGases">Mas... quais <span class="gasesDestacado">gases</span>
+            substituímos?</h2>
 
-        <p class="descricaoSubstituicao">Então, o Aether deseja sugerir à sua empresa um substituto verde para gases
+        <p class="descricaoSubstituicao">Então, o Aether sugere à sua empresa um substituto verde para gases
             poluentes de Escopo 1, 2 e 3, utilizado em cada setor de sua empresa. Essas categorias incluem os gases:</p>
 
         <!-- ===== CARROSSEL DE GASES ===== -->
@@ -456,7 +456,7 @@
             <div class="divTituloAnaliseDeDados">
                 <h2 class="tituloAnalise">Análise de <span class="tituloDadosDestacado">Dados</span></h2>
                 <p class="textoAnaliseDados">
-                    Nossa empresa busca trazer a melhor solução para a sua em 3 etapas
+                    Nossa empresa traz a melhor solução para a sua em 3 etapas
                     principais. Analisamos dados e relatórios a partir de diversos critérios
                     para sugerir as melhores alternativas renováveis aos gases poluentes.
                 </p>
@@ -757,7 +757,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <button class="linkTrocaAba" type="button" data-destino="login">clique aqui</button>
+                        <a href="Login.jsp" class="linkTrocaAba" type="button" data-destino="l">clique aqui</a>
                     </p>
                 </form>
             </div>

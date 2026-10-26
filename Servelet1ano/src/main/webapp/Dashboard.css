@@ -1,0 +1,411 @@
+.quadradoInformativo{
+    width: 685px;
+    height: 348px;
+    border-radius: 16px;
+    background: linear-gradient(104deg, #7C3AED 26.19%, #C4B5FD 134.3%);
+    box-shadow: 0 163px 46px 0 rgba(167, 151, 231, 0.00), 0 104px 42px 0 rgba(167, 151, 231, 0.01), 0 59px 35px 0 rgba(167, 151, 231, 0.05), 0 26px 26px 0 rgba(167, 151, 231, 0.09), 0 7px 14px 0 rgba(167, 151, 231, 0.10);
+}
+
+.tipografiaNomeQuadrado{
+    width: 347px;
+    height: 56px;
+    color: #FFF;
+    font-family: "Montserrat", sans-serif;
+    font-size: 54px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 64.8px;
+    letter-spacing: -1.08px;
+}
+
+.tipografiaDescricao{
+    color: #FFF;
+    font-family: "Montserrat", sans-serif;
+    font-size: 26px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 31.2px;
+    letter-spacing: -0.52px;
+}
+
+.botaoRegistro{
+    display: flex;
+    padding: 12px 30px;
+    align-items: flex-start;
+    gap: 10px;
+    border-radius: 40px;
+    background: #FFF;
+}
+
+.tipografiaRegistro{
+    color: #444;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 26.4px;
+}
+
+.botaoFuncionario{
+    display: flex;
+    padding: 12px 30px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 40px;
+    border: 1px solid #FFF;
+    background: rgba(255, 255, 255, 0.10);
+}
+
+.tipografiaFuncionario{
+    color: #FFF;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 22px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.tipografiaQuadradinhos{
+    color: #070416;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+}
+
+.tipografiaNumerosQuadradinhos{
+    color: #070416;
+    font-family: "Montserrat", sans-serif;
+    font-size: 64px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.imagemQuadradinhos{
+    width: 22px;
+    height: 22px;
+    aspect-ratio: 1/1;
+}
+
+.imagemQuadradinhosEspecial{
+    width: 24.167px;
+    height: 21.75px;
+}
+
+.quadradoAtividadeRecente{
+    display: flex;
+    padding: 24px 20px 38px 17px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    background: #FFF;
+    opacity: 0.5;
+}
+
+.quadradoPermissoes{
+    display: flex;
+    padding: 24px 20px 38px 17px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    background: #FFF;
+    opacity: 0.5;
+}
+
+.quadradoFuncionario{
+    display: flex;
+    padding: 24px 20px 38px 17px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    background: #FFF;
+    opacity: 0.5;
+}
+
+.quadradoUnidade{
+    display: flex;
+    padding: 24px 20px 38px 17px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    background: #FFF;
+    opacity: 0.5;
+}
+
+.linhaQuadradinho{
+    width: 119px;
+    height: 1px;
+    background: var(#E5E5EA);
+}
+
+.quadradoRelatorios{
+    width: 335px;
+    height: 205px;
+    fill: linear-gradient(295deg, #FFF 44.38%, #FFF 148.98%);
+}
+
+.tipografiaTituloRelatorios{
+    width: 168px;
+    color: #1E0A4A;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.tipografiaDescricaoRelatorio{
+    color: #7E8294;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.tipografiaSubTitulo{
+    color: #1E0A4A;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: -0.43px;
+}
+
+.botaoHistorico{
+    width: 274px;
+    height: 45px;
+    border-radius: 50px;
+    background: #2DBD7E;
+}
+
+.tipografiaBotaoHistorico{
+    color: #FFF;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    letter-spacing: -0.43px;
+}
+
+.imagemRelatorio{
+    width: 95px;
+    height: 95px;
+}
+
+.quadradoEmissao{
+    width: 335px;
+    height: 205px;
+    fill: linear-gradient(295deg, #FFF 44.38%, #FFF 148.98%);
+}
+
+.tipografiaTituloEmissao{
+    width: 184px;
+    color: #1E0A4A;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.imagemIndustria{
+    width: 125px;
+    height: 108.644px;
+}
+
+.notificacaoEmissao{
+    display: inline-flex;
+    padding: 5px 18px;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    border-radius: 50px;
+    border: 0.5px solid #5DDBA5;
+    background: rgba(168, 240, 210, 0.30);
+}
+
+.tipografiaNotificacao{
+    color: rgba(26, 92, 74, 0.75);
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 114.751%;
+}
+
+.quadradoSCP{
+    width: 335px;
+    height: 205px;
+    fill: linear-gradient(295deg, #FFF 44.38%, #FFF 148.98%);
+}
+
+.tipopgrafiaTituloSCP{
+    width: 158px;
+    color: #1E0A4A;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+}
+
+.tipografiaSubtituloSCP{
+
+    color: #7E8294;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: -0.43px;
+}
+
+.imagemSelo{
+    width: 75.296px;
+    height: 75.296px;
+}
+
+.tipografiaCriterios{
+    color: #4A435E;
+    text-align: center;
+    font-feature-settings: 'liga' off, 'clig' off;
+    font-family: "Montserrat", sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: -0.43px;
+}
+
+.imagemAviso{
+    width: 22px;
+    height: 22px;
+}
+
+.quadradoInsercoes{
+    width: 700px;
+    height: 476px;
+    border-radius: 16px;
+    background: #FFF;
+    box-shadow: 0 482px 135px 0 rgba(167, 151, 231, 0.00), 0 308px 123px 0 rgba(167, 151, 231, 0.01), 0 173px 104px 0 rgba(167, 151, 231, 0.05), 0 77px 77px 0 rgba(167, 151, 231, 0.09), 0 19px 42px 0 rgba(167, 151, 231, 0.10);
+}
+
+.tituloInsercoes{
+    color: #070416;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat",sans-serif;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.numeracaoIncersoes{
+    width: 20px;
+    flex-shrink: 0;
+    color: #070416;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.tipografiaFuncionarioIncersao{
+    width: 119px;
+    color: #070416;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.tipografiaDescricaoIncersao{
+    width: 220px;
+    color: #070416;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 120%;
+}
+
+.botaoReprovar{
+    display: flex;
+    padding: 8px 14px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 20px;
+    border: 1px solid #E93D53;
+}
+
+.tipografiaReprovar{
+    color: #E93D53;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.botaoAprovar{
+    display: flex;
+    padding: 8px 14px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 20px;
+    background: #32D384;
+}
+
+.tipografiaAprovar{
+    color: #FFF;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+}
+
+.tipografiaVerMais{
+    color: #070416;
+    text-align: right;
+    font-feature-settings: 'salt' on;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 120%;
+    opacity: 0.5;
+}
