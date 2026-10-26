@@ -3,7 +3,6 @@ package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.PlansDAO;
-import com.example.servelet1ano.dao.SubscriptionsDAO;
 import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
@@ -30,12 +29,15 @@ public class CompanyRegisterServlet extends HttpServlet {
     private static final Logger LOGGER =
             Logger.getLogger(CompanyRegisterServlet.class.getName());
 
+    private static final String CADASTRO = "/CompanyRegister.jsp";
+
     @Override
     protected void doPost(
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
 
         String empresa = request.getParameter("empresas");
         String razao = request.getParameter("razoes");
@@ -43,6 +45,13 @@ public class CompanyRegisterServlet extends HttpServlet {
         String cnpj = request.getParameter("campoCNPJ");
         String email = request.getParameter("campoEmail");
         String plano = request.getParameter("planos");
+
+        request.setAttribute("empresas", empresa);
+        request.setAttribute("razoes", razao);
+        request.setAttribute("tamanhos", tamanho);
+        request.setAttribute("campoCNPJ", cnpj);
+        request.setAttribute("campoEmail", email);
+        request.setAttribute("planos", plano);
 
 
         if (empresa == null || empresa.isBlank()
@@ -52,8 +61,9 @@ public class CompanyRegisterServlet extends HttpServlet {
                 || email == null || email.isBlank()
                 || plano == null || plano.isBlank()) {
 
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
+            exibirErro(
+                    request,
+                    response,
                     "Preencha todos os campos obrigatórios."
             );
             return;
@@ -61,6 +71,7 @@ public class CompanyRegisterServlet extends HttpServlet {
 
         empresa = empresa.trim();
         razao = razao.trim();
+        tamanho = tamanho.trim();
         cnpj = cnpj.trim();
         email = email.trim();
         plano = plano.trim();
@@ -82,51 +93,32 @@ public class CompanyRegisterServlet extends HttpServlet {
                 break;
 
             default:
-                response.sendError(
-                        HttpServletResponse.SC_BAD_REQUEST,
+                exibirErro(
+                        request,
+                        response,
                         "Selecione um tamanho de empresa válido."
                 );
                 return;
         }
 
-
-        Plans planoSelecionado;
-        /*
-        * Abre método para identificar o plano selecionado pelo usuário.
-        */
         try {
+
             PlansDAO plansDAO = new PlansDAO();
-            planoSelecionado = plansDAO.searchByName(plano);
+            Plans planoSelecionado = plansDAO.searchByName(plano);
 
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Erro ao consultar o plano no banco de dados.",
-                    e
-            );
-
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Não foi possível consultar os planos. Tente novamente mais tarde."
-            );
-            return;
-        }
-
-        if (planoSelecionado == null) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "O plano selecionado não existe ou está indisponível."
-            );
-            return;
-        }
+            if (planoSelecionado == null) {
+                exibirErro(
+                        request,
+                        response,
+                        "O plano selecionado não existe ou está indisponível."
+                );
+                return;
+            }
 
 
-        CompaniesDAO companiesDAO = new CompaniesDAO();
-        /*
-        * Verifica se já há uma empresa cadastrada com os mesmos dados
-        */
-        try {
+            CompaniesDAO companiesDAO = new CompaniesDAO();
             CompaniesFilter filter = new CompaniesFilter();
+
             filter.setName(empresa);
             filter.setCnpj(cnpj);
 
@@ -136,86 +128,79 @@ public class CompanyRegisterServlet extends HttpServlet {
             if (empresasEncontradas != null
                     && !empresasEncontradas.isEmpty()) {
 
-                response.sendError(
-                        HttpServletResponse.SC_CONFLICT,
-                        "Esta empresa já está cadastrada. Verifique os dados ou faça login."
+                exibirErro(
+                        request,
+                        response,
+                        "Esta empresa já está cadastrada. "
+                                + "Verifique os dados ou faça login."
                 );
                 return;
             }
 
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Erro ao verificar a existência da empresa.",
-                    e
+
+            Companies novaEmpresa = new Companies(
+                    empresa,
+                    razao,
+                    tamanhoEmpresa,
+                    cnpj,
+                    email
             );
 
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Não foi possível verificar o cadastro da empresa. Tente novamente."
+            novaEmpresa.setRegistrationDate(
+                    Date.valueOf(LocalDate.now())
             );
-            return;
-        }
 
-        Companies novaEmpresa = new Companies(
-                empresa,
-                razao,
-                tamanhoEmpresa,
-                cnpj,
-                email
-        );
 
-        novaEmpresa.setRegistrationDate(
-                Date.valueOf(LocalDate.now())
-        );
-        /*
-        * Realiza o cadastro de empresa e cria uma inscrição, formando uma dependência entre os dois registros utilizando a mesma conexão ao banco
-         */
-
-        try {
             Subscriptions subscription = new Subscriptions();
-
             subscription.setPlanId(planoSelecionado.getId());
             subscription.setInstallments(true);
+
 
             CompanyRegistrationService service =
                     new CompanyRegistrationService();
 
-            try {
-                int companyId = service.register(novaEmpresa, subscription);
+            service.register(novaEmpresa, subscription);
 
-                response.setContentType("text/html;charset=UTF-8");
-                response.setStatus(HttpServletResponse.SC_CREATED);
+            request.setAttribute(
+                    "sucesso",
+                    "Cadastro realizado com sucesso!"
+            );
+            request.getRequestDispatcher(CADASTRO)
+                    .forward(request, response);
 
-                response.getWriter().println(
-                        "<h1>Cadastro realizado com sucesso!</h1>"
-                );
-
-            } catch (RuntimeException e) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "Falha ao cadastrar empresa e assinatura.",
-                        e
-                );
-
-                response.sendError(
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Não foi possível concluir seu cadastro. "
-                                + "Nenhum registro desta operação foi confirmado."
-                );
-            }
         } catch (RuntimeException e) {
             LOGGER.log(
                     Level.SEVERE,
-                    "Erro o sistema de cadastro ao banco não respondeu",
+                    "Erro ao realizar o cadastro da empresa.",
                     e
             );
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Nosso serviço de cadastro não esta´disponível no momento. Tente mais tarde."
+
+            exibirErro(
+                    request,
+                    response,
+                    "Não foi possível concluir o cadastro. "
+                            + "Tente novamente mais tarde."
             );
-            }
         }
     }
 
+    /*
+     * EXIBIÇÃO DE ERROS
+     *
+     * Recebe a mensagem que deverá ser apresentada ao usuário,
+     * disponibiliza-a pelo atributo "erro".
+     *
+     * O forward encaminha a requisição atual ao JSP, permitindo
+     * que a mensagem seja exibida na mesma página do formulário.
+     */
 
+    private void exibirErro(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            String mensagem
+    ) throws ServletException, IOException {
+        request.setAttribute("erro", mensagem);
+        request.getRequestDispatcher(CADASTRO)
+                .forward(request, response);
+    }
+}

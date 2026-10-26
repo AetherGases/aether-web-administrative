@@ -17,128 +17,177 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
+    <link rel="stylesheet" href="Global2.css">
+
+
 </head>
 <body>
 
-<aside>
+    <aside class="aside">
 
 
-    <div >
-        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-        <p>aether</p>
+        <div >
+            <img  class="logoAether" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+            <p class="tipografiaLogo">aether</p>
+        </div>
+
+        <div>
+            <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
+            <p class="tipografiaAdmin">ADMIN</p>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Dashboard.jsp">Dashboards</a>
+                        <img class="imagemDashboard" src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Employee.jsp">Funcionários</a>
+                        <img  class="imagemFuncionario" src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Sectors.jsp">Setores</a>
+                        <img class="imagemSetores" src="Imagens/setores.svg" alt="Imagem de setor">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Units.jsp">Unidades</a>
+                        <img class="imagemUnidade" src="Imagens/unidade.svg" alt="Imagem de prédios">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Company.jsp">Empresas</a>
+                        <img class="imagemEmpresas" src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes1" src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes2" src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <div>
+            <a class="tipografiaLogout" href="Login.jsp">Logout</a>
+            <img class="imagemLogout" src="Imagens/logout.svg" alt="Logout">
+        </div>
+
+    </aside>
+
+    <div>
+
+        <h2 class="tipografiaAreaRestrita">Area restrista</h2>
+        <p class="tipografiaNomeDaAba">Setores</p>
+
+    </div>
+
+    <div class="barraPesquisar">
+        <p class="tipografiaPesquisar">Pesquisar</p>
+        <img class="imagemPesquisar" src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
+    </div>
+
+    <div class="barraFiltros">
+        <p class="tipografiaFiltro">Filtro</p>
+        <img class="imagemBarraBaixo" src="Imagens/setaBaixo.svg" alt="Seta para Baixo">
     </div>
 
     <div>
-        <h3>Giulia Cacá</h3>
-        <p>ADMIN</p>
+        <button class="botaoAdicionar" id="btnAbrirModal">Adicionar novo</button>
+        <img src="Imagens/Mais.svg" alt="Adicionar">
     </div>
 
-    <nav>
-        <ul>
-            <li><a href="">Dashboards</a></li>
-            <li><a href="">Funcionários</a></li>
-            <li><a href="">Setores</a></li>
-            <li><a href="">Unidades</a></li>
-            <li><a href="">Empresas</a></li>
-            <li><a href="">Permissões</a></li>
-            <li><a href="">Permissões</a></li>
-        </ul>
-    </nav>
+    <div id="modalSetores">
 
-    <div>
-        <a href="Login.jsp">Logout</a>
-    </div>
+        <div>
+            <h2>Adicionar Setor</h2>
+            <button id="btnFecharModal">✕</button>
 
-</aside>
+            <form action="AdicionarSetor" method="post">
 
-<div>
+                <input type="text" id="nomeSetor" name="campoNomeSetor" placeholder="setor">
+                <label for="nomeSetor"></label>
 
-    <h2>Area restrista</h2>
-    <p>Setores</p>
+                <input type="text" id="subSetor" name="campoSubSetor" placeholder="subsetor">
+                <label for="subSetor"></label>
 
-</div>
+                <input type="text" id="idUnidade" name="campoidUnidade" placeholder="id unidade">
+                <label for="idUnidade"></label>
 
-<div>
-    <button id="btnAbrirModal">Adicionar novo</button>
-    <img src="Imagens/Mais.svg" alt="Adicionar">
-</div>
+                <input type="text" id="descricao" name="campoDescricao" placeholder="descricao">
+                <label for="descricao"></label>
 
-<div id="modalSetores">
+                <button type="submit" value="enviarFormularioAdicionarSetor">Adicionar</button>
 
-    <div>
-        <h2>Adicionar Setor</h2>
-        <button id="btnFecharModal">✕</button>
+            </form>
 
-        <form action="AdicionarSetor" method="post">
-
-            <input type="text" id="nomeSetor" name="campoNomeSetor" placeholder="setor">
-            <label for="nomeSetor"></label>
-
-            <input type="text" id="subSetor" name="campoSubSetor" placeholder="subsetor">
-            <label for="subSetor"></label>
-
-            <input type="text" id="idUnidade" name="campoidUnidade" placeholder="id unidade">
-            <label for="idUnidade"></label>
-
-            <input type="text" id="descricao" name="campoDescricao" placeholder="descricao">
-            <label for="descricao"></label>
-
-            <button type="submit" value="enviarFormularioAdicionarSetor">Adicionar</button>
-
-        </form>
+        </div>
 
     </div>
 
-</div>
 
 
+    <div class="tabela">
+        <table>
+            <thead class="tabelaThread">
+                <tr class="tabelaLinhas">
+                    <th class="tipografiaTopoTabela">Setor</th>
+                    <th class="tipografiaTopoTabela">ID</th>
+                    <th class="tipografiaTopoTabela">Subsetor</th>
+                    <th class="tipografiaTopoTabela">Status</th>
+                    <th class="tipografiaTopoTabela">Descrição</th>
+                </tr>
+            </thead>
+            <tbody>
 
-<section>
-    <table>
-        <thead>
-        <tr>
-            <th>Setor</th>
-            <th>ID</th>
-            <th>Subsetor</th>
-            <th>Status</th>
-            <th>Descrição</th>
-        </tr>
-        </thead>
-        <tbody>
-
-        <tr>
-            <td>Caio Campelo Rocha</td>
-            <td>350</td>
-            <td>sdmfdlfs</td>
-            <td>Ativo</td>
-            <td>legal</td>
-
-
-            <td>
-                <button></button>
-                <button></button>
-                <button></button>
-            </td>
-
-        </tr>
-        </tbody>
-    </table>
-</section>
+                <tr class="tabelaLinhas">
+                    <td class="tipografiaTabelaGeral">Caio Campelo Rocha</td>
+                    <td class="tipografiaTabelaGeral">350</td>
+                    <td class="tipografiaTabelaGeral">sdmfdlfs</td>
+                    <td class="tipografiaTabelaGeral">Ativo</td>
+                    <td class="tipografiaTabelaGeral">legal</td>
 
 
-<script>
-    const btnAbrir = document.getElementById('btnAbrirModal');
-    const btnFechar = document.getElementById('btnFecharModal');
-    const modal = document.getElementById('modalSetores');
+                    <td>
+                        <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
+                        <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
+                        <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
+                    </td>
 
-    btnAbrir.addEventListener('click', function() {
-        modal.classList.add('ativo');
-    });
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    btnFechar.addEventListener('click', function() {
-        modal.classList.remove('ativo');
-    });
-</script>
+
+    <script>
+        const btnAbrir = document.getElementById('btnAbrirModal');
+        const btnFechar = document.getElementById('btnFecharModal');
+        const modal = document.getElementById('modalSetores');
+
+        btnAbrir.addEventListener('click', function() {
+            modal.classList.add('ativo');
+        });
+
+        btnFechar.addEventListener('click', function() {
+            modal.classList.remove('ativo');
+        });
+    </script>
 
 </body>
 </html>

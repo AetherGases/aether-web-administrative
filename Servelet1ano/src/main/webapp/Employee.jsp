@@ -17,128 +17,276 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
+    <link rel="stylesheet" href="Global2.css">
+    <link rel="stylesheet" href="Employee.css">
+
+
 </head>
 <body>
 
-    <aside>
+    <aside class="aside">
 
 
         <div >
-            <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-            <p>aether</p>
+            <img class="logoAether" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+            <p class="tipografiaLogo">aether</p>
         </div>
 
         <div>
-            <h3>Giulia Cacá</h3>
-            <p>ADMIN</p>
+            <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
+            <p class="tipografiaAdmin">ADMIN</p>
         </div>
 
-        <nav >
+        <nav>
             <ul>
-                <li><a href="">Dashboards</a></li>
-                <li><a href="">Funcionários</a></li>
-                <li><a href="">Setores</a></li>
-                <li><a href="">Unidades</a></li>
-                <li><a href="">Empresas</a></li>
-                <li><a href="">Permissões</a></li>
-                <li><a href="">Permissões</a></li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Dashboard.jsp">Dashboards</a>
+                        <img class="imagemDashboard" src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela"  href="Employee.jsp">Funcionários</a>
+                        <img class="imagemFuncionario" src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela"  href="Sectors.jsp">Setores</a>
+                        <img class="imagemSetores" src="Imagens/setores.svg" alt="Imagem de setor">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela"  href="Units.jsp">Unidades</a>
+                        <img class="imagemUnidade" src="Imagens/unidade.svg" alt="Imagem de prédios">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela"  href="Company.jsp">Empresas</a>
+                        <img class="imagemEmpresas" src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela"  href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes1" src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela"  href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes2" src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                    </div>
+                </li>
             </ul>
         </nav>
 
         <div>
-            <a href="Login.jsp">Logout</a>
+            <a class="tipografiaLogout" href="Login.jsp">Logout</a>
+            <img class="imagemLogout" src="Imagens/logout.svg" alt="Logout">
         </div>
 
     </aside>
 
     <div>
 
-        <h2>Area restrista</h2>
-        <p>Funcionários</p>
+        <h2 class="tipografiaAreaRestrita">Area restrista</h2>
+        <p class="tipografiaNomeDaAba">Funcionários</p>
 
     </div>
 
-        <div>
-        <button id="btnAbrirModal">Adicionar novo</button>
+    <div class="barraPesquisar">
+        <p class="tipografiaPesquisar">Pesquisar</p>
+        <img class="imagemPesquisar" src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
+    </div>
+
+    <div class="barraFiltros">
+        <p class="tipografiaFiltro">Filtro</p>
+        <img class="imagemBarraBaixo" src="Imagens/setaBaixo.svg" alt="Seta para Baixo">
+    </div>
+
+    <div>
+        <button class="botaoAdicionar" id="btnAbrirModal">Adicionar novo</button>
         <img src="Imagens/Mais.svg" alt="Adicionar">
-        </div>
+    </div>
 
-        <div id="modalFuncionario">
+    <div id="modalFuncionario">
 
-            <div>
-                <h2>Adicionar funcionário</h2>
-                <button id="btnFecharModal">✕</button>
+        <div class="quadradoAdicionarFuncionarioTopo quadradoAdicionarFuncionario">
+            <h2 class="tipografiaAdicionarFuncionarioTopo">Adicionar funcionário</h2>
+            <img src="Imagens/AdicionarFuncionario.svg" alt="Imagem de Mais">
+            <button id="btnFecharModal" class="sairDaTelaAddFuncionario"></button>
 
-                <form action="AdicionarFuncionario" method="post">
+            <form action="AdicionarFuncionario" method="post">
 
-                <input type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
                 <label for="nomeFuncionario"></label>
 
-                <input type="email" id="email" name="campoEmail" placeholder="e-mail">
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="email" id="email" name="campoEmail" placeholder="e-mail">
                 <label for="email"></label>
 
-                <input type="text" id="setor" name="campoSetor" placeholder="setor">
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="setor" name="campoSetor" placeholder="setor">
                 <label for="setor"></label>
 
-                <input type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
                 <label for="dtAdmissao"></label>
 
-                <input type="password" id="senha" name="campoSenha" placeholder="senha">
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="senha" name="campoSenha" placeholder="senha">
                 <label for="senha"></label>
 
-                <input type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
                 <label for="confirmarSenha"></label>
 
                 <label for="status"></label>
-                <select name="status" id="status" >
+                <select class="campoStatus tipografiaCamposAdicionarFuncionario" name="status" id="status" >
                     <option value="" disabled selected hidden>ativo</option>
                     <option value="inativo">inativo</option>
                     <option value="recessa">recessa</option>
                     <option value="licenca">licença</option>
                 </select>
 
-                <button type="submit" value="enviarFormularioAdicionarFuncionario">Adicionar</button>
+                <button class="botaoAdicionar tipografiaBotao" type="submit" value="enviarFormularioAdicionarFuncionario">Adicionar</button>
 
-                </form>
+                <div class="linha"></div>
 
-            </div>
+            </form>
 
         </div>
 
+    </div>
 
 
-    <section>
+
+    <div class="tabela">
         <table>
-            <thead>
-            <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Status</th>
-                <th>Senha</th>
-                <th>Setor</th>
-                <th>Data de admissão</th>
-            </tr>
+            <thead class="tabelaThread">
+                <tr class="tabelaLinhas">
+                    <th class="tipografiaTopoTabela">Nome</th>
+                    <th class="tipografiaTopoTabela">E-mail</th>
+                    <th class="tipografiaTopoTabela">Status</th>
+                    <th class="tipografiaTopoTabela">Senha</th>
+                    <th class="tipografiaTopoTabela">Setor</th>
+                    <th class="tipografiaTopoTabela">Data de admissão</th>
+                </tr>
             </thead>
             <tbody>
 
-            <tr>
-                <td>Caio Campelo Rocha</td>
-                <td>caio.rocha@gmail.com</td>
-                <td>Ativo</td>
-                <td>@AmoMUITO</td>
-                <td>I. Têxtil</td>
-                <td>03-05-2016</td>
+                <tr class="tabelaLinhas">
+                    <td class="tipografiaTabelaGeral">Caio Campelo Rocha</td>
+                    <td class="tipografiaTabelaGeral">caio.rocha@gmail.com</td>
+                    <td class="tipografiaTabelaGeral">Ativo</td>
+                    <td class="tipografiaTabelaGeral">@AmoMUITO</td>
+                    <td class="tipografiaTabelaGeral">I. Têxtil</td>
+                    <td class="tipografiaTabelaGeral">03-05-2016</td>
 
-                <td>
-                    <button></button>
-                    <button></button>
-                    <button></button>
-                </td>
+                    <td>
+                        <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
+                        <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
+                        <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
+                    </td>
 
-            </tr>
+                </tr>
             </tbody>
         </table>
-    </section>
+    </div>
+
+    <div>
+
+        <div class="quadradoAdicionarFuncionarioTopo quadradoAdicionarFuncionario">
+            <h2 class="tipografiaAdicionarFuncionarioTopo">Alterar funcionário</h2>
+            <img class="imagemAdicionarFuncionario" src="Imagens/AlterarFuncionario.svg" alt="Imagem de um Lápis">
+            <button class="sairDaTelaAddFuncionario"></button>
+
+            <form action="AlterarFuncionario" method="post">
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="nomeFuncionario" name="campoNomeFuncionario" placeholder="nome">
+                <label for="nomeFuncionario"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="email" id="email" name="campoEmail" placeholder="e-mail">
+                <label for="email"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="text" id="setor" name="campoSetor" placeholder="setor">
+                <label for="setor"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="date" id="dtAdmissao" name="campoDataAdmissao" placeholder="data admissão">
+                <label for="dtAdmissao"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="senha" name="campoSenha" placeholder="senha">
+                <label for="senha"></label>
+
+                <input class="adicionarFuncionarioCampos tipografiaCamposAdicionarFuncionario" type="password" id="confirmarSenha" name="campoConfirmarSenha" placeholder="confirmar senha">
+                <label for="confirmarSenha"></label>
+
+                <label for="status"></label>
+                <select class="campoStatus tipografiaCamposAdicionarFuncionario" name="status" id="status" >
+                    <option value="" disabled selected hidden>ativo</option>
+                    <option value="inativo">inativo</option>
+                    <option value="recessa">recessa</option>
+                    <option value="licenca">licença</option>
+                </select>
+
+                <button class="botaoAlterar tipografiaBotao" type="submit" value="enviarFormularioAdicionarFuncionario">Alterar</button>
+
+                <div class="linha"></div>
+
+            </form>
+
+        </div>
+    </div>
+
+    <div>
+
+        <p>nome</p>
+        <div>
+            <p>nome</p>
+        </div>
+
+        <p>e-mail</p>
+        <div>
+            <p>e-mail</p>
+        </div>
+
+        <p>setor</p>
+        <div>
+            <p>setor</p>
+        </div>
+
+        <p>data admissão</p>
+        <div>
+            <p>data admissão</p>
+        </div>
+
+        <p>senha atual</p>
+        <div>
+            <p>senha atual</p>
+        </div>
+
+        <p>status</p>
+        <div>
+            <p>ativo</p>
+        </div>
+
+    </div>
+
+    <div>
+
+        <div>
+            <p>Deletar</p>
+            <div></div>
+            <img src="Imagens/lixeira.svg" alt="Imagem de Lixeira">
+        </div>
+
+        <img src="Imagens/perigo.svg" alt="Imagem indicando Atenção">
+        <p>Tem certeza que deseja deletar o(s) registro(s) selecionado(s)?</p>
+        <p>Essa ação não podera ser desfeita.</p>
+
+        <button>Cancelar</button>
+        <button>Deletar</button>
+
+    </div>
 
 
     <script>

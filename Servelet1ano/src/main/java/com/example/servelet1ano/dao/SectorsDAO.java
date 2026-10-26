@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -13,446 +12,558 @@ import java.util.List;
 
 public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
-    @FunctionalInterface
-    private interface StatementBinder {
-        void bind(PreparedStatement pstmt) throws SQLException;
-    }
-
-    private Connection requireConnection() throws SQLException {
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            throw new IllegalStateException(
-                    "Não foi possível estabelecer conexão com o banco de dados."
-            );
-        }
-
-        return conn;
-    }
-
-    private boolean executeUpdate(
-            String sql,
-            StatementBinder binder,
-            String errorMessage
-    ) {
-        try (Connection conn = requireConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            binder.bind(pstmt);
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(errorMessage, e);
-        }
-    }
-
-    private Sectors mapSector(ResultSet rs) throws SQLException {
-        Companies company = new Companies(
-                rs.getInt("idCompany"),
-                rs.getString("companyName")
-        );
-
-        Units unit = new Units(
-                rs.getInt("idUnit"),
-                rs.getString("unitName")
-        );
-
-        Sectors sector = new Sectors(
-                rs.getInt("id"),
-                rs.getInt("unitId"),
-                rs.getInt("companyId"),
-                rs.getString("name"),
-                rs.getString("description"),
-                company,
-                unit
-        );
-
-        sector.setCreatedAt(rs.getTimestamp("created_at"));
-        sector.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-        return sector;
-    }
-
-    private static final String SELECT_SECTORS =
-            "SELECT s.*, " +
-                    "s.company_id AS companyId, " +
-                    "s.unit_id AS unitId, " +
-                    "c.id AS idCompany, c.name AS companyName, " +
-                    "u.id AS idUnit, u.name AS unitName " +
-                    "FROM sectors s " +
-                    "JOIN companies c ON c.id = s.company_id " +
-                    "JOIN units u ON u.id = s.unit_id ";
-
-    private void bindSector(
-            PreparedStatement pstmt,
-            Sectors sector
-    ) throws SQLException {
-        pstmt.setInt(1, sector.getUnitId());
-        pstmt.setInt(2, sector.getCompanyId());
-        pstmt.setString(3, sector.getName());
-        pstmt.setString(4, sector.getDescription());
-    }
-
-    private boolean belongsToUnit(Sectors sector, int unitId) {
-        return sector != null && sector.getUnitId() == unitId;
-    }
-
+    /**
+     * Metodo que busca os setores ativos aplicando os filtros informados
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Usado tanto pra busca geral (admin Aether) quanto pra busca por unidade (admin da unidade, preenchendo unitId)
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Sectors> com os setores encontrados
+     */
     @Override
-    public List<Sectors> searchAll(SectorsFilter filter) {
+    public List<Sectors> searchAll(SectorsFilter filter){
+
         List<Sectors> sectors = new ArrayList<>();
+        Companies company = null;
+        Units unit = null;
 
         StringBuilder sql = new StringBuilder(
-                SELECT_SECTORS + "WHERE s.is_active = true"
+                "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                        "c.id as idCompany, c.name as companyName, " +
+                        "u.id as idUnit, u.name as unitName " +
+                        "from sectors s " +
+                        "join companies c on c.id = s.company_id " +
+                        "join units u on u.id = s.unit_id " +
+                        "where s.is_active = true"
         );
 
         List<Object> parametros = new ArrayList<>();
 
-        if (filter != null && filter.getId() != null) {
-            sql.append(" AND s.id = ?");
+        if (filter.getId() != null) {
+            sql.append(" and s.id = ?");
             parametros.add(filter.getId());
         }
 
-        if (filter != null
-                && filter.getName() != null
-                && !filter.getName().isBlank()) {
-            sql.append(" AND s.name ILIKE ?");
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            sql.append(" and s.name ilike ?");
             parametros.add("%" + filter.getName() + "%");
         }
 
-        if (filter != null
-                && filter.getDescription() != null
-                && !filter.getDescription().isBlank()) {
-            sql.append(" AND s.description ILIKE ?");
+        if (filter.getDescription() != null && !filter.getDescription().isBlank()) {
+            sql.append(" and s.description ilike ?");
             parametros.add("%" + filter.getDescription() + "%");
         }
 
-        if (filter != null && filter.getUnitId() != null) {
-            sql.append(" AND u.id = ?");
+        if (filter.getUnitId() != null) {
+            sql.append(" and u.id = ?");
             parametros.add(filter.getUnitId());
         }
 
-        if (filter != null && filter.getCompanyId() != null) {
-            sql.append(" AND c.id = ?");
+        if (filter.getCompanyId() != null) {
+            sql.append(" and c.id = ?");
             parametros.add(filter.getCompanyId());
         }
 
-        try (Connection conn = requireConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
+        ){
 
             for (int i = 0; i < parametros.size(); i++) {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
-                    sectors.add(mapSector(rs));
-                }
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()){
+
+                company = new Companies(
+                        rs.getInt("idCompany"),
+                        rs.getString("companyName")
+                );
+
+                unit = new Units(
+                        rs.getInt("idUnit"),
+                        rs.getString("unitName")
+                );
+
+                Sectors sector = new Sectors(
+                        rs.getInt("id"),
+                        rs.getInt("unitId"),
+                        rs.getInt("companyId"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        company,
+                        unit
+                );
+
+                sector.setCreatedAt(rs.getTimestamp("created_at"));
+                sector.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                sectors.add(sector);
             }
 
-            return sectors;
-
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao buscar setores.",
-                    e
-            );
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return sectors;
     }
 
+    /**
+     * metodo para buscar por Id (somente ativos)
+     * @param id Numero unico do setor
+     * @return Retorna o setor encontrado
+     */
     @Override
-    public Sectors searchById(int id) {
-        String sql =
-                SELECT_SECTORS +
-                        "WHERE s.id = ? AND s.is_active = true";
+    public Sectors searchById(int id){
 
-        try (Connection conn = requireConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        Sectors sector = null;
+        Companies company = null;
+        Units unit = null;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select s.*, s.company_id as companyId, s.unit_id as unitId, " +
+                                "c.id as idCompany, c.name as companyName, " +
+                                "u.id as idUnit, u.name as unitName " +
+                                "from sectors s " +
+                                "join companies c on c.id = s.company_id " +
+                                "join units u on u.id = s.unit_id " +
+                                "where s.id = ? and s.is_active = true"
+                )
+        ){
 
             pstmt.setInt(1, id);
 
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    return mapSector(rs);
-                }
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()){
+                company = new Companies(
+                        rs.getInt("idCompany"),
+                        rs.getString("companyName")
+                );
+
+                unit = new Units(
+                        rs.getInt("idUnit"),
+                        rs.getString("unitName")
+                );
+
+                sector = new Sectors(
+                        rs.getInt("id"),
+                        rs.getInt("unitId"),
+                        rs.getInt("companyId"),
+                        rs.getString("name"),
+                        rs.getString("description"),
+                        company,
+                        unit
+                );
+
+                sector.setCreatedAt(rs.getTimestamp("created_at"));
+                sector.setUpdatedAt(rs.getTimestamp("updated_at"));
             }
 
-            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+        return sector;
+    }
+
+    /**
+     * metodo para cadastrar novos setores no banco
+     * @param sector O setor que sera cadastrado
+     * @return true se foi registrado e false caso tenha dado erro
+     */
+    @Override
+    public boolean register(Sectors sector){
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
+                )
+        ){
+
+            pstmt.setInt(1, sector.getUnitId());
+            pstmt.setInt(2, sector.getCompanyId());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao buscar setor por ID.",
-                    e
-            );
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
+    /**
+     * metodo para registrar mais de um setor
+     * @param sectors Uma lista de setores
+     * @return true se foi registrado e false caso tenha dado erro
+     */
+    public boolean registerLot(List<Sectors> sectors){
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
+                )
+        ){
+
+            for (int i = 0; i < sectors.size(); i++) {
+                Sectors sector = sectors.get(i);
+
+                pstmt.setInt(1, sector.getUnitId());
+                pstmt.setInt(2, sector.getCompanyId());
+                pstmt.setString(3, sector.getName());
+                pstmt.setString(4, sector.getDescription());
+
+                pstmt.addBatch();
+            }
+
+            pstmt.executeBatch();
+            return true;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo para desativar o setor por id (is_active = false)
+     * @param id Valor unico de cada setor
+     * @return true se foi desativado e false caso tenha dado erro
+     */
     @Override
-    public boolean register(Sectors sector) {
-        if (sector == null) {
-            return false;
+    public boolean delete(int id){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
-        String sql =
-                "INSERT INTO sectors (unit_id, company_id, name, description) " +
-                        "VALUES (?, ?, ?, ?)";
-
-        return executeUpdate(
-                sql,
-                pstmt -> bindSector(pstmt, sector),
-                "Erro ao cadastrar setor."
-        );
     }
 
-    public boolean registerLot(List<Sectors> sectors) {
-        if (sectors == null || sectors.isEmpty()
-                || sectors.stream().anyMatch(s -> s == null)) {
-            return false;
+    /**
+     * metodo que desativa os setores de uma unidade (para quando uma unidade for desativada)
+     * @param unitId O id da unidade
+     * @return true se foi desativado e false caso tenha dado erro
+     */
+    public boolean deleteByUnitId(int unitId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where unit_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, unitId);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
-        return executeBatch(sectors, null, "Erro ao cadastrar setores em lote.");
     }
 
-    public boolean delete(int id) {
-        return executeUpdate(
-                "UPDATE sectors SET is_active = false, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                pstmt -> pstmt.setInt(1, id),
-                "Erro ao desativar setor."
-        );
+    /**
+     * metodo que desativa os setores de uma empresa (para quando uma empresa for desativada)
+     * @param companyId O id da empresa
+     * @return true se foi desativado e false caso tenha dado erro
+     */
+    public boolean deleteByCompanyId(int companyId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where company_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, companyId);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
-    public boolean deleteByUnitId(int unitId) {
-        return executeUpdate(
-                "UPDATE sectors SET is_active = false, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE unit_id = ?",
-                pstmt -> pstmt.setInt(1, unitId),
-                "Erro ao desativar setores da unidade."
-        );
+    /**
+     * metodo que desativa pelo nome
+     * @param name O nome do setor
+     * @return true se foi desativado e false caso tenha dado erro
+     */
+    public boolean deleteByName(String name){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where name ilike ?"
+                )
+        ) {
+
+            pstmt.setString(1, name);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
-    public boolean deleteByCompanyId(int companyId) {
-        return executeUpdate(
-                "UPDATE sectors SET is_active = false, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE company_id = ?",
-                pstmt -> pstmt.setInt(1, companyId),
-                "Erro ao desativar setores da empresa."
-        );
-    }
-
-    public boolean deleteByName(String name) {
-        return executeUpdate(
-                "UPDATE sectors SET is_active = false, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE name ILIKE ?",
-                pstmt -> pstmt.setString(1, name),
-                "Erro ao desativar setor por nome."
-        );
-    }
-
+    /**
+     * metodo que muda os values do setor selecionado pelo id
+     * @param sector Os valores do setor para ser atualizado
+     * @param id O valor unico do setor que quer atualizar
+     * @return true se foi mudado e false caso tenha dado erro
+     */
     @Override
-    public boolean update(Sectors sector, int id) {
-        if (sector == null) {
-            return false;
+    public boolean update(Sectors sector, int id){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "name = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ){
+
+            pstmt.setInt(1, sector.getUnitId());
+            pstmt.setInt(2, sector.getCompanyId());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setInt(5, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
-        String sql =
-                "UPDATE sectors SET unit_id = ?, company_id = ?, " +
-                        "name = ?, description = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-
-        return executeUpdate(
-                sql,
-                pstmt -> {
-                    bindSector(pstmt, sector);
-                    pstmt.setInt(5, id);
-                },
-                "Erro ao atualizar setor."
-        );
     }
 
-    public boolean updateByName(Sectors sector, String name) {
-        if (sector == null) {
-            return false;
+    /**
+     * metodo que muda os values do setor selecionado pelo nome
+     * @param sector Os valores do setor para ser atualizado
+     * @param name O nome para achar o setor
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
+    public boolean updateByName(Sectors sector, String name){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "name = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where name ilike ?"
+                )
+        ){
+
+            pstmt.setInt(1, sector.getUnitId());
+            pstmt.setInt(2, sector.getCompanyId());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setString(5, name);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
-
-        String sql =
-                "UPDATE sectors SET unit_id = ?, company_id = ?, " +
-                        "name = ?, description = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE name ILIKE ?";
-
-        return executeUpdate(
-                sql,
-                pstmt -> {
-                    bindSector(pstmt, sector);
-                    pstmt.setString(5, name);
-                },
-                "Erro ao atualizar setor por nome."
-        );
     }
 
-    // Métodos específicos para administradores de unidades
+    //    ------------- Metodos específicos para admins das units --------------
 
-    public boolean registerPerUnit(Sectors sector, int unitId) {
-        if (!belongsToUnit(sector, unitId)) {
-            return false;
-        }
+    /**
+     * metodo para cadastrar novos setores no banco de uma unidade
+     * @param sector O setor que sera cadastrado na unidade
+     * @param unitId numero da unidade
+     * @return true se foi registrado e false caso tenha dado erro
+     */
+    public boolean registerPerUnit(Sectors sector, int unitId){
 
-        return register(sector);
-    }
-
-    public boolean registerLotPerUnit(List<Sectors> sectors, int unitId) {
-        if (sectors == null || sectors.isEmpty()) {
-            return false;
-        }
-
-        for (Sectors sector : sectors) {
-            if (!belongsToUnit(sector, unitId)) {
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
+                )
+        ){
+            if(unitId != sector.getUnitId()){
                 return false;
             }
-        }
 
-        return executeBatch(
-                sectors,
-                unitId,
-                "Erro ao cadastrar setores da unidade em lote."
-        );
-    }
+            pstmt.setInt(1, sector.getUnitId());
+            pstmt.setInt(2, sector.getCompanyId());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
 
-    public boolean deleteByIdPerUnit(int id, int unitId) {
-        Sectors sector = searchById(id);
-
-        if (!belongsToUnit(sector, unitId)) {
-            return false;
-        }
-
-        return executeUpdate(
-                "UPDATE sectors SET is_active = false, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE id = ? AND unit_id = ?",
-                pstmt -> {
-                    pstmt.setInt(1, id);
-                    pstmt.setInt(2, unitId);
-                },
-                "Erro ao desativar setor da unidade."
-        );
-    }
-
-    public boolean updateByIdPerUnit(Sectors sector, int id, int unitId) {
-        if (!belongsToUnit(sector, unitId)) {
-            return false;
-        }
-
-        Sectors existing = searchById(id);
-
-        if (!belongsToUnit(existing, unitId)) {
-            return false;
-        }
-
-        String sql =
-                "UPDATE sectors SET unit_id = ?, company_id = ?, " +
-                        "name = ?, description = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ? AND unit_id = ?";
-
-        return executeUpdate(
-                sql,
-                pstmt -> {
-                    bindSector(pstmt, sector);
-                    pstmt.setInt(5, id);
-                    pstmt.setInt(6, unitId);
-                },
-                "Erro ao atualizar setor da unidade."
-        );
-    }
-
-    public boolean updateByNamePerUnit(
-            Sectors sector,
-            String name,
-            int unitId
-    ) {
-        if (!belongsToUnit(sector, unitId)) {
-            return false;
-        }
-
-        String sql =
-                "UPDATE sectors SET unit_id = ?, company_id = ?, " +
-                        "name = ?, description = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE name ILIKE ? AND unit_id = ?";
-
-        return executeUpdate(
-                sql,
-                pstmt -> {
-                    bindSector(pstmt, sector);
-                    pstmt.setString(5, name);
-                    pstmt.setInt(6, unitId);
-                },
-                "Erro ao atualizar setor por nome na unidade."
-        );
-    }
-
-    private boolean executeBatch(
-            List<Sectors> sectors,
-            Integer unitId,
-            String errorMessage
-    ) {
-        String sql =
-                "INSERT INTO sectors (unit_id, company_id, name, description) " +
-                        "VALUES (?, ?, ?, ?)";
-
-        Connection conn = null;
-
-        try {
-            conn = requireConnection();
-            conn.setAutoCommit(false);
-
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                for (Sectors sector : sectors) {
-                    if (sector == null
-                            || (unitId != null
-                            && sector.getUnitId() != unitId)) {
-                        conn.rollback();
-                        return false;
-                    }
-
-                    bindSector(pstmt, sector);
-                    pstmt.addBatch();
-                }
-
-                pstmt.executeBatch();
-                conn.commit();
-                return true;
-
-            } catch (SQLException e) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackError) {
-                    e.addSuppressed(rollbackError);
-                }
-
-                throw new RuntimeException(errorMessage, e);
-            }
+            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackError) {
-                    e.addSuppressed(rollbackError);
-                }
-            }
-
-            throw new RuntimeException(errorMessage, e);
-
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(
-                            "Erro ao fechar conexão do cadastro em lote.",
-                            e
-                    );
-                }
-            }
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
+
+    /**
+     * metodo para registrar mais de um setor numa unidade especifica
+     * @param sectors Uma lista de setores
+     * @param unitId O id da unidade para validacao
+     * @return true se foi registrado e false caso tenha dado erro
+     */
+    public boolean registerLotPerUnit(List<Sectors> sectors, int unitId){
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into sectors (unit_id, company_id, name, description) " +
+                                "values (?, ?, ?, ?)"
+                )
+        ){
+
+            for (int i = 0; i < sectors.size(); i++) {
+                Sectors sector = sectors.get(i);
+
+                if(unitId != sector.getUnitId()){
+                    return false;
+                }
+
+                pstmt.setInt(1, sector.getUnitId());
+                pstmt.setInt(2, sector.getCompanyId());
+                pstmt.setString(3, sector.getName());
+                pstmt.setString(4, sector.getDescription());
+
+                pstmt.addBatch();
+            }
+
+            pstmt.executeBatch();
+            return true;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo para desativar o setor por id que esta na unidade
+     * @param id Valor unico de cada setor
+     * @param unitId Id da unidade para validacao
+     * @return true se foi desativado e false caso tenha dado erro
+     */
+    public boolean deleteByIdPerUnit(int id, int unitId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            Sectors sector = searchById(id);
+
+            if(sector == null || unitId != sector.getUnitId()){
+                return false;
+            }
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo que muda os values do setor selecionado pelo id numa unidade especifica
+     * @param sector Os valores do setor para ser atualizado
+     * @param id O valor unico do setor que quer atualizar
+     * @param unitId O id da unidade para validacao
+     * @return true se foi mudado e false caso tenha dado erro
+     */
+    public boolean updateByIdPerUnit(Sectors sector, int id, int unitId){
+        Sectors sectorFound = searchById(id);
+
+        if(sectorFound == null || unitId != sectorFound.getUnitId()){
+            return false;
+        }
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "name = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ){
+
+            pstmt.setInt(1, sector.getUnitId());
+            pstmt.setInt(2, sector.getCompanyId());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setInt(5, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo que muda os values do setor selecionado pelo nome numa unidade especifica
+     * @param sector Os valores do setor para ser atualizado
+     * @param name O nome para achar o setor
+     * @param unitId O id da unidade para validacao
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
+    public boolean updateByNamePerUnit(Sectors sector, String name, int unitId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update sectors set unit_id = ?, " +
+                                "company_id = ?, " +
+                                "name = ?, " +
+                                "description = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where name ilike ? and unit_id = ?"
+                )
+        ){
+
+            pstmt.setInt(1, sector.getUnitId());
+            pstmt.setInt(2, sector.getCompanyId());
+            pstmt.setString(3, sector.getName());
+            pstmt.setString(4, sector.getDescription());
+            pstmt.setString(5, name);
+            pstmt.setInt(6, unitId);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
 }

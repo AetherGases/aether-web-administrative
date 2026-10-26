@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -17,325 +16,499 @@ import java.util.List;
 
 public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
-    @FunctionalInterface
-    private interface StatementBinder {
-        void bind(PreparedStatement pstmt) throws SQLException;
-    }
-
-    private Connection getConnection() {
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            throw new IllegalStateException(
-                    "Não foi possível estabelecer conexão com o banco de dados."
-            );
-        }
-
-        return conn;
-    }
-
+    /**
+     * Valida os dados do funcionario antes de gravar (cpf e email)
+     * @param employee O funcionario a validar
+     * @return true se cpf e email forem validos
+     */
     private boolean isValid(Employees employee) {
-        return employee != null
-                && Validators.isCpf(employee.getCpf())
-                && Validators.isEmail(employee.getEmail());
-    }
 
-    private boolean belongsToUnit(Employees employee, int unitId) {
-        return employee != null && employee.getUnitId() == unitId;
-    }
-
-    private boolean isValidForUnit(Employees employee, int unitId) {
-        return isValid(employee) && employee.getUnitId() == unitId;
-    }
-
-    private boolean executeUpdate(
-            String sql,
-            StatementBinder binder,
-            String errorMessage
-    ) {
-        try (
-                Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
-            binder.bind(pstmt);
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException(errorMessage, e);
+        if (employee == null) {
+            return false;
         }
+
+        if (!Validators.isCpf(employee.getCpf())) {
+            return false;
+        }
+
+        if (!Validators.isEmail(employee.getEmail())) {
+            return false;
+        }
+
+        return true;
     }
 
-    private Employees mapEmployee(ResultSet rs) throws SQLException {
-        Companies company = new Companies(
-                rs.getInt("idCompany"),
-                rs.getString("companyName")
-        );
+    /**
+     * Deixa so os digitos do cpf (tira pontos, traco e espacos)
+     * Usado antes de gravar e antes de buscar, pra o cpf ficar sempre no mesmo formato no banco
+     * @param cpf O cpf como foi digitado
+     * @return O cpf so com os digitos, ou null se vier null
+     */
+    private String cleanCpf(String cpf) {
 
-        PermissionGroups permissionGroup = new PermissionGroups(
-                rs.getInt("idPermissionGroup"),
-                rs.getString("permissionGroup")
-        );
+        if (cpf == null) {
+            return null;
+        }
 
-        Units unit = new Units(
-                rs.getInt("idUnit"),
-                rs.getString("unitName")
-        );
-
-        Sectors sector = new Sectors(
-                rs.getInt("idSector"),
-                rs.getString("sectorName")
-        );
-
-        Employees employee = new Employees(
-                rs.getInt("id"),
-                rs.getInt("companyId"),
-                rs.getInt("permissionGroupId"),
-                rs.getInt("unitId"),
-                rs.getInt("sectorId"),
-                rs.getString("cpf"),
-                rs.getString("name"),
-                rs.getString("email"),
-                rs.getString("phone"),
-                StatusEmployee.fromValor(rs.getString("status")),
-                permissionGroup,
-                company,
-                unit,
-                sector
-        );
-
-        employee.setPasswordHash(rs.getString("password_hash"));
-        employee.setStorageFileId(rs.getInt("storage_file_id"));
-        employee.setCreatedAt(rs.getTimestamp("created_at"));
-        employee.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-        return employee;
+        return cpf.replaceAll("\\D", "");
     }
 
-    private String employeeSelectSql() {
-        return "SELECT e.*, " +
-                "e.company_id AS companyId, " +
-                "e.permission_group_id AS permissionGroupId, " +
-                "e.unit_id AS unitId, " +
-                "e.sector_id AS sectorId, " +
-                "c.name AS companyName, " +
-                "c.id AS idCompany, " +
-                "pg.id AS idPermissionGroup, " +
-                "pg.name AS permissionGroup, " +
-                "u.name AS unitName, " +
-                "u.id AS idUnit, " +
-                "sec.id AS idSector, " +
-                "sec.name AS sectorName " +
-                "FROM employees e " +
-                "JOIN companies c ON e.company_id = c.id " +
-                "JOIN permission_groups pg ON e.permission_group_id = pg.id " +
-                "JOIN units u ON u.id = e.unit_id " +
-                "JOIN sectors sec ON sec.id = e.sector_id ";
+    /**
+     * Confere se o funcionario existe e se pertence a unidade informada (usado nos metodos PerUnit)
+     * @param employee O funcionario encontrado na busca (pode ser null)
+     * @param unitId O id da unidade do admin
+     * @return true se o funcionario existe e eh da unidade
+     */
+    private boolean belongsToUnit(Employees employee, int unitId) {
+
+        if (employee == null) {
+            return false;
+        }
+
+        if (employee.getUnitId() != unitId) {
+            return false;
+        }
+
+        return true;
     }
 
-    private String insertEmployeeSql() {
-        return "INSERT INTO employees " +
-                "(company_id, permission_group_id, unit_id, sector_id, " +
-                "cpf, name, email, phone, password_hash, status) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::status_employee)";
-    }
 
-    private void bindEmployee(
-            PreparedStatement pstmt,
-            Employees employee
-    ) throws SQLException {
-        pstmt.setInt(1, employee.getCompanyId());
-        pstmt.setInt(2, employee.getPermissionGroupId());
-        pstmt.setInt(3, employee.getUnitId());
-        pstmt.setInt(4, employee.getSectorId());
-        pstmt.setString(5, employee.getCpf());
-        pstmt.setString(6, employee.getName());
-        pstmt.setString(7, employee.getEmail());
-        pstmt.setString(8, employee.getPhone());
-        pstmt.setString(9, employee.getPasswordHash());
-        pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
-    }
-
+    /**
+     * Metodo que busca os funcionarios ativos aplicando os filtros informados
+     * Os campos do filter que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
+     * Se o filter vier null, busca sem filtro nenhum
+     * Usado tanto pra busca geral (admin Aether) quanto pra busca por unidade (admin da unidade, preenchendo unitId)
+     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @return List<Employees> com os empregados encontrados
+     */
     @Override
     public List<Employees> searchAll(EmployeesFilter filter) {
+
         List<Employees> employees = new ArrayList<>();
+        Companies company = null;
+        PermissionGroups permissionGroup = null;
+        Units unit = null;
+        Sectors sector = null;
 
         if (filter == null) {
             filter = new EmployeesFilter();
         }
 
         StringBuilder sql = new StringBuilder(
-                employeeSelectSql() + "WHERE e.is_active = true"
+                "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, e.sector_id as sectorId, " +
+                        "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
+                        "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName " +
+                        "from employees e " +
+                        "join companies c on e.company_id = c.id " +
+                        "join permission_groups pg on e.permission_group_id = pg.id " +
+                        "join units u on u.id = e.unit_id " +
+                        "join sectors sec on sec.id = e.sector_id " +
+                        "where e.is_active = true"
         );
 
         List<Object> parametros = new ArrayList<>();
 
         if (filter.getId() != null) {
-            sql.append(" AND e.id = ?");
+            sql.append(" and e.id = ?");
             parametros.add(filter.getId());
         }
 
         if (filter.getName() != null && !filter.getName().isBlank()) {
-            sql.append(" AND e.name ILIKE ?");
+            sql.append(" and e.name ilike ?");
             parametros.add("%" + filter.getName() + "%");
         }
 
         if (filter.getCpf() != null && !filter.getCpf().isBlank()) {
-            sql.append(" AND e.cpf = ?");
-            parametros.add(filter.getCpf());
+            sql.append(" and e.cpf = ?");
+            parametros.add(cleanCpf(filter.getCpf()));
         }
 
         if (filter.getStatus() != null) {
-            sql.append(" AND e.status = ?::status_employee");
+            sql.append(" and e.status = ?::status_employee");
             parametros.add(filter.getStatus().getValor());
         }
 
         if (filter.getCompanyId() != null) {
-            sql.append(" AND e.company_id = ?");
+            sql.append(" and e.company_id = ?");
             parametros.add(filter.getCompanyId());
         }
 
-        if (filter.getCompanyName() != null
-                && !filter.getCompanyName().isBlank()) {
-            sql.append(" AND c.name ILIKE ?");
+        if (filter.getCompanyName() != null && !filter.getCompanyName().isBlank()) {
+            sql.append(" and c.name ilike ?");
             parametros.add("%" + filter.getCompanyName() + "%");
         }
 
         if (filter.getUnitId() != null) {
-            sql.append(" AND u.id = ?");
+            sql.append(" and u.id = ?");
             parametros.add(filter.getUnitId());
         }
 
-        if (filter.getUnitName() != null
-                && !filter.getUnitName().isBlank()) {
-            sql.append(" AND u.name ILIKE ?");
+        if (filter.getUnitName() != null && !filter.getUnitName().isBlank()) {
+            sql.append(" and u.name ilike ?");
             parametros.add("%" + filter.getUnitName() + "%");
         }
 
         if (filter.getSectorId() != null) {
-            sql.append(" AND sec.id = ?");
+            sql.append(" and sec.id = ?");
             parametros.add(filter.getSectorId());
         }
 
-        if (filter.getSectorName() != null
-                && !filter.getSectorName().isBlank()) {
-            sql.append(" AND sec.name ILIKE ?");
+        if (filter.getSectorName() != null && !filter.getSectorName().isBlank()) {
+            sql.append(" and sec.name ilike ?");
             parametros.add("%" + filter.getSectorName() + "%");
         }
 
-        if (filter.getEmail() != null && !filter.getEmail().isBlank()) {
-            sql.append(" AND e.email = ?");
+        if (filter.getEmail() != null
+                && !filter.getEmail().isBlank()) {
+
+            sql.append(" and e.email = ?");
             parametros.add(filter.getEmail().trim());
         }
 
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return employees;
+        }
+
         try (
-                Connection conn = getConnection();
+                conn;
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
+
             for (int i = 0; i < parametros.size(); i++) {
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
             try (ResultSet rs = pstmt.executeQuery()) {
+
                 while (rs.next()) {
-                    employees.add(mapEmployee(rs));
+
+                    company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
+
+                    permissionGroup = new PermissionGroups(
+                            rs.getInt("idPermissionGroup"),
+                            rs.getString("permissionGroup")
+                    );
+
+                    unit = new Units(
+                            rs.getInt("idUnit"),
+                            rs.getString("unitName")
+                    );
+
+                    sector = new Sectors(
+                            rs.getInt("idSector"),
+                            rs.getString("sectorName")
+                    );
+
+                    Employees employee = new Employees(
+                            rs.getInt("id"),
+                            rs.getInt("companyId"),
+                            rs.getInt("permissionGroupId"),
+                            rs.getInt("unitId"),
+                            rs.getInt("sectorId"),
+                            rs.getString("cpf"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            StatusEmployee.fromValor(rs.getString("status")),
+                            permissionGroup,
+                            company,
+                            unit,
+                            sector
+                    );
+
+                    employee.setPasswordHash(rs.getString("password_hash"));
+                    employee.setStorageFileId(rs.getInt("storage_file_id"));
+                    employee.setCreatedAt(rs.getTimestamp("created_at"));
+                    employee.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+                    employees.add(employee);
                 }
             }
 
-            return employees;
-
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao buscar funcionários.",
-                    e
-            );
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return employees;
     }
 
+    /**
+     * metodo para buscar por Id (somente ativos)
+     * @param id Numero unico do empregado
+     * @return Retorna o empregado encontrado ou null caso nao exista
+     */
     @Override
     public Employees searchById(int id) {
-        String sql = employeeSelectSql()
-                + "WHERE e.id = ? AND e.is_active = true";
+
+        Employees employee = null;
+        PermissionGroups permissionGroup = null;
+        Companies company = null;
+        Units unit = null;
+        Sectors sector = null;
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
 
         try (
-                Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, e.sector_id as sectorId, " +
+                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
+                                "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName " +
+                                "from employees e " +
+                                "join permission_groups pg on pg.id = e.permission_group_id " +
+                                "join companies c on e.company_id = c.id " +
+                                "join units u on u.id = e.unit_id " +
+                                "join sectors sec on sec.id = e.sector_id " +
+                                "where e.id = ? and e.is_active = true"
+                )
         ) {
+
             pstmt.setInt(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
+
                 if (rs.next()) {
-                    return mapEmployee(rs);
+                    permissionGroup = new PermissionGroups(
+                            rs.getInt("idPermissionGroup"),
+                            rs.getString("permissionGroup")
+                    );
+
+                    company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
+
+                    unit = new Units(
+                            rs.getInt("idUnit"),
+                            rs.getString("unitName")
+                    );
+
+                    sector = new Sectors(
+                            rs.getInt("idSector"),
+                            rs.getString("sectorName")
+                    );
+
+                    employee = new Employees(
+                            rs.getInt("id"),
+                            rs.getInt("companyId"),
+                            rs.getInt("permissionGroupId"),
+                            rs.getInt("unitId"),
+                            rs.getInt("sectorId"),
+                            rs.getString("cpf"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            StatusEmployee.fromValor(rs.getString("status")),
+                            permissionGroup,
+                            company,
+                            unit,
+                            sector
+                    );
+
+                    employee.setPasswordHash(rs.getString("password_hash"));
+                    employee.setStorageFileId(rs.getInt("storage_file_id"));
+                    employee.setCreatedAt(rs.getTimestamp("created_at"));
+                    employee.setUpdatedAt(rs.getTimestamp("updated_at"));
                 }
             }
 
-            return null;
-
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao buscar funcionário pelo ID.",
-                    e
-            );
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return employee;
     }
 
+    /**
+     * metodo para buscar o empregado pelo cpf (somente ativos)
+     * O cpf é unico no banco, entao devolve só um registro
+     * @param cpf O cpf do empregado (pode vir com ou sem pontuacao)
+     * @return Retorna o empregado encontrado ou null caso nao exista
+     */
     public Employees searchByCpf(String cpf) {
-        String sql = employeeSelectSql()
-                + "WHERE e.cpf = ? AND e.is_active = true";
+
+        Employees employee = null;
+        PermissionGroups permissionGroup = null;
+        Companies company = null;
+        Units unit = null;
+        Sectors sector = null;
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return null;
+        }
 
         try (
-                Connection conn = getConnection();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, e.sector_id as sectorId, " +
+                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
+                                "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName " +
+                                "from employees e " +
+                                "join permission_groups pg on pg.id = e.permission_group_id " +
+                                "join companies c on e.company_id = c.id " +
+                                "join units u on u.id = e.unit_id " +
+                                "join sectors sec on sec.id = e.sector_id " +
+                                "where e.cpf = ? and e.is_active = true"
+                )
         ) {
-            pstmt.setString(1, cpf);
+
+            pstmt.setString(1, cleanCpf(cpf));
 
             try (ResultSet rs = pstmt.executeQuery()) {
+
                 if (rs.next()) {
-                    return mapEmployee(rs);
+                    permissionGroup = new PermissionGroups(
+                            rs.getInt("idPermissionGroup"),
+                            rs.getString("permissionGroup")
+                    );
+
+                    company = new Companies(
+                            rs.getInt("idCompany"),
+                            rs.getString("companyName")
+                    );
+
+                    unit = new Units(
+                            rs.getInt("idUnit"),
+                            rs.getString("unitName")
+                    );
+
+                    sector = new Sectors(
+                            rs.getInt("idSector"),
+                            rs.getString("sectorName")
+                    );
+
+                    employee = new Employees(
+                            rs.getInt("id"),
+                            rs.getInt("companyId"),
+                            rs.getInt("permissionGroupId"),
+                            rs.getInt("unitId"),
+                            rs.getInt("sectorId"),
+                            rs.getString("cpf"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            StatusEmployee.fromValor(rs.getString("status")),
+                            permissionGroup,
+                            company,
+                            unit,
+                            sector
+                    );
+
+                    employee.setPasswordHash(rs.getString("password_hash"));
+                    employee.setStorageFileId(rs.getInt("storage_file_id"));
+                    employee.setCreatedAt(rs.getTimestamp("created_at"));
+                    employee.setUpdatedAt(rs.getTimestamp("updated_at"));
                 }
             }
 
-            return null;
-
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao buscar funcionário pelo CPF.",
-                    e
-            );
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+        return employee;
     }
 
+    /**
+     * metodo para cadastrar novos empregados no banco (sempre ativo na criacao)
+     * A senha ja deve vir como hash no passwordHash (gerado pelo PasswordHasher)
+     * @param employee O funcionario que sera cadastrado
+     * @return true se foi registrado e false caso tenha dado erro
+     */
     @Override
     public boolean register(Employees employee) {
+
         if (!isValid(employee)) {
             return false;
         }
 
-        return executeUpdate(
-                insertEmployeeSql(),
-                pstmt -> bindEmployee(pstmt, employee),
-                "Erro ao cadastrar funcionário."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into employees (company_id, permission_group_id, unit_id, sector_id, cpf, name, email, phone, password_hash, status) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::status_employee)"
+                )
+        ) {
+
+            pstmt.setInt(1, employee.getCompanyId());
+            pstmt.setInt(2, employee.getPermissionGroupId());
+            pstmt.setInt(3, employee.getUnitId());
+            pstmt.setInt(4, employee.getSectorId());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
+            pstmt.setString(6, employee.getName());
+            pstmt.setString(7, employee.getEmail());
+            pstmt.setString(8, employee.getPhone());
+            pstmt.setString(9, employee.getPasswordHash());
+            pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * metodo para registrar mais de um empregado
+     * Todos entram juntos: se algum der erro, nenhum fica salvo (transacao)
+     * @param employees Uma lista de empregados
+     * @return true se foi registrado e false caso tenha dado erro
+     */
     public boolean registerLot(List<Employees> employees) {
+
         if (employees == null || employees.isEmpty()) {
             return false;
         }
 
-        for (Employees employee : employees) {
-            if (!isValid(employee)) {
-                return false;
-            }
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
         }
 
-        try (Connection conn = getConnection()) {
-            conn.setAutoCommit(false);
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into employees (company_id, permission_group_id, unit_id, sector_id, cpf, name, email, phone, password_hash, status) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::status_employee)"
+                )
+        ) {
 
-            try (PreparedStatement pstmt =
-                         conn.prepareStatement(insertEmployeeSql())) {
+            try {
+                // desliga o salvamento automatico pra tudo entrar junto (ou nada entrar)
+                conn.setAutoCommit(false);
 
-                for (Employees employee : employees) {
-                    bindEmployee(pstmt, employee);
+                for (int i = 0; i < employees.size(); i++) {
+                    Employees employee = employees.get(i);
+
+                    if (!isValid(employee)) {
+                        return false;
+                    }
+
+                    pstmt.setInt(1, employee.getCompanyId());
+                    pstmt.setInt(2, employee.getPermissionGroupId());
+                    pstmt.setInt(3, employee.getUnitId());
+                    pstmt.setInt(4, employee.getSectorId());
+                    pstmt.setString(5, cleanCpf(employee.getCpf()));
+                    pstmt.setString(6, employee.getName());
+                    pstmt.setString(7, employee.getEmail());
+                    pstmt.setString(8, employee.getPhone());
+                    pstmt.setString(9, employee.getPasswordHash());
+                    pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+
                     pstmt.addBatch();
                 }
 
@@ -344,338 +517,746 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 return true;
 
             } catch (SQLException e) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackError) {
-                    e.addSuppressed(rollbackError);
-                }
-
-                throw new RuntimeException(
-                        "Erro ao cadastrar a lista de funcionários.",
-                        e
-                );
+                conn.rollback();
+                throw new RuntimeException("Erro ao registrar.", e);
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro na transação de cadastro dos funcionários.",
-                    e
-            );
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
     }
 
+    /**
+     * metodo para desativar o empregado por id (is_active = false, status = 'INACTIVE')
+     * @param id Valor unico de cada empregado
+     * @return true se foi desativado e false caso tenha dado erro
+     */
     @Override
     public boolean delete(int id) {
-        return executeUpdate(
-                "UPDATE employees SET is_active = false, " +
-                        "status = 'INACTIVE', updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ?",
-                pstmt -> pstmt.setInt(1, id),
-                "Erro ao desativar funcionário pelo ID."
-        );
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set is_active = false, status = 'INACTIVE', updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * metodo que desativa por id da empresa (para quando uma empresa for desativada)
+     * Se a empresa nao tiver funcionarios devolve false, e isso nao e um erro
+     * @param idCompany
+     * @return true se foi desativado e false caso tenha dado erro
+     */
     public boolean deleteByIdCompany(int idCompany) {
-        return executeUpdate(
-                "UPDATE employees SET is_active = false, " +
-                        "status = 'INACTIVE', updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE company_id = ?",
-                pstmt -> pstmt.setInt(1, idCompany),
-                "Erro ao desativar funcionários da empresa."
-        );
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set is_active = false, status = 'INACTIVE', updated_at = current_timestamp where company_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, idCompany);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * metodo que desativa os empregados quando uma unidade for desativada
+     * Se a unidade nao tiver funcionarios devolve false, e isso nao e um erro
+     * @param unitId numero unico da unidade
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
     public boolean deleteByIdUnit(int unitId) {
-        return executeUpdate(
-                "UPDATE employees SET status = 'INACTIVE', " +
-                        "is_active = false, updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE unit_id = ?",
-                pstmt -> pstmt.setInt(1, unitId),
-                "Erro ao desativar funcionários da unidade."
-        );
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'INACTIVE', is_active = false, updated_at = current_timestamp where unit_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, unitId);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * metodo que desativa os empregados de uma unidade pelo nome
+     * @param name O nome da unidade
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
     public boolean deleteByNameUnit(String name) {
-        return executeUpdate(
-                "UPDATE employees e SET status = 'INACTIVE', " +
-                        "is_active = false, updated_at = CURRENT_TIMESTAMP " +
-                        "FROM units u WHERE e.unit_id = u.id AND u.name ILIKE ?",
-                pstmt -> pstmt.setString(1, name),
-                "Erro ao desativar funcionários pelo nome da unidade."
-        );
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees e set status = 'INACTIVE', is_active = false, updated_at = current_timestamp " +
+                                "from units u " +
+                                "where e.unit_id = u.id and lower(u.name) = lower(?)"
+                )
+        ) {
+
+            pstmt.setString(1, name);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    public boolean deleteByName(String name) {
-        return executeUpdate(
-                "UPDATE employees SET status = 'INACTIVE', " +
-                        "is_active = false, updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE name ILIKE ?",
-                pstmt -> pstmt.setString(1, name),
-                "Erro ao desativar funcionário pelo nome."
-        );
-    }
-
+    /**
+     * metodo que desativa pelo cpf
+     * @param cpf O cpf do funcionario (pode vir com ou sem pontuacao)
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
     public boolean deleteByCpf(String cpf) {
-        return executeUpdate(
-                "UPDATE employees SET status = 'INACTIVE', " +
-                        "is_active = false, updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE cpf = ?",
-                pstmt -> pstmt.setString(1, cpf),
-                "Erro ao desativar funcionário pelo CPF."
-        );
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'INACTIVE', is_active = false, updated_at = current_timestamp where cpf = ?"
+                )
+        ) {
+
+            pstmt.setString(1, cleanCpf(cpf));
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * metodo que muda os values do empregado selecionado pelo id
+     * Nao altera a senha (use updatePasswordHash) nem o status (use os metodos de status)
+     * @param employee Os valores do empregado para ser atualizado
+     * @param id O valor unico do empregado que quer atualizar
+     * @return true se foi mudado e false caso tenha dado erro
+     */
     @Override
     public boolean update(Employees employee, int id) {
+
         if (!isValid(employee)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET company_id = ?, " +
-                        "permission_group_id = ?, unit_id = ?, sector_id = ?, " +
-                        "cpf = ?, name = ?, email = ?, phone = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                pstmt -> {
-                    bindUpdateEmployee(pstmt, employee);
-                    pstmt.setInt(9, id);
-                },
-                "Erro ao atualizar funcionário pelo ID."
-        );
-    }
+        Connection conn = ConnectionFactory.connect();
 
-    public boolean updateByName(Employees employee, String name) {
-        if (!isValid(employee)) {
+        if (conn == null) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET company_id = ?, " +
-                        "permission_group_id = ?, unit_id = ?, sector_id = ?, " +
-                        "cpf = ?, name = ?, email = ?, phone = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE name ILIKE ?",
-                pstmt -> {
-                    bindUpdateEmployee(pstmt, employee);
-                    pstmt.setString(9, name);
-                },
-                "Erro ao atualizar funcionário pelo nome."
-        );
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set company_id = ?, " +
+                                "permission_group_id = ?, " +
+                                "unit_id = ?, " +
+                                "sector_id = ?, " +
+                                "cpf = ?, " +
+                                "name = ?, " +
+                                "email = ?, " +
+                                "phone = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, employee.getCompanyId());
+            pstmt.setInt(2, employee.getPermissionGroupId());
+            pstmt.setInt(3, employee.getUnitId());
+            pstmt.setInt(4, employee.getSectorId());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
+            pstmt.setString(6, employee.getName());
+            pstmt.setString(7, employee.getEmail());
+            pstmt.setString(8, employee.getPhone());
+            pstmt.setInt(9, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * Metodo que muda os values do empregado selecionado pelo cpf
+     * @param employee Os valores do empregado para ser atualizado
+     * @param cpf O cpf para achar o funcionario (pode vir com ou sem pontuacao)
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
     public boolean updateByCpf(Employees employee, String cpf) {
+
         if (!isValid(employee)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET company_id = ?, " +
-                        "permission_group_id = ?, unit_id = ?, sector_id = ?, " +
-                        "cpf = ?, name = ?, email = ?, phone = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE cpf = ?",
-                pstmt -> {
-                    bindUpdateEmployee(pstmt, employee);
-                    pstmt.setString(9, cpf);
-                },
-                "Erro ao atualizar funcionário pelo CPF."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set company_id = ?, " +
+                                "permission_group_id = ?, " +
+                                "unit_id = ?, " +
+                                "sector_id = ?, " +
+                                "cpf = ?, " +
+                                "name = ?, " +
+                                "email = ?, " +
+                                "phone = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where cpf = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, employee.getCompanyId());
+            pstmt.setInt(2, employee.getPermissionGroupId());
+            pstmt.setInt(3, employee.getUnitId());
+            pstmt.setInt(4, employee.getSectorId());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
+            pstmt.setString(6, employee.getName());
+            pstmt.setString(7, employee.getEmail());
+            pstmt.setString(8, employee.getPhone());
+            pstmt.setString(9, cleanCpf(cpf));
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
-    private void bindUpdateEmployee(
-            PreparedStatement pstmt,
-            Employees employee
-    ) throws SQLException {
-        pstmt.setInt(1, employee.getCompanyId());
-        pstmt.setInt(2, employee.getPermissionGroupId());
-        pstmt.setInt(3, employee.getUnitId());
-        pstmt.setInt(4, employee.getSectorId());
-        pstmt.setString(5, employee.getCpf());
-        pstmt.setString(6, employee.getName());
-        pstmt.setString(7, employee.getEmail());
-        pstmt.setString(8, employee.getPhone());
-    }
-
+    /**
+     * Metodo que atualiza a senha (hash) do empregado pelo id
+     * O passwordHash ja deve vir pronto (gerado pelo PasswordHasher)
+     * @param id O id do empregado
+     * @param passwordHash O hash da nova senha
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
     public boolean updatePasswordHash(int id, String passwordHash) {
+
         if (passwordHash == null || passwordHash.isBlank()) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET password_hash = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                pstmt -> {
-                    pstmt.setString(1, passwordHash);
-                    pstmt.setInt(2, id);
-                },
-                "Erro ao atualizar a senha do funcionário."
-        );
-    }
+        Connection conn = ConnectionFactory.connect();
 
-    public boolean updateStatusOnVacation(int id) {
-        return executeUpdate(
-                "UPDATE employees SET status = 'IN_VACATION', " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                pstmt -> pstmt.setInt(1, id),
-                "Erro ao alterar o status do funcionário para férias."
-        );
-    }
-
-    public boolean updateStatusActive(int id) {
-        return executeUpdate(
-                "UPDATE employees SET status = 'ACTIVE', " +
-                        "updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                pstmt -> pstmt.setInt(1, id),
-                "Erro ao ativar o status do funcionário."
-        );
-    }
-
-    // Métodos específicos para administradores de unidades.
-
-    public boolean registerPerUnit(Employees employee, int unitId) {
-        if (!isValidForUnit(employee, unitId)) {
+        if (conn == null) {
             return false;
         }
 
-        return register(employee);
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set password_hash = ?, updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setString(1, passwordHash);
+            pstmt.setInt(2, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
-    public boolean registerLotPerUnit(
-            List<Employees> employees,
-            int unitId
-    ) {
+    /**
+     * Metodo que altera o status do empregado para 'IN_VACATION'
+     * @param id O id do empregado
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
+    public boolean updateStatusOnVacation(int id) {
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'IN_VACATION', updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Metodo que altera o status do empregado para 'ACTIVE'
+     * @param id O id do empregado
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
+    public boolean updateStatusActive(int id) {
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'ACTIVE', updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+
+//    ------------- Metodos específicos para admins das units --------------
+
+    /**
+     * metodo para cadastrar novos empregados no banco
+     * @param employee O funcionario que sera cadastrado na unidade
+     * @param unitId numero da unidade
+     * @return true se foi registrado e false caso tenha dado erro
+     */
+    public boolean registerPerUnit(Employees employee, int unitId) {
+
+        if (!isValid(employee)) {
+            return false;
+        }
+
+        if (unitId != employee.getUnitId()) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into employees (company_id, permission_group_id, unit_id, sector_id, cpf, name, email, phone, password_hash, status) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::status_employee)"
+                )
+        ) {
+
+            pstmt.setInt(1, employee.getCompanyId());
+            pstmt.setInt(2, employee.getPermissionGroupId());
+            pstmt.setInt(3, employee.getUnitId());
+            pstmt.setInt(4, employee.getSectorId());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
+            pstmt.setString(6, employee.getName());
+            pstmt.setString(7, employee.getEmail());
+            pstmt.setString(8, employee.getPhone());
+            pstmt.setString(9, employee.getPasswordHash());
+            pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo para registrar mais de um empregado numa unidade especifica
+     * Todos entram juntos: se algum der erro, nenhum fica salvo (transacao)
+     * @param employees Uma lista de empregados
+     * @param unitId O id da unidade para validacao
+     * @return true se foi registrado e false caso tenha dado erro
+     */
+    public boolean registerLotPerUnit(List<Employees> employees, int unitId) {
+
         if (employees == null || employees.isEmpty()) {
             return false;
         }
 
-        for (Employees employee : employees) {
-            if (!isValidForUnit(employee, unitId)) {
-                return false;
-            }
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
         }
 
-        return registerLot(employees);
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into employees (company_id, permission_group_id, unit_id, sector_id, cpf, name, email, phone, password_hash, status) " +
+                                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::status_employee)"
+                )
+        ) {
+
+            try {
+                // desliga o salvamento automatico pra tudo entrar junto (ou nada entrar)
+                conn.setAutoCommit(false);
+
+                for (int i = 0; i < employees.size(); i++) {
+                    Employees employee = employees.get(i);
+
+                    if (!isValid(employee)) {
+                        return false;
+                    }
+
+                    if (unitId != employee.getUnitId()) {
+                        return false;
+                    }
+
+                    pstmt.setInt(1, employee.getCompanyId());
+                    pstmt.setInt(2, employee.getPermissionGroupId());
+                    pstmt.setInt(3, employee.getUnitId());
+                    pstmt.setInt(4, employee.getSectorId());
+                    pstmt.setString(5, cleanCpf(employee.getCpf()));
+                    pstmt.setString(6, employee.getName());
+                    pstmt.setString(7, employee.getEmail());
+                    pstmt.setString(8, employee.getPhone());
+                    pstmt.setString(9, employee.getPasswordHash());
+                    pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+
+                    pstmt.addBatch();
+                }
+
+                pstmt.executeBatch();
+                conn.commit();
+                return true;
+
+            } catch (SQLException e) {
+                conn.rollback();
+                throw new RuntimeException("Erro ao registrar.", e);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * metodo para desativar o empregado por id que esta na unidade
+     * @param id Valor unico de cada empregado
+     * @param unitId Id da unidade para validacao
+     * @return true se foi desativado e false caso tenha dado erro
+     */
     public boolean deleteByIdPerUnit(int id, int unitId) {
+
         Employees employee = searchById(id);
 
         if (!belongsToUnit(employee, unitId)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET status = 'INACTIVE', " +
-                        "is_active = false, updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ? AND unit_id = ?",
-                pstmt -> {
-                    pstmt.setInt(1, id);
-                    pstmt.setInt(2, unitId);
-                },
-                "Erro ao desativar funcionário da unidade."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'INACTIVE', is_active = false, updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * metodo para desativar o empregado pelo cpf que esta na unidade
+     * @param cpf O cpf do empregado (pode vir com ou sem pontuacao)
+     * @param unitId Id da unidade para validacao
+     * @return true se foi desativado e false caso tenha dado erro
+     */
     public boolean deleteByCpfPerUnit(String cpf, int unitId) {
+
         Employees employee = searchByCpf(cpf);
 
         if (!belongsToUnit(employee, unitId)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET status = 'INACTIVE', " +
-                        "is_active = false, updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE cpf = ? AND unit_id = ?",
-                pstmt -> {
-                    pstmt.setString(1, cpf);
-                    pstmt.setInt(2, unitId);
-                },
-                "Erro ao desativar funcionário pelo CPF na unidade."
-        );
-    }
+        Connection conn = ConnectionFactory.connect();
 
-    public boolean updateByIdPerUnit(
-            Employees employee,
-            int id,
-            int unitId
-    ) {
-        if (!isValidForUnit(employee, unitId)) {
+        if (conn == null) {
             return false;
         }
 
-        Employees found = searchById(id);
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'INACTIVE', is_active = false, updated_at = current_timestamp where cpf = ?"
+                )
+        ) {
 
-        if (!belongsToUnit(found, unitId)) {
+            pstmt.setString(1, cleanCpf(cpf));
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo que muda os values do empregado selecionado pelo id numa unidade especifica
+     * O funcionario nao pode ser mudado para outra unidade
+     * @param employee Os valores do empregado para ser atualizado
+     * @param id O valor unico do empregado que quer atualizar
+     * @param unitId O id da unidade para validacao
+     * @return true se foi mudado e false caso tenha dado erro
+     */
+    public boolean updateByIdPerUnit(Employees employee, int id, int unitId) {
+
+        if (!isValid(employee)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET company_id = ?, " +
-                        "permission_group_id = ?, unit_id = ?, sector_id = ?, " +
-                        "cpf = ?, name = ?, email = ?, phone = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ? AND unit_id = ?",
-                pstmt -> {
-                    bindUpdateEmployee(pstmt, employee);
-                    pstmt.setInt(9, id);
-                    pstmt.setInt(10, unitId);
-                },
-                "Erro ao atualizar funcionário da unidade pelo ID."
-        );
-    }
-
-    public boolean updateByNamePerUnit(
-            Employees employee,
-            String name,
-            int unitId
-    ) {
-        if (!isValidForUnit(employee, unitId)) {
+        if (unitId != employee.getUnitId()) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET company_id = ?, " +
-                        "permission_group_id = ?, unit_id = ?, sector_id = ?, " +
-                        "cpf = ?, name = ?, email = ?, phone = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE name ILIKE ? AND unit_id = ?",
-                pstmt -> {
-                    bindUpdateEmployee(pstmt, employee);
-                    pstmt.setString(9, name);
-                    pstmt.setInt(10, unitId);
-                },
-                "Erro ao atualizar funcionário pelo nome na unidade."
-        );
-    }
+        Employees employeeFound = searchById(id);
 
-    public boolean updateByCpfPerUnit(
-            Employees employee,
-            String cpf,
-            int unitId
-    ) {
-        if (!isValidForUnit(employee, unitId)) {
+        if (!belongsToUnit(employeeFound, unitId)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET company_id = ?, " +
-                        "permission_group_id = ?, unit_id = ?, sector_id = ?, " +
-                        "cpf = ?, name = ?, email = ?, phone = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE cpf = ? AND unit_id = ?",
-                pstmt -> {
-                    bindUpdateEmployee(pstmt, employee);
-                    pstmt.setString(9, cpf);
-                    pstmt.setInt(10, unitId);
-                },
-                "Erro ao atualizar funcionário pelo CPF na unidade."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set company_id = ?, " +
+                                "permission_group_id = ?, " +
+                                "unit_id = ?, " +
+                                "sector_id = ?, " +
+                                "cpf = ?, " +
+                                "name = ?, " +
+                                "email = ?, " +
+                                "phone = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, employee.getCompanyId());
+            pstmt.setInt(2, employee.getPermissionGroupId());
+            pstmt.setInt(3, employee.getUnitId());
+            pstmt.setInt(4, employee.getSectorId());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
+            pstmt.setString(6, employee.getName());
+            pstmt.setString(7, employee.getEmail());
+            pstmt.setString(8, employee.getPhone());
+            pstmt.setInt(9, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
-    public boolean updatePasswordHashPerUnit(
-            int id,
-            String passwordHash,
-            int unitId
-    ) {
+    /**
+     * Metodo que muda os values do empregado selecionado pelo nome numa unidade especifica
+     * O funcionario nao pode ser mudado para outra unidade
+     * @param employee Os valores do empregado para ser atualizado
+     * @param name O nome para achar o funcionario
+     * @param unitId O id da unidade para validacao
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
+    public boolean updateByNamePerUnit(Employees employee, String name, int unitId) {
+
+        if (!isValid(employee)) {
+            return false;
+        }
+
+        if (unitId != employee.getUnitId()) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set company_id = ?, " +
+                                "permission_group_id = ?, " +
+                                "unit_id = ?, " +
+                                "sector_id = ?, " +
+                                "cpf = ?, " +
+                                "name = ?, " +
+                                "email = ?, " +
+                                "phone = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where lower(name) = lower(?) and unit_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, employee.getCompanyId());
+            pstmt.setInt(2, employee.getPermissionGroupId());
+            pstmt.setInt(3, employee.getUnitId());
+            pstmt.setInt(4, employee.getSectorId());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
+            pstmt.setString(6, employee.getName());
+            pstmt.setString(7, employee.getEmail());
+            pstmt.setString(8, employee.getPhone());
+            pstmt.setString(9, name);
+            pstmt.setInt(10, unitId);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * Metodo que muda os values do empregado selecionado pelo cpf numa unidade especifica
+     * O funcionario nao pode ser mudado para outra unidade
+     * @param employee Os valores do empregado para ser atualizado
+     * @param cpf O cpf para achar o funcionario (pode vir com ou sem pontuacao)
+     * @param unitId O id da unidade para validacao
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
+    public boolean updateByCpfPerUnit(Employees employee, String cpf, int unitId) {
+
+        if (!isValid(employee)) {
+            return false;
+        }
+
+        if (unitId != employee.getUnitId()) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set company_id = ?, " +
+                                "permission_group_id = ?, " +
+                                "unit_id = ?, " +
+                                "sector_id = ?, " +
+                                "cpf = ?, " +
+                                "name = ?, " +
+                                "email = ?, " +
+                                "phone = ?, " +
+                                "updated_at = current_timestamp " +
+                                "where cpf = ? and unit_id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, employee.getCompanyId());
+            pstmt.setInt(2, employee.getPermissionGroupId());
+            pstmt.setInt(3, employee.getUnitId());
+            pstmt.setInt(4, employee.getSectorId());
+            pstmt.setString(5, cleanCpf(employee.getCpf()));
+            pstmt.setString(6, employee.getName());
+            pstmt.setString(7, employee.getEmail());
+            pstmt.setString(8, employee.getPhone());
+            pstmt.setString(9, cleanCpf(cpf));
+            pstmt.setInt(10, unitId);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
+    }
+
+    /**
+     * Metodo que atualiza a senha (hash) do empregado pelo id numa unidade especifica
+     * @param id O id do empregado
+     * @param passwordHash O hash da nova senha
+     * @param unitId O id da unidade para validacao
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
+    public boolean updatePasswordHashPerUnit(int id, String passwordHash, int unitId) {
+
         if (passwordHash == null || passwordHash.isBlank()) {
             return false;
         }
@@ -686,54 +1267,99 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET password_hash = ?, " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ? AND unit_id = ?",
-                pstmt -> {
-                    pstmt.setString(1, passwordHash);
-                    pstmt.setInt(2, id);
-                    pstmt.setInt(3, unitId);
-                },
-                "Erro ao atualizar a senha do funcionário da unidade."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set password_hash = ?, updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setString(1, passwordHash);
+            pstmt.setInt(2, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * Metodo que altera o status do empregado para 'IN_VACATION' (scoped per unit)
+     * @param id O id do empregado
+     * @param unitId O id da unidade para validacao
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
     public boolean updateStatusOnVacationPerUnit(int id, int unitId) {
+
         Employees employee = searchById(id);
 
         if (!belongsToUnit(employee, unitId)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET status = 'IN_VACATION', " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ? AND unit_id = ?",
-                pstmt -> {
-                    pstmt.setInt(1, id);
-                    pstmt.setInt(2, unitId);
-                },
-                "Erro ao alterar o status do funcionário da unidade."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'IN_VACATION', updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
 
+    /**
+     * Metodo que altera o status do empregado para 'ACTIVE' (scoped per unit)
+     * @param id O id do empregado
+     * @param unitId O id da unidade para validacao
+     * @return true se foi atualizado e false caso tenha dado erro
+     */
     public boolean updateStatusActivePerUnit(int id, int unitId) {
+
         Employees employee = searchById(id);
 
         if (!belongsToUnit(employee, unitId)) {
             return false;
         }
 
-        return executeUpdate(
-                "UPDATE employees SET status = 'ACTIVE', " +
-                        "updated_at = CURRENT_TIMESTAMP " +
-                        "WHERE id = ? AND unit_id = ?",
-                pstmt -> {
-                    pstmt.setInt(1, id);
-                    pstmt.setInt(2, unitId);
-                },
-                "Erro ao ativar o funcionário da unidade."
-        );
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "update employees set status = 'ACTIVE', updated_at = current_timestamp where id = ?"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+        }
     }
+
 }

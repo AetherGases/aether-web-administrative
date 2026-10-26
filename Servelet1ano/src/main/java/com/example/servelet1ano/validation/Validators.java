@@ -20,6 +20,8 @@ public class Validators {
 
     private static final Pattern CNPJ = Pattern.compile("^[A-Z0-9]{12}\\d{2}$");
 
+    private static final Pattern CNPJ_ZEROS = Pattern.compile("^0{14}$");
+
     /**
      * Valida um email pelo formato
      * @param email O email a validar
@@ -94,8 +96,9 @@ public class Validators {
     }
 
     /**
-     * Valida um CNPJ alfanumerico: confere o formato
+     * Valida um CNPJ alfanumerico: confere o formato e os 2 digitos verificadores
      * Tambem aceita CNPJ antigo so numerico, porque numero é um caso do alfanumerico.
+     * Nao aceita CNPJ so com zeros, porque os digitos verificadores dele "batem" (0 e 0) mas ele nao existe
      * @param cnpj O CNPJ a validar
      * @return true se for um CNPJ valido
      */
@@ -106,7 +109,7 @@ public class Validators {
 
         String cleaned = cnpj.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
 
-        if (!CNPJ.matcher(cleaned).matches()) {
+        if (!CNPJ.matcher(cleaned).matches() || CNPJ_ZEROS.matcher(cleaned).matches()) {
             return false;
         }
 

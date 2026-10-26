@@ -2,24 +2,24 @@ package com.example.servelet1ano.filter;
 
 public class PlansFilter {
     private String name;
-    private double minPrice;
-    private double maxPrice;
+    private Double minPrice;
+    private Double maxPrice;
 
-    private PlansFilter(){}
+    public PlansFilter(){}
 
-    public double getMaxPrice() {
+    public Double getMaxPrice() {
         return maxPrice;
     }
 
-    public void setMaxPrice(double maxPrice) {
+    public void setMaxPrice(Double maxPrice) {
         this.maxPrice = maxPrice;
     }
 
-    public double getMinPrice() {
+    public Double getMinPrice() {
         return minPrice;
     }
 
-    public void setMinPrice(double minPrice) {
+    public void setMinPrice(Double minPrice) {
         this.minPrice = minPrice;
     }
 
