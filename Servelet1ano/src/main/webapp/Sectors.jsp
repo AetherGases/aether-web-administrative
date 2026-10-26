@@ -202,10 +202,10 @@
     </section>
 </main>
 
-<script>
-    const btnAbrir = document.getElementById('btnAbrirModal');
-    const btnFechar = document.getElementById('btnFecharModal');
-    const modal = document.getElementById('modalSetores');
+    <script>
+        const btnAbrir = document.getElementById('btnAbrirModal');
+        const btnFechar = document.getElementById('btnFecharModal');
+        const modal = document.getElementById('modalSetores');
 
     btnAbrir.addEventListener('click', function () {
         modal.classList.add('ativo');

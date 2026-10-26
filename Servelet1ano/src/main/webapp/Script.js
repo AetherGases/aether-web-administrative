@@ -12,13 +12,13 @@
      8. animarCardsEscopo()      — animação dos cards de escopo
      9. carrosselAlunos()        — fotos 1º / 2º Médio
 
+   Todos os módulos verificam a existência dos elementos antes de agir,
+   e cada um é iniciado UMA única vez, pela função iniciar() no final.
    ========================================================================== */
 
 
 /* --------------------------------------------------------------------------
-
    1. CARROSSEL DE CELULARES
-
    -------------------------------------------------------------------------- */
 
 function carrosselCelulares() {
@@ -183,9 +183,7 @@ function carrosselCelulares() {
 
 
 /* --------------------------------------------------------------------------
-
    2. CARROSSEL DE CARDS DE GASES
-
    -------------------------------------------------------------------------- */
 
 function carrosselGases() {
@@ -231,7 +229,7 @@ function carrosselGases() {
 
     botaoAnterior.addEventListener("click", function () { mover(-1); });
     botaoProximo.addEventListener("click", function () { mover(1); });
-
+   
     cards.forEach(function (card) {
         card.addEventListener("click", function () {
             if (card.dataset.pos === "esq") mover(-1);
@@ -249,15 +247,13 @@ function carrosselGases() {
 
 
 /* --------------------------------------------------------------------------
-
    3. ACORDEÃO DE FUNCIONALIDADES
-
    -------------------------------------------------------------------------- */
 
 function menuFuncionalidades() {
-    const DURACAO = 600;                 // ms
+    const DURACAO = 600;
     const EASING = "ease-in-out";
-    const DESLOCAMENTO_CONTEUDO = 12;    // px
+    const DESLOCAMENTO_CONTEUDO = 12;
 
     const itens = Array.from(document.querySelectorAll(".agrupandoGrupo details"));
 
@@ -413,122 +409,65 @@ function menuFuncionalidades() {
 
 
 /* --------------------------------------------------------------------------
-
    4. ALTERNÂNCIA DE PLANOS (MENSAL / TRIMESTRAL)
-
    -------------------------------------------------------------------------- */
 
 function alternarPlanos() {
-
     const interruptor = document.getElementById("botaoAlternarPeriodo");
-
     const rotulos = document.querySelectorAll(".rotuloPeriodo");
-
     const cards = document.querySelectorAll(".cardPlano");
-
     const tabela = document.querySelector(".tabelaPlanos");
 
     if (!interruptor || cards.length === 0) {
-
         return;
-
     }
 
     if (interruptor.getAttribute("data-iniciado") === "true") {
-
         return;
-
     }
-
     interruptor.setAttribute("data-iniciado", "true");
 
     function aplicarPeriodo(periodo) {
-
         cards.forEach(function (card) {
+            card.classList.toggle("cardPlanoAtivo", card.getAttribute("data-periodo") === periodo);
+        });
 
-            card.classList.toggle(
-
-                "cardPlanoAtivo",
-
-                card.getAttribute("data-periodo") === periodo
-
-            );
-
+        rotulos.forEach(function (rotulo) {
+            rotulo.classList.toggle("rotuloPeriodoAtivo", rotulo.getAttribute("data-periodo") === periodo);
         });
 
         if (tabela) {
-
             tabela.setAttribute("data-periodo", periodo);
-
         }
 
-        rotulos.forEach(function (rotulo) {
-
-            rotulo.classList.toggle(
-
-                "rotuloPeriodoAtivo",
-
-                rotulo.getAttribute("data-periodo") === periodo
-
-            );
-
-        });
-
         interruptor.setAttribute("aria-checked", periodo === "trimestral" ? "true" : "false");
-
     }
 
     interruptor.addEventListener("click", function () {
-
         const estaTrimestral = interruptor.getAttribute("aria-checked") === "true";
-
         aplicarPeriodo(estaTrimestral ? "mensal" : "trimestral");
-
     });
 
     interruptor.addEventListener("keydown", function (evento) {
-
         if (evento.key === "ArrowLeft") {
-
             aplicarPeriodo("mensal");
-
         } else if (evento.key === "ArrowRight") {
-
             aplicarPeriodo("trimestral");
-
         }
-
     });
 
     rotulos.forEach(function (rotulo) {
-
         rotulo.addEventListener("click", function () {
-
             aplicarPeriodo(rotulo.getAttribute("data-periodo"));
-
         });
-
     });
 
-    aplicarPeriodo("trimestral");
-
-}
-
-if (document.readyState === "loading") {
-
-    document.addEventListener("DOMContentLoaded", alternarPlanos);
-
-} else {
-
-    alternarPlanos();
-
+    aplicarPeriodo(interruptor.getAttribute("aria-checked") === "true" ? "trimestral" : "mensal");
 }
 
 
 /* --------------------------------------------------------------------------
-
    5. DROPDOWNS PERSONALIZADOS DO CADASTRO
-
    -------------------------------------------------------------------------- */
 
 function dropdownsCadastro() {
@@ -662,9 +601,7 @@ function dropdownsCadastro() {
 
 
 /* --------------------------------------------------------------------------
-
    6. VALIDAÇÃO DO FORMULÁRIO DE CADASTRO EMPRESARIAL
-
    -------------------------------------------------------------------------- */
 
 function validarFormularios() {
@@ -731,9 +668,7 @@ function validarFormularios() {
 
 
 /* --------------------------------------------------------------------------
-
    7. CARDS DAS ETAPAS (ANÁLISE DE DADOS)
-
    -------------------------------------------------------------------------- */
 
 function cardsEtapas() {
@@ -772,9 +707,7 @@ function cardsEtapas() {
 
 
 /* --------------------------------------------------------------------------
-
    8. CARDS DE ESCOPO
-
    -------------------------------------------------------------------------- */
 
 function animarCardsEscopo() {
@@ -787,14 +720,12 @@ function animarCardsEscopo() {
 
 
 /* --------------------------------------------------------------------------
-
    9. CARROSSEL DE ALUNOS (1º Médio / 2º Médio)
-
    -------------------------------------------------------------------------- */
 
 function carrosselAlunos() {
     const FOTOS = [
-        "Imagens/1anoFoto.jpeg",
+        "Imagens/1anoFoto.png",
         "Imagens/2anoFoto.png"
     ];
 
@@ -849,9 +780,7 @@ function carrosselAlunos() {
 
 
 /* ==========================================================================
-
    INICIALIZAÇÃO
-
    ========================================================================== */
 
 function iniciar() {

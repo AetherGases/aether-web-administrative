@@ -14,54 +14,41 @@
     <link rel="icon" href="${pageContext.request.contextPath}/Imagens/LogoAether.svg" type="image/svg+xml">
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/Global.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Verification.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/CompanyRegister.css">
 </head>
 
 <body>
 
-<div class="blur1"></div>
-<div class="blur2"></div>
-<div class="blur3"></div>
-<div class="blur4"></div>
-
-<div>
-    <div>
-        <p>Aether Pulse</p>
-        <p><strong>R$3.300</strong>/por mês</p>
-
-        <ul class="listaCustomizada">
-            <li>Quantidade de cadastro limitada a 10 funcionários</li>
-            <li>Quantidade de analistas e administradores limitada a 2</li>
-            <li>Acompanhamento mensal</li>
-        </ul>
-    </div>
+    <div class="blur1"></div>
+    <div class="blur2"></div>
+    <div class="blur3"></div>
+    <div class="blur4"></div>
 
     <div>
-        <p>Aether Horizon</p>
-        <p><strong>R$9.400</strong>/a cada 3 meses</p>
+        <div class="quadradoAetherPulse">
+            <p class="tituloPlanos">Aether <span class="tituloPlanoVerde">Pulse</span></p>
+            <p class="tipografiaPorMes"><span class="tipografiaValores">R$3.300</span>/por mês</p>
 
-        <ul class="listaCustomizada2">
-            <li>Tudo do plano Aether Pulse</li>
-            <li>Quantidade de cadastro de funcionários ilimitada</li>
-            <li>Acompanhamento trimestral</li>
-        </ul>
-    </div>
-</div>
+            <div class="linhaPlanoPulse"></div>
 
-<div>
-    <img src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg" alt="Aeko">
-    <div>Cadastro empresarial</div>
-
-    <%-- Exibe a mensagem de sucesso enviada pelo CompanyRegisterServlet. --%>
-    <c:if test="${not empty requestScope.sucesso}">
-        <div class="mensagem-sucesso" role="status">
-            <p><c:out value="${requestScope.sucesso}" /></p>
+            <ul class="tipografiaPulse">
+                <li>Quantidade de cadastro limitada a 10 funcionários</li>
+                <li>Quantidade de analistas e administradores limitada a 2</li>
+                <li>Acompanhamento mensal</li>
+            </ul>
         </div>
-    </c:if>
-    <%-- Exibe a mensagem de erro enviada pelo CompanyRegisterServlet. --%>
-    <c:if test="${not empty requestScope.erro}">
-        <div class="mensagem-erro" role="alert">
-            <p><c:out value="${requestScope.erro}" /></p>
+
+        <div class="quadradoAetherHorizon">
+            <p class="tipografiaHorizon">Aether <span class="tituloPlanoRoxo">Horizon</span></p>
+            <p class="tipografiaPorMes"><span class="tipografiaValores">R$9.400</span>/a cada 3 meses</p>
+
+            <div class="linhaPlanoHorizon"></div>
+
+            <ul class="tipografiaHorizon">
+                <li>Tudo do plano Aether Pulse</li>
+                <li>Quantidade de cadastro de funcionários ilimitada</li>
+                <li>Acompanhamento trimestral</li>
+            </ul>
         </div>
     </c:if>
 
