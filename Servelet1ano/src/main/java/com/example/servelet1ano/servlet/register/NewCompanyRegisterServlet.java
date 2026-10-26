@@ -161,12 +161,10 @@ public class NewCompanyRegisterServlet extends HttpServlet {
 
             service.register(novaEmpresa, subscription);
 
-            request.setAttribute(
-                    "sucesso",
-                    "Cadastro realizado com sucesso!"
+            response.sendRedirect(
+                    request.getContextPath() + "/gerente"
             );
-            request.getRequestDispatcher(CADASTRO)
-                    .forward(request, response);
+            return;
 
         } catch (RuntimeException e) {
             LOGGER.log(

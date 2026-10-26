@@ -10,6 +10,7 @@ import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
 
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -240,8 +241,7 @@ public class LoginServlet extends HttpServlet {
     private void carregarEmpresas(HttpServletRequest request) {
         CompaniesDAO companiesDAO = new CompaniesDAO();
 
-        List<Companies> empresas =
-                companiesDAO.searchAll(new CompaniesFilter());
+        List<Companies> empresas = companiesDAO.searchAll(new CompaniesFilter());
 
         request.setAttribute("empresas", empresas);
     }

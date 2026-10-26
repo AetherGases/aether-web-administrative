@@ -81,7 +81,7 @@
                     Selecionar empresa
                 </option>
 
-                <c:forEach var="empresa" items="${requestScope.empresas}">
+                <c:forEach var="empresa" items="${empresas}">
                     <option
                             value="${empresa.id}"
                             <c:if test="${param.empresas == empresa.id}">selected</c:if>

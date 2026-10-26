@@ -67,10 +67,6 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         List<Companies> companies = new ArrayList<>();
 
-        if (filter == null) {
-            filter = new CompaniesFilter();
-        }
-
         StringBuilder sql = new StringBuilder(
                 "select c.* " +
                         "from companies c " +
@@ -78,6 +74,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         );
 
         List<Object> parametros = new ArrayList<>();
+
+        if (filter == null) {
+            filter = new CompaniesFilter();
+        }
 
         if (filter.getId() != null) {
             sql.append(" and c.id = ?");

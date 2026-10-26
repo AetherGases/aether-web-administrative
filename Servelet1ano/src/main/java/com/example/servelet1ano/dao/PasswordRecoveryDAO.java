@@ -16,10 +16,7 @@ public class PasswordRecoveryDAO {
 
     private static final int MAX_ATTEMPTS = 5;
 
-    /**
-     * Cria uma solicitação e invalida as anteriores
-     * do mesmo funcionário na mesma transação.
-     */
+
     public boolean register(PasswordRecovery recovery) {
 
         if (recovery == null
@@ -42,8 +39,8 @@ public class PasswordRecoveryDAO {
 
             try {
                 String invalidateSql =
-                        "UPDATE password_recoveries " +
-                                "SET used_at = CURRENT_TIMESTAMP " +
+                        "UPDATE password_recoveries" +
+                                " SET used_at = CURRENT_TIMESTAMP " +
                                 "WHERE employee_id = ? AND used_at IS NULL";
 
                 try (PreparedStatement pstmt =
@@ -99,9 +96,11 @@ public class PasswordRecoveryDAO {
         }
     }
 
-    /**
-     * Busca uma solicitação pelo seu ID.
-     */
+
+     /*
+      Busca uma solicitação pelo seu ID.
+      */
+
     public PasswordRecovery searchById(long id) {
 
         if (id <= 0) {
@@ -149,9 +148,12 @@ public class PasswordRecoveryDAO {
         return null;
     }
 
-    /**
-     * Registra uma tentativa incorreta, respeitando o limite.
-     */
+
+     /*
+     Registra uma tentativa incorreta, respeitando o limite.
+      */
+
+
     public boolean incrementAttempts(long id) {
 
         if (id <= 0) {
@@ -188,10 +190,11 @@ public class PasswordRecoveryDAO {
         }
     }
 
-    /**
-     * Valida o código e atualiza a senha na mesma transação.
-     * O código recebido deve estar convertido em HMAC-SHA-256.
+     /*
+     Valida o código e atualiza a senha na mesma transação.
+     *O código recebido deve estar convertido em HMAC-SHA-256.
      */
+
     public boolean completeRecovery(
             long recoveryId,
             String submittedCodeHash,
