@@ -682,8 +682,13 @@
                     <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
                     <!-- Empresa -->
-                    <label for="empresa">e</label>
-                    <input type="text" name="empresas" id="empresaTipo" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
+                    <div class="campoFormulario">
+                        <label class="rotuloCampoOculto" for="empresaNome">Nome da empresa</label>
+                        <input class="entradaEmpresarial" type="text" id="empresaNome" name="empresas"
+                               placeholder="Nome da empresa" autocomplete="organization"
+                               value="<c:out value='${requestScope.empresas}' />" required>
+                    </div>
+
                     <!-- Tamanho -->
                     <div class="dropdownPersonalizado">
                         <span class="dropdownRotulo" id="rotuloTamanho">tamanho</span>
@@ -757,7 +762,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <a href="Login.jsp" class="linkTrocaAba" type="button" data-destino="l">clique aqui</a>
+                        <a href="Login.jsp" class="linkTrocaAba" data-destino="l">clique aqui</a>
                     </p>
                 </form>
             </div>
