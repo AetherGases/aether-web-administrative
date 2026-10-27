@@ -539,7 +539,7 @@
 
                 <!-- Plano Pulse (destacado no plano mensal) -->
                 <article class="cardPlano cardPlanoPulse" data-periodo="mensal">
-                    <h3 class="nomePlano">aether Pulse</h3>
+                    <h3 class="nomePlano">Aether Pulse</h3>
                     <p class="subtituloPlano">For Industries</p>
                     <p class="precoPlano">
                         <span class="valorPlano">R$3.300</span><span class="periodoPlano">/por mês</span>
@@ -554,14 +554,14 @@
 
                 <!-- Plano Horizon (destacado no plano trimestral) -->
                 <article class="cardPlano cardPlanoHorizon cardPlanoAtivo" data-periodo="trimestral">
-                    <h3 class="nomePlano">aether Horizon</h3>
+                    <h3 class="nomePlano">Aether Horizon</h3>
                     <p class="subtituloPlano">For Bigger Industries</p>
                     <p class="precoPlano">
                         <span class="valorPlano">R$9.400</span><span class="periodoPlano">/a cada 3 meses</span>
                     </p>
                     <a class="botaoAssinar botaoAssinarRoxo" href="#cadastro">Assine agora <span class="setaAssinar" aria-hidden="true">&rarr;</span></a>
                     <ul class="listaBeneficios">
-                        <li>Tudo do plano aether Pulse</li>
+                        <li>Tudo do plano Aether Pulse</li>
                         <li>Quantidade de cadastro de funcionários ilimitada</li>
                         <li>Acompanhamento Trimestral</li>
                     </ul>
