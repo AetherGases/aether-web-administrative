@@ -9,6 +9,13 @@ import io.github.cdimascio.dotenv.DotenvException;
  */
 public class DatabaseConfig {
 
+    /**
+     * Nome da variavel de ambiente (ou propriedade -D da JVM) com a pasta onde esta o .env
+     * Util quando a aplicacao roda no Tomcat, porque a pasta de trabalho dele nao e a do projeto
+     * Se nao for informada, o dotenv procura na pasta de trabalho e depois no classpath
+     */
+    private static final String ENV_DIRECTORY = "DOTENV_DIR";
+
     private static final Dotenv dotenv = load();
 
     /**
@@ -18,11 +25,21 @@ public class DatabaseConfig {
      */
     private static Dotenv load() {
         try {
-            return Dotenv.configure()
-                    .ignoreIfMissing()
-                    .load();
+            var builder = Dotenv.configure().ignoreIfMissing();
+
+            String directory = System.getProperty(ENV_DIRECTORY);
+
+            if (directory == null || directory.isBlank()) {
+                directory = System.getenv(ENV_DIRECTORY);
+            }
+
+            if (directory != null && !directory.isBlank()) {
+                builder = builder.directory(directory.trim());
+            }
+
+            return builder.load();
         } catch (DotenvException e) {
-            System.err.println("Error: could not read the .env file.");
+            System.err.println("Erro: não foi possível ler o arquivo .env.");
             e.printStackTrace();
             return null;
         }

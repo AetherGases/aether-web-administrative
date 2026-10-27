@@ -1,10 +1,8 @@
-
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
 import com.example.servelet1ano.filter.CompaniesFilter;
-import com.example.servelet1ano.filter.EmployeesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.util.PasswordHasher;
@@ -153,17 +151,18 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            EmployeesFilter filterEmployee = new EmployeesFilter();
-            filterEmployee.setEmail(email);
-            filterEmployee.setCompanyId(companyId);
-            filterEmployee.setName(nome);
-
+            /*
+             * O searchAll não traz o hash da senha (por segurança).
+             * O searchForLogin é o único método que traz, e só devolve
+             * o funcionário se existir exatamente um com esse e-mail
+             * e esse nome na empresa.
+             */
             EmployeesDAO employeesDAO = new EmployeesDAO();
 
-            List<Employees> employees =
-                    employeesDAO.searchAll(filterEmployee);
+            Employees employee =
+                    employeesDAO.searchForLogin(email, companyId, nome);
 
-            if (employees == null || employees.size() != 1) {
+            if (employee == null) {
                 exibirErro(
                         request,
                         response,
@@ -171,8 +170,6 @@ public class LoginServlet extends HttpServlet {
                 );
                 return;
             }
-
-            Employees employee = employees.getFirst();
 
             String passwordHash = employee.getPasswordHash();
 
@@ -189,8 +186,20 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            boolean senhaCorreta =
-                    PasswordHasher.verify(passwordHash, senha);
+            boolean senhaCorreta;
+
+            try {
+                senhaCorreta = PasswordHasher.verify(passwordHash, senha);
+
+            } catch (RuntimeException e) {
+                // hash fora do formato esperado no banco: trata como senha errada
+                LOGGER.log(
+                        Level.WARNING,
+                        "Não foi possível conferir o hash de senha do funcionário.",
+                        e
+                );
+                senhaCorreta = false;
+            }
 
             if (!senhaCorreta) {
                 exibirErro(

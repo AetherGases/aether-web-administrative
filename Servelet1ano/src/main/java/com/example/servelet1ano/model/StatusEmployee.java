@@ -25,7 +25,7 @@ public enum StatusEmployee {
     public static StatusEmployee fromValor(String valor) {
 
         if (valor == null || valor.isBlank()) {
-            System.out.println("Error: the employee status is empty. Check the status column in the employees table.");
+            System.out.println("Erro: o status do funcionário está vazio. Confira a coluna status da tabela employees.");
             return null;
         }
 
@@ -35,7 +35,7 @@ public enum StatusEmployee {
             }
         }
 
-        System.out.println("Error: the employee status '" + valor + "' is not valid. The accepted values are ACTIVE, INACTIVE and IN_VACATION.");
+        System.out.println("Erro: o status do funcionário '" + valor + "' não é válido. Os valores aceitos são ACTIVE, INACTIVE e IN_VACATION.");
         return null;
     }
 

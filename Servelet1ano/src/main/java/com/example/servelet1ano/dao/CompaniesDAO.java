@@ -15,9 +15,9 @@ import java.util.Locale;
 public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
-     * Valida os dados da empresa antes de gravar (nome, cnpj, porte e, se preenchido, email)
+     * Valida os dados da empresa antes de gravar (nome, cnpj, porte e, se preenchido, email e tax id)
      * @param company A empresa a validar
-     * @return true se nome, cnpj, porte e o email (quando informado) forem validos e couberem na tabela
+     * @return true se nome, cnpj, porte, o email e o tax id (quando informados) forem validos e couberem na tabela
      */
     private boolean isValid(Companies company) {
 
@@ -43,6 +43,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         if (company.getEmail() != null && !company.getEmail().isBlank()
                 && (company.getEmail().trim().length() > 255 || !Validators.isEmail(company.getEmail()))) {
+            return false;
+        }
+
+        if (company.getTaxId() != null && company.getTaxId().trim().length() > 50) {
             return false;
         }
 
@@ -93,6 +97,20 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
     }
 
     /**
+     * Devolve o tax id sem espacos nas pontas (ou null se estiver vazio)
+     * @param company A empresa
+     * @return O tax id, ou null
+     */
+    private String taxIdOf(Companies company) {
+
+        if (company.getTaxId() == null || company.getTaxId().isBlank()) {
+            return null;
+        }
+
+        return company.getTaxId().trim();
+    }
+
+    /**
      * Confere se o erro do banco foi de valor duplicado (unique violation, SQLState 23505), ex: cnpj ja cadastrado
      * @param e O erro do banco
      * @return true se foi duplicidade
@@ -130,6 +148,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         );
 
         company.setUpdatedAt(rs.getTimestamp("updated_at"));
+        company.setTaxId(rs.getString("tax_id"));
 
         return company;
     }
@@ -291,8 +310,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         }
 
         String sql = "INSERT INTO companies " +
-                "(name, trade_name, size, registration_date, cnpj, email) " +
-                "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
+                "(name, trade_name, size, registration_date, cnpj, email, tax_id) " +
+                "VALUES (?, ?, ?::company_size, ?, ?, ?, ?) " +
                 "RETURNING id";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -303,6 +322,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             pstmt.setDate(4, company.getRegistrationDate());
             pstmt.setString(5, cleanCnpj(company.getCnpj()));
             pstmt.setString(6, emailOf(company));
+            pstmt.setString(7, taxIdOf(company));
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -369,6 +389,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
      * Metodo que atualiza a empresa pelo ID
+     * Se a data de cadastro vier null, mantem a que ja esta no banco
      * @param company Valores da empresa para atualizar
      * @param id ID da empresa que sera atualizada
      * @return true se foi atualizada e false se os dados forem invalidos, o cnpj ja for de outra empresa ou a empresa nao existir/estiver desativada
@@ -386,9 +407,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
                         "update companies set name = ?, " +
                                 "trade_name = ?, " +
                                 "size = ?::company_size, " +
-                                "registration_date = ?, " +
+                                "registration_date = coalesce(?::date, registration_date), " +
                                 "cnpj = ?, " +
                                 "email = ?, " +
+                                "tax_id = ?, " +
                                 "updated_at = current_timestamp " +
                                 "where id = ? and is_active = true"
                 )
@@ -400,7 +422,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             pstmt.setDate(4, company.getRegistrationDate());
             pstmt.setString(5, cleanCnpj(company.getCnpj()));
             pstmt.setString(6, emailOf(company));
-            pstmt.setInt(7, id);
+            pstmt.setString(7, taxIdOf(company));
+            pstmt.setInt(8, id);
 
             return pstmt.executeUpdate() > 0;
 

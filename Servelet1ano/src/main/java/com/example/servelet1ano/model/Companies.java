@@ -10,6 +10,7 @@ public class Companies {
     private CompanySize size;
     private Date registrationDate;
     private String email;
+    private String taxId;
     private java.util.Date createdAt;
     private java.util.Date updatedAt;
     private boolean isActive;
@@ -116,6 +117,14 @@ public class Companies {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(String taxId) {
+        this.taxId = taxId;
     }
 
     public java.util.Date getCreatedAt() {

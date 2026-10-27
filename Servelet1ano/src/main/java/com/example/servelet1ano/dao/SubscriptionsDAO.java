@@ -106,8 +106,10 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
 
     /**
      * metodo para cadastrar novas assinaturas no banco (sempre ativa na criacao)
+     * Cada empresa so pode ter uma assinatura ativa por vez
      * @param subscription A assinatura que sera cadastrada
      * @return true se foi registrada e false se a empresa ou o plano nao existirem (ou estiverem desativados)
+     * ou se a empresa ja tiver uma assinatura ativa
      */
     @Override
     public boolean register(Subscriptions subscription){
@@ -117,6 +119,11 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             return registerConn(subscription, conn);
 
         } catch (SQLException e) {
+
+            if (isUniqueViolation(e)) {
+                return false;
+            }
+
             throw new RuntimeException("Erro ao cadastrar a assinatura no banco de dados.", e);
         }
     }
@@ -125,16 +132,19 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
      * metodo para cadastrar uma nova assinatura usando uma conexao ja aberta (sempre ativa na criacao)
      * (permite que quem chamou controle a transacao, ex: cadastrar a empresa e a assinatura juntas)
      * Dentro de uma transacao, a empresa recem-cadastrada na mesma conexao ja e enxergada pela conferencia
+     * Cada empresa so pode ter uma assinatura ativa por vez
      * @param subscription A assinatura que sera cadastrada
      * @param conn A conexao (nao e fechada aqui)
      * @return true se foi registrada e false se a empresa ou o plano nao existirem (ou estiverem desativados)
+     * ou se a empresa ja tiver uma assinatura ativa
      * @throws SQLException se der erro no banco
      */
     public boolean registerConn(Subscriptions subscription, Connection conn) throws SQLException {
 
         if (subscription == null
                 || !existsActive(conn, "companies", subscription.getCompanyId())
-                || !existsActive(conn, "plans", subscription.getPlanId())) {
+                || !existsActive(conn, "plans", subscription.getPlanId())
+                || hasActiveSubscription(conn, subscription.getCompanyId())) {
             return false;
         }
 
@@ -242,9 +252,10 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
 
     /**
      * metodo para ativar uma assinatura
-     * So reativa se a empresa da assinatura estiver ativa
+     * So reativa se a empresa da assinatura estiver ativa e nao tiver outra assinatura ativa
      * @param id Id da assinatura
-     * @return true se foi ativada e false se a assinatura nao existe, ja estava ativa ou a empresa esta desativada
+     * @return true se foi ativada e false se a assinatura nao existe, ja estava ativa, a empresa esta desativada
+     * ou a empresa ja tem outra assinatura ativa
      */
     public boolean activateSubscription(int id){
 
@@ -253,7 +264,8 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update subscriptions set is_active = true, deactivated_at = null, updated_at = current_timestamp " +
                                 "where id = ? and is_active = false " +
-                                "and exists (select 1 from companies c where c.id = subscriptions.company_id and c.is_active = true)"
+                                "and exists (select 1 from companies c where c.id = subscriptions.company_id and c.is_active = true) " +
+                                "and not exists (select 1 from subscriptions o where o.company_id = subscriptions.company_id and o.is_active = true)"
                 )
         ){
 
@@ -262,6 +274,11 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
+
+            if (isUniqueViolation(e)) {
+                return false;
+            }
+
             throw new RuntimeException("Erro ao ativar a assinatura de id " + id + " no banco de dados.", e);
         }
     }
@@ -337,6 +354,33 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                 return rs.next();
             }
         }
+    }
+
+    /**
+     * Confere se a empresa ja tem uma assinatura ativa
+     */
+    private boolean hasActiveSubscription(Connection conn, int companyId) throws SQLException {
+
+        try (PreparedStatement pstmt = conn.prepareStatement(
+                "select 1 from subscriptions where company_id = ? and is_active = true"
+        )) {
+
+            pstmt.setInt(1, companyId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    /**
+     * Confere se o erro do banco foi de valor duplicado (unique violation, SQLState 23505)
+     * Aqui acontece se duas assinaturas ativas da mesma empresa forem gravadas ao mesmo tempo
+     * @param e O erro do banco
+     * @return true se foi duplicidade
+     */
+    private boolean isUniqueViolation(SQLException e) {
+        return "23505".equals(e.getSQLState());
     }
 
 }

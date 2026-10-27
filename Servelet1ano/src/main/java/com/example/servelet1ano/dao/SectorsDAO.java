@@ -16,6 +16,13 @@ import java.util.Set;
 public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
     /**
+     * Condicao usada nos updates que desativam setor: so desativa se nao houver funcionario ativo no setor
+     * (antes de desativar, os funcionarios precisam ser movidos para outro setor ou desativados)
+     */
+    private static final String NO_ACTIVE_EMPLOYEES =
+            " and not exists (select 1 from employees e where e.sector_id = sectors.id and e.is_active = true)";
+
+    /**
      * Metodo que busca os setores ativos aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
      * Usado tanto pra busca geral (admin Aether) quanto pra busca por unidade (admin da unidade, preenchendo unitId)
@@ -257,8 +264,10 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
     /**
      * metodo para desativar o setor por id (is_active = false)
+     * Nao desativa se ainda houver funcionarios ativos no setor: antes e preciso mover ou desativar esses funcionarios
+     * (use hasActiveEmployees para saber o motivo quando devolver false)
      * @param id Valor unico de cada setor
-     * @return true se foi desativado e false se o setor nao existe ou ja estava desativado
+     * @return true se foi desativado e false se o setor nao existe, ja estava desativado ou ainda tem funcionarios ativos
      */
     @Override
     public boolean delete(int id){
@@ -267,7 +276,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update sectors set is_active = false, updated_at = current_timestamp " +
-                                "where id = ? and is_active = true"
+                                "where id = ? and is_active = true" + NO_ACTIVE_EMPLOYEES
                 )
         ) {
 
@@ -281,7 +290,34 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
     }
 
     /**
+     * metodo que confere se o setor ainda tem funcionarios ativos
+     * Util para o servlet avisar o usuario antes de desativar o setor (mover ou desativar os funcionarios primeiro)
+     * @param sectorId O id do setor
+     * @return true se existe pelo menos um funcionario ativo no setor
+     */
+    public boolean hasActiveEmployees(int sectorId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select 1 from employees where sector_id = ? and is_active = true limit 1"
+                )
+        ) {
+
+            pstmt.setInt(1, sectorId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao conferir os funcionários do setor de id " + sectorId + " no banco de dados.", e);
+        }
+    }
+
+    /**
      * metodo que desativa os setores de uma unidade (para quando uma unidade for desativada)
+     * Nao confere os funcionarios: quem desativa a unidade ja desativa os funcionarios dela antes
      * @param unitId O id da unidade
      * @return true se algum setor foi desativado e false se a unidade nao tinha setores ativos
      */
@@ -358,9 +394,10 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
      * metodo que desativa pelo nome, dentro de uma empresa
      * O nome precisa ser igual (sem diferenciar maiusculas de minusculas)
      * Desativa todos os setores ativos da empresa com esse nome
+     * Se algum deles ainda tiver funcionarios ativos, nenhum e desativado (mover ou desativar os funcionarios primeiro)
      * @param name O nome do setor
      * @param companyId O id da empresa dona do setor (evita desativar setores de outras empresas)
-     * @return true se foi desativado e false se nenhum setor foi encontrado
+     * @return true se foi desativado e false se nenhum setor foi encontrado ou algum ainda tem funcionarios ativos
      */
     public boolean deleteByName(String name, int companyId){
 
@@ -368,18 +405,35 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             return false;
         }
 
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update sectors set is_active = false, updated_at = current_timestamp " +
-                                "where lower(name) = lower(?) and company_id = ? and is_active = true"
-                )
-        ) {
+        try(Connection conn = ConnectionFactory.connect()) {
 
-            pstmt.setString(1, name.trim());
-            pstmt.setInt(2, companyId);
+            try (PreparedStatement check = conn.prepareStatement(
+                    "select 1 from sectors " +
+                            "where lower(name) = lower(?) and company_id = ? and is_active = true " +
+                            "and exists (select 1 from employees e where e.sector_id = sectors.id and e.is_active = true) " +
+                            "limit 1"
+            )) {
 
-            return pstmt.executeUpdate() > 0;
+                check.setString(1, name.trim());
+                check.setInt(2, companyId);
+
+                try (ResultSet rs = check.executeQuery()) {
+                    if (rs.next()) {
+                        return false;
+                    }
+                }
+            }
+
+            try (PreparedStatement pstmt = conn.prepareStatement(
+                    "update sectors set is_active = false, updated_at = current_timestamp " +
+                            "where lower(name) = lower(?) and company_id = ? and is_active = true"
+            )) {
+
+                pstmt.setString(1, name.trim());
+                pstmt.setInt(2, companyId);
+
+                return pstmt.executeUpdate() > 0;
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao desativar o setor pelo nome no banco de dados.", e);
@@ -388,9 +442,10 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
     /**
      * metodo que muda os values do setor selecionado pelo id
+     * O setor nao pode ser movido para outra unidade (os funcionarios dele ficariam em outra unidade)
      * @param sector Os valores do setor para ser atualizado
      * @param id O valor unico do setor que quer atualizar
-     * @return true se foi mudado e false se os dados forem invalidos ou o setor nao existir/estiver desativado
+     * @return true se foi mudado e false se os dados forem invalidos, o setor nao existir/estiver desativado ou for de outra unidade
      */
     @Override
     public boolean update(Sectors sector, int id){
@@ -405,7 +460,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 return false;
             }
 
-            return updateSector(conn, sector, id, null);
+            return updateSector(conn, sector, id, sector.getUnitId());
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar o setor de id " + id + " no banco de dados.", e);
@@ -416,11 +471,11 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
      * metodo que muda os values do setor selecionado pelo nome, dentro de uma empresa
      * So atualiza se existir exatamente um setor ativo com esse nome na empresa
      * (se houver mais de um, nao da pra saber qual atualizar, entao use o update por id)
-     * O setor nao pode ser movido para outra empresa por este metodo
+     * O setor nao pode ser movido para outra empresa nem para outra unidade por este metodo
      * @param sector Os valores do setor para ser atualizado
      * @param name O nome para achar o setor
      * @param companyId O id da empresa dona do setor
-     * @return true se foi atualizado e false se os dados forem invalidos ou nao achou exatamente um setor
+     * @return true se foi atualizado e false se os dados forem invalidos, nao achou exatamente um setor ou o setor e de outra unidade
      */
     public boolean updateByName(Sectors sector, String name, int companyId){
 
@@ -440,7 +495,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 return false;
             }
 
-            return updateSector(conn, sector, id, null);
+            return updateSector(conn, sector, id, sector.getUnitId());
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar o setor pelo nome no banco de dados.", e);
@@ -488,9 +543,10 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
     /**
      * metodo para desativar o setor por id que esta na unidade
+     * Nao desativa se ainda houver funcionarios ativos no setor (mover ou desativar os funcionarios primeiro)
      * @param id Valor unico de cada setor
      * @param unitId Id da unidade para validacao
-     * @return true se foi desativado e false se o setor nao existe, ja estava desativado ou nao e da unidade
+     * @return true se foi desativado e false se o setor nao existe, ja estava desativado, nao e da unidade ou ainda tem funcionarios ativos
      */
     public boolean deleteByIdPerUnit(int id, int unitId){
 
@@ -498,7 +554,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update sectors set is_active = false, updated_at = current_timestamp " +
-                                "where id = ? and unit_id = ? and is_active = true"
+                                "where id = ? and unit_id = ? and is_active = true" + NO_ACTIVE_EMPLOYEES
                 )
         ) {
 
@@ -601,7 +657,8 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
                 rs.getString("name"),
                 rs.getString("description"),
                 company,
-                unit
+                unit,
+                rs.getBoolean("is_active")
         );
 
         sector.setCreatedAt(rs.getTimestamp("created_at"));
@@ -677,7 +734,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
 
     /**
      * Atualiza um setor ativo pelo id usando a conexao recebida
-     * @param unitScope se for diferente de null, so atualiza se o setor estiver nessa unidade
+     * @param unitScope se for diferente de null, so atualiza se o setor ja estiver nessa unidade (impede mover o setor de unidade)
      */
     private boolean updateSector(Connection conn, Sectors sector, int id, Integer unitScope) throws SQLException {
 

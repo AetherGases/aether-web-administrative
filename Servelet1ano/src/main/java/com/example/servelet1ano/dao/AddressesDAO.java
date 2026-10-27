@@ -18,6 +18,13 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                     "values (?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
+     * Condicao usada no update que desativa endereco: so desativa se nenhuma unidade ou empresa ativa usar o endereco
+     */
+    private static final String NOT_IN_USE =
+            " and not exists (select 1 from units u where u.address_id = addresses.id and u.is_active = true)" +
+                    " and not exists (select 1 from companies c where c.address_id = addresses.id and c.is_active = true)";
+
+    /**
      * Valida os dados do endereco antes de gravar
      * Rua, numero, bairro, cidade e estado sao obrigatorios (NOT NULL no banco) e todos os campos precisam caber na tabela
      * O CEP é opcional no banco, entao so é validado quando vier preenchido
@@ -343,8 +350,10 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
     /**
      * metodo para desativar o endereco por id (is_active = false)
+     * Nao desativa se uma unidade ou empresa ativa ainda usar o endereco
+     * (use isInUse para saber o motivo quando devolver false)
      * @param id Valor unico de cada endereco
-     * @return true se foi desativado e false se o endereco nao existe ou ja estava desativado
+     * @return true se foi desativado e false se o endereco nao existe, ja estava desativado ou ainda esta em uso
      */
     @Override
     public boolean delete(int id) {
@@ -353,7 +362,7 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update addresses set is_active = false, updated_at = current_timestamp " +
-                                "where id = ? and is_active = true"
+                                "where id = ? and is_active = true" + NOT_IN_USE
                 )
         ) {
 
@@ -363,6 +372,34 @@ public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao desativar o endereço de id " + id + " no banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo que confere se o endereco ainda esta sendo usado por alguma unidade ou empresa ativa
+     * Util para o servlet avisar o usuario antes de desativar o endereco
+     * @param id O id do endereco
+     * @return true se alguma unidade ou empresa ativa usa o endereco
+     */
+    public boolean isInUse(int id) {
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select 1 where exists (select 1 from units where address_id = ? and is_active = true) " +
+                                "or exists (select 1 from companies where address_id = ? and is_active = true)"
+                )
+        ) {
+
+            pstmt.setInt(1, id);
+            pstmt.setInt(2, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao conferir o uso do endereço de id " + id + " no banco de dados.", e);
         }
     }
 

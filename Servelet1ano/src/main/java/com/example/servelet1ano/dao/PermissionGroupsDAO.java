@@ -15,6 +15,13 @@ import java.util.Set;
 public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGroupsFilter> {
 
     /**
+     * Condicao usada nos updates que desativam grupo: so desativa se nao houver funcionario ativo usando o grupo
+     * (antes de desativar, os funcionarios precisam ser movidos para outro grupo ou desativados)
+     */
+    private static final String NO_ACTIVE_EMPLOYEES =
+            " and not exists (select 1 from employees e where e.permission_group_id = permission_groups.id and e.is_active = true)";
+
+    /**
      * Metodo que busca os grupos de permissao ativos aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
      * Se o companyId vier nulo, NAO filtra por empresa (busca em todas). Para buscar so os grupos globais, use searchGlobal()
@@ -232,8 +239,10 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
     /**
      * metodo para desativar o grupo de permissao por id (is_active = false)
+     * Nao desativa se ainda houver funcionarios ativos usando o grupo: antes e preciso mover ou desativar esses funcionarios
+     * (use hasActiveEmployees para saber o motivo quando devolver false)
      * @param id Valor unico de cada grupo de permissao
-     * @return true se foi desativado e false se o grupo nao existe ou ja estava desativado
+     * @return true se foi desativado e false se o grupo nao existe, ja estava desativado ou ainda tem funcionarios ativos
      */
     @Override
     public boolean delete(int id){
@@ -242,7 +251,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update permission_groups set is_active = false, updated_at = current_timestamp " +
-                                "where id = ? and is_active = true"
+                                "where id = ? and is_active = true" + NO_ACTIVE_EMPLOYEES
                 )
         ) {
 
@@ -256,12 +265,39 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
     }
 
     /**
+     * metodo que confere se o grupo de permissao ainda tem funcionarios ativos usando ele
+     * Util para o servlet avisar o usuario antes de desativar o grupo (mover ou desativar os funcionarios primeiro)
+     * @param permissionGroupId O id do grupo de permissao
+     * @return true se existe pelo menos um funcionario ativo usando o grupo
+     */
+    public boolean hasActiveEmployees(int permissionGroupId){
+
+        try(
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select 1 from employees where permission_group_id = ? and is_active = true limit 1"
+                )
+        ) {
+
+            pstmt.setInt(1, permissionGroupId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao conferir os funcionários do grupo de permissão de id " + permissionGroupId + " no banco de dados.", e);
+        }
+    }
+
+    /**
      * metodo que desativa pelo nome, dentro de uma empresa
      * O nome precisa ser igual (sem diferenciar maiusculas de minusculas)
      * Desativa todos os grupos ativos da empresa com esse nome
+     * Se algum deles ainda tiver funcionarios ativos, nenhum e desativado (mover ou desativar os funcionarios primeiro)
      * @param name O nome do grupo de permissao
      * @param companyId O id da empresa dona do grupo (evita desativar grupos de outras empresas); se for null, procura entre os grupos globais
-     * @return true se foi desativado e false se nenhum grupo foi encontrado
+     * @return true se foi desativado e false se nenhum grupo foi encontrado ou algum ainda tem funcionarios ativos
      */
     public boolean deleteByName(String name, Integer companyId){
 
@@ -269,22 +305,42 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
             return false;
         }
 
-        String sql = "update permission_groups set is_active = false, updated_at = current_timestamp " +
-                "where lower(name) = lower(?) and is_active = true and " +
+        String where = "lower(name) = lower(?) and is_active = true and " +
                 (companyId == null ? "company_id is null" : "company_id = ?");
 
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try(Connection conn = ConnectionFactory.connect()) {
 
-            pstmt.setString(1, name.trim());
+            try (PreparedStatement check = conn.prepareStatement(
+                    "select 1 from permission_groups where " + where +
+                            " and exists (select 1 from employees e where e.permission_group_id = permission_groups.id and e.is_active = true)" +
+                            " limit 1"
+            )) {
 
-            if (companyId != null) {
-                pstmt.setInt(2, companyId);
+                check.setString(1, name.trim());
+
+                if (companyId != null) {
+                    check.setInt(2, companyId);
+                }
+
+                try (ResultSet rs = check.executeQuery()) {
+                    if (rs.next()) {
+                        return false;
+                    }
+                }
             }
 
-            return pstmt.executeUpdate() > 0;
+            try (PreparedStatement pstmt = conn.prepareStatement(
+                    "update permission_groups set is_active = false, updated_at = current_timestamp where " + where
+            )) {
+
+                pstmt.setString(1, name.trim());
+
+                if (companyId != null) {
+                    pstmt.setInt(2, companyId);
+                }
+
+                return pstmt.executeUpdate() > 0;
+            }
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao desativar o grupo de permissão pelo nome no banco de dados.", e);
@@ -293,6 +349,7 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
     /**
      * metodo que desativa os grupos de permissao de uma empresa (para quando uma empresa for desativada)
+     * Nao confere os funcionarios: quem desativa a empresa ja desativa os funcionarios dela antes
      * @param companyId O id da empresa
      * @return true se algum grupo foi desativado e false se a empresa nao tinha grupos ativos
      */
