@@ -12,23 +12,31 @@ import java.util.List;
 public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter> {
 
     /**
+     * Select base usado na busca geral e na busca por id
+     * A juncao e left join pra nao sumir uma assinatura que esteja sem empresa
+     */
+    private static final String SELECT_SUBSCRIPTIONS =
+            "select s.*, s.company_id as companyId, s.plan_id as planId, " +
+                    "c.id as idCompany, c.name as companyName " +
+                    "from subscriptions s " +
+                    "left join companies c on c.id = s.company_id ";
+
+    /**
      * Metodo que busca as assinaturas ativas aplicando os filtros informados
      * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados
-     * @param filter Objeto com os campos opcionais para filtrar a busca
+     * @param filter Objeto com os campos opcionais para filtrar a busca (se for null, busca todas)
      * @return List<Subscriptions> com as assinaturas encontradas
      */
     @Override
     public List<Subscriptions> searchAll(SubscriptionsFilter filter){
 
+        if (filter == null) {
+            filter = new SubscriptionsFilter();
+        }
+
         List<Subscriptions> subscriptions = new ArrayList<>();
 
-        StringBuilder sql = new StringBuilder(
-                "select s.*, s.company_id as companyId, s.plan_id as planId, " +
-                        "c.id as idCompany, c.name as companyName " +
-                        "from subscriptions s " +
-                        "join companies c on c.id = s.company_id " +
-                        "where s.is_active = true"
-        );
+        StringBuilder sql = new StringBuilder(SELECT_SUBSCRIPTIONS + "where s.is_active = true");
 
         List<Object> parametros = new ArrayList<>();
 
@@ -42,6 +50,8 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             parametros.add(filter.getCompanyId());
         }
 
+        sql.append(" order by s.id");
+
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
@@ -51,107 +61,87 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
                 pstmt.setObject(i + 1, parametros.get(i));
             }
 
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()){
-
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                Subscriptions subscription = new Subscriptions(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("planId"),
-                        rs.getBoolean("is_active"),
-                        rs.getBoolean("installments"),
-                        company
-                );
-
-                subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
-                subscription.setCreatedAt(rs.getTimestamp("created_at"));
-                subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
-
-                subscriptions.add(subscription);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()){
+                    subscriptions.add(mapSubscription(rs));
+                }
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erro ao buscar as assinaturas no banco de dados.", e);
         }
 
-        finally {
-            return subscriptions;
-        }
+        return subscriptions;
     }
 
     /**
      * metodo para buscar por Id (somente ativas)
      * @param id Numero unico da assinatura
-     * @return Retorna a assinatura encontrada
+     * @return Retorna a assinatura encontrada, ou null se nao existir ou estiver desativada
      */
     @Override
     public Subscriptions searchById(int id){
 
-        Subscriptions subscription = null;
-
         try (
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "select s.*, s.company_id as companyId, s.plan_id as planId, " +
-                                "c.id as idCompany, c.name as companyName " +
-                                "from subscriptions s " +
-                                "join companies c on c.id = s.company_id " +
-                                "where s.id = ? and s.is_active = true"
+                        SELECT_SUBSCRIPTIONS + "where s.id = ? and s.is_active = true"
                 )
         ){
 
             pstmt.setInt(1, id);
 
-            ResultSet rs = pstmt.executeQuery();
-
-            if(rs.next()){
-                Companies company = new Companies(
-                        rs.getInt("idCompany"),
-                        rs.getString("companyName")
-                );
-
-                subscription = new Subscriptions(
-                        rs.getInt("id"),
-                        rs.getInt("companyId"),
-                        rs.getInt("planId"),
-                        rs.getBoolean("is_active"),
-                        rs.getBoolean("installments"),
-                        company
-                );
-
-                subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
-                subscription.setCreatedAt(rs.getTimestamp("created_at"));
-                subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if(rs.next()){
+                    return mapSubscription(rs);
+                }
             }
 
+            return null;
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            return subscription;
+            throw new RuntimeException("Erro ao buscar a assinatura de id " + id + " no banco de dados.", e);
         }
     }
 
     /**
      * metodo para cadastrar novas assinaturas no banco (sempre ativa na criacao)
      * @param subscription A assinatura que sera cadastrada
-     * @return true se foi registrada e false caso tenha dado erro
+     * @return true se foi registrada e false se a empresa ou o plano nao existirem (ou estiverem desativados)
      */
     @Override
     public boolean register(Subscriptions subscription){
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into subscriptions (company_id, plan_id, is_active, installments) " +
-                                "values (?, ?, ?, ?)"
-                )
-        ){
+        try (Connection conn = ConnectionFactory.connect()){
+
+            return registerConn(subscription, conn);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao cadastrar a assinatura no banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo para cadastrar uma nova assinatura usando uma conexao ja aberta (sempre ativa na criacao)
+     * (permite que quem chamou controle a transacao, ex: cadastrar a empresa e a assinatura juntas)
+     * Dentro de uma transacao, a empresa recem-cadastrada na mesma conexao ja e enxergada pela conferencia
+     * @param subscription A assinatura que sera cadastrada
+     * @param conn A conexao (nao e fechada aqui)
+     * @return true se foi registrada e false se a empresa ou o plano nao existirem (ou estiverem desativados)
+     * @throws SQLException se der erro no banco
+     */
+    public boolean registerConn(Subscriptions subscription, Connection conn) throws SQLException {
+
+        if (subscription == null
+                || !existsActive(conn, "companies", subscription.getCompanyId())
+                || !existsActive(conn, "plans", subscription.getPlanId())) {
+            return false;
+        }
+
+        try (PreparedStatement pstmt = conn.prepareStatement(
+                "insert into subscriptions (company_id, plan_id, is_active, installments) " +
+                        "values (?, ?, ?, ?)"
+        )){
 
             pstmt.setInt(1, subscription.getCompanyId());
             pstmt.setInt(2, subscription.getPlanId());
@@ -159,10 +149,6 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             pstmt.setBoolean(4, subscription.isInstallments());
 
             return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 
@@ -170,96 +156,104 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
      * metodo para desativar a assinatura por id (is_active = false)
      * Faz a mesma coisa que deactivateSubscription -- mantido separado pra bater com a interface DAOI
      * @param id Valor unico de cada assinatura
-     * @return true se foi desativada e false caso tenha dado erro
+     * @return true se foi desativada e false se a assinatura nao existe ou ja estava desativada
      */
     @Override
     public boolean delete(int id){
-
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
-                )
-        ) {
-
-            pstmt.setInt(1, id);
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return deactivateSubscription(id);
     }
 
     /**
      * metodo que desativa as assinaturas de uma empresa (para quando uma empresa for desativada)
      * @param companyId O id da empresa
-     * @return true se foi desativada e false caso tenha dado erro
+     * @return true se alguma assinatura foi desativada e false se a empresa nao tinha assinaturas ativas
      */
     public boolean deleteByCompanyId(int companyId){
 
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where company_id = ?"
-                )
-        ) {
+        try(Connection conn = ConnectionFactory.connect()) {
+
+            return deleteByCompanyId(companyId, conn);
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao desativar as assinaturas da empresa de id " + companyId + ".", e);
+        }
+    }
+
+    /**
+     * metodo que desativa as assinaturas de uma empresa usando uma conexao ja aberta
+     * (permite que quem chamou controle a transacao, ex: desativar a empresa e tudo o que depende dela juntos)
+     * @param companyId O id da empresa
+     * @param conn A conexao (nao e fechada aqui)
+     * @return true se alguma assinatura foi desativada e false se a empresa nao tinha assinaturas ativas
+     * @throws SQLException se der erro no banco
+     */
+    public boolean deleteByCompanyId(int companyId, Connection conn) throws SQLException {
+
+        try(PreparedStatement pstmt = conn.prepareStatement(
+                "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp " +
+                        "where company_id = ? and is_active = true"
+        )) {
 
             pstmt.setInt(1, companyId);
 
             return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 
     /**
      * metodo que muda os values da assinatura selecionada pelo id
+     * A assinatura nao pode mudar de empresa; so o plano e o parcelamento
      * @param subscription Os valores da assinatura para ser atualizada
      * @param id O valor unico da assinatura que quer atualizar
-     * @return true se foi mudada e false caso tenha dado erro
+     * @return true se foi mudada e false se o plano nao existir/estiver desativado ou a assinatura nao existir/estiver desativada
      */
     @Override
     public boolean update(Subscriptions subscription, int id){
 
-        try(
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set company_id = ?, " +
-                                "plan_id = ?, " +
-                                "installments = ?, " +
-                                "updated_at = current_timestamp " +
-                                "where id = ?"
-                )
-        ){
+        if (subscription == null) {
+            return false;
+        }
 
-            pstmt.setInt(1, subscription.getCompanyId());
-            pstmt.setInt(2, subscription.getPlanId());
-            pstmt.setBoolean(3, subscription.isInstallments());
-            pstmt.setInt(4, id);
+        try(Connection conn = ConnectionFactory.connect()){
 
-            return pstmt.executeUpdate() > 0;
+            if (!existsActive(conn, "plans", subscription.getPlanId())) {
+                return false;
+            }
+
+            try (PreparedStatement pstmt = conn.prepareStatement(
+                    "update subscriptions set plan_id = ?, " +
+                            "installments = ?, " +
+                            "updated_at = current_timestamp " +
+                            "where id = ? and company_id = ? and is_active = true"
+            )) {
+
+                pstmt.setInt(1, subscription.getPlanId());
+                pstmt.setBoolean(2, subscription.isInstallments());
+                pstmt.setInt(3, id);
+                pstmt.setInt(4, subscription.getCompanyId());
+
+                return pstmt.executeUpdate() > 0;
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao atualizar a assinatura de id " + id + " no banco de dados.", e);
         }
     }
 
     /**
      * metodo para ativar uma assinatura
+     * So reativa se a empresa da assinatura estiver ativa
      * @param id Id da assinatura
-     * @return true se foi ativada e false caso tenha dado erro
+     * @return true se foi ativada e false se a assinatura nao existe, ja estava ativa ou a empresa esta desativada
      */
     public boolean activateSubscription(int id){
 
         try(
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = true, deactivated_at = null, updated_at = current_timestamp where id = ?"
+                        "update subscriptions set is_active = true, deactivated_at = null, updated_at = current_timestamp " +
+                                "where id = ? and is_active = false " +
+                                "and exists (select 1 from companies c where c.id = subscriptions.company_id and c.is_active = true)"
                 )
         ){
 
@@ -268,22 +262,22 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao ativar a assinatura de id " + id + " no banco de dados.", e);
         }
     }
 
     /**
      * metodo para desativar uma assinatura
      * @param id Id da assinatura
-     * @return true se foi desativada e false caso tenha dado erro
+     * @return true se foi desativada e false se a assinatura nao existe ou ja estava desativada
      */
     public boolean deactivateSubscription(int id){
 
         try(
                 Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
-                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp where id = ?"
+                        "update subscriptions set is_active = false, deactivated_at = current_timestamp, updated_at = current_timestamp " +
+                                "where id = ? and is_active = true"
                 )
         ){
 
@@ -292,8 +286,56 @@ public class SubscriptionsDAO implements DAOI<Subscriptions, SubscriptionsFilter
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Erro ao desativar a assinatura de id " + id + " no banco de dados.", e);
+        }
+    }
+
+    //    ------------- Metodos auxiliares (privados) --------------
+
+    /**
+     * Monta uma assinatura (com a empresa) a partir da linha atual do ResultSet
+     * Como a juncao e left join, a empresa fica null se a assinatura nao tiver vinculo
+     */
+    private Subscriptions mapSubscription(ResultSet rs) throws SQLException {
+
+        Companies company = null;
+
+        int idCompany = rs.getInt("idCompany");
+        if (!rs.wasNull()) {
+            company = new Companies(idCompany, rs.getString("companyName"));
+        }
+
+        Subscriptions subscription = new Subscriptions(
+                rs.getInt("id"),
+                rs.getInt("companyId"),
+                rs.getInt("planId"),
+                rs.getBoolean("is_active"),
+                rs.getBoolean("installments"),
+                company
+        );
+
+        subscription.setDeactivatedAt(rs.getTimestamp("deactivated_at"));
+        subscription.setCreatedAt(rs.getTimestamp("created_at"));
+        subscription.setUpdatedAt(rs.getTimestamp("updated_at"));
+
+        return subscription;
+    }
+
+    /**
+     * Confere se existe um registro ativo com esse id
+     * @param table Nome da tabela: use somente valores fixos do codigo ("companies" ou "plans"), nunca texto digitado
+     */
+    private boolean existsActive(Connection conn, String table, int id) throws SQLException {
+
+        try (PreparedStatement pstmt = conn.prepareStatement(
+                "select 1 from " + table + " where id = ? and is_active = true"
+        )) {
+
+            pstmt.setInt(1, id);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
         }
     }
 
