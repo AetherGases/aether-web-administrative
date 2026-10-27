@@ -56,6 +56,17 @@ public class Employees {
         this.status = status;
     }
 
+    public Employees(int companyId, int permissionGroupId, String cpf, String name, String email, String phone, String passwordHash, StatusEmployee status) {
+        this.companyId = companyId;
+        this.permissionGroupId = permissionGroupId;
+        this.cpf = cpf;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.passwordHash = passwordHash;
+        this.status = status;
+    }
+
     public Employees(int id, int companyId, int permissionGroupId, int unitId, int sectorId, String cpf, String name, String email, String phone, StatusEmployee status, PermissionGroups permissionGroup, Companies company, Units unit, Sectors sector) {
         this.id = id;
         this.companyId = companyId;

@@ -77,7 +77,7 @@
         <p>Dashboard</p>
 
         <div>
-            <h3> Olá, Layous!</h3>
+            <h3>Olá, ${employee.name}!</h3>
             <p>Voce tem 12 mini-layouts aguardando análise hoje </p>
 
             <a>Ver registros </a>

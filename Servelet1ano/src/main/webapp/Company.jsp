@@ -17,144 +17,204 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
+    <link rel="stylesheet" href="Global2.css">
+
+
 </head>
 <body>
 
-<aside>
+    <aside class="aside">
 
 
-    <div >
-        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-        <p>aether</p>
-    </div>
+        <div>
+            <img  class="logoAether" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+            <p class="tipografiaLogo">aether</p>
+        </div>
+
+        <div>
+            <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
+            <p class="tipografiaAdmin">ADMIN</p>
+        </div>
+
+        <nav>
+            <ul>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Dashboard.jsp">Dashboards</a>
+                        <img class="imagemDashboard" src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Employee.jsp">Funcionários</a>
+                        <img class="imagemFuncionario" src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Sectors.jsp">Setores</a>
+                        <img class="imagemSetores" src="Imagens/setores.svg" alt="Imagem de setor">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Units.jsp">Unidades</a>
+                        <img class="imagemUnidade" src="Imagens/unidade.svg" alt="Imagem de prédios">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Company.jsp">Empresas</a>
+                        <img class="imagemEmpresas" src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes1" src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes2" src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <div>
+            <a class="tipografiaLogout" href="Login.jsp">Logout</a>
+            <img class="imagemLogout" src="Imagens/logout.svg" alt="Logout">
+        </div>
+
+    </aside>
 
     <div>
-        <h3>Giulia Cacá</h3>
-        <p>ADMIN</p>
+
+        <h2 class="tipografiaAreaRestrita">Area restrista</h2>
+        <p class="tipografiaNomeDaAba">Empresas</p>
+
+    </div>
+
+    <div class="barraPesquisar">
+        <p class="tipografiaPesquisar">Pesquisar</p>
+        <img class="imagemPesquisar" src="Imagens/pesquisar2.svg" alt="Imagem de Pesquisar">
     </div>
 
     <nav>
         <ul>
-            <li><a href="">Dashboards</a></li>
-            <li><a href="">Funcionários</a></li>
-            <li><a href="">Setores</a></li>
-            <li><a href="">Unidades</a></li>
-            <li><a href="">Empresas</a></li>
-            <li><a href="">Permissões</a></li>
-            <li><a href="">Permissões</a></li>
+            <li><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></li>
+            <li><a href="${pageContext.request.contextPath}/funcionarios">Funcionários</a></li>
+            <li><a href="${pageContext.request.contextPath}/setores">Setores</a></li>
+            <li><a href="${pageContext.request.contextPath}/unidades">Unidades</a></li>
+            <li><a href="${pageContext.request.contextPath}/empresas">Empresas</a></li>
+            <li><a href="${pageContext.request.contextPath}/permissoes">Permissões</a></li>
         </ul>
+
+        <div>
+            <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
+        </div>
     </nav>
 
-    <div>
-        <a href="Login.jsp">Logout</a>
-    </div>
 
-</aside>
+    <div id="modalEmpresa">
 
-<div>
+        <div>
+            <h2>Adicionar empresa</h2>
+            <button id="btnFecharModal">✕</button>
 
-    <h2>Area restrista</h2>
+    <h2>Area restrita</h2>
     <p>Empresas</p>
 
-</div>
+                <input type="text" id="nomeEmpresa" name="campoNomeEmpresa" placeholder="nome">
+                <label for="nomeEmpresa"></label>
 
-<div>
-    <button id="btnAbrirModal">Adicionar novo</button>
-    <img src="Imagens/Mais.svg" alt="Adicionar">
-</div>
+                <input type="text" id="taxID" name="campoTaxID" placeholder="tax ID">
+                <label for="taxID"></label>
 
-<div id="modalEmpresa">
+                <input type="text" id="setor" name="campoSetor" placeholder="setor">
+                <label for="setor"></label>
 
-    <div>
-        <h2>Adicionar empresa</h2>
-        <button id="btnFecharModal">✕</button>
+                <input type="date" id="dtRegistro" name="campoDataRegistro" placeholder="data registro">
+                <label for="dtRegistro"></label>
 
-        <form action="AdicionarEmpresa" method="post">
+                <label for="status"></label>
+                <select name="status" id="status" >
+                    <option value="" disabled selected hidden>ativo</option>
+                    <option value="inativo">inativo</option>
+                    <option value="ativo">ativo</option>
+                </select>
 
-            <input type="text" id="nomeEmpresa" name="campoNomeEmpresa" placeholder="nome">
-            <label for="nomeEmpresa"></label>
+                <label for="tamanho"></label>
+                <select name="tamanhos" id="tamanho" >
+                    <option value="" disabled selected hidden>grande</option>
+                    <option value="inativo">média</option>
+                    <option value="recessa">pequena</option>
+                    <option value="licenca">grande</option>
+                </select>
 
-            <input type="text" id="taxID" name="campoTaxID" placeholder="tax ID">
-            <label for="taxID"></label>
+                <button type="submit" value="enviarFormularioAdicionarEmpresa">Adicionar</button>
 
-            <input type="text" id="setor" name="campoSetor" placeholder="setor">
-            <label for="setor"></label>
+            </form>
 
-            <input type="date" id="dtRegistro" name="campoDataRegistro" placeholder="data registro">
-            <label for="dtRegistro"></label>
-
-            <label for="status"></label>
-            <select name="status" id="status" >
-                <option value="" disabled selected hidden>ativo</option>
-                <option value="inativo">inativo</option>
-                <option value="ativo">ativo</option>
-            </select>
-
-            <label for="tamanho"></label>
-            <select name="tamanhos" id="tamanho" >
-                <option value="" disabled selected hidden>grande</option>
-                <option value="inativo">média</option>
-                <option value="recessa">pequena</option>
-                <option value="licenca">grande</option>
-            </select>
-
-            <button type="submit" value="enviarFormularioAdicionarEmpresa">Adicionar</button>
-
-        </form>
+        </div>
 
     </div>
 
-</div>
 
 
+    <div class="tabela">
+        <table>
+            <thead class="tabelaThread">
+                <tr class="tabelaLinhas">
+                    <th class="tipografiaTopoTabela">Nome</th>
+                    <th class="tipografiaTopoTabela">Tamanho</th>
+                    <th class="tipografiaTopoTabela">Data de Registro</th>
+                    <th class="tipografiaTopoTabela">Tax ID</th>
+                    <th class="tipografiaTopoTabela">E-mail</th>
+                    <th class="tipografiaTopoTabela">Status</th>
+                </tr>
+            </thead>
+            <tbody>
 
-<section>
-    <table>
-        <thead>
-        <tr>
-            <th>Nome</th>
-            <th>Tamanho</th>
-            <th>Data de Registro</th>
-            <th>Tax ID</th>
-            <th>E-mail</th>
-            <th>Status</th>
-        </tr>
-        </thead>
-        <tbody>
+                <tr class="tabelaLinhas">
+                    <td class="tipografiaTabelaGeral">Caio Campelo Rocha</td>
+                    <td class="tipografiaTabelaGeral">350</td>
+                    <td class="tipografiaTabelaGeral">05/02/2029</td>
+                    <td class="tipografiaTabelaGeral">19090938208</td>
+                    <td class="tipografiaTabelaGeral">jbs@gmail.com</td>
+                    <td class="tipografiaTabelaGeral">Ativo</td>
 
-        <tr>
-            <td>Caio Campelo Rocha</td>
-            <td>350</td>
-            <td>05/02/2029</td>
-            <td>19090938208</td>
-            <td>jbs@gmail.com</td>
-            <td>Ativo</td>
+                    <td>
+                        <button><img src="Imagens/VER.svg" alt="Imagem de um Olho"></button>
+                        <button><img src="Imagens/EDITAR.svg" alt="Imagem de um Lápis"></button>
+                        <button><img src="Imagens/LIXO.svg" alt="Imagem de uma Lixeira"></button>
+                    </td>
 
-            <td>
-                <button></button>
-                <button></button>
-                <button></button>
-            </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        </tr>
-        </tbody>
-    </table>
-</section>
+    <button></button>
+    <div>1</div>
+    <button></button>
 
 
-<script>
-    const btnAbrir = document.getElementById('btnAbrirModal');
-    const btnFechar = document.getElementById('btnFecharModal');
-    const modal = document.getElementById('modalEmpresa');
+    <script>
+        const btnAbrir = document.getElementById('btnAbrirModal');
+        const btnFechar = document.getElementById('btnFecharModal');
+        const modal = document.getElementById('modalEmpresa');
 
-    btnAbrir.addEventListener('click', function() {
-        modal.classList.add('ativo');
-    });
+        btnAbrir.addEventListener('click', function() {
+            modal.classList.add('ativo');
+        });
 
-    btnFechar.addEventListener('click', function() {
-        modal.classList.remove('ativo');
-    });
-</script>
+        btnFechar.addEventListener('click', function() {
+            modal.classList.remove('ativo');
+        });
+    </script>
 
 </body>
 </html>

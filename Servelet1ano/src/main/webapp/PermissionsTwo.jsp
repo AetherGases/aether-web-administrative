@@ -46,7 +46,7 @@
     </nav>
 
     <div>
-        <a href="Login.jsp">Logout</a>
+    <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
     </div>
 
 </aside>

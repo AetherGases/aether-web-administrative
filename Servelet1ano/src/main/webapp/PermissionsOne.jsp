@@ -46,14 +46,14 @@
         </nav>
 
         <div>
-            <a href="Login.jsp">Logout</a>
+        <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
         </div>
 
     </aside>
 
     <div>
 
-        <h2>Area restrista</h2>
+        <h2>Area restrita</h2>
         <p>Permissões Aether</p>
 
     </div>
