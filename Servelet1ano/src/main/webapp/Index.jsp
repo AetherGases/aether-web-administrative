@@ -699,9 +699,9 @@
                                 <span class="dropdownSeta" aria-hidden="true"></span>
                             </button>
                             <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloTamanho">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>grande</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">média</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">pequena</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>Grande</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">Média</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">Pequena</li>
                             </ul>
                             <input type="hidden" id="empresaTamanho" name="tamanhos" value="">
                         </div>
@@ -711,7 +711,7 @@
                     <div class="campoFormulario">
                         <label class="rotuloCampoOculto" for="empresaCnpj">CNPJ</label>
                         <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="cnpj"
-                               placeholder="CNPJ" inputmode="numeric" autocomplete="off" required>
+                               placeholder="00.000.000/0001-91" inputmode="numeric" autocomplete="off" required>
                     </div>
 
                     <!-- E-mail -->
