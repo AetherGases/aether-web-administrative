@@ -5,155 +5,177 @@
 <head>
     <meta charset="UTF-8">
     <title>Tela de Dashboard do Aether</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
+
+    <link rel="stylesheet" href="Dashboard.css">
+    <link rel="stylesheet" href="Global2.css">
+
+
 </head>
 <body>
 
-<aside>
-
-    <div>
-        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-        <p>aether</p>
-    </div>
-
-    <div>
-        <p>ADMIN</p>
-    </div>
-
-    <nav>
-        <ul>
-            <li>
-                <div>
-                    <a href="Dashboard.jsp">Dashboards</a>
-                    <img src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
-                </div>
-            </li>
-            <li>
-                <div>
-                    <a href="Employee.jsp">Funcionários</a>
-                    <img src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
-                </div>
-            </li>
-            <li>
-                <div>
-                    <a href="Sectors.jsp">Setores</a>
-                    <img src="Imagens/setores.svg" alt="Imagem de setor">
-                </div>
-            </li>
-            <li>
-                <div>
-                    <a href="Units.jsp">Unidades</a>
-                    <img src="Imagens/unidade.svg" alt="Imagem de prédios">
-                </div>
-            </li>
-            <li>
-                <div>
-                    <a href="Company.jsp">Empresas</a>
-                    <img src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
-                </div>
-            </li>
-            <li>
-                <div>
-                    <a href="PermissionsOne.jsp">Permissões</a>
-                    <img src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
-                </div>
-            </li>
-            <li>
-                <div>
-                    <a href="PermissionsOne.jsp">Permissões</a>
-                    <img src="Imagens/permissao2.svg" alt="Imagem de nuvem">
-                </div>
-            </li>
-        </ul>
-    </nav>
-
-    <div>
-        <a href="Login.jsp">Logout</a>
-        <img src="Imagens/logout.svg" alt="Logout">
-    </div>
-
-</aside>
-
-<h2>Area restrita </h2>
-<p>Dashboard</p>
-
-<div>
-    <h3>Olá, ${employee.name}!</h3>
-    <p>Voce tem 12 mini-layouts aguardando análise hoje </p>
-
-    <a>Ver registros </a>
-    <a>Ver funcionários</a>
-</div>
+    <aside class="aside">
 
 
-<div>
-    <h3>Inserções recentes</h3>
-    <a>Ver mais</a>
+        <div>
+            <img  class="logoAether" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+            <p class="tipografiaLogo">aether</p>
+        </div>
 
-    <p>1.</p>
-    <p>Caio Sagaz</p>
-    <p>Mandou um relatório</p>
+        <div>
+            <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
+            <p class="tipografiaAdmin">ADMIN</p>
+        </div>
 
-    <a>Reprovar</a>
-    <a>Aprovar</a>
+        <nav>
+            <ul>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Dashboard.jsp">Dashboards</a>
+                        <img class="imagemDashboard" src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Employee.jsp">Funcionários</a>
+                        <img class="imagemFuncionario" src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Sectors.jsp">Setores</a>
+                        <img class="imagemSetores" src="Imagens/setores.svg" alt="Imagem de setor">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Units.jsp">Unidades</a>
+                        <img class="imagemUnidade" src="Imagens/unidade.svg" alt="Imagem de prédios">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Company.jsp">Empresas</a>
+                        <img class="imagemEmpresas" src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes1" src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes2" src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                    </div>
+                </li>
+            </ul>
+        </nav>
 
-</div>
+        <div>
+            <a class="tipografiaLogout" href="Login.jsp">Logout</a>
+            <img class="imagemLogout" src="Imagens/logout.svg" alt="Logout">
+        </div>
 
-<div>
+    </aside>
 
-    <div>
-        <p>Atividades recentes </p>
-        <p>24</p>
-        <img src="Imagens/grafico.svg" alt="Imagem de um gráfico">
-    </div>
+        <h2 class="tipografiaAreaRestrita">Area restrita </h2>
+        <p class="tipografiaNomeDaAba">Dashboard</p>
 
-    <div>
-        <p>Permissões</p>
-        <p>8</p>
-        <img src="Imagens/chave.svg" alt="Imagem ">
-    </div>
+        <div class="quadradoInformativo">
+            <h3 class="tipografiaNomeQuadrado"> Olá, Layous!</h3>
+            <p class="tipografiaDescricao">Voce tem 12 mini-layouts aguardando análise hoje </p>
 
-    <div>
-        <p>Funcionários</p>
-        <p>15</p>
-        <img src="Imagens/pessoas.svg" alt="Imagem de Pessoas">
-    </div>
+            <a class="botaoRegistro tipografiaRegistro">Ver registros </a>
+            <a class="botaoFuncionario tipografiaFuncionario">Ver funcionários</a>
+        </div>
 
-    <div>
-        <p>Unidades</p>
-        <p>07</p>
-        <img src="Imagens/predios.svg" alt="Imagem de Prédios">
-    </div>
-</div>
 
-<div>
-    <p>Relatórios revisados</p>
-    <p>450</p>
-    <p>Este mês</p>
-    <img src="Imagens/relatorio.svg" alt="Imagem de um Relatório">
-    <a>Ver histórico</a>
-    <p>Último enviado em 11/09/2001</p>
-</div>
+        <div class="quadradoInsercoes">
+            <h3 class="tituloInsercoes">Inserções recentes</h3>
+            <a class="tipografiaVerMais">Ver mais</a>
 
-<div>
-    <p>Emissões da unidade</p>
-    <p>2.403</p>
-    <p>tCO<sub>2</sub>e/mês</p>
+            <p class="numeracaoIncersoes">1.</p>
+            <p class="tipografiaFuncionarioIncersao">Caio Sagaz</p>
+            <p class="tipografiaDescricaoIncersao">Mandou um relatório</p>
 
-    <div>
-        <p>12% em relação ao período anterior</p>
-        <img src="Imagens/fabrica.svg" alt="Imagem de uma Fábrica">
-    </div>
+            <a class="botaoReprovar tipografiaReprovar">Reprovar</a>
+            <a class="botaoAprovar tipografiaAprovar">Aprovar</a>
 
-</div>
+        </div>
 
-<div>
-    <p>Selo Clima Paraná</p>
-    <p>Nível</p>
-    <p>50%</p>
-    <img src="Imagens/medalha.svg" alt="Imagem de uma Medalha">
-    <img src="Imagens/atencao.svg" alt="Imagem de uma Sinal de Atenção">
-    <p>2 de 4 critérios atendidos</p>
-</div>
+        <div>
+
+            <div class="quadradoAtividadeRecente">
+                <p class="tipografiaQuadradinhos">Atividades recentes </p>
+                <p class="tipografiaNumerosQuadradinhos">24</p>
+                <img class="imagemQuadradinhos" src="Imagens/grafico.svg" alt="Imagem de um gráfico">
+                <div class="linhaQuadradinho"></div>
+            </div>
+
+            <div class="quadradoPermissoes">
+                <p class="tipografiaQuadradinhos">Permissões</p>
+                <p class="tipografiaNumerosQuadradinhos">8</p>
+                <img class="imagemQuadradinhos" src="Imagens/chave.svg" alt="Imagem de uma chave">
+                <div class="linhaQuadradinho"></div>
+            </div>
+
+            <div class="quadradoFuncionario">
+                <p class="tipografiaQuadradinhos">Funcionários</p>
+                <p class="tipografiaNumerosQuadradinhos">15</p>
+                <img class="imagemQuadradinhosEspecial" src="Imagens/pessoas.svg" alt="Imagem de Pessoas">
+                <div class="linhaQuadradinho"></div>
+            </div>
+
+            <div class="quadradoUnidade">
+                <p class="tipografiaQuadradinhos">Unidades</p>
+                <p class="tipografiaNumerosQuadradinhos">07</p>
+                <img class="imagemQuadradinhos" src="Imagens/predios.svg" alt="Imagem de Prédios">
+                <div class="linhaQuadradinho"></div>
+            </div>
+        </div>
+
+        <div class="quadradoRelatorios">
+            <p class="tipografiaTituloRelatorios">Relatórios revisados</p>
+            <p class="tipografiaNumerosQuadradinhos">450</p>
+            <p class="tipografiaSubTitulo">Este mês</p>
+            <img class="imagemRelatorio" src="Imagens/Relatorio.svg" alt="Imagem de um Relatório">
+            <a class="botaoHistorico tipografiaBotaoHistorico">Ver histórico</a>
+            <p class="tipografiaDescricaoRelatorio">Último enviado em 11/09/2001</p>
+        </div>
+
+        <div class="quadradoEmissao">
+            <p class="tipografiaTituloEmissao">Emissões da unidade</p>
+            <p class="tipografiaNumerosQuadradinhos">2.403</p>
+            <p class="tipografiaSubTitulo">tCO<sub>2</sub>e/mês</p>
+
+            <div class="notificacaoEmissao">
+                <p class="tipografiaNotificacao">12% em relação ao período anterior</p>
+                <img class="imagemIndustria" src="Imagens/fabrica.svg" alt="Imagem de uma Fábrica">
+            </div>
+
+        </div>
+
+        <div class="quadradoSCP">
+            <p class="tipopgrafiaTituloSCP">Selo Clima Paraná</p>
+            <p class="tipografiaSubtituloSCP">Nível</p>
+            <p class="tipografiaNumerosQuadradinhos">50%</p>
+            <img class="imagemSelo" src="Imagens/medalha.svg" alt="Imagem de uma Medalha">
+            <img class="imagemAviso" src="Imagens/atencao.svg" alt="Imagem de uma Sinal de Atenção">
+            <p class="tipografiaCriterios">2 de 4 critérios atendidos</p>
+        </div>
 
 </body>
 </html>
