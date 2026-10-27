@@ -34,10 +34,17 @@ public class DatabaseConfig {
      * @return O valor da variavel ou null se nao foi encontrada
      */
     private static String get(String key) {
-        if (dotenv == null) {
-            return null;
+        String value = null;
+
+        if (dotenv != null) {
+            value = dotenv.get(key);
         }
-        return dotenv.get(key);
+
+        if (value == null || value.isBlank()) {
+            value = System.getenv(key);
+        }
+
+        return value;
     }
 
     public static String getUrl() {
@@ -50,5 +57,17 @@ public class DatabaseConfig {
 
     public static String getPassword() {
         return get("DB_PASSWORD");
+    }
+
+    public static String getBrevoApiKey() {
+        return get("BREVO_API_KEY");
+    }
+
+    public static String getBrevoFromEmail() {
+        return get("BREVO_FROM_EMAIL");
+    }
+
+    public static String getBrevoFromName() {
+        return get("BREVO_FROM_NAME");
     }
 }
