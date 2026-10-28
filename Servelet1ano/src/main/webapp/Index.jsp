@@ -682,8 +682,13 @@
                     <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
                     <!-- Empresa -->
-                    <label for="empresa">e</label>
-                    <input type="text" name="empresas" id="empresaTipo" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
+                    <div class="campoFormulario">
+                        <label class="rotuloCampoOculto" for="empresaNome">Nome da empresa</label>
+                        <input class="entradaEmpresarial" type="text" id="empresaNome" name="empresas"
+                               placeholder="Nome da empresa" autocomplete="organization"
+                               value="<c:out value='${requestScope.empresas}' />" required>
+                    </div>
+
                     <!-- Tamanho -->
                     <div class="dropdownPersonalizado">
                         <span class="dropdownRotulo" id="rotuloTamanho">tamanho</span>
@@ -694,9 +699,9 @@
                                 <span class="dropdownSeta" aria-hidden="true"></span>
                             </button>
                             <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloTamanho">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>grande</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">média</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">pequena</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>Grande</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">Média</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">Pequena</li>
                             </ul>
                             <input type="hidden" id="empresaTamanho" name="tamanhos" value="">
                         </div>
@@ -706,7 +711,7 @@
                     <div class="campoFormulario">
                         <label class="rotuloCampoOculto" for="empresaCnpj">CNPJ</label>
                         <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="cnpj"
-                               placeholder="CNPJ" inputmode="numeric" autocomplete="off" required>
+                               placeholder="00.000.000/0001-91" inputmode="numeric" autocomplete="off" required>
                     </div>
 
                     <!-- E-mail -->
@@ -757,7 +762,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <a href="Login.jsp" class="linkTrocaAba" type="button" data-destino="l">clique aqui</a>
+                        <a href="Login.jsp" class="linkTrocaAba" data-destino="l">clique aqui</a>
                     </p>
                 </form>
             </div>
