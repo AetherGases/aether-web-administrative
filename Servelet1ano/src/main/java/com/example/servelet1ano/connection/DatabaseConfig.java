@@ -70,4 +70,8 @@ public class DatabaseConfig {
     public static String getBrevoFromName() {
         return get("BREVO_FROM_NAME");
     }
+
+    public static String getPasswordRecoverySecret() {
+        return get("PASSWORD_RECOVERY_SECRET");
+    }
 }

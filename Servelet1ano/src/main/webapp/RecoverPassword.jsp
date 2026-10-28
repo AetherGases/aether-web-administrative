@@ -45,9 +45,9 @@
                 <p class="tipografiaRecSenha">Recuperar senha</p>
             </div>
 
-            <form action="Verification.jsp" method="post">
+            <form action="${pageContext.request.contextPath}/recover-password" method="post">
 
-                <input class="campoEmail campoEmailtipografia" type="email" id="email" name="campoEmail" placeholder="e-mail">
+                <input class="campoEmail campoEmailtipografia" type="email" id="email" name="campoEmail" placeholder="e-mail" autocomplete="email" required>
                 <label for="email"></label>
 
                 <button class="botaoEnvioRoxo tipografiaEnvio" type="submit" value="enviarFormulárioSenha">Confirmar</button>
