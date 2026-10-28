@@ -57,7 +57,7 @@
             </div>
 
             <form
-                    action="${pageContext.request.contextPath}/gerente"
+                    action="${pageContext.request.contextPath}/Employee.jsp"
                     method="post"
                     accept-charset="UTF-8"
             >

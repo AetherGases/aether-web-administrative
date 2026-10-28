@@ -90,12 +90,12 @@
         <p class="tipografiaDescricao">Voce tem 12 mini-layouts aguardando análise hoje</p>
 
         <a class="botaoRegistro tipografiaRegistro">Ver registros</a>
-        <a class="botaoFuncionario tipografiaFuncionario">Ver funcionários</a>
+        <a href="Employee.jsp" class="botaoFuncionario tipografiaFuncionario">Ver funcionários</a>
     </div>
 
     <div class="quadradoInsercoes">
         <h3 class="tituloInsercoes">Inserções recentes</h3>
-        <a class="tipografiaVerMais">Ver mais</a>
+        <a href="Employee.jsp" class="tipografiaVerMais">Ver mais</a>
 
         <p class="numeracaoIncersoes">1.</p>
         <p class="tipografiaFuncionarioIncersao">Caio Sagaz</p>

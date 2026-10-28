@@ -20,36 +20,72 @@
 </head>
 <body>
 
-<aside>
+    <aside class="aside">
+        <div>
+            <img class="logoAether" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+            <p class="tipografiaLogo">aether</p>
+        </div>
 
+        <div>
+            <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
+            <p class="tipografiaAdmin">ADMIN</p>
+        </div>
 
-    <div >
-        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-        <p>aether</p>
-    </div>
+        <nav>
+            <ul>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Dashboard.jsp">Dashboards</a>
+                        <img class="imagemDashboard" src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Employee.jsp">Funcionários</a>
+                        <img class="imagemFuncionario" src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Sectors.jsp">Setores</a>
+                        <img class="imagemSetores" src="Imagens/setores.svg" alt="Imagem de setor">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Units.jsp">Unidades</a>
+                        <img class="imagemUnidade" src="Imagens/unidade.svg" alt="Imagem de prédios">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="Company.jsp">Empresas</a>
+                        <img class="imagemEmpresas" src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes1" src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                        <img class="imagemPermissoes2" src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                    </div>
+                </li>
+            </ul>
+        </nav>
 
-    <div>
-        <h3>Giulia Cacá</h3>
-        <p>ADMIN</p>
-    </div>
+        <div>
+            <a class="tipografiaLogout" href="Login.jsp">Logout</a>
+            <img class="imagemLogout" src="Imagens/logout.svg" alt="Logout">
+        </div>
+    </aside>
 
-    <nav>
-        <ul>
-            <li><a href="">Dashboards</a></li>
-            <li><a href="">Funcionários</a></li>
-            <li><a href="">Setores</a></li>
-            <li><a href="">Unidades</a></li>
-            <li><a href="">Empresas</a></li>
-            <li><a href="">Permissões</a></li>
-            <li><a href="">Permissões</a></li>
-        </ul>
-    </nav>
-
-    <div>
-    <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
-    </div>
-
-</aside>
+    <h2 class="tipografiaAreaRestrita">Area restrita</h2>
+    <p class="tipografiaNomeDaAba">Dashboard</p>
 
 <div>
 

@@ -124,8 +124,10 @@
             <h2>Adicionar empresa</h2>
             <button id="btnFecharModal">✕</button>
 
-    <h2>Area restrita</h2>
-    <p>Empresas</p>
+            <h2>Area restrita</h2>
+            <p>Empresas</p>
+
+            <form>
 
                 <input type="text" id="nomeEmpresa" name="campoNomeEmpresa" placeholder="nome">
                 <label for="nomeEmpresa"></label>
