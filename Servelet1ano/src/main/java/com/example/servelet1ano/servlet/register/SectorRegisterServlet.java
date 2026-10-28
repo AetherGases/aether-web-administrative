@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.model.Sectors;
@@ -154,6 +153,22 @@ public class SectorRegisterServlet extends HttpServlet {
                             response,
                             companyId,
                             "O setor não foi encontrado ou não pertence à sua empresa."
+                    );
+                    return;
+                }
+
+                /*
+                 * Um setor com funcionários ativos não pode ser excluído:
+                 * antes é preciso mover ou desativar esses funcionários.
+                 */
+                if (sectorsDAO.hasActiveEmployees(id)) {
+                    exibirErro(
+                            request,
+                            response,
+                            companyId,
+                            "Não é possível excluir o setor enquanto houver "
+                                    + "funcionários ativos nele. Mova ou desative "
+                                    + "os funcionários antes de excluir o setor."
                     );
                     return;
                 }

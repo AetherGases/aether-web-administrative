@@ -25,7 +25,7 @@ public enum CompanySize {
     public static CompanySize fromValor(String valor) {
 
         if (valor == null || valor.isBlank()) {
-            System.out.println("Error: the company size is empty. Check the size column in the companies table.");
+            System.out.println("Erro: o porte da empresa está vazio. Confira a coluna size da tabela companies.");
             return null;
         }
 
@@ -35,7 +35,7 @@ public enum CompanySize {
             }
         }
 
-        System.out.println("Error: the company size '" + valor + "' is not valid. The accepted values are pequeno, medio and grande.");
+        System.out.println("Erro: o porte da empresa '" + valor + "' não é válido. Os valores aceitos são pequeno, medio e grande.");
         return null;
     }
 }
