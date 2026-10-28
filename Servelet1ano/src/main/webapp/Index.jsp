@@ -40,13 +40,13 @@
             <li><a href="#gasesPoluentes">GEE</a></li>
             <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
             <li><a href="#planos">PLANOS</a></li>
-            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="login.jsp">Entrar</a></li>
+            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="Login.jsp">Entrar</a></li>
             <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="CompanyRegister.jsp">Cadastrar-se</a></li>
         </ul>
     </nav>
 
     <div class="acoesCabecalho">
-        <a class="botaoEntrar conteudoBotaoEntrar" href="login.jsp">Entrar</a>
+        <a class="botaoEntrar conteudoBotaoEntrar" href="Login.jsp">Entrar</a>
         <a class="botaoCadastrar conteudoBotaoCadastar" href="CompanyRegister.jsp">Cadastrar-se</a>
     </div>
 </header>
@@ -539,7 +539,7 @@
 
                 <!-- Plano Pulse (destacado no plano mensal) -->
                 <article class="cardPlano cardPlanoPulse" data-periodo="mensal">
-                    <h3 class="nomePlano">aether Pulse</h3>
+                    <h3 class="nomePlano">Aether Pulse</h3>
                     <p class="subtituloPlano">For Industries</p>
                     <p class="precoPlano">
                         <span class="valorPlano">R$3.300</span><span class="periodoPlano">/por mês</span>
@@ -554,14 +554,14 @@
 
                 <!-- Plano Horizon (destacado no plano trimestral) -->
                 <article class="cardPlano cardPlanoHorizon cardPlanoAtivo" data-periodo="trimestral">
-                    <h3 class="nomePlano">aether Horizon</h3>
+                    <h3 class="nomePlano">Aether Horizon</h3>
                     <p class="subtituloPlano">For Bigger Industries</p>
                     <p class="precoPlano">
                         <span class="valorPlano">R$9.400</span><span class="periodoPlano">/a cada 3 meses</span>
                     </p>
                     <a class="botaoAssinar botaoAssinarRoxo" href="#cadastro">Assine agora <span class="setaAssinar" aria-hidden="true">&rarr;</span></a>
                     <ul class="listaBeneficios">
-                        <li>Tudo do plano aether Pulse</li>
+                        <li>Tudo do plano Aether Pulse</li>
                         <li>Quantidade de cadastro de funcionários ilimitada</li>
                         <li>Acompanhamento Trimestral</li>
                     </ul>
@@ -682,8 +682,13 @@
                     <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
                     <!-- Empresa -->
-                    <label for="empresa">e</label>
-                    <input type="text" name="empresas" id="empresaTipo" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
+                    <div class="campoFormulario">
+                        <label class="rotuloCampoOculto" for="empresaNome">Nome da empresa</label>
+                        <input class="entradaEmpresarial" type="text" id="empresaNome" name="empresas"
+                               placeholder="Nome da empresa" autocomplete="organization"
+                               value="<c:out value='${requestScope.empresas}' />" required>
+                    </div>
+
                     <!-- Tamanho -->
                     <div class="dropdownPersonalizado">
                         <span class="dropdownRotulo" id="rotuloTamanho">tamanho</span>
@@ -694,9 +699,9 @@
                                 <span class="dropdownSeta" aria-hidden="true"></span>
                             </button>
                             <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloTamanho">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>grande</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">média</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">pequena</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>Grande</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">Média</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">Pequena</li>
                             </ul>
                             <input type="hidden" id="empresaTamanho" name="tamanhos" value="">
                         </div>
@@ -706,7 +711,7 @@
                     <div class="campoFormulario">
                         <label class="rotuloCampoOculto" for="empresaCnpj">CNPJ</label>
                         <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="cnpj"
-                               placeholder="CNPJ" inputmode="numeric" autocomplete="off" required>
+                               placeholder="00.000.000/0001-91" inputmode="numeric" autocomplete="off" required>
                     </div>
 
                     <!-- E-mail -->
@@ -757,7 +762,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <a href="login.jsp" class="linkTrocaAba" type="button" data-destino="l">clique aqui</a>
+                        <a href="Login.jsp" class="linkTrocaAba" data-destino="l">clique aqui</a>
                     </p>
                 </form>
             </div>
