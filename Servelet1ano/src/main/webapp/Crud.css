@@ -43,165 +43,7 @@ button {
     overflow: hidden;
 }
 
-/* ------------------------------ SIDEBAR ------------------------------ */
-.sidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 284px;
-    height: 1024px;
-    background: #FFF;
-    border-radius: 0 30px 30px 0;
-}
-
-.sidebar-logo {
-    position: absolute;
-    left: 48px;
-    top: 28px;
-    width: 186px;
-    height: 71px;
-}
-
-.sidebar-mascote {
-    position: absolute;
-    left: 47px;
-    top: 212px;
-    width: 202px;
-    height: 157px;
-}
-
-.sidebar-mascote .nuvem {
-    position: absolute;
-    left: -9px;
-    top: -14px;
-    width: 264px;
-    height: auto;
-}
-
-/* Maleta do mascote — retângulos do Figma (Group 2049761284) */
-.maleta {
-    position: absolute;
-    left: 125.86px;   /* 172.86 - 47 */
-    top: 92.4px;      /* 304.40 - 212 */
-    width: 75.6px;
-    height: 64.4px;
-}
-
-.maleta span {
-    position: absolute;
-    display: block;
-}
-
-.maleta .alca-e   { left: 19.11px; top: 0; width: 6.37px; height: 17.52px; background: #2DBD7E; border-radius: 7px 7px 0 0; }
-.maleta .alca-d   { left: 46.2px;  top: 0; width: 6.37px; height: 17.52px; background: #2DBD7E; border-radius: 7px 7px 0 0; }
-.maleta .alca-t   { left: 19.11px; top: 0; width: 33.46px; height: 6.37px; background: #2DBD7E; border-radius: 7px; }
-.maleta .corpo    { left: 0; top: 15.93px; width: 75.6px; height: 48.43px; background: #2DBD7E; border-radius: 5.9px; }
-.maleta .faixa-e  { left: 11.15px; top: 15.93px; width: 4.78px; height: 47.79px; background: #1E6B56; }
-.maleta .faixa-d  { left: 55.75px; top: 15.93px; width: 4.78px; height: 47.79px; background: #1E6B56; }
-
-.sidebar-admin {
-    position: absolute;
-    left: 0;
-    top: 396px;
-    width: 284px;
-    margin: 0;
-    text-align: center;
-    color: #2DBD7E;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 24px;
-    letter-spacing: 0.5px;
-}
-
-/* Menu: primeiro item em y=482, um a cada 62px, ícone em x=63 */
-.menu {
-    position: absolute;
-    left: 0;
-    top: 0;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.menu li {
-    position: absolute;
-    left: 39px;
-    width: 206px;
-    height: 41.2px;
-}
-
-.menu li:nth-child(1) { top: 472px; }
-.menu li:nth-child(2) { top: 534px; }
-.menu li:nth-child(3) { top: 596px; }
-.menu li:nth-child(4) { top: 658px; }
-.menu li:nth-child(5) { top: 720px; }
-.menu li:nth-child(6) { top: 782px; }
-.menu li:nth-child(7) { top: 844px; }
-
-.menu a {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    width: 100%;
-    height: 100%;
-    padding-left: 24px;            /* ícone em x = 39 + 24 = 63 */
-    border-radius: 10px;
-    color: #1E6B56;
-    font-size: 18px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background-color .15s ease;
-}
-
-.menu a:hover {
-    background: #D4FFEB;
-}
-
-.menu a img {
-    width: 17px;
-    height: 18px;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-
-.menu a img.icone-largo {
-    width: 27px;
-    height: 17px;
-    margin-right: -6px;
-}
-
-/* Item ativo = Rectangle 23857 (206 x 41.2) */
-.menu a.ativo {
-    background: #2DBD7E;
-    color: #FFF;
-}
-
-.menu a.ativo img {
-    filter: brightness(0) invert(1);
-}
-
-.logout {
-    position: absolute;
-    left: 18px;
-    top: 964px;
-    width: 246px;
-    height: 51px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border-radius: 30px;
-    background: #FFF;
-    color: #FB324C;
-    font-size: 24px;
-    font-weight: 500;
-    text-decoration: none;
-}
-
-.logout img {
-    width: 27.3px;
-    height: 23px;
-}
+/* Barra lateral: ver o final deste arquivo */
 
 /* ------------------------------ CABEÇALHO ----------------------------- */
 .titulo-pagina {
@@ -905,3 +747,123 @@ button {
     white-space: nowrap;
     border: 0;
 }
+
+/* ===================== BARRA LATERAL (WEB-INF/includes/Sidebar.jsp) ===================== */
+.sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 284px;
+    height: 1024px;
+    background: #FFF;
+    border-radius: 0 30px 30px 0;
+}
+.sidebar-logo {
+    position: absolute;
+    left: 48px;
+    top: 28px;
+    width: 186px;
+    height: 71px;
+}
+.sidebar-mascote {
+    position: absolute;
+    left: 38px;
+    top: 198px;
+    width: 264px;
+    height: auto;
+}
+.sidebar-maleta {
+    position: absolute;
+    left: 172.86px;
+    top: 304.4px;
+    width: 75.6px;
+    height: 64.4px;
+}
+.sidebar-admin {
+    position: absolute;
+    left: 0;
+    top: 396px;
+    width: 284px;
+    margin: 0;
+    color: #2DBD7E;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+.sidebar-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.sidebar-menu li {
+    position: absolute;
+    left: 39px;
+    width: 206px;
+    height: 41.2px;
+}
+.sidebar-menu li:nth-child(1) { top: 472px; }
+.sidebar-menu li:nth-child(2) { top: 534px; }
+.sidebar-menu li:nth-child(3) { top: 596px; }
+.sidebar-menu li:nth-child(4) { top: 658px; }
+.sidebar-menu li:nth-child(5) { top: 720px; }
+.sidebar-menu li:nth-child(6) { top: 782px; }
+.sidebar-menu li:nth-child(7) { top: 844px; }
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    height: 100%;
+    padding-left: 24px;
+    border-radius: 10px;
+    color: #1E6B56;
+    font-size: 18px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color .15s ease;
+}
+.sidebar-menu a:hover {
+    background: #D4FFEB;
+}
+.sidebar-menu a img {
+    width: 17px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.sidebar-menu a img.icone-largo {
+    width: 27px;
+    height: 17px;
+    margin-right: -6px;
+}
+.sidebar-menu a.ativo {
+    background: #2DBD7E;
+    color: #FFF;
+}
+.sidebar-menu a.ativo img {
+    filter: brightness(0) invert(1);
+}
+.sidebar-logout {
+    position: absolute;
+    left: 18px;
+    top: 964px;
+    width: 246px;
+    height: 51px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 30px;
+    background: #FFF;
+    color: #FB324C;
+    font-size: 24px;
+    font-weight: 500;
+    text-decoration: none;
+}
+.sidebar-logout img {
+    width: 27.3px;
+    height: 23px;
+}
+
