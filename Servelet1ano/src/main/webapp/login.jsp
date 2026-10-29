@@ -62,11 +62,7 @@
         </c:if>
 
         <!-- Formulário processado pelo LoginServlet -->
-        <form
-                action="${pageContext.request.contextPath}/login"
-                method="post"
-                accept-charset="UTF-8"
-        >
+        <form action="${pageContext.request.contextPath}/login" method="post" accept-charset="UTF-8">
             <label for="empresa" class="visually-hidden">
                 Empresa
             </label>
