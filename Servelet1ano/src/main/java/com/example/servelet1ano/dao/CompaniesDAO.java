@@ -4,22 +4,32 @@ import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
+import com.example.servelet1ano.util.SqlUtil;
 import com.example.servelet1ano.validation.Validators;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
     /**
-     * Valida os dados da empresa antes de gravar (cnpj, porte e, se preenchido, email)
+     * Valida os dados da empresa antes de gravar (nome, cnpj, porte e, se preenchido, email e tax id)
      * @param company A empresa a validar
-     * @return true se cnpj, porte e o email (quando informado) forem validos
+     * @return true se nome, cnpj, porte, o email e o tax id (quando informados) forem validos e couberem na tabela
      */
     private boolean isValid(Companies company) {
 
         if (company == null) {
+            return false;
+        }
+
+        if (company.getName() == null || company.getName().isBlank() || company.getName().trim().length() > 255) {
+            return false;
+        }
+
+        if (company.getTradeName() != null && company.getTradeName().trim().length() > 150) {
             return false;
         }
 
@@ -31,7 +41,12 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
 
-        if (company.getEmail() != null && !company.getEmail().isBlank() && !Validators.isEmail(company.getEmail())) {
+        if (company.getEmail() != null && !company.getEmail().isBlank()
+                && (company.getEmail().trim().length() > 255 || !Validators.isEmail(company.getEmail()))) {
+            return false;
+        }
+
+        if (company.getTaxId() != null && company.getTaxId().trim().length() > 50) {
             return false;
         }
 
@@ -53,6 +68,91 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
         return cnpj.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
     }
 
+    /**
+     * Deixa o email sem espacos nas pontas e em minusculo (ou null se estiver vazio)
+     * @param company A empresa
+     * @return O email normalizado, ou null
+     */
+    private String emailOf(Companies company) {
+
+        if (company.getEmail() == null || company.getEmail().isBlank()) {
+            return null;
+        }
+
+        return company.getEmail().trim().toLowerCase(Locale.ROOT);
+    }
+
+    /**
+     * Devolve o nome fantasia sem espacos nas pontas (ou null se estiver vazio)
+     * @param company A empresa
+     * @return O nome fantasia, ou null
+     */
+    private String tradeNameOf(Companies company) {
+
+        if (company.getTradeName() == null || company.getTradeName().isBlank()) {
+            return null;
+        }
+
+        return company.getTradeName().trim();
+    }
+
+    /**
+     * Devolve o tax id sem espacos nas pontas (ou null se estiver vazio)
+     * @param company A empresa
+     * @return O tax id, ou null
+     */
+    private String taxIdOf(Companies company) {
+
+        if (company.getTaxId() == null || company.getTaxId().isBlank()) {
+            return null;
+        }
+
+        return company.getTaxId().trim();
+    }
+
+    /**
+     * Confere se o erro do banco foi de valor duplicado (unique violation, SQLState 23505), ex: cnpj ja cadastrado
+     * @param e O erro do banco
+     * @return true se foi duplicidade
+     */
+    private boolean isUniqueViolation(SQLException e) {
+        return "23505".equals(e.getSQLState());
+    }
+
+    /**
+     * Desfaz a transacao sem esconder o erro original
+     */
+    private void rollbackQuietly(Connection conn, Exception cause) {
+        try {
+            conn.rollback();
+        } catch (SQLException rollbackError) {
+            cause.addSuppressed(rollbackError);
+        }
+    }
+
+    /**
+     * Monta uma empresa a partir da linha atual do ResultSet
+     */
+    private Companies mapCompany(ResultSet rs) throws SQLException {
+
+        Companies company = new Companies(
+                rs.getInt("id"),
+                rs.getString("name"),
+                rs.getString("trade_name"),
+                rs.getString("cnpj"),
+                CompanySize.fromValor(rs.getString("size")),
+                rs.getDate("registration_date"),
+                rs.getString("email"),
+                rs.getTimestamp("created_at"),
+                rs.getBoolean("is_active")
+        );
+
+        company.setUpdatedAt(rs.getTimestamp("updated_at"));
+        company.setTaxId(rs.getString("tax_id"));
+
+        return company;
+    }
+
 
     /**
      * Metodo que busca as empresas ativas aplicando os filtros informados
@@ -67,10 +167,6 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         List<Companies> companies = new ArrayList<>();
 
-        if (filter == null) {
-            filter = new CompaniesFilter();
-        }
-
         StringBuilder sql = new StringBuilder(
                 "select c.* " +
                         "from companies c " +
@@ -79,6 +175,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         List<Object> parametros = new ArrayList<>();
 
+        if (filter == null) {
+            filter = new CompaniesFilter();
+        }
+
         if (filter.getId() != null) {
             sql.append(" and c.id = ?");
             parametros.add(filter.getId());
@@ -86,7 +186,7 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         if (filter.getName() != null && !filter.getName().isBlank()) {
             sql.append(" and c.name ilike ?");
-            parametros.add("%" + filter.getName() + "%");
+            parametros.add("%" + SqlUtil.escapeLike(filter.getName().trim()) + "%");
         }
 
         if (filter.getCnpj() != null && !filter.getCnpj().isBlank()) {
@@ -99,14 +199,10 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             parametros.add(filter.getRegistrationDate());
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return companies;
-        }
+        sql.append(" order by c.id");
 
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
@@ -117,28 +213,14 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 while (rs.next()) {
-
-                    Companies company = new Companies(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getString("trade_name"),
-                            rs.getString("cnpj"),
-                            CompanySize.fromValor(rs.getString("size")),
-                            rs.getDate("registration_date"),
-                            rs.getString("email"),
-                            rs.getDate("created_at"),
-                            rs.getBoolean("is_active")
-                    );
-
-                    company.setUpdatedAt(rs.getDate("updated_at"));
-
-                    companies.add(company);
+                    companies.add(mapCompany(rs));
                 }
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+            throw new RuntimeException("Erro ao buscar as empresas no banco de dados.", e);
         }
+
         return companies;
     }
 
@@ -150,16 +232,8 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
     @Override
     public Companies searchById(int id) {
 
-        Companies company = null;
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return null;
-        }
-
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "select c.* " +
                                 "from companies c " +
@@ -172,77 +246,33 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()) {
-
-                    company = new Companies(
-                            rs.getInt("id"),
-                            rs.getString("name"),
-                            rs.getString("trade_name"),
-                            rs.getString("cnpj"),
-                            CompanySize.fromValor(rs.getString("size")),
-                            rs.getDate("registration_date"),
-                            rs.getString("email"),
-                            rs.getDate("created_at"),
-                            rs.getBoolean("is_active")
-                    );
-
-                    company.setUpdatedAt(rs.getDate("updated_at"));
+                    return mapCompany(rs);
                 }
             }
 
+            return null;
+
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+            throw new RuntimeException("Erro ao buscar a empresa de id " + id + " no banco de dados.", e);
         }
-        return company;
     }
 
     /**
      * Metodo para cadastrar novas empresas no banco
      * @param company Empresa que sera cadastrada
-     * @return true se foi registrada e false caso tenha dado erro
+     * @return true se foi registrada e false se os dados forem invalidos ou o cnpj ja estiver cadastrado
      */
     @Override
     public boolean register(Companies company) {
-
-        if (!isValid(company)) {
-            return false;
-        }
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "insert into companies (name, trade_name, size, registration_date, cnpj, email) " +
-                                "values (?, ?, ?::company_size, ?, ?, ?)"
-                )
-        ) {
-
-            pstmt.setString(1, company.getName());
-            pstmt.setString(2, company.getTradeName());
-            pstmt.setString(3, company.getSize().getValor());
-            pstmt.setDate(4, company.getRegistrationDate());
-            pstmt.setString(5, cleanCnpj(company.getCnpj()));
-            pstmt.setString(6, company.getEmail());
-
-            return pstmt.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
-        }
+        return registerReturningId(company) > 0;
     }
 
     /**
-     * Cadastra uma empresa e retorna o ID gerado pelo banco.
-     *
-     * Utiliza uma conexão própria quando o cadastro não faz parte
-     * de uma transação externa.
-     *
-     * @param company empresa que será cadastrada
-     * @return ID gerado ou -1 caso os dados sejam inválidos
+     * metodo para cadastrar uma nova empresa e devolver o id gerado
+     * Usado quando a empresa precisa ser vinculada a uma subscription
+     * Usa o returning do PostgreSQL em vez de RETURN_GENERATED_KEYS
+     * @param company A empresa que sera cadastrada
+     * @return O id gerado, ou -1 se os dados forem invalidos ou o cnpj ja estiver cadastrado
      */
     public int registerReturningId(Companies company) {
 
@@ -252,118 +282,117 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         try (Connection conn = ConnectionFactory.connect()) {
 
-            if (conn == null) {
-                throw new IllegalStateException(
-                        "Não foi possível estabelecer conexão com o banco."
-                );
-            }
-
             return registerReturningId(company, conn);
 
         } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Erro ao cadastrar empresa e recuperar seu ID.",
-                    e
-            );
+
+            if (isUniqueViolation(e)) {
+                return -1;
+            }
+
+            throw new RuntimeException("Erro ao cadastrar a empresa no banco de dados.", e);
         }
     }
 
     /**
-     * Cadastra uma empresa utilizando uma conexão compartilhada.
-     *
-     * Não abre nem fecha a conexão recebida, permitindo que o service
-     * controle a transação e reverta o cadastro caso outra operação falhe.
-     *
-     * @param company empresa que será cadastrada
-     * @param conn conexão pertencente à transação externa
-     * @return ID gerado ou -1 caso os dados sejam inválidos
-     * @throws SQLException caso ocorra um erro durante a operação SQL
+     * metodo para cadastrar uma nova empresa usando uma conexao ja aberta e devolver o id gerado
+     * (permite que quem chamou controle a transacao, ex: cadastrar a empresa e a assinatura juntas)
+     * Se o cnpj ja estiver cadastrado, lanca SQLException (SQLState 23505), para a transacao de quem chamou ser desfeita
+     * @param company A empresa que sera cadastrada
+     * @param conn A conexao (nao e fechada aqui)
+     * @return O id gerado, ou -1 se os dados forem invalidos
+     * @throws SQLException se der erro no banco
      */
-    public int registerReturningId(Companies company, Connection conn) {
+    public int registerReturningId(Companies company, Connection conn) throws SQLException {
 
         if (!isValid(company)) {
             return -1;
         }
 
-        if (conn == null) {
-            throw new IllegalArgumentException(
-                    "A conexão com o banco não pode ser nula."
-            );
-        }
-
-        String sql =
-                "INSERT INTO companies " +
-                        "(name, trade_name, size, registration_date, cnpj, email) " +
-                        "VALUES (?, ?, ?::company_size, ?, ?, ?) " +
-                        "RETURNING id";
+        String sql = "INSERT INTO companies " +
+                "(name, trade_name, size, registration_date, cnpj, email, tax_id) " +
+                "VALUES (?, ?, ?::company_size, ?, ?, ?, ?) " +
+                "RETURNING id";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, company.getName());
-            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(1, company.getName().trim());
+            pstmt.setString(2, tradeNameOf(company));
             pstmt.setString(3, company.getSize().getValor());
             pstmt.setDate(4, company.getRegistrationDate());
             pstmt.setString(5, cleanCnpj(company.getCnpj()));
-            pstmt.setString(6, company.getEmail());
+            pstmt.setString(6, emailOf(company));
+            pstmt.setString(7, taxIdOf(company));
 
             try (ResultSet rs = pstmt.executeQuery()) {
-
                 if (rs.next()) {
                     return rs.getInt("id");
                 }
-
-                return -1;
-            } catch (SQLException e) {
-                throw new RuntimeException("Erro ao acessar o banco de dados.", e);
             }
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
         }
+
+        return -1;
     }
 
     /**
      * Metodo para desativar a empresa por ID (is_active = false)
      * Cascateia a desativacao para as units da empresa (que por sua vez cascateiam para setores e funcionarios),
-     * e tambem para setores, telefones, grupos de permissao e assinaturas da empresa
+     * e tambem para funcionarios, setores, telefones, grupos de permissao e assinaturas da empresa
+     * Tudo acontece na mesma transacao: ou a empresa e tudo o que depende dela sao desativados juntos, ou nada muda
      * @param id Valor unico de cada empresa
-     * @return true se foi desativada e false caso tenha dado erro
+     * @return true se foi desativada e false se a empresa nao existe ou ja estava desativada
      */
     @Override
     public boolean delete(int id) {
 
-        new UnitsDAO().deleteByCompanyId(id);
-        new SectorsDAO().deleteByCompanyId(id);
-        new TelephoneCompaniesDAO().deleteByCompanyId(id);
-        new PermissionGroupsDAO().deleteByCompanyId(id);
-        new SubscriptionsDAO().deleteByCompanyId(id);
+        try (Connection conn = ConnectionFactory.connect()) {
 
-        Connection conn = ConnectionFactory.connect();
+            // desliga o salvamento automatico pra tudo ser desativado junto (ou nada)
+            conn.setAutoCommit(false);
 
-        if (conn == null) {
-            return false;
-        }
+            try {
 
-        try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "update companies set is_active = false, updated_at = current_timestamp where id = ?"
-                )
-        ) {
+                boolean deactivated;
 
-            pstmt.setInt(1, id);
+                try (PreparedStatement pstmt = conn.prepareStatement(
+                        "update companies set is_active = false, updated_at = current_timestamp " +
+                                "where id = ? and is_active = true"
+                )) {
+                    pstmt.setInt(1, id);
+                    deactivated = pstmt.executeUpdate() > 0;
+                }
 
-            return pstmt.executeUpdate() > 0;
+                if (!deactivated) {
+                    conn.rollback();
+                    return false;
+                }
+
+                new UnitsDAO().deleteByCompanyId(id, conn);
+                new EmployeesDAO().deleteByIdCompany(id, conn);
+                new SectorsDAO().deleteByCompanyId(id, conn);
+                new TelephoneCompaniesDAO().deleteByCompanyId(id, conn);
+                new PermissionGroupsDAO().deleteByCompanyId(id, conn);
+                new SubscriptionsDAO().deleteByCompanyId(id, conn);
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException | RuntimeException e) {
+                rollbackQuietly(conn, e);
+                throw e;
+            }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+            throw new RuntimeException("Erro ao desativar a empresa de id " + id + " no banco de dados.", e);
         }
     }
 
     /**
      * Metodo que atualiza a empresa pelo ID
+     * Se a data de cadastro vier null, mantem a que ja esta no banco
      * @param company Valores da empresa para atualizar
      * @param id ID da empresa que sera atualizada
-     * @return true se foi atualizada e false caso tenha dado erro
+     * @return true se foi atualizada e false se os dados forem invalidos, o cnpj ja for de outra empresa ou a empresa nao existir/estiver desativada
      */
     @Override
     public boolean update(Companies company, int id) {
@@ -372,38 +401,40 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(
                         "update companies set name = ?, " +
                                 "trade_name = ?, " +
                                 "size = ?::company_size, " +
-                                "registration_date = ?, " +
+                                "registration_date = coalesce(?::date, registration_date), " +
                                 "cnpj = ?, " +
                                 "email = ?, " +
+                                "tax_id = ?, " +
                                 "updated_at = current_timestamp " +
-                                "where id = ?"
+                                "where id = ? and is_active = true"
                 )
         ) {
 
-            pstmt.setString(1, company.getName());
-            pstmt.setString(2, company.getTradeName());
+            pstmt.setString(1, company.getName().trim());
+            pstmt.setString(2, tradeNameOf(company));
             pstmt.setString(3, company.getSize().getValor());
             pstmt.setDate(4, company.getRegistrationDate());
             pstmt.setString(5, cleanCnpj(company.getCnpj()));
-            pstmt.setString(6, company.getEmail());
-            pstmt.setInt(7, id);
+            pstmt.setString(6, emailOf(company));
+            pstmt.setString(7, taxIdOf(company));
+            pstmt.setInt(8, id);
 
             return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+
+            if (isUniqueViolation(e)) {
+                return false;
+            }
+
+            throw new RuntimeException("Erro ao atualizar a empresa de id " + id + " no banco de dados.", e);
         }
     }
+
 }

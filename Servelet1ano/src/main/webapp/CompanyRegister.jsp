@@ -24,11 +24,6 @@
     <div class="blur3"></div>
     <div class="blur4"></div>
 
-    <a href="Index.jsp"  class="botaoVoltar">
-        <p class="tipografiaBotaoVoltar">Voltar</p>
-        <div class="botaoRendondoVoltar"> <img class="setaVoltar" src="Imagens/setaVoltar.svg" alt="Seta Voltar"> </div>
-    </a>
-
     <div>
         <div class="quadradoAetherPulse">
             <p class="tituloPlanos">Aether <span class="tituloPlanoVerde">Pulse</span></p>
@@ -55,46 +50,23 @@
                 <li>Acompanhamento trimestral</li>
             </ul>
         </div>
-    </div>
+    </c:if>
 
-    <div>
-        <img class="aekoCRUD" src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg" alt="Aeko">
-        <div class="cadastroEmpresarial tipografiaCadastroEmpresarial">Cadastro empresarial</div>
+    <fieldset>
+        <form action="${pageContext.request.contextPath}/empresa" method="post">
 
-        <%-- Exibe a mensagem de sucesso enviada pelo CompanyRegisterServlet. --%>
-        <c:if test="${not empty requestScope.sucesso}">
-            <div class="mensagem-sucesso" role="status">
-                <p><c:out value="${requestScope.sucesso}" /></p>
-            </div>
-        </c:if>
-        <%-- Exibe a mensagem de erro enviada pelo CompanyRegisterServlet. --%>
-        <c:if test="${not empty requestScope.erro}">
-            <div class="mensagem-erro" role="alert">
-                <p><c:out value="${requestScope.erro}" /></p>
-            </div>
-        </c:if>
+            <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
+            <label for="empresa"></label>
+            <input type="text" name="empresas" id="empresa" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
 
-        <fieldset>
-            <form action="${pageContext.request.contextPath}/ManagerRegister.jsp" method="post">
-
-                <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
-                <label for="empresa"></label>
-                <input
-                        type="text"
-                        name="empresas"
-                        id="empresa"
-                        placeholder="Nome da empresa"
-                        value="<c:out value='${requestScope.empresas}' />"
-                        required>
-
-                <label for="razao"></label>
-                <input
-                        type="text"
-                        name="razoes"
-                        id="razao"
-                        placeholder="Razão social"
-                        value="<c:out value='${requestScope.razoes}' />"
-                        required>
+            <label for="razao"></label>
+            <input
+                    type="text"
+                    name="razoes"
+                    id="razao"
+                    placeholder="Razão social"
+                    value="<c:out value='${requestScope.razoes}' />"
+                    required>
 
             <label for="tamanho"></label>
             <select name="tamanhos" id="tamanho" required>

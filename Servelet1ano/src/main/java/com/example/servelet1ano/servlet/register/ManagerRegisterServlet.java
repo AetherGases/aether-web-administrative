@@ -257,7 +257,16 @@ public class ManagerRegisterServlet extends HttpServlet {
 
             EmployeesDAO employeesDAO = new EmployeesDAO();
 
-            employeesDAO.register(employee);
+            boolean cadastro = employeesDAO.register(employee);
+
+            if (!cadastro) {
+                exibirErro(
+                        request,
+                        response,
+                        "Não foi possível cadastrar o funcionário."
+                );
+                return;
+            }
 
 
             EmployeesFilter filterEmployee = new EmployeesFilter();
@@ -284,7 +293,7 @@ public class ManagerRegisterServlet extends HttpServlet {
             session.setAttribute("companyId", companyId);
 
             response.sendRedirect(
-                    request.getContextPath() + "/dashboard"
+                    request.getContextPath() + "/Dashboard.jsp"
             );
 
         } catch (RuntimeException e) {
@@ -328,11 +337,7 @@ public class ManagerRegisterServlet extends HttpServlet {
      * EXIBIÇÃO DE ERROS
      *
      * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro" e carrega novamente
-     * as empresas para que o formulário possa ser renderizado.
-     *
-     * Se ocorrer uma falha ao carregar as empresas, uma lista
-     * vazia é disponibilizada e a exceção é registrada.
+     * disponibiliza-a pelo atributo "erro".
      *
      * O forward encaminha a requisição atual ao JSP, permitindo
      * que a mensagem seja exibida na mesma página do formulário.
