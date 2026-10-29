@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -9,7 +8,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 
 public class PasswordRecoveryDAO {
@@ -32,13 +30,7 @@ public class PasswordRecoveryDAO {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (conn) {
+        try (Connection conn = ConnectionFactory.connect()) {
 
             conn.setAutoCommit(false);
 
@@ -62,24 +54,19 @@ public class PasswordRecoveryDAO {
                                 "WHERE EXISTS (" +
                                 "SELECT 1 FROM employees " +
                                 "WHERE id = ? AND is_active = TRUE" +
-                                ")";
+                                ") " +
+                                "RETURNING id";
 
-                try (PreparedStatement pstmt = conn.prepareStatement(
-                        insertSql, Statement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
 
                     pstmt.setInt(1, recovery.getEmployeeId());
                     pstmt.setString(2, recovery.getCodeHash());
                     pstmt.setTimestamp(3, recovery.getExpiresAt());
                     pstmt.setInt(4, recovery.getEmployeeId());
 
-                    if (pstmt.executeUpdate() != 1) {
-                        conn.rollback();
-                        return false;
-                    }
-
-                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
-                            recovery.setId(rs.getLong(1));
+                            recovery.setId(rs.getLong("id"));
                         } else {
                             conn.rollback();
                             return false;
@@ -90,8 +77,8 @@ public class PasswordRecoveryDAO {
                 conn.commit();
                 return true;
 
-            } catch (SQLException e) {
-                conn.rollback();
+            } catch (SQLException | RuntimeException e) {
+                rollbackQuietly(conn, e);
                 throw e;
             }
 
@@ -112,19 +99,13 @@ public class PasswordRecoveryDAO {
             return null;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return null;
-        }
-
         String sql =
                 "SELECT id, employee_id, code_hash, expires_at, " +
                         "attempts, used_at, created_at " +
                         "FROM password_recoveries WHERE id = ?";
 
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -164,12 +145,6 @@ public class PasswordRecoveryDAO {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
         String sql =
                 "UPDATE password_recoveries " +
                         "SET attempts = attempts + 1 " +
@@ -179,7 +154,7 @@ public class PasswordRecoveryDAO {
                         "AND attempts < ?";
 
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -213,13 +188,7 @@ public class PasswordRecoveryDAO {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (conn) {
+        try (Connection conn = ConnectionFactory.connect()) {
 
             conn.setAutoCommit(false);
 
@@ -325,8 +294,8 @@ public class PasswordRecoveryDAO {
                 conn.commit();
                 return true;
 
-            } catch (SQLException e) {
-                conn.rollback();
+            } catch (SQLException | RuntimeException e) {
+                rollbackQuietly(conn, e);
                 throw e;
             }
 

@@ -14,7 +14,7 @@ public class Employees {
     private String phone;
     private String passwordHash;
     private StatusEmployee status;
-    private int storageFileId;
+    private Integer storageFileId;
     private Date createdAt;
     private Date updatedAt;
     private PermissionGroups permissionGroup;
@@ -172,11 +172,11 @@ public class Employees {
         this.status = status;
     }
 
-    public int getStorageFileId() {
+    public Integer getStorageFileId() {
         return storageFileId;
     }
 
-    public void setStorageFileId(int storageFileId) {
+    public void setStorageFileId(Integer storageFileId) {
         this.storageFileId = storageFileId;
     }
 

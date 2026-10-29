@@ -1,6 +1,5 @@
 package com.example.servelet1ano.dao;
 
-import com.example.servelet1ano.dao.DAOI;
 import com.example.servelet1ano.filter.PlansFilter;
 import com.example.servelet1ano.model.Plans;
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -10,58 +9,69 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PlansDAO implements DAOI<Plans, PlansFilter>  {
+
     /**
-     * Metodo que busca todos os planos ativos no banco.
+     * Metodo que busca os planos ativos no banco aplicando os filtros informados.
+     * Os campos do filtro que vierem preenchidos entram na consulta; os que vierem nulos sao ignorados.
+     * O nome precisa ser igual (sem diferenciar maiusculas de minusculas) e o preco
+     * aceita um minimo e/ou um maximo (inclusive).
      *
+     * @param filter Objeto com os campos opcionais para filtrar a busca (se for null, busca todos)
      * @return Lista de Plans com os planos encontrados.
-     * Retorna uma lista vazia caso nenhum plano seja encontrado
-     * ou ocorra um erro na consulta.
+     * Retorna uma lista vazia caso nenhum plano seja encontrado.
      */
     @Override
     public List<Plans> searchAll(PlansFilter filter) {
 
+        if (filter == null) {
+            filter = new PlansFilter();
+        }
 
         List<Plans> plans = new ArrayList<>();
 
-        String sql =
-                "select * " +
-                        "from plans " +
-                        "where is_active = true " +
-                        "and (? is null or LOWER(name) = LOWER(?))";
+        StringBuilder sql = new StringBuilder(
+                "select * from plans where is_active = true"
+        );
 
-        String name = (filter == null) ? null : filter.getName();
+        List<Object> parametros = new ArrayList<>();
+
+        if (filter.getName() != null && !filter.getName().isBlank()) {
+            sql.append(" and lower(name) = lower(?)");
+            parametros.add(filter.getName().trim());
+        }
+
+        if (filter.getMinPrice() != null) {
+            sql.append(" and price >= ?");
+            parametros.add(filter.getMinPrice());
+        }
+
+        if (filter.getMaxPrice() != null) {
+            sql.append(" and price <= ?");
+            parametros.add(filter.getMaxPrice());
+        }
+
+        sql.append(" order by id");
 
         try (
                 Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
+                PreparedStatement pstmt = conn.prepareStatement(sql.toString())
         ) {
 
-            pstmt.setString(1, name);
-            pstmt.setString(2, name);
+            for (int i = 0; i < parametros.size(); i++) {
+                pstmt.setObject(i + 1, parametros.get(i));
+            }
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 while (rs.next()) {
-
-                    Plans plan = new Plans();
-
-                    plan.setId(rs.getInt("id"));
-                    plan.setName(rs.getString("name"));
-                    plan.setDescription(rs.getString("description"));
-                    plan.setPrice(rs.getDouble("price"));
-                    plan.setDurationDays(rs.getInt("duration_days"));
-                    plan.setCurrency(rs.getString("currency"));
-                    plan.setActive(rs.getBoolean("is_active"));
-                    plan.setCreatedAt(rs.getDate("created_at"));
-                    plan.setUpdatedAt(rs.getDate("updated_at"));
-
-                    plans.add(plan);
+                    plans.add(mapPlan(rs));
                 }
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+            throw new RuntimeException("Erro ao buscar os planos no banco de dados.", e);
         }
+
         return plans;
     }
 
@@ -75,8 +85,6 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
 
     @Override
     public Plans searchById(int id) {
-
-        Plans plan = null;
 
         String sql =
                 "select * " +
@@ -93,25 +101,15 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             try (ResultSet rs = pstmt.executeQuery()) {
 
                 if (rs.next()) {
-
-                    plan = new Plans();
-
-                    plan.setId(rs.getInt("id"));
-                    plan.setName(rs.getString("name"));
-                    plan.setDescription(rs.getString("description"));
-                    plan.setPrice(rs.getDouble("price"));
-                    plan.setDurationDays(rs.getInt("duration_days"));
-                    plan.setCurrency(rs.getString("currency"));
-                    plan.setActive(rs.getBoolean("is_active"));
-                    plan.setCreatedAt(rs.getDate("created_at"));
-                    plan.setUpdatedAt(rs.getDate("updated_at"));
+                    return mapPlan(rs);
                 }
             }
 
+            return null;
+
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
+            throw new RuntimeException("Erro ao buscar o plano de id " + id + " no banco de dados.", e);
         }
-        return plan;
     }
 
 
@@ -130,44 +128,34 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
             return null;
         }
 
-        Plans plan = null;
+        PlansFilter filter = new PlansFilter();
+        filter.setName(name);
 
-        String sql =
-                "select * " +
-                        "from plans " +
-                        "where LOWER(name) = LOWER(?) " +
-                        "and is_active = true";
+        List<Plans> plans = searchAll(filter);
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        return plans.isEmpty() ? null : plans.get(0);
+    }
 
-            pstmt.setString(1, name.trim());
+    /**
+     * Monta um plano a partir da linha atual do ResultSet
+     */
+    private Plans mapPlan(ResultSet rs) throws SQLException {
 
-            try (ResultSet rs = pstmt.executeQuery()) {
+        Plans plan = new Plans();
 
-                if (rs.next()) {
+        plan.setId(rs.getInt("id"));
+        plan.setName(rs.getString("name"));
+        plan.setDescription(rs.getString("description"));
+        plan.setPrice(rs.getBigDecimal("price"));
+        plan.setDurationDays(rs.getInt("duration_days"));
+        plan.setCurrency(rs.getString("currency"));
+        plan.setActive(rs.getBoolean("is_active"));
+        plan.setCreatedAt(rs.getTimestamp("created_at"));
+        plan.setUpdatedAt(rs.getTimestamp("updated_at"));
 
-                    plan = new Plans();
-
-                    plan.setId(rs.getInt("id"));
-                    plan.setName(rs.getString("name"));
-                    plan.setDescription(rs.getString("description"));
-                    plan.setPrice(rs.getDouble("price"));
-                    plan.setDurationDays(rs.getInt("duration_days"));
-                    plan.setCurrency(rs.getString("currency"));
-                    plan.setActive(rs.getBoolean("is_active"));
-                    plan.setCreatedAt(rs.getDate("created_at"));
-                    plan.setUpdatedAt(rs.getDate("updated_at"));
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erro ao acessar o banco de dados.", e);
-        }
         return plan;
     }
+
     @Override
     public boolean register(Plans entity) {
         throw new UnsupportedOperationException(

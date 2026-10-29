@@ -3,7 +3,7 @@ package com.example.servelet1ano.validation;
 import java.util.regex.Pattern;
 
 /**
- * Classe utilitaria com as validacoes de entrada do sistema (CPF, CNPJ, celular, CEP e email)
+ * Classe utilitaria com as validacoes de entrada do sistema (CPF, CNPJ, celular, telefone, CEP e email)
  * Cada metodo devolve true se o valor for valido e false caso contrario
  */
 public class Validators {
@@ -11,6 +11,8 @@ public class Validators {
     private static final Pattern EMAIL = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
 
     private static final Pattern MOBILE_PHONE = Pattern.compile("^[1-9]{2}9\\d{8}$");
+
+    private static final Pattern LANDLINE_PHONE = Pattern.compile("^[1-9]{2}[2-5]\\d{7}$");
 
     private static final Pattern CEP = Pattern.compile("^\\d{8}$");
 
@@ -47,6 +49,43 @@ public class Validators {
         }
         String digits = phone.replaceAll("\\D", "");
         return MOBILE_PHONE.matcher(digits).matches();
+    }
+
+    /**
+     * Deixa so os digitos do telefone, sem o codigo do pais (+55)
+     * Usado antes de validar e antes de gravar, pra o telefone ficar sempre no mesmo formato no banco
+     * O 55 so e retirado quando sobra um numero com DDD (12 ou 13 digitos no total)
+     * @param phone O telefone como foi digitado (pode ter parenteses, espacos, traco e +55)
+     * @return O telefone so com DDD + numero, ou null se vier null
+     */
+    public static String normalizePhone(String phone) {
+        if (phone == null) {
+            return null;
+        }
+
+        String digits = phone.replaceAll("\\D", "");
+
+        if ((digits.length() == 12 || digits.length() == 13) && digits.startsWith("55")) {
+            digits = digits.substring(2);
+        }
+
+        return digits;
+    }
+
+    /**
+     * Valida um telefone brasileiro com DDD, celular (9 digitos, comeca com 9) ou fixo (8 digitos, comeca de 2 a 5)
+     * Aceita com ou sem pontuacao e com ou sem +55
+     * @param phone O numero a validar
+     * @return true se for um celular ou telefone fixo valido
+     */
+    public static boolean isPhone(String phone) {
+        if (phone == null) {
+            return false;
+        }
+
+        String digits = normalizePhone(phone);
+
+        return MOBILE_PHONE.matcher(digits).matches() || LANDLINE_PHONE.matcher(digits).matches();
     }
 
     /**

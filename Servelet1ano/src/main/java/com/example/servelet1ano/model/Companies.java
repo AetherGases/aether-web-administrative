@@ -10,11 +10,12 @@ public class Companies {
     private CompanySize size;
     private Date registrationDate;
     private String email;
-    private Date createdAt;
-    private Date updatedAt;
+    private String taxId;
+    private java.util.Date createdAt;
+    private java.util.Date updatedAt;
     private boolean isActive;
 
-    public Companies(int id, String name, CompanySize size, Date registrationDate, String cnpj, String email, Date createdAt) {
+    public Companies(int id, String name, CompanySize size, Date registrationDate, String cnpj, String email, java.util.Date createdAt) {
         this.id = id;
         this.name = name;
         this.size = size;
@@ -40,7 +41,7 @@ public class Companies {
         this.email = email;
     }
 
-    public Companies(int id, String name, String tradeName, String cnpj, CompanySize size, Date registrationDate, String email, Date createdAt, boolean isActive) {
+    public Companies(int id, String name, String tradeName, String cnpj, CompanySize size, Date registrationDate, String email, java.util.Date createdAt, boolean isActive) {
         this.id = id;
         this.name = name;
         this.tradeName = tradeName;
@@ -118,19 +119,27 @@ public class Companies {
         this.email = email;
     }
 
-    public Date getCreatedAt() {
+    public String getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(String taxId) {
+        this.taxId = taxId;
+    }
+
+    public java.util.Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(java.util.Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Date getUpdatedAt() {
+    public java.util.Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(java.util.Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 

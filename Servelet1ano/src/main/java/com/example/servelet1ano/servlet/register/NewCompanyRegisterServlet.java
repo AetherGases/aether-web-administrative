@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
@@ -159,7 +158,21 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             CompanyRegistrationService service =
                     new CompanyRegistrationService();
 
-            service.register(novaEmpresa, subscription);
+            int empresaId = service.register(novaEmpresa, subscription);
+
+            /*
+             * O service devolve -1 quando o CNPJ já existe (mesmo que o nome
+             * seja diferente, o que a busca acima não pega).
+             */
+            if (empresaId == -1) {
+                exibirErro(
+                        request,
+                        response,
+                        "Este CNPJ já está cadastrado. "
+                                + "Verifique os dados ou faça login."
+                );
+                return;
+            }
 
             response.sendRedirect(
                     request.getContextPath() + "/gerente?sucesso=1"
