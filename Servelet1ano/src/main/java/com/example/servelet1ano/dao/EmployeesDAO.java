@@ -100,9 +100,9 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                         "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName " +
                         "from employees e " +
                         "join companies c on e.company_id = c.id " +
-                        "join permission_groups pg on e.permission_group_id = pg.id " +
-                        "join units u on u.id = e.unit_id " +
-                        "join sectors sec on sec.id = e.sector_id " +
+                        "left join permission_groups pg on e.permission_group_id = pg.id " +
+                        "left join units u on u.id = e.unit_id " +
+                        "left join sectors sec on sec.id = e.sector_id " +
                         "where e.is_active = true"
         );
 
@@ -263,10 +263,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                                 "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
                                 "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName " +
                                 "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
+                                "left join permission_groups pg on pg.id = e.permission_group_id " +
                                 "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "join sectors sec on sec.id = e.sector_id " +
+                                "left join units u on u.id = e.unit_id " +
+                                "left join sectors sec on sec.id = e.sector_id " +
                                 "where e.id = ? and e.is_active = true"
                 )
         ) {
@@ -353,10 +353,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                                 "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
                                 "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName " +
                                 "from employees e " +
-                                "join permission_groups pg on pg.id = e.permission_group_id " +
+                                "left join permission_groups pg on pg.id = e.permission_group_id " +
                                 "join companies c on e.company_id = c.id " +
-                                "join units u on u.id = e.unit_id " +
-                                "join sectors sec on sec.id = e.sector_id " +
+                                "left join units u on u.id = e.unit_id " +
+                                "left join sectors sec on sec.id = e.sector_id " +
                                 "where e.cpf = ? and e.is_active = true"
                 )
         ) {
@@ -443,16 +443,27 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 )
         ) {
 
+
             pstmt.setInt(1, employee.getCompanyId());
             pstmt.setInt(2, employee.getPermissionGroupId());
-            pstmt.setInt(3, employee.getUnitId());
-            pstmt.setInt(4, employee.getSectorId());
+
+            if (employee.getUnitId() > 0) {
+                pstmt.setInt(3, employee.getUnitId());
+            } else {
+                pstmt.setNull(3, java.sql.Types.INTEGER);
+            }
+            if (employee.getSectorId() > 0) {
+                pstmt.setInt(4, employee.getSectorId());
+            } else {
+                pstmt.setNull(4, java.sql.Types.INTEGER);
+            }
             pstmt.setString(5, cleanCpf(employee.getCpf()));
             pstmt.setString(6, employee.getName());
             pstmt.setString(7, employee.getEmail());
             pstmt.setString(8, employee.getPhone());
             pstmt.setString(9, employee.getPasswordHash());
             pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+
 
             return pstmt.executeUpdate() > 0;
 

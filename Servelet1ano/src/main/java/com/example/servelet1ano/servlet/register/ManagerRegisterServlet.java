@@ -257,7 +257,16 @@ public class ManagerRegisterServlet extends HttpServlet {
 
             EmployeesDAO employeesDAO = new EmployeesDAO();
 
-            employeesDAO.register(employee);
+            boolean cadastro = employeesDAO.register(employee);
+
+            if (!cadastro) {
+                exibirErro(
+                        request,
+                        response,
+                        "Não foi possível cadastrar o funcionário."
+                );
+                return;
+            }
 
 
             EmployeesFilter filterEmployee = new EmployeesFilter();
@@ -284,7 +293,7 @@ public class ManagerRegisterServlet extends HttpServlet {
             session.setAttribute("companyId", companyId);
 
             response.sendRedirect(
-                    request.getContextPath() + "/dashboard"
+                    request.getContextPath() + "/Dashboard.jsp"
             );
 
         } catch (RuntimeException e) {
