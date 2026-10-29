@@ -675,7 +675,7 @@
             </div>
 
             <div class="cardCadastroLogin">
-                <form id="formularioEmpresarial" class="formularioEmpresarial" action="${pageContext.request.contextPath}/empresas" method="post" accept-charset="UTF-8">
+                <form id="formularioEmpresarial" class="formularioEmpresarial" action="${pageContext.request.contextPath}/ManagerRegister.jsp" method="post" accept-charset="UTF-8">
 
                     <img class="aekoCadastro" src="Imagens/Aeko.svg" alt="" loading="lazy">
 

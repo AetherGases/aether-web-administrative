@@ -204,3 +204,36 @@ body{
     white-space: nowrap;
     border: 0;
 }
+
+.botaoVoltar{
+    left: 19px;
+    top: 28px;
+    width: 187px;
+    height: 57px;
+    border-radius: 15px;
+    opacity: 0.3;
+    background: #9A72F9;
+    z-index: 10;
+}
+
+.tipografiaBotaoVoltar{
+    color: #5B21B6;
+    font-family: "Montserrat", sans-serif;
+    font-size: 30px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.botaoRendondoVoltar{
+    width: 50px;
+    height: 50px;
+    aspect-ratio: 1/1;
+    border-radius: 50px;
+    background: #9A72F9;
+}
+
+.setaVoltar{
+    width: 21px;
+    height: 44px;
+}

@@ -20,43 +20,87 @@
 </head>
 <body>
 
-<aside>
-
-
-    <div >
-        <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-        <p>aether</p>
+<aside class="aside">
+    <div>
+        <img class="logoAether" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+        <p class="tipografiaLogo">aether</p>
     </div>
 
     <div>
-        <h3>Giulia Cacá</h3>
-        <p>ADMIN</p>
+        <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
+        <img src="Imagens/Maleta.svg" alt="Imagem de uma maleta">
+        <p class="tipografiaAdmin">ADMIN</p>
     </div>
 
     <nav>
         <ul>
-            <li><a href="">Dashboards</a></li>
-            <li><a href="">Funcionários</a></li>
-            <li><a href="">Setores</a></li>
-            <li><a href="">Unidades</a></li>
-            <li><a href="">Empresas</a></li>
-            <li><a href="">Permissões</a></li>
-            <li><a href="">Permissões</a></li>
+            <li>
+                <div>
+                    <a class="tipografiaOpcoesTela" href="Dashboard.jsp">Dashboards</a>
+                    <img class="imagemDashboard" src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a class="tipografiaOpcoesTela" href="Employee.jsp">Funcionários</a>
+                    <img class="imagemFuncionario" src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a class="tipografiaOpcoesTela" href="Sectors.jsp">Setores</a>
+                    <img class="imagemSetores" src="Imagens/setores.svg" alt="Imagem de setor">
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a class="tipografiaOpcoesTela" href="Units.jsp">Unidades</a>
+                    <img class="imagemUnidade" src="Imagens/unidade.svg" alt="Imagem de prédios">
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a class="tipografiaOpcoesTela" href="Company.jsp">Empresas</a>
+                    <img class="imagemEmpresas" src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                    <img class="imagemPermissoes1" src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a class="tipografiaOpcoesTela" href="PermissionsOne.jsp">Permissões</a>
+                    <img class="imagemPermissoes2" src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                </div>
+            </li>
         </ul>
     </nav>
 
     <div>
-    <a href="${pageContext.request.contextPath}/Login.jsp">Logout</a>
+        <a class="tipografiaLogout" href="Login.jsp">Logout</a>
+        <img class="imagemLogout" src="Imagens/logout.svg" alt="Logout">
     </div>
-
 </aside>
 
 <div>
 
-    <h2>Area restrista</h2>
+    <h2>Area restrita</h2>
     <p>Permissões Aether</p>
-
 </div>
+
+<div>
+    <p>Permissões de: Caio Campelo Roxo</p>
+    <img src="Imagens/setaBaixo.svg" alt="Imagem de uma seta para baixo">
+</div>
+
+<div>
+    <p>Pesquisar</p>
+    <img src="Imagens/pesquisar.svg" alt="Imagem de uma lupa">
+</div>
+
 
 <section>
 
@@ -66,12 +110,13 @@
 
             <div>
                 <div>
-                    imagem
+                    <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                    <img src="Imagens/SimboloAnalise.svg" alt="Imagem de Gráfico">
                 </div>
-                <h3>Criar Inventários</h3>
+                <h3>Analisar usuários</h3>
             </div>
 
-            <p>Habilitar esta permissão concede ao funcionário a habilidade de criar de inventários.</p>
+            <p>Acesso analítico em toda a hierarquia corporativa</p>
 
             <div>
 
@@ -88,17 +133,18 @@
             <div>
 
                 <div>
-                    imagem
+                    <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                    <img src="Imagens/SimboloAnalise.svg" alt="Imagem de um Gráfico">
                 </div>
 
-                <h3>Excluir Inventários</h3>
+                <h3>Analisar inventários</h3>
 
             </div>
 
-            <p>Habilitar esta permissão concede ao funcionário a habilidade de excluir inventários.</p>
+            <p>Acesso à análise de inventário</p>
 
             <div>
-                <label >
+                <label>
                     <input type="checkbox">
                     <span>animacao</span>
                 </label>
@@ -110,14 +156,15 @@
             <div>
 
                 <div>
-                    imagem
+                    <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                    <img src="Imagens/SimboloInventarios.svg" alt="Imagem de uma olho">
                 </div>
 
-                <h3>Visualizar Inventários</h3>
+                <h3>Registrar inventários</h3>
 
             </div>
 
-            <p>Habilitar esta permissão concede ao funcionário a habilidade de visualizar inventários.</p>
+            <p>Acesso para criar e editar inventário.</p>
 
             <div>
                 <label>
@@ -132,14 +179,15 @@
             <div>
 
                 <div>
-                    imagem
+                    <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                    <img src="Imagens/SimboloAnalise.svg" alt="Imagem de um gráfico">
                 </div>
 
-                <h3>Visualizar Análises de ROI</h3>
+                <h3>Gerar relatórios</h3>
 
             </div>
 
-            <p>Habilitar esta permissão concede ao funcionário a habilidade de visualizar análises de ROI.</p>
+            <p>Acesso para gerar um relatório de saída</p>
 
             <div>
 
@@ -158,5 +206,11 @@
         <span>Mostrando 4 por página</span>
     </div>
 
+    <a></a>
+    <div>1</div>
+    <div>2</div>
+    <a></a>
+
 </section>
+
 </body>
