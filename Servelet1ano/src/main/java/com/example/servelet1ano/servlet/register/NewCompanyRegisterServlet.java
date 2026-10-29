@@ -174,13 +174,10 @@ public class NewCompanyRegisterServlet extends HttpServlet {
                 return;
             }
 
-            request.setAttribute(
-                    "sucesso",
-                    "Cadastro realizado com sucesso!"
+            response.sendRedirect(
+                    request.getContextPath() + "/gerente?sucesso=1"
             );
-            request.getRequestDispatcher(CADASTRO)
-                    .forward(request, response);
-
+            return;
         } catch (RuntimeException e) {
             LOGGER.log(
                     Level.SEVERE,

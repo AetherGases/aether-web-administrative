@@ -14,10 +14,11 @@ public class PasswordRecoveryDAO {
 
     private static final int MAX_ATTEMPTS = 5;
 
-    /**
-     * Cria uma solicitação e invalida as anteriores
-     * do mesmo funcionário na mesma transação.
-     * Usa o returning do PostgreSQL em vez de RETURN_GENERATED_KEYS
+    /*
+     * Registra uma nova solicitação de recuperação de senha.
+     * Invalida solicitações anteriores do funcionário e cadastra
+     * o novo código somente se a conta estiver ativa.
+     * Executa as operações na mesma transação.
      */
     public boolean register(PasswordRecovery recovery) {
 
@@ -87,8 +88,10 @@ public class PasswordRecoveryDAO {
         }
     }
 
-    /**
-     * Busca uma solicitação pelo seu ID.
+    /*
+     * Busca uma solicitação de recuperação pelo seu identificador.
+     * Retorna os dados da solicitação quando encontrada
+     * ou null quando o ID for inválido ou não existir.
      */
     public PasswordRecovery searchById(long id) {
 
@@ -131,8 +134,10 @@ public class PasswordRecoveryDAO {
         return null;
     }
 
-    /**
-     * Registra uma tentativa incorreta, respeitando o limite.
+    /*
+     * Incrementa o número de tentativas de validação de uma solicitação.
+     * A atualização ocorre somente se o código ainda não foi utilizado,
+     * não expirou e não atingiu o limite de tentativas.
      */
     public boolean incrementAttempts(long id) {
 
@@ -164,9 +169,11 @@ public class PasswordRecoveryDAO {
         }
     }
 
-    /**
-     * Valida o código e atualiza a senha na mesma transação.
-     * O código recebido deve estar convertido em HMAC-SHA-256.
+    /*
+     * Valida o código informado e atualiza a senha do funcionário
+     * na mesma transação. Recebe o HMAC-SHA-256 do código informado
+     * Rejeita solicitações expiradas, utilizadas ou sem tentativas.
+     * Em caso de sucesso, atualiza a senha e invalida o código.
      */
     public boolean completeRecovery(
             long recoveryId,
@@ -297,15 +304,40 @@ public class PasswordRecoveryDAO {
                     "Erro ao concluir a recuperação de senha.", e);
         }
     }
-
-    /**
-     * Desfaz a transacao sem esconder o erro original
+    /*
+     * Invalida uma solicitação de recuperação de senha.
+     * Retorna true quando a solicitação foi invalidada.
      */
-    private void rollbackQuietly(Connection conn, Exception cause) {
-        try {
-            conn.rollback();
-        } catch (SQLException rollbackError) {
-            cause.addSuppressed(rollbackError);
+    public boolean invalidate(long id) {
+
+        if (id <= 0) {
+            return false;
+        }
+
+        Connection conn = ConnectionFactory.connect();
+
+        if (conn == null) {
+            return false;
+        }
+
+        String sql =
+                "UPDATE password_recoveries " +
+                        "SET used_at = CURRENT_TIMESTAMP " +
+                        "WHERE id = ? AND used_at IS NULL";
+
+        try (
+                conn;
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setLong(1, id);
+
+            return pstmt.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao invalidar a recuperação de senha.", e
+            );
         }
     }
 }

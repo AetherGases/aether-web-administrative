@@ -23,6 +23,12 @@
 </head>
 <body>
 
+    <c:if test="${not empty mensagem}">
+        <p role="status">
+            <c:out value="${mensagem}" />
+        </p>
+    </c:if>
+
     <div class="blur1"></div>
     <div class="blur2"></div>
     <div class="blur3"></div>
@@ -47,7 +53,7 @@
                 <p class="tipografiaVerificacao">Verificação</p>
             </div>
 
-            <form action="Employee.jsp" method="post">
+            <form action="${pageContext.request.contextPath}/verify-recovery" method="post">
 
                 <div class="divQuadradinhos">
                     <input type="text" id="codigo1" aria-label="Primeiro dígito do código" name="codigo1" maxlength="1" required class="quadradinhoCod" autofocus oninput="moverProximo(this, 'codigo2')">
@@ -58,7 +64,24 @@
                     <input type="text" id="codigo6" aria-label="Sexto dígito do código" name="codigo6" maxlength="1" required class="quadradinhoCod">
                 </div>
 
-                <button class="botaoEnvioRoxo tipografiaEnvio" type="submit" value="enviarFormulárioSenha">Entrar</button>
+                <div>
+                    <label for="novaSenha">Nova senha</label>
+                    <input type="password" id="novaSenha" name="novaSenha"
+                           maxlength="1024" autocomplete="new-password" required>
+                </div>
+
+                <div>
+                    <label for="confirmarSenha">Confirmar nova senha</label>
+                    <input type="password" id="confirmarSenha" name="confirmarSenha"
+                           maxlength="1024" autocomplete="new-password" required>
+                </div>
+
+                <c:if test="${not empty mensagem}">
+                    <p role="alert"><c:out value="${mensagem}" /></p>
+                </c:if>
+
+                <button class="botaoEnvioRoxo tipografiaEnvio" type="submit" value="enviarFormulárioSenha">Enviar</button>
+
 
             </form>
 
@@ -66,7 +89,7 @@
 
             <p class="divSubtexto2"> Não recebeu o código? <a href="RecoverPassword.css" class="divSubtexto2Reenviar">Reenviar </a> </p>
 
-            <p class="divSubTexto3">Colocou o E-mail errado? <a class="divSubTexto3Destaque"  href="recuperarSenha.html">altere aqui</a></p>
+            <p class="divSubTexto3">Colocou o E-mail errado? <a class="divSubTexto3Destaque"  href="RecoverPassword.jsp">altere aqui</a></p>
 
 
             <script>

@@ -19,6 +19,18 @@
 
 <body>
 
+    <c:if test="${not empty requestScope.erro}">
+        <div class="mensagemErro" role="alert">
+            <c:out value="${requestScope.erro}"/>
+        </div>
+    </c:if>
+
+    <c:if test="${not empty param.sucesso}">
+        <div class="mensagemSucesso" role="status">
+            Cadastro realizado com sucesso!
+        </div>
+    </c:if>
+
     <div class="blur1"></div>
     <div class="blur2"></div>
     <div class="blur3"></div>
@@ -50,7 +62,6 @@
                 <li>Acompanhamento trimestral</li>
             </ul>
         </div>
-    </c:if>
 
     <fieldset>
         <form action="${pageContext.request.contextPath}/empresa" method="post">

@@ -2,6 +2,8 @@ package com.example.servelet1ano.servlet.listscreen;
 
 import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.dao.EmployeesDAO;
+import com.example.servelet1ano.dao.PermissionGroupsDAO;
+
 
 
 import jakarta.servlet.ServletException;
@@ -19,6 +21,7 @@ import java.io.IOException;
 public class DashboardServlet extends HttpServlet{
 
     private final EmployeesDAO employeesDAO = new EmployeesDAO();
+
     /*
     *Recupera a sessão do usuário, responsável pelas informações personalidades ddo servlet.
      */
@@ -70,6 +73,8 @@ public class DashboardServlet extends HttpServlet{
         request.getRequestDispatcher("/Dashboard.jsp")
                 .forward(request, response);
     }
+
+
 }
 
 
