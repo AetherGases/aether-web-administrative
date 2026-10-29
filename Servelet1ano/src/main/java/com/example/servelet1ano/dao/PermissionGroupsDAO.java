@@ -8,6 +8,7 @@ import com.example.servelet1ano.util.SqlUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -170,6 +171,76 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao cadastrar o grupo de permissão no banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo para cadastrar um grupo de permissao ja ligado as suas permissoes (tabela permission_group_permissions)
+     * Tudo ou nada: se der erro em alguma ligacao, nem o grupo nem as ligacoes ficam salvos
+     * @param permissionGroup O grupo de permissao que sera cadastrado
+     * @param permissionIds Os ids das permissoes (tabela permissions) que o grupo vai ter; ids repetidos sao ignorados
+     * @return O id do grupo cadastrado, ou -1 se os dados forem invalidos
+     * (ex: nome vazio, empresa inexistente, lista vazia ou alguma permissao inexistente/desativada)
+     */
+    public int registerWithPermissions(PermissionGroups permissionGroup, List<Integer> permissionIds){
+
+        if (!isValid(permissionGroup) || permissionIds == null || permissionIds.isEmpty()) {
+            return -1;
+        }
+
+        Set<Integer> ids = new LinkedHashSet<>(permissionIds);
+
+        try (Connection conn = ConnectionFactory.connect()) {
+
+            conn.setAutoCommit(false);
+
+            try {
+
+                if (!companyIsValid(conn, permissionGroup.getCompanyId())
+                        || !permissionsAreValid(conn, ids)) {
+                    conn.rollback();
+                    return -1;
+                }
+
+                int groupId;
+
+                try (PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into permission_groups (name, company_id) values (?, ?) returning id"
+                )) {
+
+                    pstmt.setString(1, permissionGroup.getName().trim());
+                    setCompany(pstmt, 2, permissionGroup.getCompanyId());
+
+                    try (ResultSet rs = pstmt.executeQuery()) {
+                        rs.next();
+                        groupId = rs.getInt("id");
+                    }
+                }
+
+                try (PreparedStatement pstmt = conn.prepareStatement(
+                        "insert into permission_group_permissions (permission_group_id, permission_id) values (?, ?)"
+                )) {
+
+                    for (Integer permissionId : ids) {
+                        pstmt.setInt(1, groupId);
+                        pstmt.setInt(2, permissionId);
+
+                        pstmt.addBatch();
+                    }
+
+                    pstmt.executeBatch();
+                }
+
+                conn.commit();
+                return groupId;
+
+            } catch (SQLException | RuntimeException e) {
+                rollbackQuietly(conn, e);
+                throw e;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao cadastrar o grupo de permissão com as permissões no banco de dados.", e);
         }
     }
 
@@ -489,6 +560,30 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 return rs.next();
+            }
+        }
+    }
+
+    /**
+     * Confere se todas as permissoes informadas existem e estao ativas (tabela permissions)
+     * @param ids Os ids das permissoes, sem repeticao
+     * @return true se todas existirem e estiverem ativas
+     */
+    private boolean permissionsAreValid(Connection conn, Set<Integer> ids) throws SQLException {
+
+        if (ids.contains(null)) {
+            return false;
+        }
+
+        try (PreparedStatement pstmt = conn.prepareStatement(
+                "select count(*) from permissions where is_active = true and id = any (?)"
+        )) {
+
+            pstmt.setArray(1, conn.createArrayOf("integer", ids.toArray()));
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                rs.next();
+                return rs.getInt(1) == ids.size();
             }
         }
     }

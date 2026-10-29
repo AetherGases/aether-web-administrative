@@ -172,27 +172,59 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
     /**
      * Confere se os vinculos do funcionario fazem sentido juntos:
-     * a empresa existe e esta ativa, a unidade e dessa empresa, o setor e dessa unidade
-     * e o grupo de permissao e dessa empresa (ou e um grupo global, sem empresa)
+     * a empresa existe e esta ativa; se tiver unidade, ela e dessa empresa;
+     * se tiver setor, ele e dessa unidade (setor sem unidade nao vale);
+     * se tiver grupo de permissao, ele e dessa empresa (ou e um grupo global, sem empresa)
+     * Unidade, setor e grupo com id 0 contam como "sem vinculo" (ex: gerente recem cadastrado)
      * @param conn A conexao
      * @param employee O funcionario
      * @return true se estiver tudo consistente
      */
     private boolean referencesConsistent(Connection conn, Employees employee) throws SQLException {
 
-        try (PreparedStatement pstmt = conn.prepareStatement(
-                "select 1 from companies c " +
-                        "join units u on u.company_id = c.id and u.id = ? and u.is_active = true " +
-                        "join sectors s on s.id = ? and s.unit_id = u.id and s.is_active = true " +
-                        "join permission_groups pg on pg.id = ? and pg.is_active = true " +
-                        "and (pg.company_id = c.id or pg.company_id is null) " +
-                        "where c.id = ? and c.is_active = true"
-        )) {
+        if (!exists(conn,
+                "select 1 from companies where id = ? and is_active = true",
+                employee.getCompanyId())) {
+            return false;
+        }
 
-            pstmt.setInt(1, employee.getUnitId());
-            pstmt.setInt(2, employee.getSectorId());
-            pstmt.setInt(3, employee.getPermissionGroupId());
-            pstmt.setInt(4, employee.getCompanyId());
+        if (employee.getUnitId() > 0 && !exists(conn,
+                "select 1 from units where id = ? and company_id = ? and is_active = true",
+                employee.getUnitId(), employee.getCompanyId())) {
+            return false;
+        }
+
+        if (employee.getSectorId() > 0) {
+
+            if (employee.getUnitId() <= 0 || !exists(conn,
+                    "select 1 from sectors where id = ? and unit_id = ? and is_active = true",
+                    employee.getSectorId(), employee.getUnitId())) {
+                return false;
+            }
+        }
+
+        if (employee.getPermissionGroupId() > 0 && !exists(conn,
+                "select 1 from permission_groups where id = ? and is_active = true " +
+                        "and (company_id = ? or company_id is null)",
+                employee.getPermissionGroupId(), employee.getCompanyId())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Roda uma consulta "select 1 ..." e diz se achou alguma linha
+     * @param sql Comando fixo do codigo
+     * @param params Valores dos ? do comando (todos inteiros)
+     */
+    private boolean exists(Connection conn, String sql, int... params) throws SQLException {
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (int i = 0; i < params.length; i++) {
+                pstmt.setInt(i + 1, params[i]);
+            }
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 return rs.next();
@@ -202,17 +234,30 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
     /**
      * Preenche os 8 primeiros parametros (empresa, grupo, unidade, setor, cpf, nome, email e telefone), iguais no insert e no update
+     * Grupo, unidade e setor com id 0 (ainda nao definidos) sao gravados como null
      */
     private void bindData(PreparedStatement pstmt, Employees employee) throws SQLException {
 
         pstmt.setInt(1, employee.getCompanyId());
-        pstmt.setInt(2, employee.getPermissionGroupId());
-        pstmt.setInt(3, employee.getUnitId());
-        pstmt.setInt(4, employee.getSectorId());
+        setNullableId(pstmt, 2, employee.getPermissionGroupId());
+        setNullableId(pstmt, 3, employee.getUnitId());
+        setNullableId(pstmt, 4, employee.getSectorId());
         pstmt.setString(5, cleanCpf(employee.getCpf()));
         pstmt.setString(6, employee.getName().trim());
         pstmt.setString(7, cleanEmail(employee.getEmail()));
         pstmt.setString(8, phoneOf(employee));
+    }
+
+    /**
+     * Coloca um id no PreparedStatement, gravando null quando o id for 0 ou negativo (sem vinculo)
+     */
+    private void setNullableId(PreparedStatement pstmt, int index, int id) throws SQLException {
+
+        if (id > 0) {
+            pstmt.setInt(index, id);
+        } else {
+            pstmt.setNull(index, Types.INTEGER);
+        }
     }
 
     /**
@@ -530,18 +575,8 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 " limit 2";
 
         try (
-                conn;
-                PreparedStatement pstmt = conn.prepareStatement(
-                        "select e.*, e.company_id as companyId, e.permission_group_id as permissionGroupId, e.unit_id as unitId, e.sector_id as sectorId, " +
-                                "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
-                                "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName " +
-                                "from employees e " +
-                                "left join permission_groups pg on pg.id = e.permission_group_id " +
-                                "join companies c on e.company_id = c.id " +
-                                "left join units u on u.id = e.unit_id " +
-                                "left join sectors sec on sec.id = e.sector_id " +
-                                "where e.cpf = ? and e.is_active = true"
-                )
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
             pstmt.setString(1, cleanEmail(email));
@@ -595,29 +630,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
             try (PreparedStatement pstmt = conn.prepareStatement(INSERT_EMPLOYEE)) {
 
+                bindInsert(pstmt, employee);
 
-            pstmt.setInt(1, employee.getCompanyId());
-            pstmt.setInt(2, employee.getPermissionGroupId());
-
-            if (employee.getUnitId() > 0) {
-                pstmt.setInt(3, employee.getUnitId());
-            } else {
-                pstmt.setNull(3, java.sql.Types.INTEGER);
+                return pstmt.executeUpdate() > 0;
             }
-            if (employee.getSectorId() > 0) {
-                pstmt.setInt(4, employee.getSectorId());
-            } else {
-                pstmt.setNull(4, java.sql.Types.INTEGER);
-            }
-            pstmt.setString(5, cleanCpf(employee.getCpf()));
-            pstmt.setString(6, employee.getName());
-            pstmt.setString(7, employee.getEmail());
-            pstmt.setString(8, employee.getPhone());
-            pstmt.setString(9, employee.getPasswordHash());
-            pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
-
-
-            return pstmt.executeUpdate() > 0;
 
         } catch (SQLException e) {
             return falseIfDuplicate(e, "Erro ao cadastrar o funcionário no banco de dados.");
