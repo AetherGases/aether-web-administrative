@@ -20,10 +20,14 @@
 </head>
 <body>
 
-    <h2>Erro 404</h2>
-    <p>Oops! Página não encontrada</p>
+    <h2 class="tituloErro">Erro 404</h2>
+    <p class="subTituloErro">Oops! Página não encontrada</p>
 
-    <p></p>
+    <p class="subTituloErro">Parece que você pegou um caminho errado...Por favor, volte ao início</p>
+
+    <a href="Index.jsp" class="botaoVoltarInicio tipografiaVoltarInicio">Volte ao início</a>
+
+    <img src="Imagens/NuvemErro.svg" alt="Aeko indicando Erro">
 
 </body>
 </html>

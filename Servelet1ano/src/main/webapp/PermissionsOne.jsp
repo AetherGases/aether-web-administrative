@@ -17,6 +17,8 @@
 
     <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
 
+
+
 </head>
 <body>
 
@@ -28,6 +30,7 @@
 
         <div>
             <img class="aeko" src="Imagens/AekoLogin.svg" alt="Imagem do Aeko">
+            <img src="Imagens/Maleta.svg" alt="Imagem de uma maleta">
             <p class="tipografiaAdmin">ADMIN</p>
         </div>
 
@@ -84,13 +87,20 @@
         </div>
     </aside>
 
-    <h2 class="tipografiaAreaRestrita">Area restrita</h2>
-    <p class="tipografiaNomeDaAba">Dashboard</p>
-
     <div>
 
         <h2>Area restrita</h2>
         <p>Permissões Aether</p>
+
+        <div>
+            <p>Permissões de: Caio Campelo Roxo</p>
+            <img src="Imagens/setaBaixo.svg" alt="Imagem de uma seta para baixo">
+        </div>
+
+        <div>
+            <p>Pesquisar</p>
+            <img src="Imagens/pesquisar.svg" alt="Imagem de uma lupa">
+        </div>
 
     </div>
 
@@ -102,7 +112,8 @@
 
                 <div>
                     <div>
-                        imagem
+                        <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                        <img src="Imagens/SimboloInventarios.svg" alt="Imagem de Adicionar">
                     </div>
                     <h3>Criar Inventários</h3>
                 </div>
@@ -124,7 +135,8 @@
                 <div>
 
                     <div>
-                        imagem
+                        <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                        <img src="Imagens/SimboloExcluir.svg" alt="Imagem de uma Lixeira">
                     </div>
 
                     <h3>Excluir Inventários</h3>
@@ -134,7 +146,7 @@
                 <p>Habilitar esta permissão concede ao funcionário a habilidade de excluir inventários.</p>
 
                 <div>
-                    <label >
+                    <label>
                         <input type="checkbox">
                         <span>animacao</span>
                     </label>
@@ -146,7 +158,8 @@
                 <div>
 
                     <div>
-                        imagem
+                        <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                        <img src="Imagens/SimboloVizualizar.svg" alt="Imagem de uma olho">
                     </div>
 
                     <h3>Visualizar Inventários</h3>
@@ -168,7 +181,8 @@
                 <div>
 
                     <div>
-                        imagem
+                        <img src="Imagens/Glass%20Effect.svg" alt="Quadrado de efeito">
+                        <img src="Imagens/SimboloAnalise.svg" alt="Imagem de um gráfico">
                     </div>
 
                     <h3>Visualizar Análises de ROI</h3>
@@ -193,6 +207,11 @@
         <div>
             <span>Mostrando 4 por página</span>
         </div>
+
+        <a></a>
+        <div>1</div>
+        <div>2</div>
+        <a></a>
 
     </section>
 </body>
