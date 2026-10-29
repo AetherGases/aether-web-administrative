@@ -24,6 +24,11 @@
     <div class="blur3"></div>
     <div class="blur4"></div>
 
+    <a href="Index.jsp"  class="botaoVoltar">
+        <p class="tipografiaBotaoVoltar">Voltar</p>
+        <div class="botaoRendondoVoltar"> <img class="setaVoltar" src="Imagens/setaVoltar.svg" alt="Seta Voltar"> </div>
+    </a>
+
     <div>
         <div class="quadradoAetherPulse">
             <p class="tituloPlanos">Aether <span class="tituloPlanoVerde">Pulse</span></p>

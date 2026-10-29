@@ -21,6 +21,11 @@
     <div class="blur3" aria-hidden="true"></div>
     <div class="blur4" aria-hidden="true"></div>
 
+    <a href="Index.jsp"  class="botaoVoltar">
+        <p class="tipografiaBotaoVoltar">Voltar</p>
+        <div class="botaoRendondoVoltar"> <img class="setaVoltar" src="Imagens/setaVoltar.svg" alt="Seta Voltar"> </div>
+    </a>
+
     <header class="divLogo">
         <img class="logoCRUD" src="${pageContext.request.contextPath}/Imagens/LogoAethererdeEscuro.svg" alt="Logo do Aether">
         <h1 class="logotipoAether">aether</h1>
@@ -68,6 +73,9 @@
                 <button class="botaoEnvioRoxo tipografiaEnvio" type="submit">Entrar</button>
             </form>
         </section>
+
+        <p>Não possui uma conta? <a href="CompanyRegister.jsp">Clique Aqui</a></p>
+        <p>Esqueceu a senha? <a href="RecoverPassword.jsp">clique aqui</a></p>
     </main>
 
 </body>

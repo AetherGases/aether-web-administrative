@@ -28,6 +28,11 @@
     <div class="blur3"></div>
     <div class="blur4"></div>
 
+    <a href="CompanyRegister.jsp"  class="botaoVoltar">
+        <p class="tipografiaBotaoVoltar">Voltar</p>
+        <div class="botaoRendondoVoltar"> <img class="setaVoltar" src="Imagens/setaVoltar.svg" alt="Seta Voltar"> </div>
+    </a>
+
     <div class="divLogo">
         <img class="logoCRUD" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
         <h1 class="logotipoAether">aether</h1>
