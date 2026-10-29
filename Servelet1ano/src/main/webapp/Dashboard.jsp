@@ -22,7 +22,7 @@
 <%-- Figma: TELA CRUD (INICIO) — nó 4920:5840 --%>
 <div class="tela tela-dashboard">
 
-    <jsp:include page="/WEB-INF/includes/Sidebar.jsp">
+    <jsp:include page="Sidebar.jsp">
         <jsp:param name="ativo" value="dashboard"/>
     </jsp:include>
 

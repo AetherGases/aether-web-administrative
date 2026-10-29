@@ -118,7 +118,7 @@
     background: radial-gradient(circle, rgba(180, 161, 255, 1) 0%, rgba(124, 58, 237, 1) 100%);
 }
 
-.quadradoVerFuncionarioTopo{
+.quadradoVerFuncionario{
     display: flex;
     width: 842px;
     padding: 0 1px 25px 1px;
@@ -128,4 +128,83 @@
     gap: 25px;
     border: 1px solid #1E0A4A;
     background: #FFF;
+}
+
+.quadradoVerFucionarioTopo{
+    width: 842px;
+    height: 65px;
+    background: #1E0A4A;
+    box-shadow: 0 5px 0 0 #B3B7C9;
+}
+
+.campoNomeVF{
+    width: 288px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.campoEmailVF{
+    width: 288px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.campoSetorVF{
+    width: 288px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.campoDTAdmVF{
+    width: 288px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.campoSenhaVF{
+    width: 288px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.campoStatusVF{
+    width: 288px;
+    height: 54px;
+    border-radius: 15px;
+    border: 1px solid #B3B7C9;
+    background: #FFF;
+}
+
+.tipografiaTitulosCamposVF{
+    color: #1E0A4A;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+}
+
+.tipografiaCamposVF{
+    display: -webkit-box;
+    width: 250px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    color: #B3B7C9;
+    text-overflow: ellipsis;
+    font-family: "Montserrat", sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
 }

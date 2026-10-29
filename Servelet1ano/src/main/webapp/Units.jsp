@@ -19,7 +19,7 @@
 
 <div class="tela">
 
-    <jsp:include page="/WEB-INF/includes/Sidebar.jsp">
+    <jsp:include page="Sidebar.jsp">
         <jsp:param name="ativo" value="unidades"/>
     </jsp:include>
 
@@ -33,7 +33,7 @@
         <p class="mensagem mensagem-sucesso" role="status"><c:out value="${sucesso}"/></p>
     </c:if>
 
-    <jsp:include page="/WEB-INF/includes/Acoes.jsp">
+    <jsp:include page="Acoes.jsp">
         <jsp:param name="modal" value="overlayAdicionarUnidade"/>
         <jsp:param name="selecionar" value="${not empty unidades}"/>
     </jsp:include>
@@ -113,7 +113,7 @@
 
         <%-- Estado vazio (Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS) --%>
         <c:if test="${empty unidades}">
-            <jsp:include page="/WEB-INF/includes/Vazio.jsp">
+            <jsp:include page="Vazio.jsp">
                 <jsp:param name="destaque" value="nenhuma unidade cadastrada."/>
             </jsp:include>
         </c:if>
@@ -121,7 +121,7 @@
 
     <%-- Paginação só aparece quando há registros (no Figma do estado vazio ela não existe) --%>
     <c:if test="${not empty unidades}">
-        <jsp:include page="/WEB-INF/includes/Paginacao.jsp"/>
+        <jsp:include page="Paginacao.jsp"/>
     </c:if>
 </div>
 
