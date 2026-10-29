@@ -46,28 +46,28 @@
 
     <%-- Cartões de números (Analytic em 330, 513 — 343 x 206 cada).
          Os valores são de exemplo, como no Figma; troque pelos atributos do servlet quando existirem. --%>
-    <a class="cartao-numero n1" href="${ctx}/setores">
+    <a class="cartao-numero n1" href="${ctx}/Sectors.jsp">
         <p class="rotulo">Setores</p>
         <p class="valor">24</p>
         <img src="${ctx}/Imagens/grafico.svg" alt="">
         <span class="linha"></span>
     </a>
 
-    <a class="cartao-numero n2" href="${ctx}/permissoes">
+    <a class="cartao-numero n2" href="${ctx}/PermissionsOne.jsp">
         <p class="rotulo">Permissões</p>
         <p class="valor">08</p>
         <img src="${ctx}/Imagens/chave.svg" alt="">
         <span class="linha"></span>
     </a>
 
-    <a class="cartao-numero n3" href="${ctx}/funcionarios">
+    <a class="cartao-numero n3" href="${ctx}/Employee.jsp">
         <p class="rotulo">Funcionários</p>
         <p class="valor">15</p>
         <img src="${ctx}/Imagens/pessoas.svg" alt="" style="height: 60px; top: 87px">
         <span class="linha"></span>
     </a>
 
-    <a class="cartao-numero n4" href="${ctx}/unidades">
+    <a class="cartao-numero n4" href="${ctx}/Units.jsp">
         <p class="rotulo">Unidades</p>
         <p class="valor">07</p>
         <img src="${ctx}/Imagens/predios.svg" alt="">
