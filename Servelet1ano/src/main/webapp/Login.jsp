@@ -20,7 +20,7 @@
 
     <link rel="stylesheet" href="${pageContext.request.contextPath}/global.css">
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/login.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Login.css">
 </head>
 
 <body>
@@ -62,7 +62,11 @@
         </c:if>
 
         <!-- Formulário processado pelo LoginServlet -->
-        <form action="${pageContext.request.contextPath}/login" method="post" accept-charset="UTF-8">
+        <form
+                action="${pageContext.request.contextPath}/login"
+                method="post"
+                accept-charset="UTF-8"
+        >
             <label for="empresa" class="visually-hidden">
                 Empresa
             </label>

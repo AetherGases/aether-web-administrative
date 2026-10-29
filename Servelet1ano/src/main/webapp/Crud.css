@@ -1,0 +1,907 @@
+/* =====================================================================
+   Crud.css — layout compartilhado das telas internas (Figma: TELA CRUDV2)
+   Todas as coordenadas abaixo vêm do frame de 1440 x 1024 do Figma.
+   ===================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #EDEEF8;
+    font-family: "Montserrat", sans-serif;
+    color: #161C2D;
+    min-width: 1440px;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+/* Canvas fixo com as medidas do Figma; tudo dentro é posicionado em px. */
+.tela {
+    position: relative;
+    width: 1440px;
+    height: 1024px;
+    margin: 0 auto;
+    background: #EDEEF8;
+    overflow: hidden;
+}
+
+/* ------------------------------ SIDEBAR ------------------------------ */
+.sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 284px;
+    height: 1024px;
+    background: #FFF;
+    border-radius: 0 30px 30px 0;
+}
+
+.sidebar-logo {
+    position: absolute;
+    left: 48px;
+    top: 28px;
+    width: 186px;
+    height: 71px;
+}
+
+.sidebar-mascote {
+    position: absolute;
+    left: 47px;
+    top: 212px;
+    width: 202px;
+    height: 157px;
+}
+
+.sidebar-mascote .nuvem {
+    position: absolute;
+    left: -9px;
+    top: -14px;
+    width: 264px;
+    height: auto;
+}
+
+/* Maleta do mascote — retângulos do Figma (Group 2049761284) */
+.maleta {
+    position: absolute;
+    left: 125.86px;   /* 172.86 - 47 */
+    top: 92.4px;      /* 304.40 - 212 */
+    width: 75.6px;
+    height: 64.4px;
+}
+
+.maleta span {
+    position: absolute;
+    display: block;
+}
+
+.maleta .alca-e   { left: 19.11px; top: 0; width: 6.37px; height: 17.52px; background: #2DBD7E; border-radius: 7px 7px 0 0; }
+.maleta .alca-d   { left: 46.2px;  top: 0; width: 6.37px; height: 17.52px; background: #2DBD7E; border-radius: 7px 7px 0 0; }
+.maleta .alca-t   { left: 19.11px; top: 0; width: 33.46px; height: 6.37px; background: #2DBD7E; border-radius: 7px; }
+.maleta .corpo    { left: 0; top: 15.93px; width: 75.6px; height: 48.43px; background: #2DBD7E; border-radius: 5.9px; }
+.maleta .faixa-e  { left: 11.15px; top: 15.93px; width: 4.78px; height: 47.79px; background: #1E6B56; }
+.maleta .faixa-d  { left: 55.75px; top: 15.93px; width: 4.78px; height: 47.79px; background: #1E6B56; }
+
+.sidebar-admin {
+    position: absolute;
+    left: 0;
+    top: 396px;
+    width: 284px;
+    margin: 0;
+    text-align: center;
+    color: #2DBD7E;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+}
+
+/* Menu: primeiro item em y=482, um a cada 62px, ícone em x=63 */
+.menu {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu li {
+    position: absolute;
+    left: 39px;
+    width: 206px;
+    height: 41.2px;
+}
+
+.menu li:nth-child(1) { top: 472px; }
+.menu li:nth-child(2) { top: 534px; }
+.menu li:nth-child(3) { top: 596px; }
+.menu li:nth-child(4) { top: 658px; }
+.menu li:nth-child(5) { top: 720px; }
+.menu li:nth-child(6) { top: 782px; }
+.menu li:nth-child(7) { top: 844px; }
+
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    height: 100%;
+    padding-left: 24px;            /* ícone em x = 39 + 24 = 63 */
+    border-radius: 10px;
+    color: #1E6B56;
+    font-size: 18px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color .15s ease;
+}
+
+.menu a:hover {
+    background: #D4FFEB;
+}
+
+.menu a img {
+    width: 17px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.menu a img.icone-largo {
+    width: 27px;
+    height: 17px;
+    margin-right: -6px;
+}
+
+/* Item ativo = Rectangle 23857 (206 x 41.2) */
+.menu a.ativo {
+    background: #2DBD7E;
+    color: #FFF;
+}
+
+.menu a.ativo img {
+    filter: brightness(0) invert(1);
+}
+
+.logout {
+    position: absolute;
+    left: 18px;
+    top: 964px;
+    width: 246px;
+    height: 51px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 30px;
+    background: #FFF;
+    color: #FB324C;
+    font-size: 24px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.logout img {
+    width: 27.3px;
+    height: 23px;
+}
+
+/* ------------------------------ CABEÇALHO ----------------------------- */
+.titulo-pagina {
+    position: absolute;
+    left: 334.73px;
+    top: 50.71px;
+    margin: 0;
+    color: #1E0A4A;
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 61px;
+    white-space: nowrap;
+}
+
+.subtitulo-pagina {
+    position: absolute;
+    left: 334.73px;
+    top: 113.71px;
+    margin: 0;
+    color: #7E8294;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+}
+
+/* ------------------------------ BARRA DE AÇÕES ------------------------ */
+.pesquisa {
+    position: absolute;
+    left: 334.19px;
+    top: 151.49px;
+    width: 455px;
+    height: 44px;
+    border-radius: 15px;
+    border: 2px solid #D8DAE3;
+    background: #FFF;
+    box-shadow: 0 50px 50px 0 rgba(133, 144, 157, 0.09), 0 13px 28px 0 rgba(133, 144, 157, 0.10);
+}
+
+.pesquisa input {
+    width: 100%;
+    height: 100%;
+    padding: 0 52px 0 18px;
+    border: 0;
+    border-radius: 13px;
+    background: transparent;
+    color: #161C2D;
+    font-size: 16px;
+    font-weight: 500;
+    outline: none;
+}
+
+.pesquisa input::placeholder {
+    color: #7E8294;
+}
+
+.pesquisa svg {
+    position: absolute;
+    right: 12px;
+    top: 8px;
+    width: 26px;
+    height: 26px;
+    pointer-events: none;
+}
+
+.botao-filtros {
+    position: absolute;
+    left: 804.19px;
+    top: 152.16px;
+    width: 110px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 11px;
+    border-radius: 15px;
+    border: 2px solid rgba(179, 183, 201, 0.5);
+    background: #FFF;
+    color: #7E8294;
+    font-size: 16px;
+    font-weight: 500;
+    box-shadow: 0 10px 10px 0 rgba(170, 181, 192, 0.09), 0 3px 6px 0 rgba(170, 181, 192, 0.10);
+}
+
+.botao-filtros svg {
+    width: 28px;
+    height: 28px;
+}
+
+.botao-selecionar {
+    position: absolute;
+    left: 1030px;
+    top: 152px;
+    width: 189px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 11px;
+    border: 0;
+    border-radius: 15px;
+    background: #39BD83;
+    color: #FFF;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.botao-adicionar {
+    position: absolute;
+    left: 1225px;
+    top: 152px;
+    width: 170px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 0;
+    border-radius: 15px;
+    background: linear-gradient(246.6deg, #3EBC85 7.9%, #2DBD7E 50.26%);
+    color: #FFF;
+    font-size: 16px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.botao-selecionar svg,
+.botao-adicionar svg,
+.botao-adicionar img {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* ------------------------------ MENSAGENS ---------------------------- */
+.mensagem {
+    position: absolute;
+    left: 680px;
+    top: 50px;
+    max-width: 715px;
+    margin: 0;
+    padding: 12px 20px;
+    border-radius: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    z-index: 5;
+}
+
+.mensagem-erro {
+    background: #FFE3E7;
+    color: #C4122B;
+    border: 1px solid #FB324C;
+}
+
+.mensagem-sucesso {
+    background: #D4FFEB;
+    color: #1E6B56;
+    border: 1px solid #2DBD7E;
+}
+
+/* ------------------------------ TABELA ------------------------------- */
+/* Rectangle 23979: 1061 x 680 em (333.87, 209.76) */
+.cartao-tabela {
+    position: absolute;
+    left: 333.87px;
+    top: 209.76px;
+    width: 1061px;
+    height: 680px;
+    padding: 5px;
+    border-radius: 30px;
+    background: #FFF;
+    box-shadow: 0 50px 50px 0 rgba(156, 156, 156, 0.09), 0 12px 27px 0 rgba(156, 156, 156, 0.10);
+    overflow: hidden;
+}
+
+.tabela {
+    width: 1051px;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+/* Rectangle 23980: faixa verde 1051 x 44 */
+.tabela thead th {
+    height: 44px;
+    padding: 0;
+    background: #D4FFEB;
+    color: #1E6B56;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tabela thead th:first-child { border-radius: 25px 0 0 5px; }
+.tabela thead th:last-child  { border-radius: 0 25px 5px 0; }
+
+/* Linhas a cada 62px; divisórias de 1013px começando em x=357.87 */
+.tabela tbody td {
+    height: 62px;
+    padding: 0;
+    color: #161C2D;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    background: linear-gradient(#F3F0FF, #F3F0FF) left bottom / 100% 2px no-repeat;
+}
+
+/* A divisória começa 19px depois da borda da faixa e termina 19px antes */
+.tabela tbody td:first-child {
+    padding-left: 21px;
+    background-position: right bottom;
+    background-size: calc(100% - 19px) 2px;
+}
+
+.tabela tbody td:last-child {
+    background-size: calc(100% - 19px) 2px;
+}
+
+.tabela tbody tr:last-child td {
+    background: none;
+}
+
+/* Recuos finos para alinhar textos que no Figma não começam na borda da coluna */
+.tabela .recuo-6  { padding-left: 6px; }
+.tabela .recuo-14 { padding-left: 14px; }
+.tabela .recuo-16 { padding-left: 16px; }
+.tabela .recuo-22 { padding-left: 22px; }
+
+/* Checkbox 20 x 20 do Figma (BOTÃO CHECK) */
+.check {
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    border: 2px solid #2DBD7E;
+    border-radius: 5px;
+    background: #FFF;
+    cursor: pointer;
+}
+
+.check:checked {
+    background: #2DBD7E url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3.2 3L15 6.5' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat;
+}
+
+.status-icone {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+.acoes {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.acoes form {
+    display: contents;
+}
+
+.acao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.acao img {
+    display: block;
+}
+
+/* VER em x+0, EDITAR em x+54, LIXO em x+102 (relativos a 1238.87) */
+.acao-ver    { width: 25.6px; height: 22px; }
+.acao-editar { width: 22px;   height: 22px; margin-left: 28.4px; }
+.acao-excluir{ width: 19.8px; height: 22px; margin-left: 26px; }
+
+.acao-ver img    { width: 25.6px; height: 17.9px; }
+.acao-editar img { width: 22px;   height: 22px; }
+.acao-excluir img{ width: 19.8px; height: 22px; }
+
+.acao:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.texto-secundario {
+    color: #7E8294;
+}
+
+/* Estado vazio — Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS (nó 4938:8858).
+   Posições relativas ao cartão (Rectangle 24042 em 334, 210). */
+.vazio {
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    background: #FFF;
+}
+
+/* Group 2049760503 em (656, 306.16) → (322.13, 96.4) dentro do cartão */
+.vazio-mascote {
+    position: absolute;
+    left: 322.13px;
+    top: 96.4px;
+    width: 506px;
+    height: 310px;
+    overflow: visible;
+}
+
+/* Texto em (651, 627.24), 426 x 90 → (317.13, 417.48) dentro do cartão */
+.vazio-texto {
+    position: absolute;
+    left: 317.13px;
+    top: 417.48px;
+    width: 426px;
+    height: 90px;
+    margin: 0;
+    color: #878787;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 30px;
+    text-align: center;
+}
+
+.vazio-texto .roxo {
+    color: #7C3AED;
+}
+
+/* ------------------------------ PAGINAÇÃO ---------------------------- */
+.contagem {
+    position: absolute;
+    left: 1203px;
+    top: 903px;
+    width: 189px;
+    margin: 0;
+    color: #4A435E;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 18px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.pagina-seta {
+    position: absolute;
+    top: 914px;
+    width: 43px;
+    height: 43px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: radial-gradient(84.96% 84.96% at 74.42% 0%, #5DDBA5 0%, #2DBD7E 100%);
+}
+
+.pagina-seta svg {
+    width: 19px;
+    height: 19px;
+}
+
+.pagina-anterior { left: 783px; }
+.pagina-proxima  { left: 903px; }
+
+.pagina-atual {
+    position: absolute;
+    left: 843px;
+    top: 915px;
+    width: 41.3px;
+    height: 41.3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.425px solid #B3B7C9;
+    border-radius: 10px;
+    background: #FFF;
+    color: #7E8294;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* ------------------------------ OVERLAYS ----------------------------- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(30, 10, 74, 0.35);
+    z-index: 100;
+    overflow: auto;
+}
+
+.overlay.ativo {
+    display: flex;
+}
+
+/* Frame OVERLAY: 842px de largura, borda #1E0A4A */
+.modal {
+    position: relative;
+    width: 842px;
+    margin: auto;
+    border: 1px solid #1E0A4A;
+    background: #FFF;
+}
+
+/* Rectangle 23991: 842 x 65, sombra inferior de 5px */
+.modal-topo {
+    position: relative;
+    height: 65px;
+    margin-top: 1px;
+    background: #1E0A4A;
+    box-shadow: 0 5px 0 0 #B3B7C9;
+}
+
+.modal-topo img {
+    position: absolute;
+    left: 37px;
+    top: 15px;
+    width: 35px;
+    height: 35px;
+}
+
+.modal-topo h2 {
+    position: absolute;
+    left: 79px;
+    top: 8px;
+    margin: 0;
+    color: #FFF;
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 49px;
+    white-space: nowrap;
+}
+
+.modal-fechar {
+    position: absolute;
+    left: 772px;
+    top: 18px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
+.modal-fechar:focus-visible {
+    outline: 2px solid #FFF;
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+.modal-fechar svg {
+    width: 28px;
+    height: 28px;
+}
+
+/* Grade de campos: colunas em x=98 e x=456 (288px), linhas a cada 80px a partir de y=91 */
+.modal-corpo {
+    display: grid;
+    grid-template-columns: 288px 288px;
+    column-gap: 70px;
+    row-gap: 26px;
+    padding: 25px 97px 0 97px;
+}
+
+.campo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.campo.largo {
+    grid-column: 1 / -1;
+    width: 288px;
+    justify-self: center;
+}
+
+.campo label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+}
+
+.modal.modo-ver .campo label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    margin: 0 0 0 15px;
+    color: #4A435E;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+    width: 288px;
+    height: 54px;
+    padding: 0 16px;
+    border: 1px solid #B3B7C9;
+    border-radius: 15px;
+    background: #FFF;
+    color: #161C2D;
+    font-size: 20px;
+    font-weight: 500;
+    outline: none;
+}
+
+.campo textarea {
+    height: 134px;
+    padding: 14px 16px;
+    resize: none;
+    line-height: 24px;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+    color: #B3B7C9;
+}
+
+.campo select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 42px;
+    background: #FFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%237E8294' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 18px center no-repeat;
+}
+
+.campo select:invalid {
+    color: #B3B7C9;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    border-color: #9A72F9;
+    box-shadow: 0 0 0 3px rgba(154, 114, 249, 0.2);
+}
+
+.campo input[readonly],
+.campo textarea[readonly] {
+    background: #FAFAFD;
+    cursor: default;
+}
+
+.modal.modo-ver .campo input,
+.modal.modo-ver .campo textarea {
+    color: #4A435E;
+}
+
+/* Line 380: 306px centralizada; botão ADD (232 x 56) / ALT (187 x 56) */
+.modal-rodape {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 0 14px;
+}
+
+.modal-rodape::before {
+    content: "";
+    width: 306px;
+    height: 3px;
+    margin-bottom: 25px;
+    background: #B3B7C9;
+    opacity: .5;
+    border-radius: 2px;
+}
+
+.modal.modo-ver .modal-rodape {
+    padding: 0 0 25px;
+}
+
+.modal.modo-ver .modal-rodape::before {
+    display: none;
+}
+
+.botao-roxo {
+    min-width: 187px;
+    height: 56px;
+    padding: 0 41px;
+    border: 0;
+    border-radius: 50px;
+    background: radial-gradient(circle, #B4A1FF 0%, #7C3AED 100%);
+    color: #FFF;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.botao-roxo.adicionar {
+    width: 232px;
+}
+
+.botao-roxo:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.aviso-modal {
+    margin: 10px 0 0;
+    color: #7E8294;
+    font-size: 13px;
+}
+
+/* OVERLAY EXCLUIR */
+.modal-excluir .corpo-excluir {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 92px 0 35px;
+}
+
+.modal-excluir .corpo-excluir img {
+    width: 100px;
+    height: 100px;
+}
+
+.modal-excluir .corpo-excluir p {
+    width: 628px;
+    margin: 32px 0 0;
+    color: #4A435E;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 31px;
+    text-align: center;
+}
+
+.botoes-excluir {
+    display: flex;
+    justify-content: center;
+    gap: 72px;
+    padding: 0 0 20px;
+}
+
+.botoes-excluir button {
+    width: 300px;
+    height: 70px;
+    border-radius: 50px;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.botao-cancelar {
+    border: 2px solid #B3B7C9;
+    background: #FFF;
+    color: #7E8294;
+}
+
+.botao-deletar {
+    border: 0;
+    background: #FB324C;
+    color: #FFF;
+}
+
+.botao-deletar:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.campo.alto {
+    grid-row: span 2;
+}
+
+.modal.modo-ver .modal-corpo {
+    row-gap: 32px;
+}
+
+.modal.modo-ver .campo label {
+    margin-bottom: -2px;
+}
+
+.modal.modo-ver .campo textarea {
+    height: 54px;
+    padding-top: 14px;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
