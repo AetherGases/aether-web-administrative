@@ -23,6 +23,20 @@
 </head>
 <body>
 
+    <!-- Mensagem de erro enviada pelo ManagerRegisterServlet -->
+    <c:if test="${not empty requestScope.erro}">
+        <div class="mensagem-erro" role="alert">
+            <p><c:out value="${requestScope.erro}" /></p>
+        </div>
+    </c:if>
+
+    <!-- Mensagem de sucesso enviada pelo ManagerServletServlet -->
+    <c:if test="${not empty requestScope.sucesso}">
+        <div class="mensagem-sucesso" role="status">
+            <p><c:out value="${requestScope.sucesso}" /></p>
+        </div>
+    </c:if>
+
     <div class="blur1"></div>
     <div class="blur2"></div>
     <div class="blur3"></div>
@@ -42,19 +56,6 @@
     <main class="divLoginPrincipal">
 
         <div class="caixaFormGerente">
-            <!-- Mensagem de erro enviada pelo ManagerRegisterServlet -->
-            <c:if test="${not empty requestScope.erro}">
-                <div class="mensagem-erro" role="alert">
-                    <p><c:out value="${requestScope.erro}" /></p>
-                </div>
-            </c:if>
-
-            <!-- Mensagem de sucesso enviada pelo ManagerServletServlet -->
-            <c:if test="${not empty requestScope.sucesso}">
-                <div class="mensagem-sucesso" role="status">
-                    <p><c:out value="${requestScope.sucesso}" /></p>
-                </div>
-            </c:if>
 
             <img class="aekoCRUD" src="Imagens/AekoLogin.svg" alt="Aeko">
             <div class="tipografiaRetanguloGerente retanguloGerente">

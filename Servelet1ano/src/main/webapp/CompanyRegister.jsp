@@ -19,7 +19,15 @@
 
 <body>
 
-    <div class="blur1"></div>
+<!-- Mensagem de erro enviada pelo ManagerRegisterServlet -->
+<c:if test="${not empty requestScope.erro}">
+    <div class="mensagem-erro" role="alert">
+        <p><c:out value="${requestScope.erro}" /></p>
+    </div>
+</c:if>
+
+
+<div class="blur1"></div>
     <div class="blur2"></div>
     <div class="blur3"></div>
     <div class="blur4"></div>
@@ -50,7 +58,6 @@
                 <li>Acompanhamento trimestral</li>
             </ul>
         </div>
-    </c:if>
 
     <fieldset>
         <form action="${pageContext.request.contextPath}/empresa" method="post">
