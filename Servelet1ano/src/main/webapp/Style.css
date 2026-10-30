@@ -1,37 +1,5 @@
 @charset "UTF-8";
-/* ==========================================================================
-   AETHER — LANDING PAGE RESPONSIVA (abordagem MOBILE-FIRST)
 
-   Organização do arquivo:
-     0.  Tokens (cores, fontes, escalas fluidas)
-     1.  Reset
-     2.  Base e estrutura das seções
-     3.  Elementos decorativos (bolas desfocadas) e rótulos de seção
-     4.  Cabeçalho e menu
-     5.  Setor 1 — Hero
-     6.  Setor 2 — Quem somos
-     7.  Setor 3 — Gases de efeito estufa
-     8.  Setor 4 — Carrossel de gases
-     9.  Setor 5 — Nossa solução + análise de dados
-     10. Setor 6 — Planos
-     11. Setor 7 — Cadastro
-     12. Setor 8 — Rodapé
-     13. Utilitários e acessibilidade
-     14. MEDIA QUERIES
-           14.1 ≥ 481px  — smartphones grandes
-           14.2 ≥ 769px  — tablets
-           14.3 ≥ 1025px — desktop
-           14.4 Dispositivos sem hover (desktop touch)
-           14.5 Movimento reduzido
-     15. Página de contato (legado + adaptação responsiva)
-
-   Os estilos-base (fora de @media) valem para telas de até 480px.
-   ========================================================================== */
-
-
-/* ==========================================================================
-   0. TOKENS
-   ========================================================================== */
 :root {
     --roxo: #7C3AED;
     --roxo-escuro: #5B21B6;
