@@ -570,7 +570,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
         boolean withName = name != null && !name.isBlank();
 
         String sql = "select e.password_hash, " + SELECT_FIELDS + FROM_EMPLOYEES +
-                "where lower(e.email) = ? and e.company_id = ? and e.is_active = true" +
+                "where lower(e.email) = ? " +
                 (withName ? " and lower(e.name) = lower(?)" : "") +
                 " limit 2";
 
