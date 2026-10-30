@@ -25,19 +25,19 @@ public class PasswordRecoveryService {
     private static final int CODE_LENGTH = 6;
     private static final int EXPIRATION_MINUTES = 10;
 
-    /*
+    /**
      * Gera um código numérico aleatório de seis dígitos.
      * Mantém os zeros à esquerda quando necessário.
-     */
+     **/
     public String generateCode() {
         int number = RANDOM.nextInt(1_000_000);
         return String.format("%06d", number);
     }
 
-    /*
+    /**
      * Converte o código em um HMAC-SHA-256 utilizando uma chave secreta.
      * Retorna o resultado em hexadecimal para armazenamento no banco.
-     */
+     **/
     public String hashCode(String code, String codeSecret) {
         if (code == null || !code.matches("\\d{" + CODE_LENGTH + "}")) {
             throw new IllegalArgumentException("Código inválido.");
@@ -151,10 +151,10 @@ public class PasswordRecoveryService {
         }
     }
 
-        /*
+        /**
          * Calcula o instante de expiração do código em milissegundos.
          * O código permanece válido por dez minutos após a geração.
-         */
+         **/
         public long getExpirationMillis () {
             return System.currentTimeMillis()
                     + EXPIRATION_MINUTES * 60_000L;

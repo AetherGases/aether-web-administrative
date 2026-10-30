@@ -1,21 +1,10 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
-    <title>Dashboard | Aether</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="${ctx}/Crud.css">
-    <link rel="stylesheet" href="${ctx}/Dashboard.css">
+    <title>Tela de Dashboard do Aether</title>
 </head>
 <body>
 
