@@ -314,19 +314,13 @@ public class PasswordRecoveryDAO {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
         String sql =
                 "UPDATE password_recoveries " +
                         "SET used_at = CURRENT_TIMESTAMP " +
                         "WHERE id = ? AND used_at IS NULL";
 
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 

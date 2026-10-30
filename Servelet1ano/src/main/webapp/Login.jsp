@@ -18,9 +18,9 @@
 
     <link rel="icon" href="${pageContext.request.contextPath}/Imagens/LogoAether.svg" type="image/svg+xml">
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/global.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Global.css.css">
 
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/login.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Login.css.css">
 </head>
 
 <body>
