@@ -67,7 +67,7 @@
         <img class="mascote" style="left: 192px; top: 26px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo" style="left: 80.5px; top: 137px; width: 385px">Cadastro empresarial</h1>
 
-        <form action="${ctx}/empresa" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/ManagerRegister.jsp" method="post" accept-charset="UTF-8">
             <label for="empresa" class="visually-hidden">Nome da empresa</label>
             <input class="entrada" style="top: 196px" type="text" id="empresa" name="empresas"
                    placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}'/>" required>

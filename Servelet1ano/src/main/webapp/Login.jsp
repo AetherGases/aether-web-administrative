@@ -44,7 +44,7 @@
         <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo" style="left: 109.5px; top: 146px; width: 327px">Login pessoal</h1>
 
-        <form action="${ctx}/login" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Dashboard.jsp" method="post" accept-charset="UTF-8">
             <label for="empresa" class="visually-hidden">Empresa</label>
             <select class="entrada" style="top: 221px" id="empresa" name="empresas" required>
                 <option value="" disabled ${empty param.empresas ? 'selected' : ''}>Selecionar empresa</option>

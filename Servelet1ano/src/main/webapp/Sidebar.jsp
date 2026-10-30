@@ -24,7 +24,7 @@
     <nav aria-label="Menu principal">
         <ul class="sidebar-menu">
             <li>
-                <a href="${ctx}/dashboard" class="${ativo eq 'dashboard' ? 'ativo' : ''}">
+                <a href="${ctx}/Dashboard.jsp" class="${ativo eq 'dashboard' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/dashboard.svg" alt="">Dashboards
                 </a>
             </li>

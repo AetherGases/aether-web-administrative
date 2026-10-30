@@ -1,69 +1,106 @@
-body{
+/* =====================================================================
+   Error.css — Figma: "Crud - Error" (canvas 1440 x 1024).
+   Todas as posições abaixo são as do Figma, em px, relativas à .telaErro.
+   ===================================================================== */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
     margin: 0;
     padding: 0;
-    background-color: #EDEEF8;
-    width: 100vw;
-    height: 100vh;
+}
+
+body {
+    min-width: 1440px;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #EDEEF8 0.02%, #B3A2FB 100%) fixed;
+    font-family: "Montserrat", sans-serif;
+}
+
+/* Canvas fixo de 1440 x 1024, centralizado */
+.telaErro {
     position: relative;
+    width: 1440px;
+    height: 1024px;
+    margin: 0 auto;
     overflow: hidden;
-    background: linear-gradient(180deg, #EDEEF8 0.02%, #643BFF 236.49%);
+    background: linear-gradient(180deg, #EDEEF8 0.02%, #B3A2FB 100%);
 }
 
-.tituloErro{
+/* "Erro 404" — tinta do "E" em x ≈ 88, altura de 160px */
+.tituloErro {
+    position: absolute;
+    left: 73px;
+    top: 234px;
+    margin: 0;
     color: #7C3AED;
-    -webkit-text-stroke-width: 1.32px;
-    -webkit-text-stroke-color: #7C3AED;
-    font-family: "Montserrat", sans-serif;
+    -webkit-text-stroke: 1.32px #7C3AED;
     font-size: 160px;
-    font-style: normal;
     font-weight: 600;
-    line-height: normal;
+    line-height: 1;
+    white-space: nowrap;
 }
 
-.subTituloErro{
+/* "Oops! Página não encontrada" — tinta em x ≈ 82, centro em y ≈ 498 */
+.subTituloErro {
+    position: absolute;
+    left: 80px;
+    top: 467px;
+    margin: 0;
     color: #000;
-    font-family: "Montserrat", sans-serif;
     font-size: 45px;
-    font-style: normal;
     font-weight: 600;
-    line-height: normal;
+    line-height: 55px;
+    white-space: nowrap;
 }
 
-.descricaoErro{
+/* "Parece que você pegou um caminho errado..." — tinta em x ≈ 82, 3 linhas a partir de y ≈ 587 */
+.descricaoErro {
+    position: absolute;
+    left: 80px;
+    top: 587px;
     width: 560.335px;
+    margin: 0;
     color: #767676;
-    font-family: "Montserrat", sans-serif;
     font-size: 32.884px;
-    font-style: normal;
     font-weight: 400;
-    line-height: normal;
+    line-height: 39.5px;
 }
 
-.botaoVoltarInicio{
-    display: flex;
+/* Botão "Volte ao início" — 443.6 x 69.7 em (82, 748) */
+.botaoVoltarInicio {
+    position: absolute;
+    left: 82px;
+    top: 748px;
     width: 443.607px;
     height: 69.713px;
-    padding: 17.099px 27.622px 17.099px 26.307px;
+    display: flex;
     justify-content: center;
     align-items: center;
-    gap: 13.153px;
     border-radius: 24.991px;
     border: 1.315px solid #7C3AED;
     background: #7C3AED;
+    text-decoration: none;
 }
 
-.tipografiaVoltarInicio{
+.tipografiaVoltarInicio {
     color: #FFF;
-    font-family: "Montserrat", sans-serif;
     font-size: 26.307px;
-    font-style: normal;
     font-weight: 600;
-    line-height: normal;
+    line-height: 1.2;
 }
 
-.nuvemErro{
-    width: 685.974px;
-    height: 456.967px;
-    transform: rotate(2.517deg);
-    aspect-ratio: 656/437;
+/* Nuvem: o SVG já vem com a rotação de 2,5° (705 x 487), então NÃO se aplica
+   transform. O desenho visível ocupa x 805–1406 e y 305–709 do canvas. */
+.nuvemErro {
+    position: absolute;
+    left: 736px;
+    top: 259px;
+    width: 705px;
+    height: 487px;
 }

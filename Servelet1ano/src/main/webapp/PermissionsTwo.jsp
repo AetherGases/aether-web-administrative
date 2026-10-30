@@ -60,7 +60,7 @@
             <%-- Página 2 (print enviado): 3 cartões; o texto "Mostrando" fica ao lado do 3º cartão --%>
             <ul class="perm-lista">
                 <li class="perm-cartao">
-                    <span class="perm-icone"><img src="${ctx}/Imagens/SimboloCalculadora.svg" alt=""></span>
+                    <span class="perm-icone"><img src="${ctx}/Imagens/SimboloAnalise.svg" alt=""></span>
                     <h2>Calculadora de gases</h2>
                     <p>Acesso à calculadora de previsão de gases.</p>
                     <label class="perm-chave">
@@ -71,7 +71,7 @@
                 </li>
 
                 <li class="perm-cartao">
-                    <span class="perm-icone"><img src="${ctx}/Imagens/SimboloCalculadora.svg" alt=""></span>
+                    <span class="perm-icone"><img src="${ctx}/Imagens/SimboloAnalise.svg" alt=""></span>
                     <h2>Calculadora de ROI</h2>
                     <p>Acesso à calculadora de projeção de investimentos.</p>
                     <label class="perm-chave">
@@ -82,7 +82,7 @@
                 </li>
 
                 <li class="perm-cartao">
-                    <span class="perm-icone"><img src="${ctx}/Imagens/SimboloChatbot.svg" alt=""></span>
+                    <span class="perm-icone"><img src="${ctx}/Imagens/SimboloInventarios.svg" alt=""></span>
                     <h2>Chatbot</h2>
                     <p>Acesso ao Chatbot.</p>
                     <label class="perm-chave">

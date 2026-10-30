@@ -51,7 +51,7 @@
         <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo roxa" style="left: 63.5px; top: 146px; width: 419px">Cadastro de gerente</h1>
 
-        <form action="${ctx}/gerente" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Dashboard.jsp" method="post" accept-charset="UTF-8">
             <label for="nome" class="visually-hidden">Nome</label>
             <input class="entrada" style="top: 221px" type="text" id="nome" name="campoNome"
                    placeholder="Nome" value="<c:out value='${requestScope.campoNome}'/>" required>

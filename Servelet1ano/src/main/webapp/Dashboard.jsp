@@ -40,8 +40,8 @@
         <h2>Olá, <c:out value="${primeiroNome}"/>!</h2>
         <p>Você tem 12 mini-layouts aguardando análise hoje.</p>
 
-        <a class="botao-cartao botao-unidades" href="${ctx}/unidades">Ver unidades</a>
-        <a class="botao-cartao botao-funcionarios" href="${ctx}/funcionarios">Ver funcionários</a>
+        <a class="botao-cartao botao-unidades" href="${ctx}/Units.jsp">Ver unidades</a>
+        <a class="botao-cartao botao-funcionarios" href="${ctx}/Employee.jsp">Ver funcionários</a>
     </section>
 
     <%-- Cartões de números (Analytic em 330, 513 — 343 x 206 cada).

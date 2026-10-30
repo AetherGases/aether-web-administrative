@@ -43,7 +43,7 @@
         <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo roxa" style="left: 109.5px; top: 146px; width: 327px">Recuperar senha</h1>
 
-        <form action="${ctx}/recover-password" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Verification.jsp" method="post" accept-charset="UTF-8">
             <label for="email" class="visually-hidden">E-mail</label>
             <input class="entrada" style="top: 221px" type="email" id="email" name="campoEmail" placeholder="E-mail"
                    autocomplete="email" required>
