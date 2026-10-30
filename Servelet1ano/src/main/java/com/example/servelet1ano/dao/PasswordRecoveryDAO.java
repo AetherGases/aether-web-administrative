@@ -314,19 +314,13 @@ public class PasswordRecoveryDAO {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
         String sql =
                 "UPDATE password_recoveries " +
                         "SET used_at = CURRENT_TIMESTAMP " +
                         "WHERE id = ? AND used_at IS NULL";
 
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -340,7 +334,6 @@ public class PasswordRecoveryDAO {
             );
         }
     }
-
     private void rollbackQuietly(Connection conn, Exception cause) {
         try {
             conn.rollback();
@@ -348,5 +341,4 @@ public class PasswordRecoveryDAO {
             cause.addSuppressed(rollbackError);
         }
     }
-
 }
