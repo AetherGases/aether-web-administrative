@@ -1,147 +1,111 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Tela de Cadastro Empresarial do Aether</title>
+    <meta name="viewport" content="width=1440">
+    <title>Cadastro empresarial | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="icon" href="${pageContext.request.contextPath}/Imagens/LogoAether.svg" type="image/svg+xml">
-
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Global.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/CompanyRegister.css">
+    <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="${ctx}/Cadastro.css">
 </head>
-
 <body>
 
-<!-- Mensagem de erro enviada pelo ManagerRegisterServlet -->
-<c:if test="${not empty requestScope.erro}">
-    <div class="mensagem-erro" role="alert">
-        <p><c:out value="${requestScope.erro}" /></p>
-    </div>
-</c:if>
+<div class="tela">
+    <div class="blur blur-1"></div>
+    <div class="blur blur-2"></div>
+    <div class="blur blur-3"></div>
+    <div class="blur blur-4"></div>
 
+    <a class="voltar" href="${ctx}/Index.jsp">
+        <span>
+            <svg viewBox="0 0 22 22" aria-hidden="true"><path d="M14 4l-7 7 7 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        Voltar
+    </a>
 
-<div class="blur1"></div>
-    <div class="blur2"></div>
-    <div class="blur3"></div>
-    <div class="blur4"></div>
+    <%-- Planos (Figma: PLANO PULSE em 114,128 e PLANO HORIZON em 114,536) --%>
+    <section class="plano-card plano-pulse">
+        <h2>Aether <span class="verde">Pulse</span></h2>
+        <p class="preco"><strong>R$3.300</strong>/por mês</p>
+        <hr>
+        <ul>
+            <li>Quantidade de cadastro limitada a 10 funcionários</li>
+            <li>Quantidade de analistas e administradores limitada a 2</li>
+            <li>Acompanhamento mensal</li>
+        </ul>
+    </section>
 
-    <div>
-        <div class="quadradoAetherPulse">
-            <p class="tituloPlanos">Aether <span class="tituloPlanoVerde">Pulse</span></p>
-            <p class="tipografiaPorMes"><span class="tipografiaValores">R$3.300</span>/por mês</p>
+    <section class="plano-card plano-horizon">
+        <h2>Aether <span class="roxo">Horizon</span></h2>
+        <p class="preco"><strong>R$9.400</strong>/a cada 3 meses</p>
+        <hr>
+        <ul>
+            <li>Tudo do plano Aether Pulse</li>
+            <li>Quantidade de cadastro de funcionários ilimitada</li>
+            <li>Acompanhamento trimestral</li>
+        </ul>
+    </section>
 
-            <div class="linhaPlanoPulse"></div>
+    <c:if test="${not empty requestScope.erro}">
+        <p class="mensagem mensagem-erro" role="alert" style="top: 16px"><c:out value="${requestScope.erro}"/></p>
+    </c:if>
+    <c:if test="${not empty requestScope.sucesso}">
+        <p class="mensagem mensagem-sucesso" role="status" style="top: 16px"><c:out value="${requestScope.sucesso}"/></p>
+    </c:if>
 
-            <ul class="tipografiaPulse">
-                <li>Quantidade de cadastro limitada a 10 funcionários</li>
-                <li>Quantidade de analistas e administradores limitada a 2</li>
-                <li>Acompanhamento mensal</li>
-            </ul>
-        </div>
+    <%-- Cartão do formulário (Figma: Frame 2049760440 em 755,72).
+         "Razão social" não existe no Figma, mas o NewCompanyRegisterServlet exige o campo;
+         por isso os campos abaixo dele descem 72px e o cartão cresce de 708 para 780px. --%>
+    <main class="cartao-form" style="top: 72px; height: 780px">
+        <img class="mascote" style="left: 192px; top: 26px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
+        <h1 class="pilula-titulo" style="left: 80.5px; top: 137px; width: 385px">Cadastro empresarial</h1>
 
-        <div class="quadradoAetherHorizon">
-            <p class="tipografiaHorizon">Aether <span class="tituloPlanoRoxo">Horizon</span></p>
-            <p class="tipografiaPorMes"><span class="tipografiaValores">R$9.400</span>/a cada 3 meses</p>
+        <form action="${ctx}/empresa" method="post" accept-charset="UTF-8">
+            <label for="empresa" class="visually-hidden">Nome da empresa</label>
+            <input class="entrada" style="top: 196px" type="text" id="empresa" name="empresas"
+                   placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}'/>" required>
 
-            <div class="linhaPlanoHorizon"></div>
+            <label for="razao" class="visually-hidden">Razão social</label>
+            <input class="entrada" style="top: 268px" type="text" id="razao" name="razoes"
+                   placeholder="Razão social" value="<c:out value='${requestScope.razoes}'/>" required>
 
-            <ul class="tipografiaHorizon">
-                <li>Tudo do plano Aether Pulse</li>
-                <li>Quantidade de cadastro de funcionários ilimitada</li>
-                <li>Acompanhamento trimestral</li>
-            </ul>
-        </div>
-
-    <fieldset>
-        <form action="${pageContext.request.contextPath}/empresa" method="post">
-
-            <%-- Mantém os valores preenchidos quando o Servlet retorna um erro. --%>
-            <label for="empresa"></label>
-            <input type="text" name="empresas" id="empresa" placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}' />" required>
-
-            <label for="razao"></label>
-            <input
-                    type="text"
-                    name="razoes"
-                    id="razao"
-                    placeholder="Razão social"
-                    value="<c:out value='${requestScope.razoes}' />"
-                    required>
-
-            <label for="tamanho"></label>
-            <select name="tamanhos" id="tamanho" required>
-                <option value="" disabled hidden
-                        <c:if test="${empty requestScope.tamanhos}">selected</c:if>>
-                    Selecionar
-                </option>
-
-                <option value="pequena"
-                        <c:if test="${requestScope.tamanhos eq 'pequena'}">selected</c:if>>
-                    Pequena empresa
-                </option>
-
-                <option value="media"
-                        <c:if test="${requestScope.tamanhos eq 'media'}">selected</c:if>>
-                    Média empresa
-                </option>
-
-                <option value="grande"
-                        <c:if test="${requestScope.tamanhos eq 'grande'}">selected</c:if>>
-                    Grande empresa
-                </option>
+            <label for="tamanho" class="visually-hidden">Tamanho da empresa</label>
+            <select class="entrada" style="top: 340px" id="tamanho" name="tamanhos" required>
+                <option value="" disabled ${empty requestScope.tamanhos ? 'selected' : ''}>Tamanho da empresa</option>
+                <option value="pequena" ${requestScope.tamanhos eq 'pequena' ? 'selected' : ''}>Pequena empresa</option>
+                <option value="media" ${requestScope.tamanhos eq 'media' ? 'selected' : ''}>Média empresa</option>
+                <option value="grande" ${requestScope.tamanhos eq 'grande' ? 'selected' : ''}>Grande empresa</option>
             </select>
 
-            <label for="cnpj"></label>
-            <input
-                    type="text"
-                    id="cnpj"
-                    name="campoCNPJ"
-                    placeholder="CNPJ"
-                    value="<c:out value='${requestScope.campoCNPJ}' />"
-                    required>
+            <label for="cnpj" class="visually-hidden">CNPJ</label>
+            <input class="entrada" style="top: 422px" type="text" id="cnpj" name="campoCNPJ"
+                   placeholder="CNPJ" value="<c:out value='${requestScope.campoCNPJ}'/>" required>
 
-            <label for="email"></label>
-            <input
-                    type="email"
-                    id="email"
-                    name="campoEmail"
-                    placeholder="E-mail"
-                    value="<c:out value='${requestScope.campoEmail}' />"
-                    required>
+            <label for="email" class="visually-hidden">E-mail</label>
+            <input class="entrada" style="top: 494px" type="email" id="email" name="campoEmail"
+                   placeholder="E-mail" value="<c:out value='${requestScope.campoEmail}'/>" required>
 
-            <label for="plano"></label>
-            <select name="planos" id="plano" required>
-                <option value="" disabled hidden
-                        <c:if test="${empty requestScope.planos}">selected</c:if>>
-                    Plano...
-                </option>
-
-                <option value="Aether Pulse"
-                        <c:if test="${requestScope.planos eq 'Aether Pulse'}">selected</c:if>>
-                    Aether Pulse
-                </option>
-
-                <option value="Aether Horizon"
-                        <c:if test="${requestScope.planos eq 'Aether Horizon'}">selected</c:if>>
-                    Aether Horizon
-                </option>
+            <label for="plano" class="visually-hidden">Plano</label>
+            <select class="entrada plano" style="top: 566px" id="plano" name="planos" required>
+                <option value="" disabled ${empty requestScope.planos ? 'selected' : ''}>Plano...</option>
+                <option value="Aether Pulse" ${requestScope.planos eq 'Aether Pulse' ? 'selected' : ''}>Aether Pulse</option>
+                <option value="Aether Horizon" ${requestScope.planos eq 'Aether Horizon' ? 'selected' : ''}>Aether Horizon</option>
             </select>
 
-            <button type="submit">Cadastrar</button>
+            <button class="botao-enviar" style="top: 632px" type="submit">Cadastrar</button>
+
+            <p class="link-conta" style="top: 705px">
+                Já possui uma conta? <a href="${ctx}/login">clique aqui</a>
+            </p>
         </form>
-    </fieldset>
-
-    <p>
-        Já possui uma conta?
-        <a href="${pageContext.request.contextPath}/Login.jsp">Clique aqui</a>
-    </p>
+    </main>
 </div>
 
 </body>

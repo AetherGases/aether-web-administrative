@@ -1,0 +1,146 @@
+/* =====================================================================
+   Sidebar.css — barra lateral do Aether (Figma: Rectangle 23889, 284 x 1024).
+   Usada com WEB-INF/includes/Sidebar.jsp. A página deve ter um contêiner
+   com position: relative (ex.: .perm-tela) de 1440 x 1024.
+   ===================================================================== */
+
+/* ------------------------------ BARRA LATERAL (284 x 1024) ------------------------------ */
+.sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 284px;
+    height: 1024px;
+    background: #FFF;
+    border-radius: 0 30px 30px 0;
+}
+
+/* Group 11: logo em (53, 34) */
+.sidebar-logo {
+    position: absolute;
+    left: 48px;
+    top: 28px;
+    width: 186px;
+    height: 71px;
+}
+
+/* Group 2049761286: mascote em (47, 212) */
+.sidebar-mascote {
+    position: absolute;
+    left: 38px;
+    top: 198px;
+    width: 264px;
+    height: auto;
+}
+
+/* Maleta (Group 2049761284): 75.6 x 64.4 em (172.86, 304.4) */
+.sidebar-maleta {
+    position: absolute;
+    left: 172.86px;
+    top: 304.4px;
+    width: 75.6px;
+    height: 64.4px;
+}
+
+/* ADMIN em (105, 401) */
+.sidebar-admin {
+    position: absolute;
+    left: 0;
+    top: 396px;
+    width: 284px;
+    margin: 0;
+    color: #2DBD7E;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+/* Menu: itens a cada 62px a partir de y=482, ícones em x=63 */
+.sidebar-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-menu li {
+    position: absolute;
+    left: 39px;
+    width: 206px;
+    height: 41.2px;
+}
+
+.sidebar-menu li:nth-child(1) { top: 472px; }
+.sidebar-menu li:nth-child(2) { top: 534px; }
+.sidebar-menu li:nth-child(3) { top: 596px; }
+.sidebar-menu li:nth-child(4) { top: 658px; }
+.sidebar-menu li:nth-child(5) { top: 721px; }
+.sidebar-menu li:nth-child(6) { top: 782px; }
+
+.sidebar-menu a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    height: 100%;
+    padding-left: 24px;
+    border-radius: 10px;
+    color: #1E6B56;
+    font-size: 18px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color .15s ease;
+}
+
+.sidebar-menu a:hover {
+    background: #D4FFEB;
+}
+
+.sidebar-menu a img {
+    width: 17px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.sidebar-menu a img.icone-largo {
+    width: 27px;
+    height: 17px;
+    margin-right: -6px;
+}
+
+/* Item ativo (Rectangle 23857: 206 x 41.2) */
+.sidebar-menu a.ativo {
+    background: #2DBD7E;
+    color: #FFF;
+}
+
+.sidebar-menu a.ativo img {
+    filter: brightness(0) invert(1);
+}
+
+/* LOGOUT: 246 x 51 em (18, 964) */
+.sidebar-logout {
+    position: absolute;
+    left: 18px;
+    top: 964px;
+    width: 246px;
+    height: 51px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 30px;
+    background: #FFF;
+    color: #FB324C;
+    font-size: 24px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.sidebar-logout img {
+    width: 27.3px;
+    height: 23px;
+}
+

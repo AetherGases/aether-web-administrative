@@ -1,68 +1,61 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Tela de Recuperação de Senha do Aether</title>
+    <meta name="viewport" content="width=1440">
+    <title>Recuperar senha | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-    <link rel="icon" href="Imagens/LogoAether.svg" type="image/svg">
-
-    <link rel="stylesheet" href="Global.css">
-    <link rel="stylesheet" href="RecoverPassword.css">
-
+    <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="${ctx}/Cadastro.css">
 </head>
 <body>
 
-    <div class="blur1"></div>
-    <div class="blur2"></div>
-    <div class="blur3"></div>
-    <div class="blur4"></div>
+<div class="tela">
+    <div class="blur blur-1"></div>
+    <div class="blur blur-2"></div>
+    <div class="blur blur-3"></div>
+    <div class="blur blur-4"></div>
 
-    <a href="Login.jsp"  class="botaoVoltar">
-        <p class="tipografiaBotaoVoltar">Voltar</p>
-        <div class="botaoRendondoVoltar"> <img class="setaVoltar" src="Imagens/setaVoltar.svg" alt="Seta Voltar"> </div>
+    <a class="voltar roxo" href="${ctx}/Login.jsp">
+        <span>
+            <svg viewBox="0 0 22 22" aria-hidden="true"><path d="M14 4l-7 7 7 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        Voltar
     </a>
 
-    <div class="divLogo">
-        <img class="logoCRUD" src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
-        <h1 class="logotipoAether">aether</h1>
-        <p class="fraseLogo">Pense no presente e mude seu <span class="fraseFuturoLogo">futuro</span></p>
+    <div class="logo-lateral">
+        <img src="${ctx}/Imagens/AekoLogoEmBaixo.svg" alt="Aether">
+        <p>Pense no presente e mude seu <span>futuro</span></p>
     </div>
 
+    <c:if test="${not empty requestScope.erro or not empty requestScope.mensagem}">
+        <p class="mensagem mensagem-erro" role="alert" style="top: 2px; padding: 6px 18px"><c:out value="${not empty requestScope.erro ? requestScope.erro : requestScope.mensagem}"/></p>
+    </c:if>
 
-    <main class="divLoginPrincipal">
+    <main class="cartao-form" style="top: 277px; height: 470px">
+        <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
+        <h1 class="pilula-titulo roxa" style="left: 109.5px; top: 146px; width: 327px">Recuperar senha</h1>
 
-        <div class="caixaFormRS">
+        <form action="${ctx}/recover-password" method="post" accept-charset="UTF-8">
+            <label for="email" class="visually-hidden">E-mail</label>
+            <input class="entrada" style="top: 221px" type="email" id="email" name="campoEmail" placeholder="E-mail"
+                   autocomplete="email" required>
 
-            <img class="aekoCRUD" src="Imagens/AekoLogin.svg" alt="Aeko">
+            <button class="botao-enviar roxo" style="top: 297px" type="submit">Confirmar</button>
 
-            <div class="retanguloRecSenha">
-                <p class="tipografiaRecSenha">Recuperar senha</p>
-            </div>
-
-            <form action="${pageContext.request.contextPath}/recover-password" method="post">
-
-                <input class="campoEmail campoEmailtipografia" type="email" id="email" name="campoEmail" placeholder="e-mail" autocomplete="email" required>
-                <label for="email"></label>
-
-                <button class="botaoEnvioRoxo tipografiaEnvio" type="submit" value="enviarFormulárioSenha">Confirmar</button>
-
-            </form>
-
-            <p class="naoPossuirConta">Não possui uma conta? <a class="naoPossuirContaClicavel" href="CompanyRegister.jsp">clique aqui</a></p>
-        </div>
-
+            <p class="link-conta roxo" style="top: 380px">
+                Não possui uma conta? <a href="${ctx}/CompanyRegister.jsp">clique aqui</a>
+            </p>
+        </form>
     </main>
+</div>
 
 </body>
 </html>
