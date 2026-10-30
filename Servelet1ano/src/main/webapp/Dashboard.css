@@ -1,411 +1,189 @@
-.quadradoInformativo{
-    width: 685px;
+/* =====================================================================
+   Dashboard.css — Figma: TELA CRUD (INICIO), nó 4920:5840 (1440 x 1024).
+   Depende de Crud.css (sidebar, .tela, fontes).
+   ===================================================================== */
+
+.tela-dashboard .titulo-pagina    { left: 340px; top: 32px; }
+.tela-dashboard .subtitulo-pagina { left: 340px; top: 90px; }
+
+/* ---------------- Cartão roxo "Olá" (nó 4909:7020: 1051 x 348 em 330, 128) ---------------- */
+.cartao-boas-vindas {
+    position: absolute;
+    left: 330px;
+    top: 128px;
+    width: 1051px;
     height: 348px;
     border-radius: 16px;
-    background: linear-gradient(104deg, #7C3AED 26.19%, #C4B5FD 134.3%);
-    box-shadow: 0 163px 46px 0 rgba(167, 151, 231, 0.00), 0 104px 42px 0 rgba(167, 151, 231, 0.01), 0 59px 35px 0 rgba(167, 151, 231, 0.05), 0 26px 26px 0 rgba(167, 151, 231, 0.09), 0 7px 14px 0 rgba(167, 151, 231, 0.10);
-}
-
-.tipografiaNomeQuadrado{
-    width: 347px;
-    height: 56px;
+    background: linear-gradient(126.7deg, #7C3AED 26.19%, #C4B5FD 134.3%);
+    box-shadow: 0 59px 35px 0 rgba(167, 151, 231, 0.05),
+    0 26px 26px 0 rgba(167, 151, 231, 0.09),
+    0 7px 14px 0 rgba(167, 151, 231, 0.10);
+    overflow: hidden;
     color: #FFF;
-    font-family: "Montserrat", sans-serif;
-    font-size: 54px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 64.8px;
-    letter-spacing: -1.08px;
 }
 
-.tipografiaDescricao{
-    color: #FFF;
-    font-family: "Montserrat", sans-serif;
-    font-size: 26px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 31.2px;
-    letter-spacing: -0.52px;
+/* Elipses e linhas decorativas (Ellipse 88 / Ellipse 89 / Group 3852) */
+.decoracao {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
 }
 
-.botaoRegistro{
-    display: flex;
-    padding: 12px 30px;
-    align-items: flex-start;
-    gap: 10px;
-    border-radius: 40px;
-    background: #FFF;
-}
-
-.tipografiaRegistro{
-    color: #444;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 22px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 26.4px;
-}
-
-.botaoFuncionario{
-    display: flex;
-    padding: 12px 30px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    border-radius: 40px;
-    border: 1px solid #FFF;
+.decoracao-grande {
+    left: 408px;
+    top: -275px;
+    width: 621px;
+    height: 591px;
     background: rgba(255, 255, 255, 0.10);
 }
 
-.tipografiaFuncionario{
-    color: #FFF;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 22px;
-    font-style: normal;
+.decoracao-pequena {
+    left: -40px;
+    top: -60px;
+    width: 140px;
+    height: 140px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.decoracao-linha-1 {
+    left: 304px;
+    top: 215px;
+    width: 353px;
+    height: 183px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.decoracao-linha-2 {
+    left: 600px;
+    top: 120px;
+    width: 420px;
+    height: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.cartao-boas-vindas h2 {
+    position: absolute;
+    left: 56px;
+    top: 36px;
+    margin: 0;
+    font-size: 54px;
     font-weight: 700;
-    line-height: 120%;
+    line-height: 1.2;
+    letter-spacing: -1.08px;
+    white-space: nowrap;
+    z-index: 1;
 }
 
-.tipografiaQuadradinhos{
-    color: #070416;
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    font-style: normal;
+.cartao-boas-vindas p {
+    position: absolute;
+    left: 56px;
+    top: 134px;
+    width: 649px;
+    margin: 0;
+    font-size: 26px;
     font-weight: 500;
-    line-height: 120%;
+    line-height: 1.2;
+    letter-spacing: -0.52px;
+    z-index: 1;
 }
 
-.tipografiaNumerosQuadradinhos{
-    color: #070416;
-    font-family: "Montserrat", sans-serif;
-    font-size: 64px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 120%;
-}
-
-.imagemQuadradinhos{
-    width: 22px;
-    height: 22px;
-    aspect-ratio: 1/1;
-}
-
-.imagemQuadradinhosEspecial{
-    width: 24.167px;
-    height: 21.75px;
-}
-
-.quadradoAtividadeRecente{
-    display: flex;
-    padding: 24px 20px 38px 17px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 16px;
-    background: #FFF;
-    opacity: 0.5;
-}
-
-.quadradoPermissoes{
-    display: flex;
-    padding: 24px 20px 38px 17px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 16px;
-    background: #FFF;
-    opacity: 0.5;
-}
-
-.quadradoFuncionario{
-    display: flex;
-    padding: 24px 20px 38px 17px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 16px;
-    background: #FFF;
-    opacity: 0.5;
-}
-
-.quadradoUnidade{
-    display: flex;
-    padding: 24px 20px 38px 17px;
-    justify-content: center;
-    align-items: center;
-    border-radius: 16px;
-    background: #FFF;
-    opacity: 0.5;
-}
-
-.linhaQuadradinho{
-    width: 119px;
-    height: 1px;
-    background: var(#E5E5EA);
-}
-
-.quadradoRelatorios{
-    width: 335px;
-    height: 205px;
-    fill: linear-gradient(295deg, #FFF 44.38%, #FFF 148.98%);
-}
-
-.tipografiaTituloRelatorios{
-    width: 168px;
-    color: #1E0A4A;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-}
-
-.tipografiaDescricaoRelatorio{
-    color: #7E8294;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-}
-
-.tipografiaSubTitulo{
-    color: #1E0A4A;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 22px;
-    letter-spacing: -0.43px;
-}
-
-.botaoHistorico{
-    width: 274px;
-    height: 45px;
-    border-radius: 50px;
-    background: #2DBD7E;
-}
-
-.tipografiaBotaoHistorico{
-    color: #FFF;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 22px;
-    letter-spacing: -0.43px;
-}
-
-.imagemRelatorio{
-    width: 95px;
-    height: 95px;
-}
-
-.quadradoEmissao{
-    width: 335px;
-    height: 205px;
-    fill: linear-gradient(295deg, #FFF 44.38%, #FFF 148.98%);
-}
-
-.tipografiaTituloEmissao{
-    width: 184px;
-    color: #1E0A4A;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-}
-
-.imagemIndustria{
-    width: 125px;
-    height: 108.644px;
-}
-
-.notificacaoEmissao{
+/* Botões "Btn": padding 12px 30px, borda branca, raio 40 */
+.botao-cartao {
+    position: absolute;
+    top: 224px;
     display: inline-flex;
-    padding: 5px 18px;
-    justify-content: center;
     align-items: center;
-    gap: 20px;
-
-    border-radius: 50px;
-    border: 0.5px solid #5DDBA5;
-    background: rgba(168, 240, 210, 0.30);
+    justify-content: center;
+    padding: 12px 30px;
+    border: 1px solid #FFF;
+    border-radius: 40px;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+    font-feature-settings: "salt" 1;
+    text-decoration: none;
+    white-space: nowrap;
+    z-index: 1;
 }
 
-.tipografiaNotificacao{
-    color: rgba(26, 92, 74, 0.75);
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 114.751%;
-}
-
-.quadradoSCP{
-    width: 335px;
-    height: 205px;
-    fill: linear-gradient(295deg, #FFF 44.38%, #FFF 148.98%);
-}
-
-.tipopgrafiaTituloSCP{
-    width: 158px;
-    color: #1E0A4A;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: normal;
-}
-
-.tipografiaSubtituloSCP{
-
-    color: #7E8294;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 22px;
-    letter-spacing: -0.43px;
-}
-
-.imagemSelo{
-    width: 75.296px;
-    height: 75.296px;
-}
-
-.tipografiaCriterios{
-    color: #4A435E;
-    text-align: center;
-    font-feature-settings: 'liga' off, 'clig' off;
-    font-family: "Montserrat", sans-serif;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 22px;
-    letter-spacing: -0.43px;
-}
-
-.imagemAviso{
-    width: 22px;
-    height: 22px;
-}
-
-.quadradoInsercoes{
-    width: 700px;
-    height: 476px;
-    border-radius: 16px;
+.botao-unidades {
+    left: 74.5px;
     background: #FFF;
-    box-shadow: 0 482px 135px 0 rgba(167, 151, 231, 0.00), 0 308px 123px 0 rgba(167, 151, 231, 0.01), 0 173px 104px 0 rgba(167, 151, 231, 0.05), 0 77px 77px 0 rgba(167, 151, 231, 0.09), 0 19px 42px 0 rgba(167, 151, 231, 0.10);
+    color: #000;
 }
 
-.tituloInsercoes{
-    color: #070416;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat",sans-serif;
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 120%;
-}
-
-.numeracaoIncersoes{
-    width: 20px;
-    flex-shrink: 0;
-    color: #070416;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
-}
-
-.tipografiaFuncionarioIncersao{
-    width: 119px;
-    color: #070416;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 120%;
-}
-
-.tipografiaDescricaoIncersao{
-    width: 220px;
-    color: #070416;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 120%;
-}
-
-.botaoReprovar{
-    display: flex;
-    padding: 8px 14px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    border-radius: 20px;
-    border: 1px solid #E93D53;
-}
-
-.tipografiaReprovar{
-    color: #E93D53;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 120%;
-}
-
-.botaoAprovar{
-    display: flex;
-    padding: 8px 14px;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    border-radius: 20px;
-    background: #32D384;
-}
-
-.tipografiaAprovar{
+.botao-funcionarios {
+    left: 338px;
+    background: rgba(255, 255, 255, 0.10);
     color: #FFF;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 120%;
 }
 
-.tipografiaVerMais{
+/* ---------------- Cartões de números (Analytic em 330, 513) ---------------- */
+.cartao-numero {
+    position: absolute;
+    width: 343px;
+    height: 206px;
+    border-radius: 20.1px;
+    background: #FFF;
     color: #070416;
-    text-align: right;
-    font-feature-settings: 'salt' on;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
+    text-decoration: none;
+    box-shadow: 0 47.7px 23.9px 0 rgba(167, 151, 231, 0.09),
+    0 12.6px 13.2px 0 rgba(167, 151, 231, 0.10);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+a.cartao-numero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 47.7px 23.9px 0 rgba(167, 151, 231, 0.12),
+    0 12.6px 13.2px 0 rgba(167, 151, 231, 0.16);
+}
+
+.cartao-numero.n1 { left: 330px; top: 513px; }
+.cartao-numero.n2 { left: 775px; top: 513px; }
+.cartao-numero.n3 { left: 330px; top: 744px; }
+.cartao-numero.n4 { left: 775px; top: 744px; }
+
+.cartao-numero .rotulo {
+    position: absolute;
+    left: 30.15px;
+    top: 30.15px;
+    margin: 0;
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.2;
+    opacity: .5;
+    white-space: nowrap;
+}
+
+.cartao-numero.n1 .rotulo { top: 26.81px; }
+
+.cartao-numero .valor {
+    position: absolute;
+    left: 30.15px;
+    top: 61.55px;
+    margin: 0;
+    font-size: 80.39px;
     font-weight: 700;
-    line-height: 120%;
-    opacity: 0.5;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.cartao-numero.n1 .valor { top: 69.81px; }
+
+/* Ícone 67 x 67 em (181, 84) dentro do cartão */
+.cartao-numero img {
+    position: absolute;
+    left: 181px;
+    top: 84px;
+    width: 67px;
+    height: 67px;
+}
+
+.cartao-numero .linha {
+    position: absolute;
+    left: 32px;
+    top: 175px;
+    width: 149.5px;
+    height: 1.26px;
+    background: #E5E5EA;
 }

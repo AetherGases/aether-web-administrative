@@ -1,0 +1,410 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-width: 1440px;
+    background: #EDEEF8;
+    font-family: "Montserrat", sans-serif;
+    color: #4A435E;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+.tela {
+    position: relative;
+    width: 1440px;
+    height: 1024px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #EDEEF8;
+}
+
+/* Elipses desfocadas do fundo (Ellipse 198 / 201 / 202) */
+.blur {
+    position: absolute;
+    width: 708.55px;
+    height: 708.55px;
+    border-radius: 50%;
+    filter: blur(226.9px);
+    pointer-events: none;
+}
+
+.blur-1 { left: 46px;  top: -155px; background: rgba(184, 255, 226, 0.75); }
+.blur-2 { left: 843px; top: -88px;  background: #D7CCFF; }
+.blur-3 { left: -28px; top: 413px;  background: #D7CCFF; }
+.blur-4 { left: 755px; top: 314px;  background: rgba(184, 255, 226, 0.75); }
+
+/* Botão "Voltar" (Group 2049761147: 187 x 57 em 19, 28) */
+.voltar {
+    position: absolute;
+    left: 19px;
+    top: 28px;
+    width: 187px;
+    height: 57px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding-left: 4px;
+    border-radius: 40px;
+    background: rgba(255, 255, 255, 0.75);
+    color: #4A435E;
+    font-size: 30px;
+    font-weight: 500;
+    text-decoration: none;
+    z-index: 2;
+}
+
+.voltar span {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #2DBD7E;
+}
+
+.voltar.roxo span {
+    background: #9A72F9;
+}
+
+.voltar svg {
+    width: 22px;
+    height: 22px;
+}
+
+/* Logo à esquerda (Group 427320935: 433 x 384 em 110, 325) */
+.logo-lateral {
+    position: absolute;
+    left: 110px;
+    top: 325px;
+    width: 433px;
+    z-index: 1;
+}
+
+.logo-lateral img {
+    display: block;
+    width: 433px;
+    height: 374px;
+}
+
+.logo-lateral p {
+    position: absolute;
+    left: 24px;
+    top: 362px;
+    width: 388px;
+    margin: 0;
+    color: #5B6473;
+    font-family: "Comfortaa", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 22px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.logo-lateral p span {
+    color: #2B8D76;
+}
+
+/* Cartão do formulário (Frame 2049760440 / 2049760443: 546px de largura em x=755) */
+.cartao-form {
+    position: absolute;
+    left: 755px;
+    width: 546px;
+    border-radius: 30px;
+    border: 1px solid #7E8294;
+    background: rgba(255, 255, 255, 0.75);
+    z-index: 2;
+}
+
+.cartao-form > * {
+    position: absolute;
+}
+
+/* Group 4096 (122 x 82): o SVG tem 160 x 153 com margem de sombra,
+   por isso é deslocado -20px / -10px para o desenho cair no lugar do Figma. */
+.cartao-form .mascote {
+    width: 160px;
+    height: 153px;
+}
+
+.pilula-titulo {
+    height: 41px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 39px;
+    background: #2DBD7E;
+    color: #FFF;
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 37px;
+    white-space: nowrap;
+}
+
+.pilula-titulo.roxa {
+    background: #9A72F9;
+}
+
+.cartao-form form {
+    position: absolute;
+    inset: 0;
+}
+
+.cartao-form form > * {
+    position: absolute;
+    left: 42.5px;
+    width: 461px;
+}
+
+.entrada {
+    height: 54px;
+    padding: 0 20px;
+    border: 1px solid #B3B7C9;
+    border-radius: 15px;
+    background: #FFF;
+    color: #161C2D;
+    font-size: 20px;
+    font-weight: 500;
+    outline: none;
+}
+
+.entrada::placeholder {
+    color: #B3B7C9;
+}
+
+select.entrada {
+    height: 64px;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 48px;
+    background: #FFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%237E8294' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 22px center no-repeat;
+}
+
+select.entrada:invalid {
+    color: #B3B7C9;
+}
+
+/* "BOTÃO ... DO PLANO": 462 x 48, raio 20, fundo translúcido */
+select.entrada.plano {
+    left: 42px;
+    width: 462px;
+    height: 48px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.47);
+}
+
+.entrada:focus {
+    border-color: #2DBD7E;
+    box-shadow: 0 0 0 3px rgba(45, 189, 126, 0.18);
+}
+
+.cartao-form.roxo .entrada:focus {
+    border-color: #9A72F9;
+    box-shadow: 0 0 0 3px rgba(154, 114, 249, 0.2);
+}
+
+.rotulo-cpf {
+    height: 34px;
+    margin: 0;
+    color: #4A435E;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 34px;
+}
+
+.entrada.cpf {
+    height: 48px;
+    border-radius: 20px;
+    border-color: #B3B6CA;
+}
+
+/* Group 4091 / 427320891: 462 x 55 */
+.botao-enviar {
+    left: 42px !important;
+    width: 462px !important;
+    height: 55px;
+    border: 0;
+    border-radius: 60px;
+    background: #2DBD7E;
+    color: #FFF;
+    font-size: 28px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-enviar.roxo {
+    background: #9A72F9;
+}
+
+.link-conta {
+    left: 0 !important;
+    width: 100% !important;
+    margin: 0;
+    color: #4A435E;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+    text-align: center;
+    opacity: .7;
+}
+
+.link-conta a {
+    color: #2DBD7E;
+    text-decoration: none;
+}
+
+.link-conta.roxo {
+    opacity: 1;
+}
+
+.link-conta.roxo a {
+    color: #9B73F9;
+}
+
+/* Mensagens do servlet — acima do cartão */
+.mensagem {
+    position: absolute;
+    left: 755px;
+    width: 546px;
+    margin: 0;
+    padding: 10px 18px;
+    border-radius: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    z-index: 3;
+}
+
+.mensagem-erro {
+    background: #FFE3E7;
+    color: #C4122B;
+    border: 1px solid #FB324C;
+}
+
+.mensagem-sucesso {
+    background: #D4FFEB;
+    color: #1E6B56;
+    border: 1px solid #2DBD7E;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* --------------------- Planos (PLANO PULSE / PLANO HORIZON) --------------------- */
+.plano-card {
+    position: absolute;
+    left: 114px;
+    width: 484px;
+    height: 359px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 35px;
+    border-radius: 15px;
+    background: #FFF;
+    color: #000;
+    z-index: 1;
+}
+
+.plano-pulse   { top: 128px; }
+.plano-horizon { top: 536px; }
+
+.plano-card h2 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 37px;
+}
+
+.plano-card h2 .verde { color: #2DBD7E; }
+.plano-card h2 .roxo  { color: #9A72F9; }
+
+.plano-card .preco {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 42px;
+}
+
+.plano-card .preco strong {
+    font-size: 42px;
+    font-weight: 500;
+}
+
+.plano-card hr {
+    width: 417px;
+    height: 1px;
+    margin: 4px 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.plano-card ul {
+    width: 388px;
+    margin: 0;
+    padding-left: 20px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 26px;
+}
+
+/* --------------------- Verificação: código de 6 dígitos --------------------- */
+.codigo {
+    left: 42px !important;
+    width: 462px !important;
+    display: flex;
+    gap: 6px;
+}
+
+.codigo input {
+    width: 72px;
+    height: 81px;
+    padding: 0;
+    border: 1px solid #5B21B6;
+    border-radius: 8px;
+    background: #FFF;
+    color: #5B21B6;
+    font-size: 32px;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+}
+
+.codigo input:focus {
+    box-shadow: 0 0 0 3px rgba(154, 114, 249, 0.25);
+}
+
+.cartao-form .correio {
+    left: 335px;
+    top: 48px;
+    width: 54px;
+    height: 43px;
+    transform: rotate(-13.25deg);
+}

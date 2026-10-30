@@ -1,22 +1,3 @@
-/* ==========================================================================
-   AETHER — script.js
-
-   Módulos:
-     1. carrosselCelulares()     — carrossel de telas do app
-     2. carrosselGases()         — carrossel de cards de gases
-     3. menuFuncionalidades()    — acordeão exclusivo
-     4. alternarPlanos()         — mensal / trimestral
-     5. dropdownsCadastro()      — dropdowns personalizados do cadastro
-     6. validarFormularios()     — validação básica no cliente
-     7. cardsEtapas()            — cards da análise de dados (saiba mais)
-     8. animarCardsEscopo()      — animação dos cards de escopo
-     9. carrosselAlunos()        — fotos 1º / 2º Médio
-
-   Todos os módulos verificam a existência dos elementos antes de agir,
-   e cada um é iniciado UMA única vez, pela função iniciar() no final.
-   ========================================================================== */
-
-
 /* --------------------------------------------------------------------------
    1. CARROSSEL DE CELULARES
    -------------------------------------------------------------------------- */
