@@ -340,7 +340,6 @@ public class PasswordRecoveryDAO {
             );
         }
     }
-
     private void rollbackQuietly(Connection conn, Exception cause) {
         try {
             conn.rollback();
@@ -348,5 +347,4 @@ public class PasswordRecoveryDAO {
             cause.addSuppressed(rollbackError);
         }
     }
-
 }
