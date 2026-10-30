@@ -8,61 +8,152 @@
 </head>
 <body>
 
-<%-- Figma: TELA CRUD (INICIO) — nó 4920:5840 --%>
-<div class="tela tela-dashboard">
+    <aside>
 
-    <jsp:include page="Sidebar.jsp">
-        <jsp:param name="ativo" value="dashboard"/>
-    </jsp:include>
+            <div>
+                <img src="Imagens/LogoAethererdeEscuro.svg" alt="Logo Aether">
+                <p>aether</p>
+            </div>
 
-    <h1 class="titulo-pagina">Área restrita</h1>
-    <p class="subtitulo-pagina">Dashboard</p>
+            <div>
+                <p>ADMIN</p>
+            </div>
 
-    <%-- Cartão de boas-vindas (1051 x 348 em 330, 128) --%>
-    <section class="cartao-boas-vindas">
-        <span class="decoracao decoracao-grande" aria-hidden="true"></span>
-        <span class="decoracao decoracao-pequena" aria-hidden="true"></span>
-        <span class="decoracao decoracao-linha-1" aria-hidden="true"></span>
-        <span class="decoracao decoracao-linha-2" aria-hidden="true"></span>
+            <nav>
+                <ul>
+                    <li>
+                        <div>
+                            <a href="Dashboard.jsp">Dashboards</a>
+                            <img src="Imagens/dashboard.svg" alt="Imagem de uma Casa">
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="Employee.jsp">Funcionários</a>
+                            <img src="Imagens/funcionario.svg" alt="Imagem de um Usuário cujo rosto não é identificado">
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="Sectors.jsp">Setores</a>
+                            <img src="Imagens/setores.svg" alt="Imagem de setor">
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="Units.jsp">Unidades</a>
+                            <img src="Imagens/unidade.svg" alt="Imagem de prédios">
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="Company.jsp">Empresas</a>
+                            <img src="Imagens/Empresa.svg" alt="Imagem de Quadrados">
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="PermissionsOne.jsp">Permissões</a>
+                            <img src="Imagens/permissao1.svg" alt="Imagem de uma pessoa com chave">
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <a href="PermissionsOne.jsp">Permissões</a>
+                            <img src="Imagens/permissao2.svg" alt="Imagem de nuvem">
+                        </div>
+                    </li>
+                </ul>
+            </nav>
 
-        <c:set var="primeiroNome" value="${empty employee.name ? 'Layous' : fn:split(fn:trim(employee.name), ' ')[0]}" />
-        <h2>Olá, <c:out value="${primeiroNome}"/>!</h2>
-        <p>Você tem 12 mini-layouts aguardando análise hoje.</p>
+            <div>
+                <a href="Login.jsp">Logout</a>
+                <img src="Imagens/logout.svg" alt="Logout">
+            </div>
 
-        <a class="botao-cartao botao-unidades" href="${ctx}/unidades">Ver unidades</a>
-        <a class="botao-cartao botao-funcionarios" href="${ctx}/funcionarios">Ver funcionários</a>
-    </section>
+        </aside>
 
-    <%-- Cartões de números (Analytic em 330, 513 — 343 x 206 cada).
-         Os valores são de exemplo, como no Figma; troque pelos atributos do servlet quando existirem. --%>
-    <a class="cartao-numero n1" href="${ctx}/Sectors.jsp">
-        <p class="rotulo">Setores</p>
-        <p class="valor">24</p>
-        <img src="${ctx}/Imagens/grafico.svg" alt="">
-        <span class="linha"></span>
-    </a>
+        <h2>Area restrita </h2>
+        <p>Dashboard</p>
 
-    <a class="cartao-numero n2" href="${ctx}/PermissionsOne.jsp">
-        <p class="rotulo">Permissões</p>
-        <p class="valor">08</p>
-        <img src="${ctx}/Imagens/chave.svg" alt="">
-        <span class="linha"></span>
-    </a>
+        <div>
+            <h3>Olá, ${employee.name}!</h3>
+            <p>Voce tem 12 mini-layouts aguardando análise hoje </p>
 
-    <a class="cartao-numero n3" href="${ctx}/Employee.jsp">
-        <p class="rotulo">Funcionários</p>
-        <p class="valor">15</p>
-        <img src="${ctx}/Imagens/pessoas.svg" alt="" style="height: 60px; top: 87px">
-        <span class="linha"></span>
-    </a>
+            <a>Ver registros </a>
+            <a>Ver funcionários</a>
+        </div>
 
-    <a class="cartao-numero n4" href="${ctx}/Units.jsp">
-        <p class="rotulo">Unidades</p>
-        <p class="valor">07</p>
-        <img src="${ctx}/Imagens/predios.svg" alt="">
-        <span class="linha"></span>
-    </a>
-</div>
+
+        <div>
+            <h3>Inserções recentes</h3>
+            <a>Ver mais</a>
+
+            <p>1.</p>
+            <p>Caio Sagaz</p>
+            <p>Mandou um relatório</p>
+
+            <a>Reprovar</a>
+            <a>Aprovar</a>
+
+        </div>
+
+        <div>
+
+            <div>
+                <p>Atividades recentes </p>
+                <p>24</p>
+                <img src="Imagens/grafico.svg" alt="Imagem de um gráfico">
+            </div>
+
+            <div>
+                <p>Permissões</p>
+                <p>8</p>
+                <img src="Imagens/chave.svg" alt="Imagem ">
+            </div>
+
+            <div>
+                <p>Funcionários</p>
+                <p>15</p>
+                <img src="Imagens/pessoas.svg" alt="Imagem de Pessoas">
+            </div>
+
+            <div>
+                <p>Unidades</p>
+                <p>07</p>
+                <img src="Imagens/predios.svg" alt="Imagem de Prédios">
+            </div>
+        </div>
+
+        <div>
+            <p>Relatórios revisados</p>
+            <p>450</p>
+            <p>Este mês</p>
+            <img src="Imagens/relatorio.svg" alt="Imagem de um Relatório">
+            <a>Ver histórico</a>
+            <p>Último enviado em 11/09/2001</p>
+        </div>
+
+        <div>
+            <p>Emissões da unidade</p>
+            <p>2.403</p>
+            <p>tCO<sub>2</sub>e/mês</p>
+
+            <div>
+                <p>12% em relação ao período anterior</p>
+                <img src="Imagens/fabrica.svg" alt="Imagem de uma Fábrica">
+            </div>
+
+        </div>
+
+        <div>
+            <p>Selo Clima Paraná</p>
+            <p>Nível</p>
+            <p>50%</p>
+            <img src="Imagens/medalha.svg" alt="Imagem de uma Medalha">
+            <img src="Imagens/atencao.svg" alt="Imagem de uma Sinal de Atenção">
+            <p>2 de 4 critérios atendidos</p>
+        </div>
 
 </body>
 </html>

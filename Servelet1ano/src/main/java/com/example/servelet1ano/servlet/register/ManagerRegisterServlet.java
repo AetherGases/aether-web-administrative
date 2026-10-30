@@ -1,9 +1,10 @@
-
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
+import com.example.servelet1ano.dao.PermissionGroupsDAO;
 import com.example.servelet1ano.filter.CompaniesFilter;
+import com.example.servelet1ano.filter.PermissionGroupsFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.model.PermissionGroups;
@@ -31,6 +32,26 @@ public class ManagerRegisterServlet extends HttpServlet {
             Logger.getLogger(ManagerRegisterServlet.class.getName());
 
     private static final String CADASTRO = "/ManagerRegister.jsp";
+
+    /*
+     * GRUPO DE PERMISSÃO DO GERENTE
+     *
+     * Nome do grupo de administrador da empresa e ids das permissões
+     * (tabela permissions) que todo gerente precisa ter:
+     *
+     * 1 - user:analytics:visibility:high
+     * 2 - inventory:analysis
+     * 3 - inventory:register
+     * 4 - inventory:generate
+     * 5 - calculator:gases
+     * 6 - calculator:roi
+     * 7 - chatbot
+     */
+
+    private static final String GRUPO_ADMIN = "Admin da empresa";
+
+    private static final List<Integer> PERMISSOES_ADMIN =
+            List.of(1, 2, 3, 4, 5, 6, 7);
 
     /*
      *
@@ -237,16 +258,50 @@ public class ManagerRegisterServlet extends HttpServlet {
 
             String senhaHash = PasswordHasher.hash(senha);
 
-            PermissionGroups permissionGroups =
-                    new PermissionGroups(
-                            1,
-                            "Admin da empresa",
-                            companyId
+
+            /*
+             * GRUPO DE PERMISSÃO DO GERENTE
+             *
+             * Procura o grupo "Admin da empresa" da empresa escolhida.
+             * Se ainda não existir, cria o grupo já com as 7 permissões
+             * (a busca por nome do DAO é parcial, por isso o nome é
+             * conferido aqui para achar o grupo exato).
+             */
+
+            PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
+
+            PermissionGroupsFilter groupFilter = new PermissionGroupsFilter();
+            groupFilter.setCompanyId(companyId);
+            groupFilter.setName(GRUPO_ADMIN);
+
+            int permissionGroupId = -1;
+
+            for (PermissionGroups grupo : permissionGroupsDAO.searchAll(groupFilter)) {
+                if (GRUPO_ADMIN.equalsIgnoreCase(grupo.getName())) {
+                    permissionGroupId = grupo.getId();
+                    break;
+                }
+            }
+
+            if (permissionGroupId <= 0) {
+                permissionGroupId = permissionGroupsDAO.registerWithPermissions(
+                        new PermissionGroups(GRUPO_ADMIN, companyId),
+                        PERMISSOES_ADMIN
+                );
+
+                if (permissionGroupId <= 0) {
+                    exibirErro(
+                            request,
+                            response,
+                            "Não foi possível criar o grupo de permissão do gerente."
                     );
+                    return;
+                }
+            }
 
             Employees employee = new Employees(
                     companyId,
-                    permissionGroups.getId(),
+                    permissionGroupId,
                     cpf,
                     nome,
                     email,
@@ -293,7 +348,7 @@ public class ManagerRegisterServlet extends HttpServlet {
             session.setAttribute("companyId", companyId);
 
             response.sendRedirect(
-                    request.getContextPath() + "/Dashboard.jsp"
+                    request.getContextPath() + "/dashboard"
             );
 
         } catch (RuntimeException e) {

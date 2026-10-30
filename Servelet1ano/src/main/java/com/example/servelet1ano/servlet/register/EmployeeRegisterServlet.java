@@ -2,9 +2,11 @@ package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
+import com.example.servelet1ano.dao.PermissionGroupsDAO;
 import com.example.servelet1ano.dao.SectorsDAO;
 import com.example.servelet1ano.dao.UnitsDAO;
 import com.example.servelet1ano.filter.EmployeesFilter;
+import com.example.servelet1ano.filter.PermissionGroupsFilter;
 import com.example.servelet1ano.filter.SectorsFilter;
 import com.example.servelet1ano.filter.UnitsFilter;
 import com.example.servelet1ano.model.Companies;
@@ -35,6 +37,20 @@ public class EmployeeRegisterServlet extends HttpServlet {
             Logger.getLogger(EmployeeRegisterServlet.class.getName());
 
     private static final String CADASTRO = "/Employee.jsp";
+
+    /*
+     * GRUPO DE PERMISSÃO DO FUNCIONÁRIO
+     *
+     * Nome do grupo do funcionário comum e ids das permissões
+     * (tabela permissions) que ele recebe:
+     *
+     * 3 - inventory:register
+     */
+
+    private static final String GRUPO_FUNCIONARIO = "Funcionário da empresa";
+
+    private static final List<Integer> PERMISSOES_FUNCIONARIO =
+            List.of(3);
 
     /*
      * CARREGAMENTO DO FORMULÁRIO
@@ -341,17 +357,51 @@ public class EmployeeRegisterServlet extends HttpServlet {
             String senhaHash = PasswordHasher.hash(senha);
 
 
-            PermissionGroups permissionGroups =
-                    new PermissionGroups(
-                            2,
-                            "Funcionário da empresa",
-                            companyId
+            /*
+             * GRUPO DE PERMISSÃO DO FUNCIONÁRIO
+             *
+             * Procura o grupo "Funcionário da empresa" da empresa da sessão.
+             * Se ainda não existir, cria o grupo já com as permissões
+             * (a busca por nome do DAO é parcial, por isso o nome é
+             * conferido aqui para achar o grupo exato).
+             */
+
+            PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
+
+            PermissionGroupsFilter groupFilter = new PermissionGroupsFilter();
+            groupFilter.setCompanyId(companyId);
+            groupFilter.setName(GRUPO_FUNCIONARIO);
+
+            int permissionGroupId = -1;
+
+            for (PermissionGroups grupo : permissionGroupsDAO.searchAll(groupFilter)) {
+                if (GRUPO_FUNCIONARIO.equalsIgnoreCase(grupo.getName())) {
+                    permissionGroupId = grupo.getId();
+                    break;
+                }
+            }
+
+            if (permissionGroupId <= 0) {
+                permissionGroupId = permissionGroupsDAO.registerWithPermissions(
+                        new PermissionGroups(GRUPO_FUNCIONARIO, companyId),
+                        PERMISSOES_FUNCIONARIO
+                );
+
+                if (permissionGroupId <= 0) {
+                    exibirErro(
+                            request,
+                            response,
+                            companyId,
+                            "Não foi possível criar o grupo de permissão do funcionário."
                     );
+                    return;
+                }
+            }
 
             Employees employee = new Employees(
                     companyId,
-                    permissionGroups.getId(),
-                    sectors.getFirst().getId(),
+                    permissionGroupId,
+                    sectorId,
                     cpf,
                     nome,
                     email,
@@ -360,7 +410,19 @@ public class EmployeeRegisterServlet extends HttpServlet {
                     statusEmployee
             );
 
-            employeesDAO.register(employee);
+            employee.setUnitId(unitId);
+
+            boolean cadastro = employeesDAO.register(employee);
+
+            if (!cadastro) {
+                exibirErro(
+                        request,
+                        response,
+                        companyId,
+                        "Não foi possível cadastrar o funcionário. Verifique se o CPF ou o e-mail já estão cadastrados."
+                );
+                return;
+            }
 
             response.sendRedirect(
                     request.getContextPath() + "/funcionarios?sucesso=true"
