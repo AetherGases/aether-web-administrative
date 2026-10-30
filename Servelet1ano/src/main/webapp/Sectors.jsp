@@ -124,7 +124,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/setores" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Sectors.jsp" method="post" accept-charset="UTF-8">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeSetor">Nome do setor</label>
