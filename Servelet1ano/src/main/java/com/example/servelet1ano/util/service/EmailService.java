@@ -10,15 +10,35 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
+/**
+ * Classe que envia e-mails pela API da Brevo
+ * Por enquanto so envia o e-mail com o codigo de recuperacao de senha
+ */
 public class EmailService {
 
+    /**
+     * Endereco da API da Brevo usado para enviar e-mails
+     */
     private static final String api = "https://api.brevo.com/v3/smtp/email";
 
+    /**
+     * Cliente HTTP reaproveitado em todos os envios (tempo maximo de 10 segundos para conectar)
+     */
     private static final HttpClient cliente =
             HttpClient.newBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
                     .build();
 
+    /**
+     * metodo que envia o e-mail com o codigo de recuperacao de senha
+     * Usa a chave da API e os dados do remetente configurados no .env
+     * @param recipientEmail O e-mail que vai receber o codigo
+     * @param code O codigo de recuperacao (precisa ter exatamente seis digitos)
+     * @throws IllegalStateException se as configuracoes da Brevo estiverem ausentes no .env ou se a API nao confirmar o envio
+     * @throws IllegalArgumentException se o e-mail do destinatario estiver vazio ou o codigo for invalido
+     * @throws IOException se der erro de comunicacao com a API
+     * @throws InterruptedException se o envio for interrompido
+     */
     public void sendRecoveryCode(
             String recipientEmail,
             String code
@@ -93,6 +113,14 @@ public class EmailService {
         }
     }
 
+    //    ------------- Metodos auxiliares (privados) --------------
+
+    /**
+     * Escapa os caracteres especiais do texto (barra invertida, aspas, quebras de linha e tab)
+     * para que ele possa ser colocado dentro de um valor JSON sem quebrar o corpo da requisicao
+     * @param value O texto original
+     * @return O texto pronto para ir dentro de um valor JSON
+     */
     private String escapeJson(String value) {
         return value
                 .replace("\\", "\\\\")
@@ -102,4 +130,3 @@ public class EmailService {
                 .replace("\t", "\\t");
     }
 }
-

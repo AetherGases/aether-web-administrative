@@ -10,15 +10,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+/**
+ * Classe que cuida das solicitacoes de recuperacao de senha no banco (tabela password_recoveries)
+ * Guarda so o hash do codigo enviado por e-mail, nunca o codigo em si
+ */
 public class PasswordRecoveryDAO {
 
+    /**
+     * Quantidade maxima de tentativas de validar o codigo de uma solicitacao
+     * Depois disso a solicitacao deixa de aceitar o codigo
+     */
     private static final int MAX_ATTEMPTS = 5;
 
-    /*
-     * Registra uma nova solicitação de recuperação de senha.
-     * Invalida solicitações anteriores do funcionário e cadastra
-     * o novo código somente se a conta estiver ativa.
-     * Executa as operações na mesma transação.
+    /**
+     * metodo que registra uma nova solicitacao de recuperacao de senha
+     * Invalida as solicitacoes anteriores do funcionario e cadastra o novo codigo somente se a conta estiver ativa
+     * As duas operacoes acontecem na mesma transacao: ou as duas dao certo, ou nada muda
+     * @param recovery A solicitacao que sera cadastrada (o id gerado e preenchido nela)
+     * @return true se foi registrada e false se os dados forem invalidos (ex: hash fora do formato) ou a conta do funcionario nao estiver ativa
      */
     public boolean register(PasswordRecovery recovery) {
 
@@ -88,10 +97,10 @@ public class PasswordRecoveryDAO {
         }
     }
 
-    /*
-     * Busca uma solicitação de recuperação pelo seu identificador.
-     * Retorna os dados da solicitação quando encontrada
-     * ou null quando o ID for inválido ou não existir.
+    /**
+     * metodo para buscar uma solicitacao de recuperacao pelo id
+     * @param id Numero unico da solicitacao
+     * @return A solicitacao encontrada, ou null se o id for invalido ou ela nao existir
      */
     public PasswordRecovery searchById(long id) {
 
@@ -134,10 +143,11 @@ public class PasswordRecoveryDAO {
         return null;
     }
 
-    /*
-     * Incrementa o número de tentativas de validação de uma solicitação.
-     * A atualização ocorre somente se o código ainda não foi utilizado,
-     * não expirou e não atingiu o limite de tentativas.
+    /**
+     * metodo que soma uma tentativa de validacao na solicitacao
+     * So soma se o codigo ainda nao foi usado, nao expirou e nao atingiu o limite de tentativas
+     * @param id Numero unico da solicitacao
+     * @return true se a tentativa foi registrada e false se o id for invalido ou a solicitacao ja foi usada, expirou ou atingiu o limite
      */
     public boolean incrementAttempts(long id) {
 
@@ -169,11 +179,15 @@ public class PasswordRecoveryDAO {
         }
     }
 
-    /*
-     * Valida o código informado e atualiza a senha do funcionário
-     * na mesma transação. Recebe o HMAC-SHA-256 do código informado
-     * Rejeita solicitações expiradas, utilizadas ou sem tentativas.
-     * Em caso de sucesso, atualiza a senha e invalida o código.
+    /**
+     * metodo que valida o codigo informado e troca a senha do funcionario
+     * Tudo acontece na mesma transacao: ou o codigo e conferido, a senha e trocada e o codigo e invalidado, ou nada muda
+     * Recusa solicitacoes expiradas, ja usadas ou que atingiram o limite de tentativas
+     * Se o codigo estiver errado, soma uma tentativa (e a soma fica salva)
+     * @param recoveryId Numero unico da solicitacao
+     * @param submittedCodeHash O HMAC-SHA-256 do codigo digitado pelo usuario (64 caracteres hexadecimais)
+     * @param newPasswordHash O hash da nova senha (gerado pelo PasswordHasher)
+     * @return true se a senha foi trocada e false se os dados forem invalidos, a solicitacao nao existir, estiver expirada, usada ou sem tentativas, ou o codigo estiver errado
      */
     public boolean completeRecovery(
             long recoveryId,
@@ -304,9 +318,12 @@ public class PasswordRecoveryDAO {
                     "Erro ao concluir a recuperação de senha.", e);
         }
     }
-    /*
-     * Invalida uma solicitação de recuperação de senha.
-     * Retorna true quando a solicitação foi invalidada.
+
+    /**
+     * metodo que invalida uma solicitacao de recuperacao de senha (marca como usada)
+     * Util quando o envio do e-mail com o codigo falha
+     * @param id Numero unico da solicitacao
+     * @return true se foi invalidada e false se o id for invalido ou a solicitacao nao existe ou ja estava usada
      */
     public boolean invalidate(long id) {
 
@@ -335,6 +352,11 @@ public class PasswordRecoveryDAO {
         }
     }
 
+    //    ------------- Metodos auxiliares (privados) --------------
+
+    /**
+     * Desfaz a transacao sem esconder o erro original
+     */
     private void rollbackQuietly(Connection conn, Exception cause) {
         try {
             conn.rollback();
