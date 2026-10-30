@@ -1,4 +1,4 @@
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
@@ -38,7 +38,6 @@
         <jsp:param name="selecionar" value="${not empty setores}"/>
     </jsp:include>
 
-    <%-- Tabela (Figma: TELA CRUDV2 - SETOR) --%>
     <section class="cartao-tabela">
         <table class="tabela">
             <colgroup>
@@ -98,7 +97,6 @@
             </tbody>
         </table>
 
-        <%-- Estado vazio (Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS) --%>
         <c:if test="${empty setores}">
             <jsp:include page="Vazio.jsp">
                 <jsp:param name="destaque" value="nenhum setor cadastrado."/>
@@ -106,7 +104,6 @@
         </c:if>
     </section>
 
-    <%-- Paginação só aparece quando há registros (no Figma do estado vazio ela não existe) --%>
     <c:if test="${not empty setores}">
         <jsp:include page="Paginacao.jsp"/>
     </c:if>
@@ -123,6 +120,13 @@
                 <svg viewBox="0 0 28 28" aria-hidden="true"><path d="M5 5l18 18M23 5L5 23" stroke="#FFF" stroke-width="3" stroke-linecap="round"/></svg>
             </button>
         </div>
+
+        <c:if test="${not empty erro}">
+            <p class="erro-modal" role="alert"><c:out value="${erro}"/></p>
+        </c:if>
+        <c:if test="${empty unidades}">
+            <p class="erro-modal aviso" role="status">Antes de cadastrar um setor, cadastre uma unidade na tela de Unidades.</p>
+        </c:if>
 
         <form action="${ctx}/Sectors.jsp" method="post" accept-charset="UTF-8">
             <div class="modal-corpo">
@@ -169,7 +173,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/setores" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Sectors.jsp" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="editar">
             <input type="hidden" name="id" data-campo="id">
 
@@ -198,8 +202,7 @@
             </div>
 
             <div class="modal-rodape">
-                <%-- O SectorRegisterServlet ainda não trata acao=editar; o botão fica desativado
-                     para não cadastrar um setor duplicado. Remova o "disabled" quando o servlet tratar a edição. --%>
+
                 <button type="submit" class="botao-roxo" disabled>Alterar</button>
                 <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
             </div>
@@ -251,7 +254,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/setores" method="post">
+        <form action="${ctx}/Sectors.jsp" method="post">
             <input type="hidden" name="acao" value="excluir">
             <input type="hidden" name="id" data-campo="id">
 
@@ -271,5 +274,3 @@
 <script src="${ctx}/Crud.js"></script>
 </body>
 </html>
-
-

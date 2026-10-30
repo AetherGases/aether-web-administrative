@@ -1,28 +1,20 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=1440">
     <title>Login | Aether</title>
-
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
-
-    <link rel="icon" href="${pageContext.request.contextPath}/Imagens/LogoAether.svg" type="image/svg+xml">
-
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Global.css.css">
-
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Login.css.css">
+    <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="${ctx}/Cadastro.css">
 </head>
-
 <body>
 
 <div class="tela">
@@ -47,62 +39,42 @@
         <p class="mensagem mensagem-erro" role="alert" style="top: 2px; padding: 6px 18px"><c:out value="${not empty requestScope.erro ? requestScope.erro : requestScope.mensagem}"/></p>
     </c:if>
 
-    <%-- Cartão (padrão dos frames de cadastro: x=755, 546 de largura) --%>
     <main class="cartao-form" style="top: 167px; height: 690px">
         <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo" style="left: 109.5px; top: 146px; width: 327px">Login pessoal</h1>
 
-        <form action="${ctx}/Dashboard.jsp" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/login" method="post" accept-charset="UTF-8">
             <label for="empresa" class="visually-hidden">Empresa</label>
             <select class="entrada" style="top: 221px" id="empresa" name="empresas" required>
                 <option value="" disabled ${empty param.empresas ? 'selected' : ''}>Selecionar empresa</option>
                 <c:forEach var="empresa" items="${requestScope.empresas}">
-                    <option
-                            value="${empresa.id}"
-                            <c:if test="${param.empresas == empresa.id}">selected</c:if>
-                    >
-                        <c:out value="${empresa.name}" />
-                    </option>
+                    <option value="${empresa.id}" ${param.empresas == empresa.id ? 'selected' : ''}><c:out value="${empresa.name}"/></option>
                 </c:forEach>
-
             </select>
 
-            <!-- Identificação do funcionário -->
-            <label for="nome" class="visually-hidden">
-                Nome
-            </label>
+            <label for="nome" class="visually-hidden">Nome</label>
+            <input class="entrada" style="top: 297px" type="text" id="nome" name="campoNome" placeholder="Nome"
+                   autocomplete="username" maxlength="255" value="<c:out value='${param.campoNome}'/>" required>
 
-            <input
-                    class="campoNome campoNomeNome"
-                    type="text"
-                    id="nome"
-                    name="campoNome"
-                    placeholder="Nome"
-                    autocomplete="username"
-                    maxlength="255"
-                    required
-            >
-
-            <!-- E-mail do funcionário -->
             <label for="email" class="visually-hidden">E-mail</label>
+            <input class="entrada" style="top: 373px" type="email" id="email" name="campoEmail" placeholder="E-mail"
+                   autocomplete="email" maxlength="255" value="<c:out value='${param.campoEmail}'/>" required>
 
-            <input class="campoEmail campoEmailEmail" type="email" id="email" name="campoEmail" placeholder="E-mail" autocomplete="email" maxlength="255" required>
+            <label for="senha" class="visually-hidden">Senha</label>
+            <input class="entrada" style="top: 449px" type="password" id="senha" name="campoSenha" placeholder="Senha"
+                   autocomplete="current-password" maxlength="1024" required>
 
-            <!-- Senha da conta -->
-            <label for="senha" class="visually-hidden">
-                Senha
-            </label>
+            <button class="botao-enviar roxo" style="top: 535px" type="submit">Entrar</button>
 
-            <input class="campoSenha campoSenhaSenha" type="password" id="senha" name="campoSenha" placeholder="Senha" autocomplete="current-password" maxlength="1024" required>
-
-
-            <button class="botaoEnvioRoxo tipografiaEnvio" type="submit">Entrar</button>
-
+            <p class="link-conta roxo" style="top: 608px">
+                Esqueceu a senha? <a href="${ctx}/RecoverPassword.jsp">clique aqui</a>
+            </p>
+            <p class="link-conta roxo" style="top: 640px">
+                Não possui uma conta? <a href="${ctx}/CompanyRegister.jsp">clique aqui</a>
+            </p>
         </form>
-
-    </section>
-
-</main>
+    </main>
+</div>
 
 </body>
 </html>

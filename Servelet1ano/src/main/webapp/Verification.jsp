@@ -78,7 +78,6 @@
     </main>
 
     <script>
-        // Avança para o próximo quadradinho e aceita colar o código inteiro
         (function () {
             var campos = document.querySelectorAll('.codigo input');
             campos.forEach(function (campo, i) {

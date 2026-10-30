@@ -17,7 +17,6 @@
 </head>
 <body>
 
-<%-- Figma: TELA CRUDV2 - PERMISSOES (nó 4956:5965) --%>
 <div class="perm-tela">
 
     <jsp:include page="Sidebar.jsp">
@@ -28,7 +27,6 @@
     <h1 class="perm-titulo">Área restrita</h1>
     <p class="perm-subtitulo">Permissões</p>
 
-    <%-- Seletor do funcionário (Frame 2049760436). Usa o atributo "funcionarios" quando o servlet enviar. --%>
     <div class="perm-seletor">
         <label for="funcionarioPermissao">Permissões de:</label>
         <select id="funcionarioPermissao" name="funcionario">

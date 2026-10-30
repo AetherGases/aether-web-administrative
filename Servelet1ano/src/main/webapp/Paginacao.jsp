@@ -1,5 +1,4 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%-- Paginação (Figma: Group 427321410 em x=783, y=914) e texto "Mostrando 10 por página". --%>
 <p class="contagem">Mostrando 10 por página</p>
 
 <button type="button" class="pagina-seta pagina-anterior" aria-label="Página anterior">

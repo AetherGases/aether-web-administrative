@@ -17,7 +17,6 @@
 </head>
 <body>
 
-<%-- Figma: TELA CRUDV2 - AETHER (nó 4956:6389) --%>
 <div class="perm-tela">
 
     <jsp:include page="Sidebar.jsp">

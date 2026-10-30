@@ -1,13 +1,3 @@
-/*
- * Crud.js — comportamento compartilhado das telas internas.
- *
- *  - [data-abrir="idDoOverlay"]  abre um overlay; se estiver dentro de uma <tr data-*>,
- *    copia os data-* da linha para os campos do overlay que tiverem [data-campo="nome"].
- *  - [data-fechar]               fecha o overlay em que está.
- *  - Clique fora do modal ou tecla Esc também fecham.
- *  - #pesquisa filtra as linhas da tabela pelo texto digitado.
- *  - #botaoSelecionarTodos marca/desmarca todos os checkboxes.
- */
 (function () {
     "use strict";
 

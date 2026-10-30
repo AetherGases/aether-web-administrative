@@ -1,10 +1,3 @@
-/* =====================================================================
-   Sidebar.css — barra lateral do Aether (Figma: Rectangle 23889, 284 x 1024).
-   Usada com WEB-INF/includes/Sidebar.jsp. A página deve ter um contêiner
-   com position: relative (ex.: .perm-tela) de 1440 x 1024.
-   ===================================================================== */
-
-/* ------------------------------ BARRA LATERAL (284 x 1024) ------------------------------ */
 .sidebar {
     position: absolute;
     left: 0;
@@ -15,7 +8,6 @@
     border-radius: 0 30px 30px 0;
 }
 
-/* Group 11: logo em (53, 34) */
 .sidebar-logo {
     position: absolute;
     left: 48px;
@@ -24,7 +16,6 @@
     height: 71px;
 }
 
-/* Group 2049761286: mascote em (47, 212) */
 .sidebar-mascote {
     position: absolute;
     left: 38px;
@@ -33,7 +24,6 @@
     height: auto;
 }
 
-/* Maleta (Group 2049761284): 75.6 x 64.4 em (172.86, 304.4) */
 .sidebar-maleta {
     position: absolute;
     left: 172.86px;
@@ -42,7 +32,6 @@
     height: 64.4px;
 }
 
-/* ADMIN em (105, 401) */
 .sidebar-admin {
     position: absolute;
     left: 0;
@@ -57,7 +46,6 @@
     text-align: center;
 }
 
-/* Menu: itens a cada 62px a partir de y=482, ícones em x=63 */
 .sidebar-menu {
     margin: 0;
     padding: 0;
@@ -110,7 +98,6 @@
     margin-right: -6px;
 }
 
-/* Item ativo (Rectangle 23857: 206 x 41.2) */
 .sidebar-menu a.ativo {
     background: #2DBD7E;
     color: #FFF;
@@ -120,7 +107,6 @@
     filter: brightness(0) invert(1);
 }
 
-/* LOGOUT: 246 x 51 em (18, 964) */
 .sidebar-logout {
     position: absolute;
     left: 18px;

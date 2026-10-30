@@ -1,8 +1,3 @@
-/* =====================================================================
-   Error.css — Figma: "Crud - Error" (canvas 1440 x 1024).
-   Todas as posições abaixo são as do Figma, em px, relativas à .telaErro.
-   ===================================================================== */
-
 *,
 *::before,
 *::after {
@@ -22,7 +17,6 @@ body {
     font-family: "Montserrat", sans-serif;
 }
 
-/* Canvas fixo de 1440 x 1024, centralizado */
 .telaErro {
     position: relative;
     width: 1440px;
@@ -32,7 +26,6 @@ body {
     background: linear-gradient(180deg, #EDEEF8 0.02%, #B3A2FB 100%);
 }
 
-/* "Erro 404" — tinta do "E" em x ≈ 88, altura de 160px */
 .tituloErro {
     position: absolute;
     left: 73px;
@@ -46,7 +39,6 @@ body {
     white-space: nowrap;
 }
 
-/* "Oops! Página não encontrada" — tinta em x ≈ 82, centro em y ≈ 498 */
 .subTituloErro {
     position: absolute;
     left: 80px;
@@ -59,7 +51,6 @@ body {
     white-space: nowrap;
 }
 
-/* "Parece que você pegou um caminho errado..." — tinta em x ≈ 82, 3 linhas a partir de y ≈ 587 */
 .descricaoErro {
     position: absolute;
     left: 80px;
@@ -72,7 +63,6 @@ body {
     line-height: 39.5px;
 }
 
-/* Botão "Volte ao início" — 443.6 x 69.7 em (82, 748) */
 .botaoVoltarInicio {
     position: absolute;
     left: 82px;
@@ -95,8 +85,7 @@ body {
     line-height: 1.2;
 }
 
-/* Nuvem: o SVG já vem com a rotação de 2,5° (705 x 487), então NÃO se aplica
-   transform. O desenho visível ocupa x 805–1406 e y 305–709 do canvas. */
+
 .nuvemErro {
     position: absolute;
     left: 736px;
