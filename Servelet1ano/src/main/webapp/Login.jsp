@@ -25,62 +25,37 @@
 
 <body>
 
-<!-- Elementos decorativos de fundo -->
-<div class="blur1" aria-hidden="true"></div>
-<div class="blur2" aria-hidden="true"></div>
-<div class="blur3" aria-hidden="true"></div>
-<div class="blur4" aria-hidden="true"></div>
+<div class="tela">
+    <div class="blur blur-1"></div>
+    <div class="blur blur-2"></div>
+    <div class="blur blur-3"></div>
+    <div class="blur blur-4"></div>
 
+    <a class="voltar roxo" href="${ctx}/Index.jsp">
+        <span>
+            <svg viewBox="0 0 22 22" aria-hidden="true"><path d="M14 4l-7 7 7 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        Voltar
+    </a>
 
-<header class="divLogo">
+    <div class="logo-lateral">
+        <img src="${ctx}/Imagens/AekoLogoEmBaixo.svg" alt="Aether">
+        <p>Pense no presente e mude seu <span>futuro</span></p>
+    </div>
 
-    <img class="logoCRUD" src="${pageContext.request.contextPath}/Imagens/LogoAethererdeEscuro.svg" alt="Logo do Aether">
+    <c:if test="${not empty requestScope.erro or not empty requestScope.mensagem}">
+        <p class="mensagem mensagem-erro" role="alert" style="top: 2px; padding: 6px 18px"><c:out value="${not empty requestScope.erro ? requestScope.erro : requestScope.mensagem}"/></p>
+    </c:if>
 
-    <h1 class="logotipoAether">aether</h1>
+    <%-- Cartão (padrão dos frames de cadastro: x=755, 546 de largura) --%>
+    <main class="cartao-form" style="top: 167px; height: 690px">
+        <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
+        <h1 class="pilula-titulo" style="left: 109.5px; top: 146px; width: 327px">Login pessoal</h1>
 
-    <p class="fraseLogo">Pense no presente e mude seu<span class="fraseFuturoLogo">futuro</span></p>
-
-</header>
-
-<main class="divLoginPrincipal">
-
-    <section class="divCaixaForm" aria-labelledby="tituloLogin">
-
-        <img class="aekoCRUD" src="${pageContext.request.contextPath}/Imagens/AekoLogin.svg" alt="Aeko, mascote do Aether">
-
-        <div class="retanguloLogin">
-            <h2 class="loginPessoalTexto" id="tituloLogin">
-                Login pessoal
-            </h2>
-        </div>
-
-        <!-- Mensagem de erro enviada pelo LoginServlet -->
-        <c:if test="${not empty requestScope.erro}">
-            <div class="mensagem-erro" role="alert">
-                <p><c:out value="${requestScope.erro}" /></p>
-            </div>
-        </c:if>
-
-        <!-- Formulário processado pelo LoginServlet -->
-        <form action="${pageContext.request.contextPath}/login" method="post" accept-charset="UTF-8">
-            <label for="empresa" class="visually-hidden">
-                Empresa
-            </label>
-
-            <select
-                    class="campoEmpresa campoEmpresaEmpresa"
-                    name="empresas"
-                    id="empresa"
-                    required
-            >
-                <option
-                        value=""
-                        disabled
-                        <c:if test="${empty param.empresas}">selected</c:if>
-                >
-                    Selecionar empresa
-                </option>
-
+        <form action="${ctx}/Dashboard.jsp" method="post" accept-charset="UTF-8">
+            <label for="empresa" class="visually-hidden">Empresa</label>
+            <select class="entrada" style="top: 221px" id="empresa" name="empresas" required>
+                <option value="" disabled ${empty param.empresas ? 'selected' : ''}>Selecionar empresa</option>
                 <c:forEach var="empresa" items="${requestScope.empresas}">
                     <option
                             value="${empresa.id}"
