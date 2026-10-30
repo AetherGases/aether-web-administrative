@@ -39,8 +39,7 @@
         <jsp:param name="selecionar" value="${not empty funcionarios}"/>
     </jsp:include>
 
-    <%-- Tabela (Figma: TELA CRUDV2 - FUNCIONARIOS).
-         A lista vem do atributo "funcionarios" (List<Employees>). --%>
+
     <section class="cartao-tabela">
         <table class="tabela">
             <colgroup>
@@ -107,7 +106,6 @@
             </tbody>
         </table>
 
-        <%-- Estado vazio (Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS) --%>
         <c:if test="${empty funcionarios}">
             <jsp:include page="Vazio.jsp">
                 <jsp:param name="destaque" value="nenhum funcionário cadastrado."/>
@@ -115,15 +113,12 @@
         </c:if>
     </section>
 
-    <%-- Paginação só aparece quando há registros (no Figma do estado vazio ela não existe) --%>
     <c:if test="${not empty funcionarios}">
         <jsp:include page="Paginacao.jsp"/>
     </c:if>
 </div>
 
-<%-- ======================= OVERLAY ADICIONAR FUNCIONÁRIO =======================
-     Grade do Figma: colunas x=98 / x=456, linhas a cada 80px, status centralizado.
-     Telefone, CPF e Unidade foram incluídos porque o EmployeeRegisterServlet os exige. --%>
+<%-- ======================= OVERLAY ADICIONAR FUNCIONÁRIO =======================--%>
 <div class="overlay" id="overlayAdicionarFuncionario" aria-hidden="true"
      data-abrir-ao-carregar="${not empty erro}">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloAdicionarFuncionario">
@@ -135,7 +130,14 @@
             </button>
         </div>
 
-        <form action="${ctx}/funcionarios" method="post" accept-charset="UTF-8">
+        <c:if test="${not empty erro}">
+            <p class="erro-modal" role="alert"><c:out value="${erro}"/></p>
+        </c:if>
+        <c:if test="${empty unidades or empty setores}">
+            <p class="erro-modal aviso" role="status">Antes de cadastrar um funcionário, cadastre uma unidade e um setor nas telas de Unidades e Setores.</p>
+        </c:if>
+
+        <form action="${ctx}/Employee.jsp" method="post" accept-charset="UTF-8">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeFuncionario">Nome completo</label>
@@ -218,7 +220,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/funcionarios" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Employee.jsp" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="editar">
             <input type="hidden" name="id" data-campo="id">
             <div class="modal-corpo">
@@ -257,7 +259,6 @@
             </div>
 
             <div class="modal-rodape">
-                <%-- O EmployeeRegisterServlet ainda não trata edição; habilite quando houver suporte. --%>
                 <button type="submit" class="botao-roxo" disabled>Alterar</button>
                 <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
             </div>
@@ -317,7 +318,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/funcionarios" method="post">
+        <form action="${ctx}/Employee.jsp" method="post">
             <input type="hidden" name="acao" value="excluir">
             <input type="hidden" name="id" data-campo="id">
 
@@ -338,5 +339,6 @@
 <script src="${ctx}/Crud.js"></script>
 </body>
 </html>
+
 
 

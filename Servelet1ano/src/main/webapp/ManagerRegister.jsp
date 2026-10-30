@@ -30,7 +30,6 @@
         Voltar
     </a>
 
-    <%-- Logo à esquerda (Figma: Group 427320935 em 110,325) --%>
     <div class="logo-lateral">
         <img src="${ctx}/Imagens/AekoLogoEmBaixo.svg" alt="Aether">
         <p>Pense no presente e mude seu <span>futuro</span></p>
@@ -43,10 +42,6 @@
         <p class="mensagem mensagem-sucesso" role="status" style="top: 2px; padding: 6px 18px"><c:out value="${requestScope.sucesso}"/></p>
     </c:if>
 
-    <%-- Cartão do formulário (Figma: Frame 2049760443 em 755,39 — 546 x 946).
-         "Telefone" não existe no Figma, mas o ManagerRegisterServlet exige o campo;
-         por isso o passo entre os campos foi reduzido de 88px para 76px, mantendo
-         o botão "Entrar" (y=792) e o link (y=881) nas posições do Figma. --%>
     <main class="cartao-form roxo" style="top: 39px; height: 946px">
         <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo roxa" style="left: 63.5px; top: 146px; width: 419px">Cadastro de gerente</h1>

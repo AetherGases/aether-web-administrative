@@ -44,10 +44,13 @@ public class Validators {
      * @return true se for um celular valido
      */
     public static boolean isMobilePhone(String phone) {
+
         if (phone == null) {
             return false;
         }
-        String digits = phone.replaceAll("\\D", "");
+
+        String digits = normalizePhone(phone);
+
         return MOBILE_PHONE.matcher(digits).matches();
     }
 

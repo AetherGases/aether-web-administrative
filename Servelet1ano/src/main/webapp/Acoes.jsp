@@ -1,9 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%--
-    Barra de ações (Figma: BARRA DE PESQUISA, FRILTOS, SELECIONAR TODOS, ADD NOVO).
-    Parâmetros: modal = id do overlay de "Adicionar"; selecionar = "false" para esconder "Selecionar todos".
---%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <div class="pesquisa">

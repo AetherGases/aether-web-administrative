@@ -1,12 +1,6 @@
-/* =====================================================================
-   Dashboard.css — Figma: TELA CRUD (INICIO), nó 4920:5840 (1440 x 1024).
-   Depende de Crud.css (sidebar, .tela, fontes).
-   ===================================================================== */
-
 .tela-dashboard .titulo-pagina    { left: 340px; top: 32px; }
 .tela-dashboard .subtitulo-pagina { left: 340px; top: 90px; }
 
-/* ---------------- Cartão roxo "Olá" (nó 4909:7020: 1051 x 348 em 330, 128) ---------------- */
 .cartao-boas-vindas {
     position: absolute;
     left: 330px;
@@ -22,7 +16,6 @@
     color: #FFF;
 }
 
-/* Elipses e linhas decorativas (Ellipse 88 / Ellipse 89 / Group 3852) */
 .decoracao {
     position: absolute;
     border-radius: 50%;
@@ -87,7 +80,6 @@
     z-index: 1;
 }
 
-/* Botões "Btn": padding 12px 30px, borda branca, raio 40 */
 .botao-cartao {
     position: absolute;
     top: 224px;
@@ -118,7 +110,6 @@
     color: #FFF;
 }
 
-/* ---------------- Cartões de números (Analytic em 330, 513) ---------------- */
 .cartao-numero {
     position: absolute;
     width: 343px;
@@ -170,7 +161,6 @@ a.cartao-numero:hover {
 
 .cartao-numero.n1 .valor { top: 69.81px; }
 
-/* Ícone 67 x 67 em (181, 84) dentro do cartão */
 .cartao-numero img {
     position: absolute;
     left: 181px;

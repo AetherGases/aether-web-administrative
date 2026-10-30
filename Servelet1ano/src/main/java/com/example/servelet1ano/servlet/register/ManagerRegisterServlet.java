@@ -20,10 +20,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+
+import java.text.Normalizer;
+import java.util.Locale;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 @WebServlet("/gerente")
 public class ManagerRegisterServlet extends HttpServlet {
@@ -53,13 +62,34 @@ public class ManagerRegisterServlet extends HttpServlet {
     private static final List<Integer> PERMISSOES_ADMIN =
             List.of(1, 2, 3, 4, 5, 6, 7);
 
+    private static final int MAX_NOME = 150;
+    private static final int MAX_EMAIL = 255;
+    private static final int MAX_TELEFONE = 20;
+    private static final int MAX_CPF = 14;
+    private static final int MAX_SENHA = 1024;
+    private static final int MAX_EMPRESA_ID = 10;
+
+    private static final Set<String> CAMPOS_PERMITIDOS = Set.of(
+            "campoNome",
+            "campoEmail",
+            "campoTelefone",
+            "campoSenha",
+            "campoConfirmarSenha",
+            "campoCPF",
+            "empresaSelecionada",
+            "csrfToken"
+    );
+
+    private static final Pattern CARACTERES_CONTROLE =
+            Pattern.compile("[\\p{Cc}\\p{Cf}]");
+
+
+
+
     /*
      *
      * EXIBIÇÃO DO FORMULÁRIO
      *
-     *
-     * O método doGet é executado quando o usuário acessa a página
-     * de cadastro de gerente.
      *
      * Antes de encaminhar a requisição ao JSP, o Servlet consulta
      * as empresas disponíveis e disponibiliza a lista por meio do
@@ -76,6 +106,15 @@ public class ManagerRegisterServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
+
+        request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(true);
+
+        session.setAttribute(
+                "csrfToken",
+                UUID.randomUUID().toString()
+        );
 
         try {
             carregarEmpresas(request);
@@ -121,20 +160,61 @@ public class ManagerRegisterServlet extends HttpServlet {
             HttpServletResponse response
     ) throws ServletException, IOException {
 
+        request.setCharacterEncoding("UTF-8");
+        response.setHeader("Cache-Control", "no-store");
+        response.setHeader("X-Content-Type-Options", "nosniff");
+
+        for (String campo : request.getParameterMap().keySet()) {
+
+            if (!CAMPOS_PERMITIDOS.contains(campo)) {
+                exibirErro(
+                        request,
+                        response,
+                        "A requisição contém campos não permitidos."
+                );
+                return;
+            }
+        }
+
+        for (String campo : CAMPOS_PERMITIDOS) {
+
+            String[] valores = request.getParameterValues(campo);
+
+            if (valores != null && valores.length != 1) {
+                exibirErro(
+                        request,
+                        response,
+                        "A requisição contém parâmetros duplicados."
+                );
+                return;
+            }
+        }
+
+        HttpSession session = request.getSession(false);
+
+        String tokenSessao = session == null
+                ? null
+                : (String) session.getAttribute("csrfToken");
+
+        String tokenRecebido = request.getParameter("csrfToken");
+
+        if (!tokenValido(tokenSessao, tokenRecebido)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String nome = request.getParameter("campoNome");
         String email = request.getParameter("campoEmail");
         String telefone = request.getParameter("campoTelefone");
         String senha = request.getParameter("campoSenha");
         String confirmarSenha = request.getParameter("campoConfirmarSenha");
-        String empresaParam = request.getParameter("empresas");
+        String empresaParam = request.getParameter("empresaSelecionada");
         String cpf = request.getParameter("campoCPF");
 
         request.setAttribute("campoNome", nome);
         request.setAttribute("campoEmail", email);
         request.setAttribute("campoTelefone", telefone);
-        request.setAttribute("campoSenha", senha);
-        request.setAttribute("campoConfirmarSenha", confirmarSenha);
-        request.setAttribute("empresas", empresaParam);
+        request.setAttribute("empresaSelecionada", empresaParam);
         request.setAttribute("campoCPF", cpf);
 
 
@@ -160,6 +240,38 @@ public class ManagerRegisterServlet extends HttpServlet {
         empresaParam = empresaParam.trim();
         cpf = cpf.trim();
 
+        if (nome.length() > MAX_NOME
+                || email.length() > MAX_EMAIL
+                || telefone.length() > MAX_TELEFONE
+                || cpf.length() > MAX_CPF
+                || senha.length() > MAX_SENHA
+                || confirmarSenha.length() > MAX_SENHA
+                || empresaParam.length() > MAX_EMPRESA_ID) {
+
+            exibirErro(
+                    request,
+                    response,
+                    "Um ou mais campos ultrapassaram o tamanho permitido."
+            );
+            return;
+        }
+
+        if (possuiCaracteresDeControle(nome)
+                || possuiCaracteresDeControle(email)
+                || possuiCaracteresDeControle(telefone)
+                || possuiCaracteresDeControle(cpf)
+                || possuiCaracteresDeControle(senha)
+                || possuiCaracteresDeControle(confirmarSenha)
+                || possuiCaracteresDeControle(empresaParam)) {
+
+            exibirErro(
+                    request,
+                    response,
+                    "Um ou mais campos contêm caracteres não permitidos."
+            );
+            return;
+        }
+
 
         /*
          * VALIDAÇÃO DE DADOS
@@ -169,29 +281,51 @@ public class ManagerRegisterServlet extends HttpServlet {
          *
          */
 
-        if (email.length() > 255 || !Validators.isEmail(email)) {
+
+        nome = Normalizer.normalize(
+                nome.strip(),
+                Normalizer.Form.NFC
+        );
+
+        if (nome.length() < 2
+                || !nome.matches("[\\p{L}\\p{M} .'-]+")) {
+
             exibirErro(
                     request,
                     response,
-                    "O e-mail digitado não é válido. Verifique seus dados."
+                    "Informe um nome válido."
+            );
+            return;
+        }
+
+        email = email.strip().toLowerCase(Locale.ROOT);
+
+        if (!Validators.isEmail(email)) {
+            exibirErro(
+                    request,
+                    response,
+                    "O e-mail informado não é válido."
+            );
+            return;
+        }
+
+        telefone = Validators.normalizePhone(telefone);
+
+        if (!telefone.matches("[0-9]{11}")
+                || !Validators.isMobilePhone(telefone)) {
+
+            exibirErro(
+                    request,
+                    response,
+                    "O telefone digitado não é válido. Verifique seus dados."
             );
             return;
         }
 
 
-        if (senha.length() > 1024
-                || confirmarSenha.length() > 1024) {
+        if (!cpf.matches("[0-9.\\-/]+")
+                || !Validators.isCpf(cpf)) {
 
-            exibirErro(
-                    request,
-                    response,
-                    "As senhas devem ter no máximo 1024 caracteres."
-            );
-            return;
-        }
-
-
-        if (!Validators.isCpf(cpf)) {
             exibirErro(
                     request,
                     response,
@@ -200,24 +334,19 @@ public class ManagerRegisterServlet extends HttpServlet {
             return;
         }
 
+        cpf = cpf.strip();
+
+        empresaParam = empresaParam.strip();
 
         if (!senha.equals(confirmarSenha)) {
             exibirErro(
                     request,
                     response,
-                    "As senhas não conferem. Verifique-as e tente novamente."
+                    "As senhas informadas não coincidem."
             );
             return;
         }
 
-        if (!Validators.isMobilePhone(telefone)) {
-            exibirErro(
-                    request,
-                    response,
-                    "O telefone digitado não é válido. Verifique seus dados."
-            );
-            return;
-        }
 
         final int companyId;
 
@@ -276,10 +405,21 @@ public class ManagerRegisterServlet extends HttpServlet {
 
             int permissionGroupId = -1;
 
-            for (PermissionGroups grupo : permissionGroupsDAO.searchAll(groupFilter)) {
-                if (GRUPO_ADMIN.equalsIgnoreCase(grupo.getName())) {
-                    permissionGroupId = grupo.getId();
-                    break;
+            List<PermissionGroups> grupos =
+                    permissionGroupsDAO.searchAll(groupFilter);
+
+            if (grupos != null) {
+
+                for (PermissionGroups grupo : grupos) {
+
+                    if (grupo != null
+                            && grupo.getName() != null
+                            && GRUPO_ADMIN.equalsIgnoreCase(grupo.getName())
+                            && grupo.getCompanyId() == companyId) {
+
+                        permissionGroupId = grupo.getId();
+                        break;
+                    }
                 }
             }
 
@@ -337,15 +477,24 @@ public class ManagerRegisterServlet extends HttpServlet {
                 );
             }
 
-            HttpSession session = request.getSession();
+            HttpSession sessao = request.getSession(false);
+
+            if (sessao == null) {
+                throw new RuntimeException(
+                        "A sessão do usuário não está disponível."
+                );
+            }
+
             request.changeSessionId();
 
-            session.setAttribute(
+            sessao.removeAttribute("csrfToken");
+
+            sessao.setAttribute(
                     "employeeId",
                     employees.getFirst().getId()
             );
 
-            session.setAttribute("companyId", companyId);
+            sessao.setAttribute("companyId", companyId);
 
             response.sendRedirect(
                     request.getContextPath() + "/dashboard"
@@ -405,7 +554,6 @@ public class ManagerRegisterServlet extends HttpServlet {
     ) throws ServletException, IOException {
 
         request.setAttribute("erro", mensagem);
-        request.setAttribute("empresas", List.of());
 
         try {
             carregarEmpresas(request);
@@ -420,5 +568,22 @@ public class ManagerRegisterServlet extends HttpServlet {
 
         request.getRequestDispatcher(CADASTRO)
                 .forward(request, response);
+    }
+
+    private boolean tokenValido(String esperado, String recebido) {
+
+        if (esperado == null || recebido == null) {
+            return false;
+        }
+
+        return MessageDigest.isEqual(
+                esperado.getBytes(StandardCharsets.UTF_8),
+                recebido.getBytes(StandardCharsets.UTF_8)
+        );
+    }
+
+    private boolean possuiCaracteresDeControle(String valor) {
+        return valor != null
+                && CARACTERES_CONTROLE.matcher(valor).find();
     }
 }
