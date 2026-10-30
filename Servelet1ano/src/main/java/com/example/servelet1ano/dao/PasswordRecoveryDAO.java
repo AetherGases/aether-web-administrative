@@ -340,4 +340,13 @@ public class PasswordRecoveryDAO {
             );
         }
     }
+
+    private void rollbackQuietly(Connection conn, Exception cause) {
+        try {
+            conn.rollback();
+        } catch (SQLException rollbackError) {
+            cause.addSuppressed(rollbackError);
+        }
+    }
+
 }
