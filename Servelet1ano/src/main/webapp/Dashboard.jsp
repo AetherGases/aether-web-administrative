@@ -1,14 +1,24 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<c:set var="ctx" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Tela de Dashboard do Aether</title>
+    <meta name="viewport" content="width=1440">
+    <title>Dashboard | Aether</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="${ctx}/Crud.css">
+    <link rel="stylesheet" href="${ctx}/Dashboard.css">
 </head>
 <body>
 
-<%-- Figma: TELA CRUD (INICIO) — nó 4920:5840 --%>
 <div class="tela tela-dashboard">
 
     <jsp:include page="Sidebar.jsp">
@@ -18,7 +28,6 @@
     <h1 class="titulo-pagina">Área restrita</h1>
     <p class="subtitulo-pagina">Dashboard</p>
 
-    <%-- Cartão de boas-vindas (1051 x 348 em 330, 128) --%>
     <section class="cartao-boas-vindas">
         <span class="decoracao decoracao-grande" aria-hidden="true"></span>
         <span class="decoracao decoracao-pequena" aria-hidden="true"></span>
@@ -32,6 +41,7 @@
         <a class="botao-cartao botao-unidades" href="${ctx}/Units.jsp">Ver unidades</a>
         <a class="botao-cartao botao-funcionarios" href="${ctx}/Employee.jsp">Ver funcionários</a>
     </section>
+
 
     <a class="cartao-numero n1" href="${ctx}/Sectors.jsp">
         <p class="rotulo">Setores</p>

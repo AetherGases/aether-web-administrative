@@ -867,3 +867,25 @@ button {
     height: 23px;
 }
 
+
+/* Mensagem de erro/aviso dentro do modal de adicionar */
+.erro-modal {
+    margin: 16px 97px 0;
+    padding: 10px 18px;
+    border: 1px solid #FB324C;
+    border-radius: 12px;
+    background: #FFE3E7;
+    color: #C4122B;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 20px;
+    text-align: center;
+}
+
+.erro-modal.aviso {
+    border-color: #9A72F9;
+    background: #EFE9FF;
+    color: #4A3A8A;
+}
+
+

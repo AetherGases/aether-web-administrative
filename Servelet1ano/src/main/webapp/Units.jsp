@@ -122,7 +122,6 @@
     </c:if>
 </div>
 
-<%-- ======================= OVERLAY ADICIONAR UNIDADE ======================= --%>
 <div class="overlay" id="overlayAdicionarUnidade" aria-hidden="true"
      data-abrir-ao-carregar="${not empty erro}">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloAdicionarUnidade">
@@ -134,7 +133,11 @@
             </button>
         </div>
 
-        <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
+        <c:if test="${not empty erro}">
+            <p class="erro-modal" role="alert"><c:out value="${erro}"/></p>
+        </c:if>
+
+        <form action="${ctx}/Units.jsp" method="post" accept-charset="UTF-8">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeUnidade">Nome da unidade</label>
@@ -211,7 +214,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Units.jsp" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="editar">
             <div class="modal-corpo">
                 <div class="campo">
@@ -241,7 +244,6 @@
             </div>
 
             <div class="modal-rodape">
-                <%-- O UnitsRegisterServlet ainda não trata edição; habilite quando houver suporte. --%>
                 <button type="submit" class="botao-roxo" disabled>Alterar</button>
                 <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
             </div>
@@ -293,6 +295,3 @@
 <script src="${ctx}/Crud.js"></script>
 </body>
 </html>
-
-
-

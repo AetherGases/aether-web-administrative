@@ -30,7 +30,6 @@
         Voltar
     </a>
 
-    <%-- Logo à esquerda (Figma: Group 427320935 em 110,325) --%>
     <div class="logo-lateral">
         <img src="${ctx}/Imagens/AekoLogoEmBaixo.svg" alt="Aether">
         <p>Pense no presente e mude seu <span>futuro</span></p>

@@ -1,7 +1,3 @@
-/* --------------------------------------------------------------------------
-   1. CARROSSEL DE CELULARES
-   -------------------------------------------------------------------------- */
-
 function carrosselCelulares() {
     const celulares = [
         "Imagens/CelularInterativo1.svg",
