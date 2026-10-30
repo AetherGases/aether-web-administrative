@@ -328,7 +328,6 @@
 
             <div class="botoes-excluir">
                 <button type="button" class="botao-cancelar" data-fechar>Cancelar</button>
-                <%-- O EmployeeRegisterServlet ainda não trata acao=excluir; habilite quando houver suporte. --%>
                 <button type="submit" class="botao-deletar" disabled title="Exclusão ainda não disponível no servidor">Deletar</button>
             </div>
         </form>

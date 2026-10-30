@@ -33,8 +33,6 @@
         <a class="botao-cartao botao-funcionarios" href="${ctx}/Employee.jsp">Ver funcionários</a>
     </section>
 
-    <%-- Cartões de números (Analytic em 330, 513 — 343 x 206 cada).
-         Os valores são de exemplo, como no Figma; troque pelos atributos do servlet quando existirem. --%>
     <a class="cartao-numero n1" href="${ctx}/Sectors.jsp">
         <p class="rotulo">Setores</p>
         <p class="valor">24</p>

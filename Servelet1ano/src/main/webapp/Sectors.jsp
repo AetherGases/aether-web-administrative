@@ -38,7 +38,6 @@
         <jsp:param name="selecionar" value="${not empty setores}"/>
     </jsp:include>
 
-    <%-- Tabela (Figma: TELA CRUDV2 - SETOR) --%>
     <section class="cartao-tabela">
         <table class="tabela">
             <colgroup>
@@ -98,7 +97,6 @@
             </tbody>
         </table>
 
-        <%-- Estado vazio (Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS) --%>
         <c:if test="${empty setores}">
             <jsp:include page="Vazio.jsp">
                 <jsp:param name="destaque" value="nenhum setor cadastrado."/>

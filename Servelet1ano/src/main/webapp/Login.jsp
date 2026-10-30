@@ -47,7 +47,6 @@
         <p class="mensagem mensagem-erro" role="alert" style="top: 2px; padding: 6px 18px"><c:out value="${not empty requestScope.erro ? requestScope.erro : requestScope.mensagem}"/></p>
     </c:if>
 
-    <%-- Cartão (padrão dos frames de cadastro: x=755, 546 de largura) --%>
     <main class="cartao-form" style="top: 167px; height: 690px">
         <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo" style="left: 109.5px; top: 146px; width: 327px">Login pessoal</h1>

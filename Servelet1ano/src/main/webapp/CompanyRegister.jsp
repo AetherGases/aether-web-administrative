@@ -60,9 +60,6 @@
         <p class="mensagem mensagem-sucesso" role="status" style="top: 16px"><c:out value="${requestScope.sucesso}"/></p>
     </c:if>
 
-    <%-- Cartão do formulário (Figma: Frame 2049760440 em 755,72).
-         "Razão social" não existe no Figma, mas o NewCompanyRegisterServlet exige o campo;
-         por isso os campos abaixo dele descem 72px e o cartão cresce de 708 para 780px. --%>
     <main class="cartao-form" style="top: 72px; height: 780px">
         <img class="mascote" style="left: 192px; top: 26px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo" style="left: 80.5px; top: 137px; width: 385px">Cadastro empresarial</h1>

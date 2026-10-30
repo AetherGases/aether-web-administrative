@@ -1,17 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%--
-    Barra lateral do Aether (Figma: Rectangle 23889 — 284 x 1024).
-    Estilo: Sidebar.css (inclua <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css"> no <head>).
-
-    Uso:
-        <jsp:include page="/WEB-INF/includes/Sidebar.jsp">
-            <jsp:param name="ativo" value="permissoes"/>
-        </jsp:include>
-
-    Valores de "ativo": dashboard | funcionarios | setores | unidades | empresas | permissoes | permissoesAether
-    Parâmetro opcional: semEmpresas = "true" esconde o item Empresas (telas de permissões, como no Figma).
---%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <c:set var="ativo" value="${param.ativo}" />
 

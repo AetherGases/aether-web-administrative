@@ -38,7 +38,6 @@
         <jsp:param name="selecionar" value="${not empty unidades}"/>
     </jsp:include>
 
-    <%-- Tabela (Figma: TELA CRUDV2 - UNIDADE) --%>
     <section class="cartao-tabela">
         <table class="tabela">
             <colgroup>
@@ -111,7 +110,6 @@
             </tbody>
         </table>
 
-        <%-- Estado vazio (Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS) --%>
         <c:if test="${empty unidades}">
             <jsp:include page="Vazio.jsp">
                 <jsp:param name="destaque" value="nenhuma unidade cadastrada."/>
@@ -119,15 +117,12 @@
         </c:if>
     </section>
 
-    <%-- Paginação só aparece quando há registros (no Figma do estado vazio ela não existe) --%>
     <c:if test="${not empty unidades}">
         <jsp:include page="Paginacao.jsp"/>
     </c:if>
 </div>
 
-<%-- ======================= OVERLAY ADICIONAR UNIDADE =======================
-     O Figma traz um único campo "endereço"; o UnitsRegisterServlet exige o endereço
-     separado em partes, então os campos seguem a mesma grade de 2 colunas (x=98 / x=456). --%>
+<%-- ======================= OVERLAY ADICIONAR UNIDADE ======================= --%>
 <div class="overlay" id="overlayAdicionarUnidade" aria-hidden="true"
      data-abrir-ao-carregar="${not empty erro}">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloAdicionarUnidade">
