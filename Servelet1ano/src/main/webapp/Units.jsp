@@ -38,7 +38,6 @@
         <jsp:param name="selecionar" value="${not empty unidades}"/>
     </jsp:include>
 
-    <%-- Tabela (Figma: TELA CRUDV2 - UNIDADE) --%>
     <section class="cartao-tabela">
         <table class="tabela">
             <colgroup>
@@ -111,7 +110,6 @@
             </tbody>
         </table>
 
-        <%-- Estado vazio (Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS) --%>
         <c:if test="${empty unidades}">
             <jsp:include page="Vazio.jsp">
                 <jsp:param name="destaque" value="nenhuma unidade cadastrada."/>
@@ -119,15 +117,11 @@
         </c:if>
     </section>
 
-    <%-- Paginação só aparece quando há registros (no Figma do estado vazio ela não existe) --%>
     <c:if test="${not empty unidades}">
         <jsp:include page="Paginacao.jsp"/>
     </c:if>
 </div>
 
-<%-- ======================= OVERLAY ADICIONAR UNIDADE =======================
-     O Figma traz um único campo "endereço"; o UnitsRegisterServlet exige o endereço
-     separado em partes, então os campos seguem a mesma grade de 2 colunas (x=98 / x=456). --%>
 <div class="overlay" id="overlayAdicionarUnidade" aria-hidden="true"
      data-abrir-ao-carregar="${not empty erro}">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloAdicionarUnidade">
@@ -139,7 +133,11 @@
             </button>
         </div>
 
-        <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
+        <c:if test="${not empty erro}">
+            <p class="erro-modal" role="alert"><c:out value="${erro}"/></p>
+        </c:if>
+
+        <form action="${ctx}/Units.jsp" method="post" accept-charset="UTF-8">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeUnidade">Nome da unidade</label>
@@ -216,7 +214,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/Units.jsp" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="editar">
             <div class="modal-corpo">
                 <div class="campo">
@@ -246,7 +244,6 @@
             </div>
 
             <div class="modal-rodape">
-                <%-- O UnitsRegisterServlet ainda não trata edição; habilite quando houver suporte. --%>
                 <button type="submit" class="botao-roxo" disabled>Alterar</button>
                 <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
             </div>
@@ -298,6 +295,3 @@
 <script src="${ctx}/Crud.js"></script>
 </body>
 </html>
-
-
-
