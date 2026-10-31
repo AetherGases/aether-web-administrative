@@ -53,7 +53,7 @@
             <input class="entrada" style="top: 449px" type="password" id="senha" name="campoSenha" placeholder="Senha"
                    autocomplete="current-password" maxlength="1024" required>
 
-            <button class="botao-enviar roxo" style="top: 535px" type="submit">Entrar</button>
+            <button class="botao-enviar " style="top: 535px" type="submit">Entrar</button>
 
             <p class="link-conta roxo" style="top: 608px">
                 Esqueceu a senha? <a href="${ctx}/RecoverPassword.jsp">clique aqui</a>

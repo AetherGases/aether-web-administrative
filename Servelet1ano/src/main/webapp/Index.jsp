@@ -681,13 +681,6 @@
 
                     <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
-                    <!-- Empresa -->
-                    <div class="campoFormulario">
-                        <label class="rotuloCampoOculto" for="empresaNome">Nome da empresa</label>
-                        <input class="entradaEmpresarial" type="text" id="empresaNome" name="empresas"
-                               placeholder="Nome da empresa" autocomplete="organization"
-                               value="<c:out value='${requestScope.empresas}' />" required>
-                    </div>
 
                     <!-- Tamanho -->
                     <div class="dropdownPersonalizado">
