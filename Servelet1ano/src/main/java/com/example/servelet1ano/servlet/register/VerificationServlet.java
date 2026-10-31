@@ -14,17 +14,34 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
+/**
+ * Servlet da tela de verificacao do codigo de recuperacao de senha (/verify-recovery)
+ * Confere o codigo digitado e, se estiver correto, grava a nova senha
+ */
 @WebServlet("/verify-recovery")
 public class VerificationServlet extends HttpServlet{
+
+    /**
+     * Servico usado para gerar o hash do codigo digitado
+     */
     private final PasswordRecoveryService recoveryService =
             new PasswordRecoveryService();
 
+    /**
+     * DAO usado para conferir o codigo e concluir a recuperacao no banco
+     */
     private final PasswordRecoveryDAO recoveryDAO =
             new PasswordRecoveryDAO();
 
-    /*
-     * Valida o código de recuperação e redefine a senha
-     * do funcionário associado à solicitação guardada na sessão.
+    /**
+     * metodo que valida o codigo de recuperacao e redefine a senha
+     * do funcionario ligado a solicitacao guardada na sessao
+     * O codigo chega em seis campos (codigo1 a codigo6) com um digito cada
+     * Se algo estiver errado, volta para a tela com a mensagem de erro; se der certo, vai para o login com aviso de sucesso
+     * @param request A requisicao com os digitos do codigo, a nova senha e a confirmacao
+     * @param response A resposta que redireciona para o login ou volta para a tela de verificacao
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
     @Override
     protected void doPost(

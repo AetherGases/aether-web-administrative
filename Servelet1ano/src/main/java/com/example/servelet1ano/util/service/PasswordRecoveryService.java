@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.util.service;
 
 import com.example.servelet1ano.connection.DatabaseConfig;
@@ -18,26 +17,46 @@ import java.util.HexFormat;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * Classe com as regras da recuperacao de senha
+ * Gera o codigo, guarda so o hash dele no banco e manda o codigo original por e-mail
+ */
 public class PasswordRecoveryService {
 
+    /**
+     * Gerador de numeros aleatorios seguro, usado para criar o codigo
+     */
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    /**
+     * Quantidade de digitos do codigo de recuperacao
+     */
     private static final int CODE_LENGTH = 6;
+
+    /**
+     * Tempo (em minutos) que o codigo continua valido depois de gerado
+     */
     private static final int EXPIRATION_MINUTES = 10;
 
     /**
-     * Gera um código numérico aleatório de seis dígitos.
-     * Mantém os zeros à esquerda quando necessário.
-     **/
+     * metodo que gera um codigo numerico aleatorio de seis digitos
+     * Mantem os zeros a esquerda quando necessario
+     * @return O codigo gerado (ex: "004821")
+     */
     public String generateCode() {
         int number = RANDOM.nextInt(1_000_000);
         return String.format("%06d", number);
     }
 
     /**
-     * Converte o código em um HMAC-SHA-256 utilizando uma chave secreta.
-     * Retorna o resultado em hexadecimal para armazenamento no banco.
-     **/
+     * metodo que converte o codigo em um HMAC-SHA-256 usando uma chave secreta
+     * O resultado fica em hexadecimal, pronto para guardar no banco
+     * @param code O codigo de seis digitos
+     * @param codeSecret A chave secreta usada para gerar o hash
+     * @return O hash do codigo em hexadecimal
+     * @throws IllegalArgumentException se o codigo for invalido ou a chave estiver vazia
+     * @throws IllegalStateException se nao for possivel gerar o hash
+     */
     public String hashCode(String code, String codeSecret) {
         if (code == null || !code.matches("\\d{" + CODE_LENGTH + "}")) {
             throw new IllegalArgumentException("Código inválido.");
@@ -72,14 +91,21 @@ public class PasswordRecoveryService {
         }
     }
 
-    /*
-     * Solicita a recuperação de senha de um funcionário.
-     * Busca a conta pelo e-mail, gera o código, calcula seu HMAC
-     * e registra a solicitação com prazo de dez minutos.
-     * Após o registro, envia o código pela EmailService.
-     * Invalida a solicitação se ocorrer uma falha no envio.
+    /**
+     * metodo que solicita a recuperacao de senha de um funcionario
+     * Busca a conta pelo e-mail, gera o codigo, calcula o HMAC dele
+     * e registra a solicitacao com prazo de dez minutos
+     * Depois de registrar, envia o codigo pelo EmailService
+     * Se o envio falhar, invalida a solicitacao
+     * @param email O e-mail da conta que quer recuperar a senha
+     * @param employeesDAO O DAO usado para buscar o funcionario pelo e-mail
+     * @param recoveryDAO O DAO usado para registrar (e invalidar) a solicitacao
+     * @param emailService O servico usado para enviar o codigo por e-mail
+     * @return O id da solicitacao registrada, ou null se o e-mail estiver vazio, nao existir conta com ele ou nao for possivel registrar
+     * @throws IllegalStateException se a chave de recuperacao nao estiver configurada no .env
+     * @throws IOException se der erro de comunicacao ao enviar o e-mail
+     * @throws InterruptedException se o envio do e-mail for interrompido
      */
-
     public Long requestRecovery(
             String email,
             EmployeesDAO employeesDAO,
@@ -151,12 +177,13 @@ public class PasswordRecoveryService {
         }
     }
 
-        /**
-         * Calcula o instante de expiração do código em milissegundos.
-         * O código permanece válido por dez minutos após a geração.
-         **/
-        public long getExpirationMillis () {
-            return System.currentTimeMillis()
-                    + EXPIRATION_MINUTES * 60_000L;
-        }
+    /**
+     * metodo que calcula o instante em que o codigo expira, em milissegundos
+     * O codigo continua valido por dez minutos depois de gerado
+     * @return O momento de expiracao do codigo, em milissegundos
+     */
+    public long getExpirationMillis () {
+        return System.currentTimeMillis()
+                + EXPIRATION_MINUTES * 60_000L;
+    }
 }
