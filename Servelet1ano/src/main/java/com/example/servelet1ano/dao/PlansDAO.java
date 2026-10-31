@@ -156,6 +156,13 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
         return plan;
     }
 
+    /**
+     * metodo que nao e permitido: os planos nao podem ser cadastrados pelo sistema
+     * Existe so porque a interface DAOI exige
+     * @param entity O plano (nao e usado)
+     * @return Nunca retorna, sempre lanca excecao
+     * @throws UnsupportedOperationException sempre
+     */
     @Override
     public boolean register(Plans entity) {
         throw new UnsupportedOperationException(
@@ -163,6 +170,14 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
         );
     }
 
+    /**
+     * metodo que nao e permitido: os planos nao podem ser atualizados pelo sistema
+     * Existe so porque a interface DAOI exige
+     * @param entity O plano (nao e usado)
+     * @param id O id do plano (nao e usado)
+     * @return Nunca retorna, sempre lanca excecao
+     * @throws UnsupportedOperationException sempre
+     */
     @Override
     public boolean update(Plans entity, int id) {
         throw new UnsupportedOperationException(
@@ -170,6 +185,13 @@ public class PlansDAO implements DAOI<Plans, PlansFilter>  {
         );
     }
 
+    /**
+     * metodo que nao e permitido: os planos nao podem ser excluidos (desativados) pelo sistema
+     * Existe so porque a interface DAOI exige
+     * @param id O id do plano (nao e usado)
+     * @return Nunca retorna, sempre lanca excecao
+     * @throws UnsupportedOperationException sempre
+     */
     @Override
     public boolean delete(int id) {
         throw new UnsupportedOperationException(

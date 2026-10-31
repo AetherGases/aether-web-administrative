@@ -34,20 +34,31 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+/**
+ * Servlet do cadastro do gerente da empresa (/gerente)
+ * Cadastra o gerente no grupo de administrador da empresa e ja inicia a sessao dele
+ */
 @WebServlet("/gerente")
 public class ManagerRegisterServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(ManagerRegisterServlet.class.getName());
 
+    /**
+     * Pagina do formulario de cadastro do gerente
+     */
     private static final String CADASTRO = "/ManagerRegister.jsp";
 
-    /*
-     * GRUPO DE PERMISSÃO DO GERENTE
-     *
-     * Nome do grupo de administrador da empresa e ids das permissões
-     * (tabela permissions) que todo gerente precisa ter:
-     *
+    /**
+     * Nome do grupo de administrador da empresa, usado pelo gerente
+     */
+    private static final String GRUPO_ADMIN = "Admin da empresa";
+
+    /**
+     * Ids das permissoes (tabela permissions) que todo gerente precisa ter:
      * 1 - user:analytics:visibility:high
      * 2 - inventory:analysis
      * 3 - inventory:register
@@ -56,19 +67,43 @@ public class ManagerRegisterServlet extends HttpServlet {
      * 6 - calculator:roi
      * 7 - chatbot
      */
-
-    private static final String GRUPO_ADMIN = "Admin da empresa";
-
     private static final List<Integer> PERMISSOES_ADMIN =
             List.of(1, 2, 3, 4, 5, 6, 7);
 
+    /**
+     * Tamanho maximo do nome
+     */
     private static final int MAX_NOME = 150;
+
+    /**
+     * Tamanho maximo do e-mail
+     */
     private static final int MAX_EMAIL = 255;
+
+    /**
+     * Tamanho maximo do telefone (como foi digitado)
+     */
     private static final int MAX_TELEFONE = 20;
+
+    /**
+     * Tamanho maximo do CPF (como foi digitado, com pontuacao)
+     */
     private static final int MAX_CPF = 14;
+
+    /**
+     * Tamanho maximo da senha e da confirmacao
+     */
     private static final int MAX_SENHA = 1024;
+
+    /**
+     * Tamanho maximo do id da empresa enviado pelo formulario
+     */
     private static final int MAX_EMPRESA_ID = 10;
 
+    /**
+     * Nomes dos unicos campos que o formulario pode enviar
+     * Qualquer outro campo faz a requisicao ser recusada
+     */
     private static final Set<String> CAMPOS_PERMITIDOS = Set.of(
             "campoNome",
             "campoEmail",
@@ -80,27 +115,22 @@ public class ManagerRegisterServlet extends HttpServlet {
             "csrfToken"
     );
 
+    /**
+     * Padrao que encontra caracteres de controle e de formatacao invisiveis, que nao sao aceitos nos campos
+     */
     private static final Pattern CARACTERES_CONTROLE =
             Pattern.compile("[\\p{Cc}\\p{Cf}]");
 
-
-
-
-    /*
-     *
-     * EXIBIÇÃO DO FORMULÁRIO
-     *
-     *
-     * Antes de encaminhar a requisição ao JSP, o Servlet consulta
-     * as empresas disponíveis e disponibiliza a lista por meio do
-     * atributo "empresas".
-     *
-     * Caso o cadastro tenha sido concluído e o usuário tenha sido
-     * redirecionado para esta página, o parâmetro "sucesso" permite
-     * exibir uma mensagem de confirmação.
-     *
+    /**
+     * metodo que mostra o formulario de cadastro do gerente
+     * Cria um novo token anti-CSRF na sessao e carrega a lista de empresas no atributo "empresas"
+     * Se o parametro sucesso=1 vier na url, mostra a mensagem de cadastro realizado
+     * Se nao for possivel carregar as empresas, mostra a mensagem de erro no proprio formulario
+     * @param request A requisicao
+     * @param response A resposta que encaminha para o formulario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -144,16 +174,18 @@ public class ManagerRegisterServlet extends HttpServlet {
     }
 
 
-    /*
-     * PROCESSAMENTO DO CADASTRO
-     *
-     * O método doPost recebe os dados enviados pelo formulário.
-     *
-     * Quando uma validação falha, o método exibirErro encaminha
-     * a requisição ao formulário com uma mensagem apropriada.
-     *
+    /**
+     * metodo que cadastra o gerente da empresa e inicia a sessao dele
+     * Confere os campos permitidos, parametros duplicados e o token anti-CSRF (se o token for invalido responde 403)
+     * Depois valida tamanho e caracteres de cada campo, nome, e-mail, telefone, CPF, senha e empresa
+     * Procura o grupo "Admin da empresa" da empresa escolhida (se nao existir, cria com as 7 permissoes) e cadastra o gerente nele
+     * Se algo estiver errado, volta para o formulario com a mensagem de erro (mantendo o que foi digitado)
+     * Se der certo, troca o id da sessao, guarda employeeId e companyId nela e redireciona para /dashboard
+     * @param request A requisicao com os dados do gerente (campoNome, campoEmail, campoTelefone, campoSenha, campoConfirmarSenha, campoCPF, empresaSelecionada e csrfToken)
+     * @param response A resposta que redireciona para o dashboard ou volta para o formulario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -273,13 +305,9 @@ public class ManagerRegisterServlet extends HttpServlet {
         }
 
 
-        /*
-         * VALIDAÇÃO DE DADOS
-         *
-         * Verifica email, cpf e telefone de acordo com os validators
-         * Verifica senha de acordo com uma validação básica (1024 caracteres)
-         *
-         */
+        // validação de dados
+        // verifica email, cpf e telefone de acordo com os validators
+        // verifica senha de acordo com uma validação básica (1024 caracteres)
 
 
         nome = Normalizer.normalize(
@@ -388,14 +416,11 @@ public class ManagerRegisterServlet extends HttpServlet {
             String senhaHash = PasswordHasher.hash(senha);
 
 
-            /*
-             * GRUPO DE PERMISSÃO DO GERENTE
-             *
-             * Procura o grupo "Admin da empresa" da empresa escolhida.
-             * Se ainda não existir, cria o grupo já com as 7 permissões
-             * (a busca por nome do DAO é parcial, por isso o nome é
-             * conferido aqui para achar o grupo exato).
-             */
+            // grupo de permissão do gerente
+            // procura o grupo "Admin da empresa" da empresa escolhida
+            // se ainda não existir, cria o grupo já com as 7 permissões
+            // (a busca por nome do DAO é parcial, por isso o nome é
+            // conferido aqui para achar o grupo exato)
 
             PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
 
@@ -515,17 +540,14 @@ public class ManagerRegisterServlet extends HttpServlet {
         }
     }
 
+    //    ------------- Metodos auxiliares (privados) --------------
 
-    /*
-     * CARREGAMENTO DAS EMPRESAS
-     *
-     * Consulta as empresas disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "empresas".
-     *
-     * Caso a consulta falhe, a exceção é propagada para o método
-     * responsável por tratar a falha.
+    /**
+     * Carrega a lista de empresas que aparece no formulario
+     * Guarda a lista no atributo "empresas"
+     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
+     * @param request A requisicao onde a lista sera guardada
      */
-
     private void carregarEmpresas(HttpServletRequest request) {
 
         CompaniesDAO companiesDAO = new CompaniesDAO();
@@ -537,16 +559,16 @@ public class ManagerRegisterServlet extends HttpServlet {
     }
 
 
-    /*
-     * EXIBIÇÃO DE ERROS
-     *
-     * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro".
-     *
-     * O forward encaminha a requisição atual ao JSP, permitindo
-     * que a mensagem seja exibida na mesma página do formulário.
+    /**
+     * Mostra uma mensagem de erro no formulario de cadastro do gerente
+     * Guarda a mensagem no atributo "erro", recarrega a lista de empresas
+     * e encaminha a mesma requisicao de volta para a pagina, assim o que o usuario digitou continua preenchido
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para o formulario
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -570,6 +592,13 @@ public class ManagerRegisterServlet extends HttpServlet {
                 .forward(request, response);
     }
 
+    /**
+     * Compara o token anti-CSRF da sessao com o que veio no formulario
+     * A comparacao leva sempre o mesmo tempo, para nao dar pistas sobre o token
+     * @param esperado O token guardado na sessao
+     * @param recebido O token enviado pelo formulario
+     * @return true se os dois existem e sao iguais
+     */
     private boolean tokenValido(String esperado, String recebido) {
 
         if (esperado == null || recebido == null) {
@@ -582,6 +611,11 @@ public class ManagerRegisterServlet extends HttpServlet {
         );
     }
 
+    /**
+     * Confere se o texto tem caracteres de controle ou de formatacao invisiveis
+     * @param valor O texto a conferir
+     * @return true se encontrou algum desses caracteres (false se o valor for null)
+     */
     private boolean possuiCaracteresDeControle(String valor) {
         return valor != null
                 && CARACTERES_CONTROLE.matcher(valor).find();

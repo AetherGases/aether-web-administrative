@@ -16,16 +16,27 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-
+/**
+ * Servlet do dashboard (/dashboard)
+ * Mostra a tela inicial do funcionario que fez login
+ */
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet{
 
+    /**
+     * DAO usado para buscar o funcionario logado
+     */
     private final EmployeesDAO employeesDAO = new EmployeesDAO();
 
-    /*
-    *Recupera a sessão do usuário, responsável pelas informações personalidades ddo servlet.
+    /**
+     * metodo que mostra o dashboard do funcionario logado
+     * Recupera o funcionario pelo employeeId guardado na sessao e envia para a pagina no atributo "employee"
+     * Se nao houver sessao, o id for invalido ou o funcionario nao existir mais, encerra a sessao e redireciona para o login
+     * @param request A requisicao (o funcionario vem da sessao)
+     * @param response A resposta que encaminha para o dashboard ou redireciona para o login
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -76,6 +87,3 @@ public class DashboardServlet extends HttpServlet{
 
 
 }
-
-
-

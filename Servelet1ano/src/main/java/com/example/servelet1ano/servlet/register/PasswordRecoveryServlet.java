@@ -13,22 +13,44 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+/**
+ * Servlet da tela de recuperacao de senha (/recover-password)
+ * Recebe o e-mail, pede o envio do codigo de verificacao e segue para a tela de verificacao
+ */
 @WebServlet("/recover-password")
 public class PasswordRecoveryServlet extends HttpServlet {
+
+    /**
+     * Servico que gera o codigo e registra a solicitacao de recuperacao
+     */
     private final PasswordRecoveryService recoveryService =
             new PasswordRecoveryService();
 
+    /**
+     * DAO usado para buscar o funcionario pelo e-mail
+     */
     private final EmployeesDAO employeesDAO = new EmployeesDAO();
 
+    /**
+     * DAO usado para registrar a solicitacao de recuperacao no banco
+     */
     private final PasswordRecoveryDAO recoveryDAO =
             new PasswordRecoveryDAO();
 
+    /**
+     * Servico usado para enviar o codigo por e-mail
+     */
     private final EmailService emailService = new EmailService();
 
-    /*
-     * Recebe o e-mail informado na tela de recuperação.
-     * Solicita o envio do código e encaminha para a verificação
-     * sem revelar se o endereço está cadastrado.
+    /**
+     * metodo que recebe o e-mail informado na tela de recuperacao
+     * Solicita o envio do codigo e encaminha para a tela de verificacao
+     * Sempre mostra a mesma mensagem, para nao revelar se o e-mail esta cadastrado
+     * Se der certo, guarda o id da solicitacao na sessao (passwordRecoveryId) para a verificacao
+     * @param request A requisicao com o e-mail digitado (campoEmail)
+     * @param response A resposta que encaminha para a tela de verificacao
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
     @Override
     protected void doPost(
@@ -95,4 +117,3 @@ public class PasswordRecoveryServlet extends HttpServlet {
                 .forward(request, response);
     }
 }
-

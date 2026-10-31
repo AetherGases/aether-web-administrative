@@ -21,21 +21,32 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet da tela de login (/login)
+ * Mostra o formulario com a lista de empresas e confere as credenciais do funcionario
+ */
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(LoginServlet.class.getName());
 
+    /**
+     * Pagina do formulario de login
+     */
     private static final String CADASTRO = "/Login.jsp";
 
-    /*
-     *CARREGAMENTO DE EMPRESA.
-     *
-     *Recupera a sessão do gerente para relacionar a empresa do employee
-     *
-     * Se não conseguiR, trata o erro RunTimeException pelo método exibirErros()
-     *
+    /**
+     * metodo que mostra o formulario de login
+     * Carrega a lista de empresas para o usuario escolher a dele
+     * Se nao for possivel carregar as empresas, responde com erro 500
+     * @param request A requisicao
+     * @param response A resposta que encaminha para o formulario de login
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
     @Override
     protected void doGet(
@@ -63,11 +74,15 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    /** LOGIN DOPOST
-     *
-     * Valida as credenciais e inicia a sessão do funcionário.
-     *
-     * Se houver algum erro por runtime, é tratado por um try/catch.
+    /**
+     * metodo que valida as credenciais e inicia a sessao do funcionario
+     * Confere os campos, busca a empresa e o funcionario (pelo e-mail, empresa e nome) e compara a senha com o hash guardado
+     * Se algo estiver errado, volta para o formulario com uma mensagem generica (sem dizer qual dado errou)
+     * Se der certo, troca o id da sessao, guarda employeeId e companyId nela e redireciona para /dashboard
+     * @param request A requisicao com os dados do login (empresas, campoNome, campoEmail e campoSenha)
+     * @param response A resposta que redireciona para o dashboard ou volta para o formulario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
     @Override
     protected void doPost(
@@ -152,12 +167,10 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            /*
-             * O searchAll não traz o hash da senha (por segurança).
-             * O searchForLogin é o único método que traz, e só devolve
-             * o funcionário se existir exatamente um com esse e-mail
-             * e esse nome na empresa.
-             */
+            // o searchAll não traz o hash da senha (por segurança)
+            // o searchForLogin é o único método que traz, e só devolve
+            // o funcionário se existir exatamente um com esse e-mail
+            // e esse nome na empresa
             EmployeesDAO employeesDAO = new EmployeesDAO();
 
             Employees employee =
@@ -237,16 +250,14 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    /*
-     * CARREGAMENTO DAS EMPRESAS
-     *
-     * Consulta as empresas disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "empresas".
-     *
-     * Caso a consulta falhe, a exceção é propagada para o método
-     * responsável por tratar a falha.
-     */
+    //    ------------- Metodos auxiliares (privados) --------------
 
+    /**
+     * Carrega a lista de empresas que aparece no formulario de login
+     * Guarda a lista no atributo "empresas"
+     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
+     * @param request A requisicao onde a lista sera guardada
+     */
     private void carregarEmpresas(HttpServletRequest request) {
         CompaniesDAO companiesDAO = new CompaniesDAO();
 
@@ -255,16 +266,17 @@ public class LoginServlet extends HttpServlet {
         request.setAttribute("empresas", empresas);
     }
 
-    /*
-     * EXIBIÇÃO DE ERROS
-     *
-     * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro".
-     *
-     * O forward encaminha a requisição atual ao JSP, permitindo
-     * que a mensagem seja exibida na mesma página do formulário.
+    /**
+     * Mostra uma mensagem de erro no formulario de login
+     * Guarda a mensagem no atributo "erro", recarrega a lista de empresas
+     * e encaminha a mesma requisicao de volta para a pagina
+     * Se nao for possivel recarregar as empresas, responde com erro 500
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para o formulario
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,

@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.AddressesDAO;
@@ -22,14 +21,33 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet da tela de unidades (/unidades)
+ * Lista as unidades da empresa do usuario logado e cadastra novas unidades junto com o endereco
+ */
 @WebServlet("/unidades")
 public class UnitsRegisterServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(UnitsRegisterServlet.class.getName());
 
+    /**
+     * Pagina da tela de unidades
+     */
     private static final String CADASTRO = "/Units.jsp";
 
+    /**
+     * metodo que mostra a tela de unidades da empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Se vier o parametro sucesso=true, mostra a mensagem de unidade cadastrada
+     * @param request A requisicao (a empresa vem da sessao)
+     * @param response A resposta que encaminha para a tela de unidades ou redireciona para o login
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -79,6 +97,17 @@ public class UnitsRegisterServlet extends HttpServlet {
         }
     }
 
+    /**
+     * metodo que cadastra uma nova unidade (com o endereco) na empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Confere os campos obrigatorios, o tamanho do nome, o CNPJ e o CEP, e se a unidade ja nao foi cadastrada
+     * Se algo estiver errado, volta para a tela com a mensagem de erro (mantendo o que foi digitado)
+     * Se der certo, redireciona para /unidades com o aviso de sucesso
+     * @param request A requisicao com os dados da unidade e do endereco (campos que comecam com "campo")
+     * @param response A resposta que redireciona ou volta para a tela de unidades
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -278,19 +307,16 @@ public class UnitsRegisterServlet extends HttpServlet {
         }
     }
 
-    /*
-     * CARREGAMENTO DAS UNIDADES E EMPRESAS
-     *
-     * Consulta as empresas disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "empresa".
-     *
-     * Consulta as unidades disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "unidades".
-     *
-     * Caso a consulta falhe, a exceção é propagada para o método
-     * responsável por tratar a falha.
-     */
+    //    ------------- Metodos auxiliares (privados) --------------
 
+    /**
+     * Carrega os dados que a tela de unidades precisa
+     * Busca a empresa do usuario e guarda no atributo "empresa"
+     * Busca as unidades dessa empresa e guarda no atributo "unidades"
+     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
+     * @param request A requisicao onde os atributos serao guardados
+     * @param companyId O id da empresa do usuario logado
+     */
     private void carregarDados(
             HttpServletRequest request,
             int companyId
@@ -307,16 +333,18 @@ public class UnitsRegisterServlet extends HttpServlet {
         request.setAttribute("unidades", unidades);
     }
 
-    /*
-     * EXIBIÇÃO DE ERROS
-     *
-     * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro".
-     *
-     * O forward encaminha a requisição atual ao JSP, permitindo
-     * que a mensagem seja exibida na mesma página do formulário.
+    /**
+     * Mostra uma mensagem de erro na tela de unidades
+     * Guarda a mensagem no atributo "erro", recarrega os dados da tela
+     * e encaminha a mesma requisicao de volta para a pagina, assim o que o usuario digitou continua preenchido
+     * Se nao for possivel recarregar os dados, a lista de unidades fica vazia
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para a tela de unidades
+     * @param companyId O id da empresa do usuario logado
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
