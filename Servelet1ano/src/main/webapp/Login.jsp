@@ -44,13 +44,6 @@
         <h1 class="pilula-titulo" style="left: 109.5px; top: 146px; width: 327px">Login pessoal</h1>
 
         <form action="${ctx}/login" method="post" accept-charset="UTF-8">
-            <label for="empresa" class="visually-hidden">Empresa</label>
-            <select class="entrada" style="top: 221px" id="empresa" name="empresas" required>
-                <option value="" disabled ${empty param.empresas ? 'selected' : ''}>Selecionar empresa</option>
-                <c:forEach var="empresa" items="${requestScope.empresas}">
-                    <option value="${empresa.id}" ${param.empresas == empresa.id ? 'selected' : ''}><c:out value="${empresa.name}"/></option>
-                </c:forEach>
-            </select>
 
             <label for="nome" class="visually-hidden">Nome</label>
             <input class="entrada" style="top: 297px" type="text" id="nome" name="campoNome" placeholder="Nome"
@@ -64,7 +57,7 @@
             <input class="entrada" style="top: 449px" type="password" id="senha" name="campoSenha" placeholder="Senha"
                    autocomplete="current-password" maxlength="1024" required>
 
-            <button class="botao-enviar roxo" style="top: 535px" type="submit">Entrar</button>
+            <button class="botao-enviar " style="top: 535px" type="submit">Entrar</button>
 
             <p class="link-conta roxo" style="top: 608px">
                 Esqueceu a senha? <a href="${ctx}/RecoverPassword.jsp">clique aqui</a>
