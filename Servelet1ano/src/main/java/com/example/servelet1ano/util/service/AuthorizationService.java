@@ -1,46 +1,56 @@
-
 package com.example.servelet1ano.util.service;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.UUID;
 
 /**
- * Serviço responsável pela autorização dos funcionários.
- * Confere o vínculo entre funcionário, empresa, grupo e permissão.
+ * Servico responsavel por autorizar o acesso ao site administrativo.
+ * Somente gerentes ativos do grupo "Admin da empresa" podem acessar o site.
  */
 public class AuthorizationService {
 
     /**
-     * Verifica se o funcionário autenticado pertence ao grupo
-     * administrativo ativo da própria empresa.
-     *
-     * @param request Requisição atual
-     * @return true se o funcionário possui acesso administrativo
+     * Confere os identificadores da sessao no banco, sem confiar no grupo salvo na sessao.
+     * @param request A requisicao atual
+     * @return true se a sessao pertence a um gerente autorizado
      */
     public boolean isCompanyAdmin(HttpServletRequest request) {
-
         HttpSession session = request.getSession(false);
 
         if (session == null
                 || !(session.getAttribute("employeeId") instanceof Integer employeeId)
-                || !(session.getAttribute("companyId") instanceof Integer companyId)
-                || employeeId <= 0
-                || companyId <= 0) {
+                || !(session.getAttribute("companyId") instanceof Integer companyId)) {
+            return false;
+        }
+
+        return CompanyAdmin(employeeId, companyId);
+    }
+
+    /**
+     * Valida o gerente diretamente no banco, inclusive durante o login.
+     * Verifica funcionario, empresa e grupo ativos e o vinculo entre eles.
+     * @param employeeId O id do funcionario
+     * @param companyId O id da empresa
+     * @return true se a conta tem acesso ao site administrativo
+     */
+    public boolean CompanyAdmin(int employeeId, int companyId) {
+        if (employeeId <= 0 || companyId <= 0) {
             return false;
         }
 
         String sql = """
                 SELECT 1
                 FROM employees e
-                JOIN companies c
-                  ON c.id = e.company_id
+                JOIN companies c ON c.id = e.company_id
                 JOIN permission_groups pg
                   ON pg.id = e.permission_group_id
                  AND pg.company_id = e.company_id
@@ -54,10 +64,9 @@ public class AuthorizationService {
                 LIMIT 1
                 """;
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
+        try (Connection conn = ConnectionFactory.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, employeeId);
             pstmt.setInt(2, companyId);
 
@@ -67,75 +76,52 @@ public class AuthorizationService {
 
         } catch (SQLException e) {
             throw new IllegalStateException(
-                    "Erro ao validar autorização do funcionário.", e
+                    "Erro ao verificar autorizacao administrativa.", e
             );
         }
     }
 
     /**
-     * Verifica uma permissão ativa atribuída ao grupo do funcionário.
-     *
-     * @param request Requisição atual
-     * @param permissionName Nome exato da permissão
-     * @return true se o funcionário possui a permissão
+     * Prepara o token anti-CSRF dos formularios administrativos.
+     * @param request A requisicao atual
      */
-    public boolean hasPermission(
-            HttpServletRequest request,
-            String permissionName
-    ) {
+    public void CsrfToken(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
 
+        if (session == null) {
+            return;
+        }
+
+        if (!(session.getAttribute("adminCsrfToken") instanceof String)) {
+            session.setAttribute("adminCsrfToken", UUID.randomUUID().toString());
+        }
+
+        request.setAttribute("csrfToken", session.getAttribute("adminCsrfToken"));
+    }
+
+    /**
+     * Valida o token anti-CSRF recebido no POST.
+     * @param request A requisicao atual
+     * @return true se o token pertence a sessao
+     */
+    public boolean csrfTokenValido(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
 
         if (session == null
-                || !(session.getAttribute("employeeId") instanceof Integer employeeId)
-                || !(session.getAttribute("companyId") instanceof Integer companyId)
-                || employeeId <= 0
-                || companyId <= 0
-                || permissionName == null
-                || permissionName.isBlank()) {
+                || !(session.getAttribute("adminCsrfToken") instanceof String esperado)) {
             return false;
         }
 
-        String sql = """
-                SELECT 1
-                FROM employees e
-                JOIN companies c
-                  ON c.id = e.company_id
-                JOIN permission_groups pg
-                  ON pg.id = e.permission_group_id
-                 AND pg.company_id = e.company_id
-                JOIN permission_group_permissions pgp
-                  ON pgp.permission_group_id = pg.id
-                JOIN permissions p
-                  ON p.id = pgp.permission_id
-                WHERE e.id = ?
-                  AND e.company_id = ?
-                  AND p.name = ?
-                  AND e.is_active = TRUE
-                  AND e.status = 'ACTIVE'
-                  AND c.is_active = TRUE
-                  AND pg.is_active = TRUE
-                  AND pgp.is_active = TRUE
-                  AND p.is_active = TRUE
-                LIMIT 1
-                """;
+        String[] valores = request.getParameterValues("csrfToken");
 
-        try (
-                Connection conn = ConnectionFactory.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)
-        ) {
-            pstmt.setInt(1, employeeId);
-            pstmt.setInt(2, companyId);
-            pstmt.setString(3, permissionName);
-
-            try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next();
-            }
-
-        } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "Erro ao consultar permissão do funcionário.", e
-            );
+        if (valores == null || valores.length != 1
+                || valores[0] == null || valores[0].length() > 128) {
+            return false;
         }
+
+        return MessageDigest.isEqual(
+                esperado.getBytes(StandardCharsets.UTF_8),
+                valores[0].getBytes(StandardCharsets.UTF_8)
+        );
     }
 }

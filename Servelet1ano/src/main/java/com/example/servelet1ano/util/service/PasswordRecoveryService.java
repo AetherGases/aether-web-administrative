@@ -134,7 +134,7 @@ public class PasswordRecoveryService {
             return null;
         }
 
-        Employees employee = employees.get(0);
+        Employees employee = employees.getFirst();
 
         String code = generateCode();
         String codeHash = hashCode(code, codeSecret);

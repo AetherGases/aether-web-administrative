@@ -38,7 +38,7 @@ public class UnitsRegisterServlet extends HttpServlet {
     /**
      * Pagina da tela de unidades
      */
-    private static final String CADASTRO = "/Units.jsp";
+    private static final String CADASTRO = "/WEB-INF/Units.jsp";
 
     /**
      * metodo que mostra a tela de unidades da empresa do usuario logado
@@ -66,12 +66,16 @@ public class UnitsRegisterServlet extends HttpServlet {
             );
             return;
         }
-
         // Confere se o funcionário possui acesso administrativo.
         if (!new AuthorizationService().isCompanyAdmin(request)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        authorization.CsrfToken(request);
+
 
         int companyId = (Integer) session.getAttribute("companyId");
 
@@ -134,6 +138,13 @@ public class UnitsRegisterServlet extends HttpServlet {
         }
 
         if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        if (!authorization.csrfTokenValido(request)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

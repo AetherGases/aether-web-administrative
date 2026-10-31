@@ -20,7 +20,7 @@
 
 <div class="tela">
 
-    <jsp:include page="Sidebar.jsp">
+    <jsp:include page="/Sidebar.jsp">
         <jsp:param name="ativo" value="funcionarios"/>
     </jsp:include>
 
@@ -34,7 +34,7 @@
         <p class="mensagem mensagem-sucesso" role="status"><c:out value="${sucesso}"/></p>
     </c:if>
 
-    <jsp:include page="Acoes.jsp">
+    <jsp:include page="/Acoes.jsp">
         <jsp:param name="modal" value="overlayAdicionarFuncionario"/>
         <jsp:param name="selecionar" value="${not empty funcionarios}"/>
     </jsp:include>
@@ -117,14 +117,14 @@
         </table>
 
         <c:if test="${empty funcionarios}">
-            <jsp:include page="Vazio.jsp">
+            <jsp:include page="/Vazio.jsp">
                 <jsp:param name="destaque" value="nenhum funcionário cadastrado."/>
             </jsp:include>
         </c:if>
     </section>
 
     <c:if test="${not empty funcionarios}">
-        <jsp:include page="Paginacao.jsp"/>
+        <jsp:include page="/Paginacao.jsp"/>
     </c:if>
 </div>
 
@@ -148,6 +148,7 @@
         </c:if>
 
         <form action="${ctx}/funcionarios" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeFuncionario">Nome completo</label>
@@ -231,6 +232,7 @@
         </div>
 
         <form action="${ctx}/funcionarios" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
             <input type="hidden" name="acao" value="editar">
             <input type="hidden" name="id" data-campo="id">
             <div class="modal-corpo">
@@ -317,6 +319,7 @@
         </div>
 
         <form action="${ctx}/funcionarios" method="post">
+            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
             <input type="hidden" name="acao" value="excluir">
             <input type="hidden" name="id" data-campo="id">
 

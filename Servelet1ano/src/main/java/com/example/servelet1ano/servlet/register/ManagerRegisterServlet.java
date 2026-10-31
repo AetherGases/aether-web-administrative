@@ -3,14 +3,12 @@ package com.example.servelet1ano.servlet.register;
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
 import com.example.servelet1ano.dao.PermissionGroupsDAO;
-import com.example.servelet1ano.filter.PermissionGroupsFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.model.PermissionGroups;
 import com.example.servelet1ano.model.StatusEmployee;
 import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
-import com.example.servelet1ano.filter.EmployeesFilter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -134,17 +132,30 @@ public class ManagerRegisterServlet extends HttpServlet {
 
             response.setHeader("Cache-Control", "no-store");
 
+
             HttpSession session = request.getSession(false);
 
-            if (session == null
-                    || !(session.getAttribute("pendingCompanyId") instanceof Integer companyId)
-                    || companyId <= 0) {
-
-                response.sendRedirect(
-                        request.getContextPath() + "/empresa"
+            if (session == null) {
+                exibirErro(
+                        request,
+                        response,
+                        "Sua sessão de cadastro expirou. Inicie novamente."
                 );
                 return;
             }
+
+            Object empresaPendente = session.getAttribute("pendingCompanyId");
+
+            if (!(empresaPendente instanceof Integer companyId)
+                    || companyId <= 0) {
+                exibirErro(
+                        request,
+                        response,
+                        "A empresa cadastrada não foi identificada."
+                );
+                return;
+            }
+
 
             try {
                 CompaniesDAO companiesDAO = new CompaniesDAO();
@@ -314,6 +325,15 @@ public class ManagerRegisterServlet extends HttpServlet {
             return;
         }
 
+        if (senha.length() < 8) {
+            exibirErro(
+                    request,
+                    response,
+                    "A senha deve conter pelo menos 8 caracteres."
+            );
+            return;
+        }
+
         if (possuiCaracteresDeControle(nome)
                 || possuiCaracteresDeControle(email)
                 || possuiCaracteresDeControle(telefone)
@@ -431,8 +451,7 @@ public class ManagerRegisterServlet extends HttpServlet {
                             companyId
                     );
 
-            int permissionGroupId =
-                    grupo == null ? -1 : grupo.getId();
+            int permissionGroupId = grupo == null ? -1 : grupo.getId();
 
             if (permissionGroupId <= 0) {
                 permissionGroupId = permissionGroupsDAO.registerWithPermissions(

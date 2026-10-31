@@ -14,8 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="${ctx}/Crud.css">
-    <link rel="stylesheet" href="${ctx}/Dashboard.css">
+    <link rel="stylesheet" href="${ctx}/Servelet1ano/src/main/webapp/Crud.css">
+    <link rel="stylesheet" href="${ctx}/Servelet1ano/src/main/webapp/Dashboard.css">
 </head>
 <body>
 
@@ -27,7 +27,7 @@
         </div>
     </c:if>
 
-    <jsp:include page="Sidebar.jsp">
+    <jsp:include page="../Sidebar.jsp">
         <jsp:param name="ativo" value="dashboard"/>
     </jsp:include>
 

@@ -19,7 +19,7 @@
 
 <div class="tela">
 
-    <jsp:include page="Sidebar.jsp">
+    <jsp:include page="/Sidebar.jsp">
         <jsp:param name="ativo" value="unidades"/>
     </jsp:include>
 
@@ -33,7 +33,7 @@
         <p class="mensagem mensagem-sucesso" role="status"><c:out value="${sucesso}"/></p>
     </c:if>
 
-    <jsp:include page="Acoes.jsp">
+    <jsp:include page="/Acoes.jsp">
         <jsp:param name="modal" value="overlayAdicionarUnidade"/>
         <jsp:param name="selecionar" value="${not empty unidades}"/>
     </jsp:include>
@@ -113,14 +113,14 @@
         </table>
 
         <c:if test="${empty unidades}">
-            <jsp:include page="Vazio.jsp">
+            <jsp:include page="/Vazio.jsp">
                 <jsp:param name="destaque" value="nenhuma unidade cadastrada."/>
             </jsp:include>
         </c:if>
     </section>
 
     <c:if test="${not empty unidades}">
-        <jsp:include page="Paginacao.jsp"/>
+        <jsp:include page="/Paginacao.jsp"/>
     </c:if>
 </div>
 
@@ -140,6 +140,7 @@
         </c:if>
 
         <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="csrfToken" value="${csrfToken}">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeUnidade">Nome da unidade</label>

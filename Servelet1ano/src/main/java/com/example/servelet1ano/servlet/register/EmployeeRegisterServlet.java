@@ -5,8 +5,6 @@ import com.example.servelet1ano.dao.EmployeesDAO;
 import com.example.servelet1ano.dao.PermissionGroupsDAO;
 import com.example.servelet1ano.dao.SectorsDAO;
 import com.example.servelet1ano.dao.UnitsDAO;
-import com.example.servelet1ano.filter.EmployeesFilter;
-import com.example.servelet1ano.filter.PermissionGroupsFilter;
 import com.example.servelet1ano.filter.SectorsFilter;
 import com.example.servelet1ano.filter.UnitsFilter;
 import com.example.servelet1ano.model.Companies;
@@ -47,7 +45,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
     /**
      * Pagina da tela de funcionarios
      */
-    private static final String CADASTRO = "/Employee.jsp";
+    private static final String CADASTRO = "/WEB-INF/Employee.jsp";
 
     /**
      * Nome do grupo de permissao do funcionario comum
@@ -88,12 +86,15 @@ public class EmployeeRegisterServlet extends HttpServlet {
             );
             return;
         }
-
         // Confere se o funcionário possui acesso administrativo.
         if (!new AuthorizationService().isCompanyAdmin(request)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        authorization.CsrfToken(request);
 
         int companyId = (Integer) session.getAttribute("companyId");
 
@@ -175,6 +176,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
         }
 
         if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        if (!authorization.csrfTokenValido(request)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }

@@ -19,7 +19,7 @@
 
 <div class="tela">
 
-    <jsp:include page="Sidebar.jsp">
+    <jsp:include page="/Sidebar.jsp">
         <jsp:param name="ativo" value="setores"/>
     </jsp:include>
 
@@ -33,7 +33,7 @@
         <p class="mensagem mensagem-sucesso" role="status"><c:out value="${sucesso}"/></p>
     </c:if>
 
-    <jsp:include page="Acoes.jsp">
+    <jsp:include page="/Acoes.jsp">
         <jsp:param name="modal" value="overlayAdicionarSetor"/>
         <jsp:param name="selecionar" value="${not empty setores}"/>
     </jsp:include>
@@ -98,14 +98,14 @@
         </table>
 
         <c:if test="${empty setores}">
-            <jsp:include page="Vazio.jsp">
+            <jsp:include page="/Vazio.jsp">
                 <jsp:param name="destaque" value="nenhum setor cadastrado."/>
             </jsp:include>
         </c:if>
     </section>
 
     <c:if test="${not empty setores}">
-        <jsp:include page="Paginacao.jsp"/>
+        <jsp:include page="/Paginacao.jsp"/>
     </c:if>
 </div>
 
@@ -129,6 +129,7 @@
         </c:if>
 
         <form action="${ctx}/setores" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeSetor">Nome do setor</label>
@@ -174,6 +175,7 @@
         </div>
 
         <form action="${ctx}/setores" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
             <input type="hidden" name="acao" value="editar">
             <input type="hidden" name="id" data-campo="id">
 
@@ -192,19 +194,14 @@
 
                 <div class="campo">
                     <label for="editarIdUnidade">Unidade</label>
-                    <select id="editarIdUnidade" name="campoIdUnidade" data-campo="unidadeId" required>
-                        <option value="" disabled>unidade</option>
-                        <c:forEach var="unidade" items="${unidades}">
-                            <option value="${unidade.id}"><c:out value="${unidade.name}"/></option>
-                        </c:forEach>
-                    </select>
                 </div>
             </div>
 
             <div class="modal-rodape">
 
-                <button type="submit" class="botao-roxo" disabled>Alterar</button>
-                <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
+                <button type="submit" class="botao-roxo">
+                    Alterar
+                </button>
             </div>
         </form>
     </div>
@@ -255,6 +252,7 @@
         </div>
 
         <form action="${ctx}/setores" method="post">
+            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
             <input type="hidden" name="acao" value="excluir">
             <input type="hidden" name="id" data-campo="id">
 

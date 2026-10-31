@@ -2,7 +2,6 @@ package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.PlansDAO;
-import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
 import com.example.servelet1ano.model.Plans;
@@ -19,7 +18,6 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +54,6 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
-        HttpSession session = request.getSession();
 
         request.setCharacterEncoding("UTF-8");
 

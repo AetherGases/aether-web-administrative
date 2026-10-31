@@ -4,6 +4,7 @@ import com.example.servelet1ano.dao.DashboardDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
 import com.example.servelet1ano.model.Employees;
 
+import com.example.servelet1ano.util.service.AuthorizationService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,7 +22,7 @@ public class DashboardServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardServlet.class.getName());
 
-    private static final String DASHBOARD = "/Dashboard.jsp";
+    private static final String DASHBOARD = "/WEB-INF/Dashboard.jsp";
     private static final String LOGIN = "/login";
 
     private final EmployeesDAO employeesDAO = new EmployeesDAO();
@@ -52,6 +53,10 @@ public class DashboardServlet extends HttpServlet {
         Integer employeeId = getSessionId(session, "employeeId");
         Integer companyId = getSessionId(session, "companyId");
 
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         if (employeeId == null || companyId == null) {
             session.invalidate();

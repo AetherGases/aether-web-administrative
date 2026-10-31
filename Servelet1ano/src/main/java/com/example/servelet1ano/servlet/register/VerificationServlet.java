@@ -3,6 +3,7 @@ package com.example.servelet1ano.servlet.register;
 import com.example.servelet1ano.connection.DatabaseConfig;
 import com.example.servelet1ano.dao.PasswordRecoveryDAO;
 import com.example.servelet1ano.util.PasswordHasher;
+import com.example.servelet1ano.util.service.AuthorizationService;
 import com.example.servelet1ano.util.service.PasswordRecoveryService;
 
 import jakarta.servlet.ServletException;
@@ -64,6 +65,13 @@ public class VerificationServlet extends HttpServlet{
             return;
         }
 
+        AuthorizationService authorization = new AuthorizationService();
+
+        if (!authorization.csrfTokenValido(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         Object recoveryIdAttribute =
                 session.getAttribute("passwordRecoveryId");
 
@@ -103,19 +111,23 @@ public class VerificationServlet extends HttpServlet{
         String novaSenha = request.getParameter("novaSenha");
         String confirmarSenha = request.getParameter("confirmarSenha");
 
-        if (novaSenha == null || confirmarSenha == null
+        if (novaSenha == null
+                || confirmarSenha == null
                 || novaSenha.isBlank()
-                || novaSenha.length() > 1024) {
+                || novaSenha.length() < 8
+                || novaSenha.length() > 1024
+                || confirmarSenha.length() > 1024) {
 
             request.setAttribute(
                     "mensagem",
-                    "Informe uma nova senha válida."
+                    "Informe uma senha válida de pelo menos 8 caracteres."
             );
 
             request.getRequestDispatcher("/Verification.jsp")
                     .forward(request, response);
             return;
         }
+
 
         if (!novaSenha.equals(confirmarSenha)) {
             request.setAttribute(

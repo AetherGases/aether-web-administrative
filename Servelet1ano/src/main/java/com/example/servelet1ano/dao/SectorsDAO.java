@@ -541,6 +541,54 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         return registerLot(sectors);
     }
 
+
+    /**
+     * Desativa um setor da empresa.
+     * Não permite desativar setores com funcionários ativos.
+     *
+     * @param id Id do setor
+     * @param companyId Empresa autenticada
+     * @return true se o setor foi desativado
+     */
+    public boolean deleteByIdAndCompany(int id, int companyId) {
+
+        if (id <= 0 || companyId <= 0) {
+            return false;
+        }
+
+        String sql = """
+            UPDATE sectors
+            SET is_active = FALSE,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+              AND company_id = ?
+              AND is_active = TRUE
+              AND NOT EXISTS (
+                  SELECT 1
+                  FROM employees e
+                  WHERE e.sector_id = sectors.id
+                    AND e.is_active = TRUE
+              )
+            """;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setInt(1, id);
+            pstmt.setInt(2, companyId);
+
+            return pstmt.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao excluir setor.", e
+            );
+        }
+    }
+
+
     /**
      * metodo para desativar o setor por id que esta na unidade
      * Nao desativa se ainda houver funcionarios ativos no setor (mover ou desativar os funcionarios primeiro)
@@ -568,6 +616,7 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
         }
     }
 
+
     /**
      * metodo que muda os values do setor selecionado pelo id numa unidade especifica
      * O setor nao pode ser movido para outra unidade por este metodo
@@ -594,6 +643,64 @@ public class SectorsDAO implements DAOI<Sectors, SectorsFilter> {
             throw new RuntimeException("Erro ao atualizar o setor de id " + id + " da unidade " + unitId + ".", e);
         }
     }
+
+
+    /**
+     * Edita somente nome e descrição de um setor.
+     * Não modifica id, empresa ou unidade.
+     *
+     * @param id Id do setor
+     * @param companyId Empresa autenticada
+     * @param nome Novo nome
+     * @param descricao Nova descrição
+     * @return true se o setor foi atualizado
+     */
+    public boolean updateBasicData(
+            int id,
+            int companyId,
+            String nome,
+            String descricao
+    ) {
+
+        if (id <= 0
+                || companyId <= 0
+                || nome == null
+                || nome.isBlank()
+                || nome.length() > 150
+                || descricao == null
+                || descricao.length() > 255) {
+            return false;
+        }
+
+        String sql = """
+            UPDATE sectors
+            SET name = ?,
+                description = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+              AND company_id = ?
+              AND is_active = TRUE
+            """;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setString(1, nome.trim());
+            pstmt.setString(2, descricao.trim());
+            pstmt.setInt(3, id);
+            pstmt.setInt(4, companyId);
+
+            return pstmt.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao editar setor.", e
+            );
+        }
+    }
+
 
     /**
      * metodo que muda os values do setor selecionado pelo nome numa unidade especifica
