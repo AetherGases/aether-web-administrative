@@ -1,14 +1,11 @@
+
 package com.example.servelet1ano.servlet.register;
 
-import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
-import com.example.servelet1ano.filter.CompaniesFilter;
-import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,14 +24,40 @@ public class LoginServlet extends HttpServlet {
     private static final Logger LOGGER =
             Logger.getLogger(LoginServlet.class.getName());
 
-    private static final String CADASTRO = "/Login.jsp";
+    private static final String LOGIN_PAGE = "/Login.jsp";
+    private static final String DASHBOARD = "/dashboard";
 
+    private final EmployeesDAO employeesDAO = new EmployeesDAO();
 
-    /** LOGIN DOPOST
-     *
-     * Valida as credenciais e inicia a sessão do funcionário.
-     *
-     * Se houver algum erro por runtime, é tratado por um try/catch.
+    /**
+     * Exibe a tela de login.
+     */
+    @Override
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
+
+        response.setHeader("Cache-Control", "no-store");
+
+        HttpSession session = request.getSession(false);
+
+        if (session != null
+                && session.getAttribute("employeeId") instanceof Integer
+                && session.getAttribute("companyId") instanceof Integer) {
+
+            response.sendRedirect(
+                    request.getContextPath() + DASHBOARD
+            );
+            return;
+        }
+
+        request.getRequestDispatcher(LOGIN_PAGE)
+                .forward(request, response);
+    }
+
+    /**
+     * Autentica o funcionário e inicia sua sessão.
      */
     @Override
     protected void doPost(
@@ -44,148 +67,110 @@ public class LoginServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        String email = request.getParameter("campoEmail");
-        String senha = request.getParameter("campoSenha");
-
-        request.setAttribute("email", email);
-        request.setAttribute("senha", senha);
-
-
-        if (email == null || email.isBlank()
-                || senha == null || senha.isBlank()) {
-
-            exibirErro(
-                    request,
-                    response,
-                    "Todos os campos são obrigatórios."
-            );
-            return;
-        }
-
-        email = email.trim();
-
-
-        if (email.length() > 255
-                || senha.length() > 1024
-                || !Validators.isEmail(email)) {
-
-            exibirErro(
-                    request,
-                    response,
-                    "Os dados informados são inválidos."
-            );
-            return;
-        }
-
-        final int companyId;
+        response.setHeader("Cache-Control", "no-store");
 
         try {
-            companyId = Integer.parseInt(empresaParam);
 
-            if (companyId <= 0) {
-                throw new NumberFormatException(
-                        "O identificador deve ser positivo."
-                );
-            }
-
-        } catch (NumberFormatException e) {
-            exibirErro(
-                    request,
-                    response,
-                    "A empresa selecionada não está disponível."
-            );
-            return;
-        }
-
-        try {
-            CompaniesDAO companiesDAO = new CompaniesDAO();
-
-            Companies empresaSelecionada =
-                    companiesDAO.searchById(companyId);
-
-            if (empresaSelecionada == null) {
+            if (!validarParametros(request)) {
                 exibirErro(
                         request,
                         response,
-                        "Nome, e-mail, senha ou empresa inválidos."
+                        "Os dados enviados são inválidos."
                 );
                 return;
             }
 
-            /*
-             * O searchAll não traz o hash da senha (por segurança).
-             * O searchForLogin é o único método que traz, e só devolve
-             * o funcionário se existir exatamente um com esse e-mail
-             * e esse nome na empresa.
-             */
-            EmployeesDAO employeesDAO = new EmployeesDAO();
+            String email = request.getParameter("campoEmail");
+            String senha = request.getParameter("campoSenha");
 
-            Employees employee =
-                    employeesDAO.searchForLogin(email, companyId, nome);
+            if (email == null || email.isBlank()
+                    || senha == null || senha.isBlank()) {
 
-            if (employee == null) {
                 exibirErro(
                         request,
                         response,
-                        "Nome, e-mail, senha ou empresa inválidos."
+                        "Todos os campos são obrigatórios."
                 );
+                return;
+            }
+
+            email = email.trim().toLowerCase(Locale.ROOT);
+
+            request.setAttribute("email", email);
+
+            if (email.length() > 255
+                    || senha.length() > 1024
+                    || !Validators.isEmail(email)
+                    || contemCaracteresControle(email)
+                    || contemCaracteresControle(senha)) {
+
+                exibirErro(
+                        request,
+                        response,
+                        "Os dados informados são inválidos."
+                );
+                return;
+            }
+
+            Employees employee =
+                    employeesDAO.searchForLogin(email);
+
+            if (employee == null) {
+                credenciaisInvalidas(request, response);
+                return;
+            }
+
+            if (employee.getId() <= 0
+                    || employee.getCompanyId() <= 0) {
+
+                LOGGER.warning(
+                        "Funcionário com identificadores inválidos."
+                );
+
+                credenciaisInvalidas(request, response);
                 return;
             }
 
             String passwordHash = employee.getPasswordHash();
 
             if (passwordHash == null || passwordHash.isBlank()) {
-                LOGGER.warning(
-                        "Funcionário sem hash de senha cadastrado."
-                );
-
-                exibirErro(
-                        request,
-                        response,
-                        "Nome, e-mail, senha ou empresa inválidos."
-                );
+                credenciaisInvalidas(request, response);
                 return;
             }
 
             boolean senhaCorreta;
 
             try {
-                senhaCorreta = PasswordHasher.verify(passwordHash, senha);
+                senhaCorreta =
+                        PasswordHasher.verify(passwordHash, senha);
 
             } catch (RuntimeException e) {
-                // hash fora do formato esperado no banco: trata como senha errada
+
                 LOGGER.log(
                         Level.WARNING,
-                        "Não foi possível conferir o hash de senha do funcionário.",
+                        "Erro ao verificar hash de senha.",
                         e
                 );
+
                 senhaCorreta = false;
             }
 
             if (!senhaCorreta) {
-                exibirErro(
-                        request,
-                        response,
-                        "Nome, e-mail, senha ou empresa inválidos."
-                );
+                credenciaisInvalidas(request, response);
                 return;
             }
 
-
-            HttpSession session = request.getSession();
-            request.changeSessionId();
-
-            session.setAttribute("employeeId", employee.getId());
-            session.setAttribute("companyId", companyId);
+            iniciarSessao(request, employee);
 
             response.sendRedirect(
-                    request.getContextPath() + "/dashboard"
+                    request.getContextPath() + DASHBOARD
             );
 
         } catch (RuntimeException e) {
+
             LOGGER.log(
                     Level.SEVERE,
-                    "Erro inesperado durante a autenticação do funcionário.",
+                    "Erro inesperado durante o login.",
                     e
             );
 
@@ -197,34 +182,92 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    /*
-     * CARREGAMENTO DAS EMPRESAS
-     *
-     * Consulta as empresas disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "empresas".
-     *
-     * Caso a consulta falhe, a exceção é propagada para o método
-     * responsável por tratar a falha.
+    /**
+     * Cria a sessão autenticada com os identificadores
+     * necessários para as demais telas.
      */
+    private void iniciarSessao(
+            HttpServletRequest request,
+            Employees employee
+    ) {
 
-    private void carregarEmpresas(HttpServletRequest request) {
-        CompaniesDAO companiesDAO = new CompaniesDAO();
+        HttpSession session = request.getSession(false);
 
-        List<Companies> empresas = companiesDAO.searchAll(new CompaniesFilter());
+        if (session != null) {
+            session.invalidate();
+        }
 
-        request.setAttribute("empresas", empresas);
+        session = request.getSession(true);
+        request.changeSessionId();
+
+        session.setAttribute("employeeId", employee.getId());
+        session.setAttribute("companyId", employee.getCompanyId());
+
+        session.setAttribute(
+                "permissionGroupId",
+                employee.getPermissionGroupId()
+        );
+
+        session.setAttribute("unitId", employee.getUnitId());
+        session.setAttribute("sectorId", employee.getSectorId());
+
+        session.setMaxInactiveInterval(30 * 60);
+
+        LOGGER.info(
+                "Sessão autenticada iniciada para funcionário ID: "
+                        + employee.getId()
+        );
     }
 
-    /*
-     * EXIBIÇÃO DE ERROS
-     *
-     * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro".
-     *
-     * O forward encaminha a requisição atual ao JSP, permitindo
-     * que a mensagem seja exibida na mesma página do formulário.
+    /**
+     * Impede parâmetros desconhecidos ou duplicados.
      */
+    private boolean validarParametros(HttpServletRequest request) {
 
+        for (String parametro : request.getParameterMap().keySet()) {
+
+            if (!parametro.equals("campoEmail")
+                    && !parametro.equals("campoSenha")) {
+                return false;
+            }
+
+            String[] valores = request.getParameterValues(parametro);
+
+            if (valores == null || valores.length != 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Rejeita caracteres de controle nos campos.
+     */
+    private boolean contemCaracteresControle(String valor) {
+
+        return valor.codePoints()
+                .anyMatch(Character::isISOControl);
+    }
+
+    /**
+     * Exibe mensagem genérica para credenciais incorretas.
+     */
+    private void credenciaisInvalidas(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
+
+        exibirErro(
+                request,
+                response,
+                "E-mail ou senha inválidos."
+        );
+    }
+
+    /**
+     * Encaminha o erro para o JSP sem expor a senha.
+     */
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -233,7 +276,7 @@ public class LoginServlet extends HttpServlet {
 
         request.setAttribute("erro", mensagem);
 
-        request.getRequestDispatcher(CADASTRO)
+        request.getRequestDispatcher(LOGIN_PAGE)
                 .forward(request, response);
     }
 }

@@ -99,8 +99,10 @@
                             <button type="button" class="acao acao-editar" data-abrir="overlayEditarUnidade" aria-label="Editar">
                                 <img src="${ctx}/Imagens/EDITAR.svg" alt="">
                             </button>
-                            <button type="button" class="acao acao-excluir" disabled
-                                    title="Exclusão de unidades ainda não disponível no servidor" aria-label="Excluir">
+                            <button type="button"
+                                    class="acao acao-excluir"
+                                    data-abrir="overlayExcluirUnidade"
+                                    aria-label="Excluir">
                                 <img src="${ctx}/Imagens/LIXO.svg" alt="">
                             </button>
                         </div>
@@ -216,14 +218,11 @@
 
         <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="editar">
+            <input type="hidden" name="id" data-campo="id">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="editarNomeUnidade">Nome</label>
                     <input type="text" id="editarNomeUnidade" name="campoNomeUnidade" placeholder="nome" data-campo="nome">
-                </div>
-                <div class="campo">
-                    <label for="editarIdUnidade">ID</label>
-                    <input type="text" id="editarIdUnidade" name="id" placeholder="id" data-campo="id" readonly>
                 </div>
                 <div class="campo">
                     <label for="editarEnderecoUnidade">Endereço</label>
@@ -244,12 +243,50 @@
             </div>
 
             <div class="modal-rodape">
-                <button type="submit" class="botao-roxo" disabled>Alterar</button>
-                <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
+                <button type="submit" class="botao-roxo">
+                    Alterar
+                </button>
             </div>
         </form>
     </div>
 </div>
+
+
+<!-- Modal de confirmação da exclusão da unidade. -->
+<div class="overlay" id="overlayExcluirUnidade" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true"
+         aria-labelledby="tituloExcluirUnidade">
+
+        <div class="modal-topo">
+            <h2 id="tituloExcluirUnidade">Desativar unidade</h2>
+            <button type="button" class="modal-fechar"
+                    data-fechar aria-label="Fechar">
+                Cancelar
+            </button>
+        </div>
+
+        <form action="${ctx}/unidades" method="post">
+            <input type="hidden" name="acao" value="excluir">
+            <input type="hidden" name="id" data-campo="id">
+            <input type="hidden" name="csrfToken"
+                   value="${csrfToken}">
+
+            <div class="modal-corpo">
+                <p>
+                    Tem certeza de que deseja desativar esta unidade?
+                    A operação será recusada se houver funcionários ativos.
+                </p>
+            </div>
+
+            <div class="modal-rodape">
+                <button type="submit" class="botao-deletar">
+                    Desativar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <%-- ======================= OVERLAY VER UNIDADE ======================= --%>
 <div class="overlay" id="overlayVerUnidade" aria-hidden="true">
@@ -266,10 +303,6 @@
             <div class="campo">
                 <label for="verNomeUnidade">nome</label>
                 <input type="text" id="verNomeUnidade" data-campo="nome" readonly>
-            </div>
-            <div class="campo">
-                <label for="verIdUnidade">id</label>
-                <input type="text" id="verIdUnidade" data-campo="id" readonly>
             </div>
             <div class="campo">
                 <label for="verEnderecoUnidade">endereço</label>

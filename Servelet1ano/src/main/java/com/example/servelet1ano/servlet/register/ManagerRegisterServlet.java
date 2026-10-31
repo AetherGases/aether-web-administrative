@@ -3,7 +3,6 @@ package com.example.servelet1ano.servlet.register;
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
 import com.example.servelet1ano.dao.PermissionGroupsDAO;
-import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.filter.PermissionGroupsFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Employees;
@@ -44,8 +43,7 @@ public class ManagerRegisterServlet extends HttpServlet {
     /**
      * Registro de logs usado para anotar os erros inesperados
      */
-    private static final Logger LOGGER =
-            Logger.getLogger(ManagerRegisterServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ManagerRegisterServlet.class.getName());
 
     /**
      * Pagina do formulario de cadastro do gerente
@@ -96,11 +94,6 @@ public class ManagerRegisterServlet extends HttpServlet {
     private static final int MAX_SENHA = 1024;
 
     /**
-     * Tamanho maximo do id da empresa enviado pelo formulario
-     */
-    private static final int MAX_EMPRESA_ID = 10;
-
-    /**
      * Nomes dos unicos campos que o formulario pode enviar
      * Qualquer outro campo faz a requisicao ser recusada
      */
@@ -111,7 +104,6 @@ public class ManagerRegisterServlet extends HttpServlet {
             "campoSenha",
             "campoConfirmarSenha",
             "campoCPF",
-            "empresaSelecionada",
             "csrfToken"
     );
 
@@ -123,69 +115,92 @@ public class ManagerRegisterServlet extends HttpServlet {
 
     /**
      * metodo que mostra o formulario de cadastro do gerente
-     * Cria um novo token anti-CSRF na sessao e carrega a lista de empresas no atributo "empresas"
+     * Cria um novo token anti-CSRF na sessao
      * Se o parametro sucesso=1 vier na url, mostra a mensagem de cadastro realizado
-     * Se nao for possivel carregar as empresas, mostra a mensagem de erro no proprio formulario
+     * Se nao for possivel carregar a sessão, mostra a mensagem de erro no proprio formulario
      * @param request A requisicao
      * @param response A resposta que encaminha para o formulario
      * @throws ServletException se der erro no encaminhamento para a pagina
      * @throws IOException se der erro de entrada ou saida
      */
-    @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
 
-        request.setCharacterEncoding("UTF-8");
+        @Override
+        protected void doGet(
+                HttpServletRequest request,
+                HttpServletResponse response
+        ) throws ServletException, IOException {
 
-        HttpSession session = request.getSession(true);
+            request.setCharacterEncoding("UTF-8");
 
-        session.setAttribute(
-                "csrfToken",
-                UUID.randomUUID().toString()
-        );
+            response.setHeader("Cache-Control", "no-store");
 
-        try {
-            carregarEmpresas(request);
+            HttpSession session = request.getSession(false);
 
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Erro ao carregar empresas para o formulário de cadastro.",
-                    e
-            );
+            if (session == null
+                    || !(session.getAttribute("pendingCompanyId") instanceof Integer companyId)
+                    || companyId <= 0) {
 
-            request.setAttribute(
-                    "erro",
-                    "Não foi possível carregar as empresas. Tente novamente mais tarde."
-            );
+                response.sendRedirect(
+                        request.getContextPath() + "/empresa"
+                );
+                return;
+            }
+
+            try {
+                CompaniesDAO companiesDAO = new CompaniesDAO();
+
+                Companies empresa = companiesDAO.searchById(companyId);
+
+                if (empresa == null) {
+                    session.removeAttribute("pendingCompanyId");
+
+                    response.sendRedirect(
+                            request.getContextPath() + "/empresa"
+                    );
+                    return;
+                }
+
+                request.setAttribute("empresaCadastrada", empresa);
+
+                session.setAttribute(
+                        "csrfToken",
+                        UUID.randomUUID().toString()
+                );
+
+                request.getRequestDispatcher(CADASTRO)
+                        .forward(request, response);
+
+            } catch (RuntimeException e) {
+
+                LOGGER.log(
+                        Level.SEVERE,
+                        "Erro ao carregar cadastro do gerente.",
+                        e
+                );
+
+                request.setAttribute(
+                        "erro",
+                        "Não foi possível carregar o cadastro do gerente."
+                );
+
+                request.getRequestDispatcher(CADASTRO)
+                        .forward(request, response);
+            }
         }
 
-        if ("1".equals(request.getParameter("sucesso"))) {
-            request.setAttribute(
-                    "sucesso",
-                    "Cadastro realizado com sucesso!"
-            );
-        }
 
-        request.getRequestDispatcher(CADASTRO)
-                .forward(request, response);
-    }
-
-
-    /**
-     * metodo que cadastra o gerente da empresa e inicia a sessao dele
-     * Confere os campos permitidos, parametros duplicados e o token anti-CSRF (se o token for invalido responde 403)
-     * Depois valida tamanho e caracteres de cada campo, nome, e-mail, telefone, CPF, senha e empresa
-     * Procura o grupo "Admin da empresa" da empresa escolhida (se nao existir, cria com as 7 permissoes) e cadastra o gerente nele
-     * Se algo estiver errado, volta para o formulario com a mensagem de erro (mantendo o que foi digitado)
-     * Se der certo, troca o id da sessao, guarda employeeId e companyId nela e redireciona para /dashboard
-     * @param request A requisicao com os dados do gerente (campoNome, campoEmail, campoTelefone, campoSenha, campoConfirmarSenha, campoCPF, empresaSelecionada e csrfToken)
-     * @param response A resposta que redireciona para o dashboard ou volta para o formulario
-     * @throws ServletException se der erro no encaminhamento para a pagina
-     * @throws IOException se der erro de entrada ou saida
-     */
+        /**
+         * metodo que cadastra o gerente da empresa e inicia a sessao dele
+         * Confere os campos permitidos, parametros duplicados e o token anti-CSRF (se o token for invalido responde 403)
+         * Depois valida tamanho e caracteres de cada campo, nome, e-mail, telefone, CPF, senha e empresa
+         * Procura o grupo "Admin da empresa" da empresa escolhida (se nao existir, cria com as 7 permissoes) e cadastra o gerente nele
+         * Se algo estiver errado, volta para o formulario com a mensagem de erro (mantendo o que foi digitado)
+         * Se der certo, troca o id da sessao, guarda employeeId e companyId nela e redireciona para /dashboard
+         * @param request A requisicao com os dados do gerente (campoNome, campoEmail, campoTelefone, campoSenha, campoConfirmarSenha, campoCPF, empresaSelecionada e csrfToken)
+         * @param response A resposta que redireciona para o dashboard ou volta para o formulario
+         * @throws ServletException se der erro no encaminhamento para a pagina
+         * @throws IOException se der erro de entrada ou saida
+         */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -230,6 +245,22 @@ public class ManagerRegisterServlet extends HttpServlet {
 
         String tokenRecebido = request.getParameter("csrfToken");
 
+        Object empresaPendente = session == null
+                ? null
+                : session.getAttribute("pendingCompanyId");
+
+        if (!(empresaPendente instanceof Integer companyId)
+                || companyId <= 0) {
+
+            exibirErro(
+                    request,
+                    response,
+                    "Sua sessão de cadastro expirou. "
+                            + "Inicie novamente o processo."
+            );
+            return;
+        }
+
         if (!tokenValido(tokenSessao, tokenRecebido)) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -240,13 +271,11 @@ public class ManagerRegisterServlet extends HttpServlet {
         String telefone = request.getParameter("campoTelefone");
         String senha = request.getParameter("campoSenha");
         String confirmarSenha = request.getParameter("campoConfirmarSenha");
-        String empresaParam = request.getParameter("empresaSelecionada");
         String cpf = request.getParameter("campoCPF");
 
         request.setAttribute("campoNome", nome);
         request.setAttribute("campoEmail", email);
         request.setAttribute("campoTelefone", telefone);
-        request.setAttribute("empresaSelecionada", empresaParam);
         request.setAttribute("campoCPF", cpf);
 
 
@@ -255,7 +284,6 @@ public class ManagerRegisterServlet extends HttpServlet {
                 || telefone == null || telefone.isBlank()
                 || senha == null || senha.isBlank()
                 || confirmarSenha == null || confirmarSenha.isBlank()
-                || empresaParam == null || empresaParam.isBlank()
                 || cpf == null || cpf.isBlank()) {
 
             exibirErro(
@@ -269,7 +297,6 @@ public class ManagerRegisterServlet extends HttpServlet {
         nome = nome.trim();
         email = email.trim();
         telefone = telefone.trim();
-        empresaParam = empresaParam.trim();
         cpf = cpf.trim();
 
         if (nome.length() > MAX_NOME
@@ -277,8 +304,7 @@ public class ManagerRegisterServlet extends HttpServlet {
                 || telefone.length() > MAX_TELEFONE
                 || cpf.length() > MAX_CPF
                 || senha.length() > MAX_SENHA
-                || confirmarSenha.length() > MAX_SENHA
-                || empresaParam.length() > MAX_EMPRESA_ID) {
+                || confirmarSenha.length() > MAX_SENHA) {
 
             exibirErro(
                     request,
@@ -293,8 +319,7 @@ public class ManagerRegisterServlet extends HttpServlet {
                 || possuiCaracteresDeControle(telefone)
                 || possuiCaracteresDeControle(cpf)
                 || possuiCaracteresDeControle(senha)
-                || possuiCaracteresDeControle(confirmarSenha)
-                || possuiCaracteresDeControle(empresaParam)) {
+                || possuiCaracteresDeControle(confirmarSenha)) {
 
             exibirErro(
                     request,
@@ -364,34 +389,11 @@ public class ManagerRegisterServlet extends HttpServlet {
 
         cpf = cpf.strip();
 
-        empresaParam = empresaParam.strip();
-
         if (!senha.equals(confirmarSenha)) {
             exibirErro(
                     request,
                     response,
                     "As senhas informadas não coincidem."
-            );
-            return;
-        }
-
-
-        final int companyId;
-
-        try {
-            companyId = Integer.parseInt(empresaParam);
-
-            if (companyId <= 0) {
-                throw new NumberFormatException(
-                        "O identificador da empresa deve ser positivo."
-                );
-            }
-
-        } catch (NumberFormatException e) {
-            exibirErro(
-                    request,
-                    response,
-                    "A empresa selecionada não é válida. Selecione uma opção disponível."
             );
             return;
         }
@@ -419,34 +421,18 @@ public class ManagerRegisterServlet extends HttpServlet {
             // grupo de permissão do gerente
             // procura o grupo "Admin da empresa" da empresa escolhida
             // se ainda não existir, cria o grupo já com as 7 permissões
-            // (a busca por nome do DAO é parcial, por isso o nome é
-            // conferido aqui para achar o grupo exato)
+            // Busca o grupo administrativo da empresa pelo nome exato.
+            PermissionGroupsDAO permissionGroupsDAO =
+                    new PermissionGroupsDAO();
 
-            PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
+            PermissionGroups grupo =
+                    permissionGroupsDAO.searchByNameAndCompany(
+                            GRUPO_ADMIN,
+                            companyId
+                    );
 
-            PermissionGroupsFilter groupFilter = new PermissionGroupsFilter();
-            groupFilter.setCompanyId(companyId);
-            groupFilter.setName(GRUPO_ADMIN);
-
-            int permissionGroupId = -1;
-
-            List<PermissionGroups> grupos =
-                    permissionGroupsDAO.searchAll(groupFilter);
-
-            if (grupos != null) {
-
-                for (PermissionGroups grupo : grupos) {
-
-                    if (grupo != null
-                            && grupo.getName() != null
-                            && GRUPO_ADMIN.equalsIgnoreCase(grupo.getName())
-                            && grupo.getCompanyId() == companyId) {
-
-                        permissionGroupId = grupo.getId();
-                        break;
-                    }
-                }
-            }
+            int permissionGroupId =
+                    grupo == null ? -1 : grupo.getId();
 
             if (permissionGroupId <= 0) {
                 permissionGroupId = permissionGroupsDAO.registerWithPermissions(
@@ -489,14 +475,10 @@ public class ManagerRegisterServlet extends HttpServlet {
             }
 
 
-            EmployeesFilter filterEmployee = new EmployeesFilter();
-            filterEmployee.setEmail(email);
-            filterEmployee.setCompanyId(companyId);
-            filterEmployee.setName(nome);
+            Employees gerenteCadastrado =
+                    employeesDAO.searchByEmailAndCompany(email, companyId);
 
-            List<Employees> employees = employeesDAO.searchAll(filterEmployee);
-
-            if (employees == null || employees.size() != 1) {
+            if (gerenteCadastrado == null) {
                 throw new RuntimeException(
                         "Não foi possível recuperar o funcionário cadastrado."
                 );
@@ -510,16 +492,38 @@ public class ManagerRegisterServlet extends HttpServlet {
                 );
             }
 
+            sessao.invalidate();
+
+            HttpSession sessaoAutenticada = request.getSession(true);
             request.changeSessionId();
 
-            sessao.removeAttribute("csrfToken");
 
-            sessao.setAttribute(
+            sessaoAutenticada.setAttribute(
                     "employeeId",
-                    employees.getFirst().getId()
+                    gerenteCadastrado.getId()
             );
 
-            sessao.setAttribute("companyId", companyId);
+            sessaoAutenticada.setAttribute(
+                    "companyId",
+                    companyId
+            );
+
+            sessaoAutenticada.setAttribute(
+                    "permissionGroupId",
+                    permissionGroupId
+            );
+
+            sessaoAutenticada.setAttribute(
+                    "unitId",
+                    gerenteCadastrado.getUnitId()
+            );
+
+            sessaoAutenticada.setAttribute(
+                    "sectorId",
+                    gerenteCadastrado.getSectorId()
+            );
+
+            sessaoAutenticada.setMaxInactiveInterval(3600);
 
             response.sendRedirect(
                     request.getContextPath() + "/dashboard"
@@ -540,24 +544,7 @@ public class ManagerRegisterServlet extends HttpServlet {
         }
     }
 
-    //    ------------- Metodos auxiliares (privados) --------------
-
-    /**
-     * Carrega a lista de empresas que aparece no formulario
-     * Guarda a lista no atributo "empresas"
-     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
-     * @param request A requisicao onde a lista sera guardada
-     */
-    private void carregarEmpresas(HttpServletRequest request) {
-
-        CompaniesDAO companiesDAO = new CompaniesDAO();
-
-        List<Companies> empresas =
-                companiesDAO.searchAll(new CompaniesFilter());
-
-        request.setAttribute("empresas", empresas);
-    }
-
+    //    ------------- Metodos auxiliares --------------
 
     /**
      * Mostra uma mensagem de erro no formulario de cadastro do gerente
@@ -577,15 +564,34 @@ public class ManagerRegisterServlet extends HttpServlet {
 
         request.setAttribute("erro", mensagem);
 
-        try {
-            carregarEmpresas(request);
+        HttpSession session = request.getSession(false);
 
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Erro ao carregar empresas para o formulário.",
-                    e
-            );
+        if (session != null) {
+
+            Object valor = session.getAttribute("pendingCompanyId");
+
+            if (valor instanceof Integer companyId && companyId > 0) {
+
+                try {
+                    CompaniesDAO companiesDAO = new CompaniesDAO();
+
+                    Companies empresa =
+                            companiesDAO.searchById(companyId);
+
+                    request.setAttribute(
+                            "empresaCadastrada",
+                            empresa
+                    );
+
+                } catch (RuntimeException e) {
+
+                    LOGGER.log(
+                            Level.SEVERE,
+                            "Erro ao recuperar empresa durante exibição de erro.",
+                            e
+                    );
+                }
+            }
         }
 
         request.getRequestDispatcher(CADASTRO)

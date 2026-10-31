@@ -6,6 +6,7 @@ import com.example.servelet1ano.filter.SectorsFilter;
 import com.example.servelet1ano.model.Units;
 import com.example.servelet1ano.dao.UnitsDAO;
 import com.example.servelet1ano.filter.UnitsFilter;
+import com.example.servelet1ano.util.service.AuthorizationService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -67,6 +68,12 @@ public class SectorRegisterServlet extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath() + "/Login.jsp"
             );
+            return;
+        }
+
+        // Confere se o funcionário possui acesso administrativo.
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
@@ -134,6 +141,11 @@ public class SectorRegisterServlet extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath() + "/Login.jsp"
             );
+            return;
+        }
+
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 

@@ -19,18 +19,15 @@ import java.util.logging.Logger;
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
 
-    private static final Logger LOGGER =
-            Logger.getLogger(DashboardServlet.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DashboardServlet.class.getName());
 
-    private static final String DASHBOARD_PAGE = "/Dashboard.jsp";
-    private static final String LOGIN_PAGE = "/login";
+    private static final String DASHBOARD = "/Dashboard.jsp";
+    private static final String LOGIN = "/login";
 
     private final EmployeesDAO employeesDAO = new EmployeesDAO();
     private final DashboardDAO dashboardDAO = new DashboardDAO();
 
-    /**
-     * Carrega os dados do dashboard do funcionário autenticado.
-     */
+
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -44,10 +41,10 @@ public class DashboardServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        // Verifica se existe uma sessão autenticada.
+
         if (session == null) {
             response.sendRedirect(
-                    request.getContextPath() + LOGIN_PAGE
+                    request.getContextPath() + LOGIN
             );
             return;
         }
@@ -55,40 +52,41 @@ public class DashboardServlet extends HttpServlet {
         Integer employeeId = getSessionId(session, "employeeId");
         Integer companyId = getSessionId(session, "companyId");
 
-        // Impede o acesso sem identificadores válidos.
+
         if (employeeId == null || companyId == null) {
             session.invalidate();
 
             response.sendRedirect(
-                    request.getContextPath() + LOGIN_PAGE
+                    request.getContextPath() + LOGIN
             );
             return;
         }
 
         try {
 
-            // Recupera o funcionário autenticado.
             Employees employee =
                     employeesDAO.searchById(employeeId);
 
-            // Confere se o funcionário pertence à empresa da sessão.
+
             if (employee == null
+                    || employee.getCompanyId() <= 0
                     || employee.getCompanyId() != companyId) {
 
                 session.invalidate();
 
                 response.sendRedirect(
-                        request.getContextPath() + LOGIN_PAGE
+                        request.getContextPath() + LOGIN
                 );
                 return;
             }
 
-            // Busca os indicadores da empresa.
+
             Map<String, Integer> metrics =
                     dashboardDAO.getMetrics(companyId);
 
-            // Dados utilizados pela Dashboard.jsp.
+
             request.setAttribute("employee", employee);
+            request.setAttribute("companyId", companyId);
 
             request.setAttribute(
                     "totalSectors",
@@ -110,7 +108,7 @@ public class DashboardServlet extends HttpServlet {
                     metrics.get("totalUnits")
             );
 
-            request.getRequestDispatcher(DASHBOARD_PAGE)
+            request.getRequestDispatcher(DASHBOARD)
                     .forward(request, response);
 
         } catch (RuntimeException e) {
@@ -126,14 +124,12 @@ public class DashboardServlet extends HttpServlet {
                     "Não foi possível carregar os dados do dashboard."
             );
 
-            request.getRequestDispatcher(DASHBOARD_PAGE)
+            request.getRequestDispatcher(DASHBOARD)
                     .forward(request, response);
         }
     }
 
-    /**
-     * Recupera um identificador positivo armazenado na sessão.
-     */
+
     private Integer getSessionId(
             HttpSession session,
             String attribute

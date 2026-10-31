@@ -67,7 +67,7 @@
         <form action="${ctx}/empresa" method="post" accept-charset="UTF-8">
             <label for="empresa" class="visually-hidden">Nome da empresa</label>
             <input class="entrada" style="top: 196px" type="text" id="empresa" name="empresas"
-                   placeholder="Nome da empresa" value="<c:out value='${requestScope.empresas}'/>" required>
+                   placeholder="Nome da empresa" value="<c:out value='${requestScope.name}'/>" required>
 
             <label for="razao" class="visually-hidden">Razão social</label>
             <input class="entrada" style="top: 268px" type="text" id="razao" name="razoes"

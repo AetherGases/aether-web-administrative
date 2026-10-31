@@ -3,6 +3,7 @@ package com.example.servelet1ano.servlet.register;
 import com.example.servelet1ano.dao.EmployeesDAO;
 import com.example.servelet1ano.filter.EmployeesFilter;
 import com.example.servelet1ano.model.Employees;
+import com.example.servelet1ano.util.service.AuthorizationService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,16 +25,7 @@ public class PermissionServlet extends HttpServlet {
 
     private static final String PAGINA = "/permissionsOne.jsp";
 
-    /*
-     * CARREGAMENTO DA TELA DE PERMISSÕES
-     *
-     * Exige sessão iniciada (employeeId e companyId, gravados pelo LoginServlet).
-     * Busca os funcionários da empresa logada e envia ao JSP pelo atributo
-     * "funcionarios" (o JSP usa funcionario.id e funcionario.name).
-     *
-     * Se vier o parâmetro "funcionario", o id é enviado como
-     * "funcionarioSelecionado" para o JSP marcar o option correspondente.
-     */
+
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -43,13 +35,22 @@ public class PermissionServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session == null
-                || session.getAttribute("employeeId") == null
-                || session.getAttribute("companyId") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+                || !(session.getAttribute("employeeId") instanceof Integer)
+                || !(session.getAttribute("companyId") instanceof Integer)) {
+
+            response.sendRedirect(
+                    request.getContextPath() + "/login"
+            );
             return;
         }
 
-        int companyId = (Integer) session.getAttribute("companyId");
+        // Confere se o funcionário possui acesso administrativo.
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        Integer companyId = (Integer) session.getAttribute("companyId");
 
         try {
             EmployeesFilter filter = new EmployeesFilter();
@@ -58,8 +59,7 @@ public class PermissionServlet extends HttpServlet {
             List<Employees> funcionarios = new EmployeesDAO().searchAll(filter);
 
             request.setAttribute("funcionarios", funcionarios);
-            request.setAttribute("funcionarioSelecionado",
-                    lerId(request.getParameter("funcionario")));
+            request.setAttribute("funcionarioSelecionado", lerId(request.getParameter("funcionario")));
 
             request.getRequestDispatcher(PAGINA).forward(request, response);
 

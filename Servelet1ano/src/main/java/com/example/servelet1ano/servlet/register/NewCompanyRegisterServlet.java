@@ -129,16 +129,10 @@ public class NewCompanyRegisterServlet extends HttpServlet {
 
 
             CompaniesDAO companiesDAO = new CompaniesDAO();
-            CompaniesFilter filter = new CompaniesFilter();
 
-            filter.setName(empresa);
-            filter.setCnpj(cnpj);
+            Companies empresaEncontrada = companiesDAO.searchByCnpj(cnpj);
 
-            List<Companies> empresasEncontradas =
-                    companiesDAO.searchAll(filter);
-
-            if (empresasEncontradas != null
-                    && !empresasEncontradas.isEmpty()) {
+            if (empresaEncontrada != null) {
 
                 exibirErro(
                         request,
@@ -168,8 +162,7 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             subscription.setInstallments(true);
 
 
-            CompanyRegistrationService service =
-                    new CompanyRegistrationService();
+            CompanyRegistrationService service = new CompanyRegistrationService();
 
             int empresaId = service.register(novaEmpresa, subscription);
 
@@ -185,10 +178,34 @@ public class NewCompanyRegisterServlet extends HttpServlet {
                 return;
             }
 
+            if (empresaId <= 0) {
+                exibirErro(
+                        request,
+                        response,
+                        "Não foi possível identificar a empresa cadastrada."
+                );
+                return;
+            }
+
+            HttpSession sessaoAnterior = request.getSession(false);
+
+            if (sessaoAnterior != null) {
+                sessaoAnterior.invalidate();
+            }
+
+            HttpSession sessao = request.getSession(true);
+
+            request.changeSessionId();
+
+            sessao.setAttribute("pendingCompanyId", empresaId);
+
+            sessao.setMaxInactiveInterval(20 * 60);
+
             response.sendRedirect(
-                    request.getContextPath() + "/gerente?sucesso=1"
+                    request.getContextPath() + "/gerente"
             );
             return;
+
         } catch (RuntimeException e) {
             LOGGER.log(
                     Level.SEVERE,

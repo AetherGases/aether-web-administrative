@@ -47,7 +47,6 @@
                 <col style="width: 196.13px">
                 <col style="width: 196px">
                 <col style="width: 55px">
-                <col style="width: 132px">
                 <col style="width: 93px">
                 <col style="width: 135px">
                 <col style="width: 179.87px">
@@ -58,7 +57,6 @@
                 <th>Nome</th>
                 <th>E-mail</th>
                 <th style="text-align: center">Status</th>
-                <th style="text-align: center">Senha</th>
                 <th style="text-align: center">Setor</th>
                 <th style="text-align: center">Data de admissão</th>
                 <th><span class="visually-hidden">Ações</span></th>
@@ -84,21 +82,33 @@
                              src="${ctx}/Imagens/${ativo ? 'STATUSCerto' : 'STATUSErrado'}.svg"
                              alt="${statusTexto}" title="${statusTexto}">
                     </td>
-                        <%-- A senha nunca é exibida: mostramos apenas a máscara. --%>
-                    <td style="text-align: center" class="texto-secundario">••••••••</td>
+
                     <td style="text-align: center; padding: 0 4px" title="<c:out value='${funcionario.sector.name}'/>"><c:out value="${funcionario.sector.name}"/></td>
                     <td style="text-align: center">${admissao}</td>
                     <td style="padding-left: 28.87px">
+
+                        <c:set var="manager"
+                               value="${funcionario.permissionGroup.name eq 'Admin da empresa'}"/>
+
                         <div class="acoes">
                             <button type="button" class="acao acao-ver" data-abrir="overlayVerFuncionario" aria-label="Visualizar">
                                 <img src="${ctx}/Imagens/VER.svg" alt="">
                             </button>
-                            <button type="button" class="acao acao-editar" data-abrir="overlayEditarFuncionario" aria-label="Editar">
-                                <img src="${ctx}/Imagens/EDITAR.svg" alt="">
-                            </button>
-                            <button type="button" class="acao acao-excluir" data-abrir="overlayExcluirFuncionario" aria-label="Excluir">
-                                <img src="${ctx}/Imagens/LIXO.svg" alt="">
-                            </button>
+                            <c:if test="${not manager}">
+                                <button type="button"
+                                        class="acao acao-editar"
+                                        data-abrir="overlayEditarFuncionario"
+                                        aria-label="Editar">
+                                    <img src="${ctx}/Imagens/EDITAR.svg" alt="">
+                                </button>
+
+                                <button type="button"
+                                        class="acao acao-excluir"
+                                        data-abrir="overlayExcluirFuncionario"
+                                        aria-label="Excluir">
+                                    <img src="${ctx}/Imagens/LIXO.svg" alt="">
+                                </button>
+                            </c:if>
                         </div>
                     </td>
                 </tr>
@@ -240,14 +250,6 @@
                     <label for="editarAdmissao">Data de admissão</label>
                     <input type="text" id="editarAdmissao" placeholder="data admissão" data-campo="admissao" readonly>
                 </div>
-                <div class="campo">
-                    <label for="editarSenha">Senha</label>
-                    <input type="password" id="editarSenha" name="campoSenha" placeholder="senha" autocomplete="new-password">
-                </div>
-                <div class="campo">
-                    <label for="editarConfirmar">Confirmar senha</label>
-                    <input type="password" id="editarConfirmar" name="campoConfirmarSenha" placeholder="confirmar senha" autocomplete="new-password">
-                </div>
                 <div class="campo largo">
                     <label for="editarStatus">Status</label>
                     <select id="editarStatus" name="status" data-campo="status">
@@ -259,7 +261,7 @@
             </div>
 
             <div class="modal-rodape">
-                <button type="submit" class="botao-roxo" disabled>Alterar</button>
+                <button type="submit" class="botao-roxo">Alterar</button>
                 <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
             </div>
         </form>
@@ -295,10 +297,6 @@
                 <input type="text" id="verAdmissao" data-campo="admissao" readonly>
             </div>
             <div class="campo">
-                <label for="verSenha">senha atual</label>
-                <input type="password" id="verSenha" value="********" readonly>
-            </div>
-            <div class="campo">
                 <label for="verStatus">status</label>
                 <input type="text" id="verStatus" data-campo="status" readonly>
             </div>
@@ -328,9 +326,9 @@
             </div>
 
             <div class="botoes-excluir">
-                <button type="button" class="botao-cancelar" data-fechar>Cancelar</button>
-                <%-- O EmployeeRegisterServlet ainda não trata acao=excluir; habilite quando houver suporte. --%>
-                <button type="submit" class="botao-deletar" disabled title="Exclusão ainda não disponível no servidor">Deletar</button>
+                <button type="submit" class="botao-deletar">
+                    Deletar
+                </button>
             </div>
         </form>
     </div>

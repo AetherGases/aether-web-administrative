@@ -8,6 +8,7 @@ import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Units;
 import com.example.servelet1ano.validation.Validators;
+import com.example.servelet1ano.util.service.AuthorizationService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -63,6 +64,12 @@ public class UnitsRegisterServlet extends HttpServlet {
             response.sendRedirect(
                     request.getContextPath() + "/Login.jsp"
             );
+            return;
+        }
+
+        // Confere se o funcionário possui acesso administrativo.
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 
@@ -126,7 +133,29 @@ public class UnitsRegisterServlet extends HttpServlet {
             return;
         }
 
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         int companyId = (Integer) session.getAttribute("companyId");
+
+        String acao = request.getParameter("acao");
+
+        if ("editar".equals(acao)) {
+            editarUnidade(request, response, companyId);
+            return;
+        }
+
+        if ("excluir".equals(acao)) {
+            excluirUnidade(request, response, companyId);
+            return;
+        }
+
+        if (acao != null && !"cadastrar".equals(acao)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
         String nome = request.getParameter("campoNomeUnidade");
         String cnpj = request.getParameter("campoCNPJ");
@@ -370,4 +399,124 @@ public class UnitsRegisterServlet extends HttpServlet {
         request.getRequestDispatcher(CADASTRO)
                 .forward(request, response);
     }
+
+
+    /**
+     * Edita somente os dados básicos de uma unidade.
+     * Não permite alterar id, empresa ou endereço.
+     */
+    private void editarUnidade(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws ServletException, IOException {
+
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            String nome = request.getParameter("campoNomeUnidade");
+            String cnpj = request.getParameter("campoCNPJ");
+            String cnae = request.getParameter("campoCNAE");
+
+            if (id <= 0
+                    || nome == null || nome.isBlank()
+                    || cnpj == null || cnpj.isBlank()
+                    || cnae == null || cnae.isBlank()) {
+
+                exibirErro(
+                        request, response, companyId,
+                        "Informe os dados obrigatórios da unidade."
+                );
+                return;
+            }
+
+            boolean atualizado = new UnitsDAO().updateBasicData(
+                    id, companyId, nome, cnpj, cnae
+            );
+
+            if (!atualizado) {
+                exibirErro(
+                        request, response, companyId,
+                        "Não foi possível editar a unidade. "
+                                + "Verifique os dados informados."
+                );
+                return;
+            }
+
+            response.sendRedirect(
+                    request.getContextPath() + "/unidades?sucesso=true"
+            );
+
+        } catch (NumberFormatException e) {
+
+            exibirErro(
+                    request, response, companyId,
+                    "A unidade selecionada não é válida."
+            );
+
+        } catch (RuntimeException e) {
+
+            LOGGER.log(Level.SEVERE, "Erro ao editar unidade.", e);
+
+            exibirErro(
+                    request, response, companyId,
+                    "Não foi possível editar a unidade."
+            );
+        }
+    }
+
+
+    /**
+     * Desativa uma unidade sem funcionários ativos.
+     * Não altera ids nem dados de outras empresas.
+     */
+    private void excluirUnidade(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws ServletException, IOException {
+
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            if (id <= 0) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            boolean excluida = new UnitsDAO()
+                    .deleteEmptyUnit(id, companyId);
+
+            if (!excluida) {
+                exibirErro(
+                        request, response, companyId,
+                        "Não foi possível desativar a unidade. "
+                                + "Verifique se existem funcionários ativos."
+                );
+                return;
+            }
+
+            response.sendRedirect(
+                    request.getContextPath() + "/unidades?excluido=true"
+            );
+
+        } catch (NumberFormatException e) {
+
+            exibirErro(
+                    request, response, companyId,
+                    "A unidade selecionada não é válida."
+            );
+
+        } catch (RuntimeException e) {
+
+            LOGGER.log(Level.SEVERE, "Erro ao excluir unidade.", e);
+
+            exibirErro(
+                    request, response, companyId,
+                    "Não foi possível desativar a unidade."
+            );
+        }
+    }
+
+
 }

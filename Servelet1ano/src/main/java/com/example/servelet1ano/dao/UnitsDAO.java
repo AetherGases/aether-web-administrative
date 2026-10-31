@@ -361,6 +361,116 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
         }
     }
 
+
+    /**
+     * Desativa uma unidade sem excluir funcionários.
+     * Impede desativar unidades com funcionários ativos.
+     *
+     * @param id Id da unidade
+     * @param companyId Empresa autenticada
+     * @return true se a unidade foi desativada
+     */
+    public boolean deleteEmptyUnit(
+            int id,
+            int companyId
+    ) {
+
+        if (id <= 0 || companyId <= 0) {
+            return false;
+        }
+
+        try (Connection conn = ConnectionFactory.connect()) {
+
+            conn.setAutoCommit(false);
+
+            try {
+                // Bloqueia alterações concorrentes na unidade.
+                try (PreparedStatement lock = conn.prepareStatement("""
+                    SELECT id
+                    FROM units
+                    WHERE id = ?
+                      AND company_id = ?
+                      AND is_active = TRUE
+                    FOR UPDATE
+                    """)) {
+
+                    lock.setInt(1, id);
+                    lock.setInt(2, companyId);
+
+                    try (ResultSet rs = lock.executeQuery()) {
+                        if (!rs.next()) {
+                            conn.rollback();
+                            return false;
+                        }
+                    }
+                }
+
+                // Não desativa unidades com funcionários ativos.
+                try (PreparedStatement check = conn.prepareStatement("""
+                    SELECT 1
+                    FROM employees
+                    WHERE unit_id = ?
+                      AND company_id = ?
+                      AND is_active = TRUE
+                    LIMIT 1
+                    """)) {
+
+                    check.setInt(1, id);
+                    check.setInt(2, companyId);
+
+                    try (ResultSet rs = check.executeQuery()) {
+                        if (rs.next()) {
+                            conn.rollback();
+                            return false;
+                        }
+                    }
+                }
+
+                // Desativa os setores da unidade.
+                // A operação utiliza a mesma transação.
+                new SectorsDAO().deleteByUnitId(id, conn);
+
+                try (PreparedStatement pstmt = conn.prepareStatement("""
+                    UPDATE units
+                    SET is_active = FALSE,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = ?
+                      AND company_id = ?
+                      AND is_active = TRUE
+                      AND NOT EXISTS (
+                          SELECT 1
+                          FROM employees
+                          WHERE unit_id = ?
+                            AND is_active = TRUE
+                      )
+                    """)) {
+
+                    pstmt.setInt(1, id);
+                    pstmt.setInt(2, companyId);
+                    pstmt.setInt(3, id);
+
+                    if (pstmt.executeUpdate() != 1) {
+                        conn.rollback();
+                        return false;
+                    }
+                }
+
+                conn.commit();
+                return true;
+
+            } catch (SQLException | RuntimeException e) {
+                conn.rollback();
+                throw e;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao desativar unidade.", e
+            );
+        }
+    }
+
+
     /**
      * metodo que desativa pelo nome, dentro de uma empresa
      * O nome precisa ser igual (sem diferenciar maiusculas de minusculas); nao e mais busca por pedaco do nome
@@ -418,6 +528,73 @@ public class UnitsDAO implements DAOI<Units, UnitsFilter> {
             throw new RuntimeException("Erro ao atualizar a unidade de id " + id + " no banco de dados.", e);
         }
     }
+
+
+    /**
+     * Edita somente nome, CNPJ e CNAE de uma unidade.
+     * Não permite alterar id, empresa ou endereço.
+     *
+     * @param id Id da unidade
+     * @param companyId Empresa autenticada
+     * @param nome Novo nome
+     * @param cnpj Novo CNPJ
+     * @param cnae Novo CNAE
+     * @return true se a unidade foi atualizada
+     */
+    public boolean updateBasicData(
+            int id,
+            int companyId,
+            String nome,
+            String cnpj,
+            String cnae
+    ) {
+
+        if (id <= 0 || companyId <= 0
+                || nome == null || nome.isBlank()
+                || nome.length() > 255
+                || cnpj == null || !Validators.isCnpj(cnpj)
+                || cnae == null || cnae.isBlank()
+                || cnae.length() > 50) {
+            return false;
+        }
+
+        String sql = """
+            UPDATE units
+            SET name = ?,
+                cnpj = ?,
+                cnae = ?,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+              AND company_id = ?
+              AND is_active = TRUE
+            """;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setString(1, nome.trim());
+            pstmt.setString(
+                    2, cnpj.replaceAll("\\D", "")
+            );
+            pstmt.setString(3, cnae.trim());
+            pstmt.setInt(4, id);
+            pstmt.setInt(5, companyId);
+
+            return pstmt.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            if ("23505".equals(e.getSQLState())) {
+                return false;
+            }
+
+            throw new RuntimeException(
+                    "Erro ao atualizar unidade.", e
+            );
+        }
+    }
+
 
     /**
      * Metodo que muda os values da unit selecionada pelo nome, dentro de uma empresa
