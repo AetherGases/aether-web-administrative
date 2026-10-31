@@ -29,39 +29,6 @@ public class LoginServlet extends HttpServlet {
 
     private static final String CADASTRO = "/Login.jsp";
 
-    /*
-     *CARREGAMENTO DE EMPRESA.
-     *
-     *Recupera a sessão do gerente para relacionar a empresa do employee
-     *
-     * Se não conseguiR, trata o erro RunTimeException pelo método exibirErros()
-     *
-     */
-    @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
-
-        try {
-            carregarEmpresas(request);
-
-            request.getRequestDispatcher(CADASTRO)
-                    .forward(request, response);
-
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Erro ao carregar empresas para o formulário de login.",
-                    e
-            );
-
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Não foi possível carregar o formulário de login."
-            );
-        }
-    }
 
     /** LOGIN DOPOST
      *
@@ -77,21 +44,15 @@ public class LoginServlet extends HttpServlet {
 
         request.setCharacterEncoding("UTF-8");
 
-        String empresaParam = request.getParameter("empresas");
-        String nome = request.getParameter("campoNome");
         String email = request.getParameter("campoEmail");
         String senha = request.getParameter("campoSenha");
 
-        request.setAttribute("empresaParam", empresaParam);
-        request.setAttribute("nome", nome);
         request.setAttribute("email", email);
         request.setAttribute("senha", senha);
 
 
         if (email == null || email.isBlank()
-                || senha == null || senha.isBlank()
-                || empresaParam == null || empresaParam.isBlank()
-                || nome == null || nome.isBlank()) {
+                || senha == null || senha.isBlank()) {
 
             exibirErro(
                     request,
@@ -101,7 +62,6 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        nome = nome.trim();
         email = email.trim();
 
 
@@ -272,23 +232,6 @@ public class LoginServlet extends HttpServlet {
     ) throws ServletException, IOException {
 
         request.setAttribute("erro", mensagem);
-
-        try {
-            carregarEmpresas(request);
-
-        } catch (RuntimeException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Erro ao recarregar empresas após falha no login.",
-                    e
-            );
-
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Não foi possível carregar o formulário de login."
-            );
-            return;
-        }
 
         request.getRequestDispatcher(CADASTRO)
                 .forward(request, response);

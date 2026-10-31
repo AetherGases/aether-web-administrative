@@ -12,33 +12,28 @@
     <nav aria-label="Menu principal">
         <ul class="sidebar-menu">
             <li>
-                <a href="${ctx}/Dashboard.jsp" class="${ativo eq 'dashboard' ? 'ativo' : ''}">
+                <a href="${ctx}/dashboard" class="${ativo eq 'dashboard' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/dashboard.svg" alt="">Dashboards
                 </a>
             </li>
             <li>
-                <a href="${ctx}/Employee.jsp" class="${ativo eq 'funcionarios' ? 'ativo' : ''}">
+                <a href="${ctx}/funcionarios" class="${ativo eq 'funcionarios' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/funcionario.svg" alt="">Funcionários
                 </a>
             </li>
             <li>
-                <a href="${ctx}/Sectors.jsp" class="${ativo eq 'setores' ? 'ativo' : ''}">
+                <a href="${ctx}/setores" class="${ativo eq 'setores' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/setores.svg" alt="">Setores
                 </a>
             </li>
             <li>
-                <a href="${ctx}/Units.jsp" class="${ativo eq 'unidades' ? 'ativo' : ''}">
+                <a href="${ctx}/unidades" class="${ativo eq 'unidades' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/unidade.svg" alt="">Unidades
                 </a>
             </li>
             <li>
-                <a href="${ctx}/PermissionsOne.jsp" class="${ativo eq 'permissoes' ? 'ativo' : ''}">
+                <a href="${ctx}/permissoes]" class="${ativo eq 'permissoes' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/permissao1.svg" alt="">Permissões
-                </a>
-            </li>
-            <li>
-                <a href="${ctx}/PermissionsTwo.jsp" class="${ativo eq 'permissoesAether' ? 'ativo' : ''}">
-                    <img class="icone-largo" src="${ctx}/Imagens/permissao2.svg" alt="">Permissões
                 </a>
             </li>
         </ul>

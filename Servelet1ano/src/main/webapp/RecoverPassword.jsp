@@ -23,7 +23,7 @@
     <div class="blur blur-3"></div>
     <div class="blur blur-4"></div>
 
-    <a class="voltar roxo" href="${ctx}/Login.jsp">
+    <a class="voltar roxo" href="${ctx}/login">
         <span>
             <svg viewBox="0 0 22 22" aria-hidden="true"><path d="M14 4l-7 7 7 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
@@ -43,7 +43,7 @@
         <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo roxa" style="left: 109.5px; top: 146px; width: 327px">Recuperar senha</h1>
 
-        <form action="${ctx}/Verification.jsp" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/recover-password" method="post" accept-charset="UTF-8">
             <label for="email" class="visually-hidden">E-mail</label>
             <input class="entrada" style="top: 221px" type="email" id="email" name="campoEmail" placeholder="E-mail"
                    autocomplete="email" required>
@@ -51,7 +51,7 @@
             <button class="botao-enviar roxo" style="top: 297px" type="submit">Confirmar</button>
 
             <p class="link-conta roxo" style="top: 380px">
-                Não possui uma conta? <a href="${ctx}/CompanyRegister.jsp">clique aqui</a>
+                Não possui uma conta? <a href="${ctx}/empresa">clique aqui</a>
             </p>
         </form>
     </main>

@@ -128,7 +128,7 @@
             <p class="erro-modal aviso" role="status">Antes de cadastrar um setor, cadastre uma unidade na tela de Unidades.</p>
         </c:if>
 
-        <form action="${ctx}/Sectors.jsp" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/setores" method="post" accept-charset="UTF-8">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeSetor">Nome do setor</label>
@@ -173,7 +173,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/Sectors.jsp" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/setores" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="editar">
             <input type="hidden" name="id" data-campo="id">
 
@@ -254,7 +254,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/Sectors.jsp" method="post">
+        <form action="${ctx}/setores" method="post">
             <input type="hidden" name="acao" value="excluir">
             <input type="hidden" name="id" data-campo="id">
 

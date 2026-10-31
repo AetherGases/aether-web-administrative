@@ -44,17 +44,6 @@
         <h1 class="pilula-titulo" style="left: 109.5px; top: 146px; width: 327px">Login pessoal</h1>
 
         <form action="${ctx}/login" method="post" accept-charset="UTF-8">
-            <label for="empresa" class="visually-hidden">Empresa</label>
-            <select class="entrada" style="top: 221px" id="empresa" name="empresas" required>
-                <option value="" disabled ${empty param.empresas ? 'selected' : ''}>Selecionar empresa</option>
-                <c:forEach var="empresa" items="${requestScope.empresas}">
-                    <option value="${empresa.id}" ${param.empresas == empresa.id ? 'selected' : ''}><c:out value="${empresa.name}"/></option>
-                </c:forEach>
-            </select>
-
-            <label for="nome" class="visually-hidden">Nome</label>
-            <input class="entrada" style="top: 297px" type="text" id="nome" name="campoNome" placeholder="Nome"
-                   autocomplete="username" maxlength="255" value="<c:out value='${param.campoNome}'/>" required>
 
             <label for="email" class="visually-hidden">E-mail</label>
             <input class="entrada" style="top: 373px" type="email" id="email" name="campoEmail" placeholder="E-mail"

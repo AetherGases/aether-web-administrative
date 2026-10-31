@@ -137,7 +137,7 @@
             <p class="erro-modal aviso" role="status">Antes de cadastrar um funcionário, cadastre uma unidade e um setor nas telas de Unidades e Setores.</p>
         </c:if>
 
-        <form action="${ctx}/Employee.jsp" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/funcionarios" method="post" accept-charset="UTF-8">
             <div class="modal-corpo">
                 <div class="campo">
                     <label for="nomeFuncionario">Nome completo</label>
@@ -196,7 +196,7 @@
                     <select id="status" name="status" required>
                         <option value="" disabled ${empty campoStatus ? 'selected' : ''}>status</option>
                         <option value="Ativo" ${campoStatus eq 'Ativo' ? 'selected' : ''}>Ativo</option>
-                        <option value="Inativo" ${campoStatus eq 'Inativo' ? 'selected' : ''}>Inativo</option>
+                        <option value="Inativo" ${  campoStatus eq 'Inativo' ? 'selected' : ''}>Inativo</option>
                         <option value="Em recesso" ${campoStatus eq 'Em recesso' ? 'selected' : ''}>Em recesso</option>
                     </select>
                 </div>
@@ -220,7 +220,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/Employee.jsp" method="post" accept-charset="UTF-8">
+        <form action="${ctx}/funcionarios" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="editar">
             <input type="hidden" name="id" data-campo="id">
             <div class="modal-corpo">
@@ -318,7 +318,7 @@
             </button>
         </div>
 
-        <form action="${ctx}/Employee.jsp" method="post">
+        <form action="${ctx}/funcionarios" method="post">
             <input type="hidden" name="acao" value="excluir">
             <input type="hidden" name="id" data-campo="id">
 

@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -35,6 +36,7 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
+        HttpSession session = request.getSession();
 
         request.setCharacterEncoding("UTF-8");
 
@@ -44,14 +46,6 @@ public class NewCompanyRegisterServlet extends HttpServlet {
         String cnpj = request.getParameter("campoCNPJ");
         String email = request.getParameter("campoEmail");
         String plano = request.getParameter("planos");
-
-        request.setAttribute("empresas", empresa);
-        request.setAttribute("razoes", razao);
-        request.setAttribute("tamanhos", tamanho);
-        request.setAttribute("campoCNPJ", cnpj);
-        request.setAttribute("campoEmail", email);
-        request.setAttribute("planos", plano);
-
 
         if (empresa == null || empresa.isBlank()
                 || razao == null || razao.isBlank()
@@ -74,7 +68,6 @@ public class NewCompanyRegisterServlet extends HttpServlet {
         cnpj = cnpj.trim();
         email = email.trim();
         plano = plano.trim();
-
 
         CompanySize tamanhoEmpresa;
 

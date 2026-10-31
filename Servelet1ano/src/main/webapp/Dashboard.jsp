@@ -40,36 +40,36 @@
         <span class="decoracao decoracao-linha-1" aria-hidden="true"></span>
         <span class="decoracao decoracao-linha-2" aria-hidden="true"></span>
 
-        <c:set var="primeiroNome" value="${empty employee.name ? 'Layous' : fn:split(fn:trim(employee.name), ' ')[0]}" />
+        <c:set var="primeiroNome" value="${fn:split(fn:trim(employee.name), ' ')[0]}" />
         <h2>Olá, <c:out value="${primeiroNome}"/>!</h2>
 
-        <a class="botao-cartao botao-unidades" href="${ctx}/Units.jsp">Ver unidades</a>
-        <a class="botao-cartao botao-funcionarios" href="${ctx}/Employee.jsp">Ver funcionários</a>
+        <a class="botao-cartao botao-unidades" href="${ctx}/unidades">Ver unidades</a>
+        <a class="botao-cartao botao-funcionarios" href="${ctx}/funcionariosx">Ver funcionários</a>
     </section>
 
 
-    <a class="cartao-numero n1" href="${ctx}/Sectors.jsp">
+    <a class="cartao-numero n1" href="${ctx}/setores">
         <p class="rotulo">Setores</p>
         <p class="valor">${totalSectors}</p>
         <img src="${ctx}/Imagens/grafico.svg" alt="">
         <span class="linha"></span>
     </a>
 
-    <a class="cartao-numero n2" href="${ctx}/PermissionsOne.jsp">
+    <a class="cartao-numero n2" href="${ctx}/permissoes">
         <p class="rotulo">Permissões</p>
         <p class="valor">${totalPermissions}</p>
         <img src="${ctx}/Imagens/chave.svg" alt="">
         <span class="linha"></span>
     </a>
 
-    <a class="cartao-numero n3" href="${ctx}/Employee.jsp">
+    <a class="cartao-numero n3" href="${ctx}/funcionarios">
         <p class="rotulo">Funcionários</p>
         <p class="valor">${totalEmployees}</p>
         <img src="${ctx}/Imagens/pessoas.svg" alt="" style="height: 60px; top: 87px">
         <span class="linha"></span>
     </a>
 
-    <a class="cartao-numero n4" href="${ctx}/Units.jsp">
+    <a class="cartao-numero n4" href="${ctx}/unidades">
         <p class="rotulo">Unidades</p>
         <p class="valor">${totalUnits}</p>
         <img src="${ctx}/Imagens/predios.svg" alt="">
