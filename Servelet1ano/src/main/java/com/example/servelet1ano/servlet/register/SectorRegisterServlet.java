@@ -19,17 +19,39 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet da tela de setores (/setores)
+ * Lista os setores e as unidades da empresa do usuario logado, cadastra novos setores e exclui (desativa) setores
+ */
 @WebServlet("/setores")
 public class SectorRegisterServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(SectorRegisterServlet.class.getName());
 
+    /**
+     * Pagina da tela de setores
+     */
     private static final String CADASTRO = "/Sectors.jsp";
 
+    /**
+     * Mensagem mostrada ao usuario quando der erro no banco ao cadastrar um setor
+     */
     private static final String ERRO_BANCO =
             "Não foi possível concluir a operação. Tente novamente mais tarde.";
 
+    /**
+     * metodo que mostra a tela de setores da empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Se vier o parametro sucesso=true ou excluido=true, mostra a mensagem de setor cadastrado ou excluido
+     * @param request A requisicao (a empresa vem da sessao)
+     * @param response A resposta que encaminha para a tela de setores ou redireciona para o login
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -85,6 +107,18 @@ public class SectorRegisterServlet extends HttpServlet {
         }
     }
 
+    /**
+     * metodo que cadastra um novo setor ou exclui (desativa) um setor da empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Se vier acao=excluir, desativa o setor do id informado (so se ele for da empresa e nao tiver funcionarios ativos)
+     * Caso contrario, cadastra um setor novo: confere os campos obrigatorios, o tamanho do nome, se a unidade e da empresa e se o setor ja nao existe na unidade
+     * Se algo estiver errado, volta para a tela com a mensagem de erro (mantendo o que foi digitado)
+     * Se der certo, redireciona para /setores com o aviso de sucesso
+     * @param request A requisicao com a acao e o id (exclusao) ou com os dados do setor (campoNomeSetor, campoIdUnidade e campoDescricao)
+     * @param response A resposta que redireciona ou volta para a tela de setores
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -157,10 +191,8 @@ public class SectorRegisterServlet extends HttpServlet {
                     return;
                 }
 
-                /*
-                 * Um setor com funcionários ativos não pode ser excluído:
-                 * antes é preciso mover ou desativar esses funcionários.
-                 */
+                // um setor com funcionários ativos não pode ser excluído:
+                // antes é preciso mover ou desativar esses funcionários
                 if (sectorsDAO.hasActiveEmployees(id)) {
                     exibirErro(
                             request,
@@ -345,19 +377,16 @@ public class SectorRegisterServlet extends HttpServlet {
         }
     }
 
-    /*
-     * CARREGAMENTO DAS UNIDADES E DOS SETORES
-     *
-     * Consulta os setores disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "setores".
-     *
-     * Consulta as unidades disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "unidades".
-     *
-     * Caso a consulta falhe, a exceção é propagada para o método
-     * responsável por tratar a falha.
-     */
+    //    ------------- Metodos auxiliares (privados) --------------
 
+    /**
+     * Carrega os dados que a tela de setores precisa
+     * Busca as unidades da empresa e guarda no atributo "unidades"
+     * Busca os setores da empresa e guarda no atributo "setores"
+     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
+     * @param request A requisicao onde os atributos serao guardados
+     * @param companyId O id da empresa do usuario logado
+     */
     private void carregarDados(
             HttpServletRequest request,
             int companyId
@@ -378,16 +407,18 @@ public class SectorRegisterServlet extends HttpServlet {
         request.setAttribute("unidades", unidades);
     }
 
-    /*
-     * EXIBIÇÃO DE ERROS
-     *
-     * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro".
-     *
-     * O forward encaminha a requisição atual ao JSP, permitindo
-     * que a mensagem seja exibida na mesma página do formulário.
+    /**
+     * Mostra uma mensagem de erro na tela de setores
+     * Guarda a mensagem no atributo "erro", recarrega os dados da tela
+     * e encaminha a mesma requisicao de volta para a pagina, assim o que o usuario digitou continua preenchido
+     * Se nao for possivel recarregar os dados, as listas de setores e unidades ficam vazias
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para a tela de setores
+     * @param companyId O id da empresa do usuario logado
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,

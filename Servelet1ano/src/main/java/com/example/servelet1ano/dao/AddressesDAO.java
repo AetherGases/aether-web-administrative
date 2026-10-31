@@ -13,6 +13,9 @@ import java.util.List;
 
 public class AddressesDAO implements DAOI<Addresses, AddressesFilter> {
 
+    /**
+     * Comando de insert do endereco, usado no cadastro simples e no cadastro que devolve o id gerado
+     */
     private static final String INSERT_ADDRESS =
             "insert into addresses (zip_code, street, number, complement, neighborhood, city, state, country) " +
                     "values (?, ?, ?, ?, ?, ?, ?, ?)";

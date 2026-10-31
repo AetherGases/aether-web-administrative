@@ -30,6 +30,10 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                     "c.name as companyName, c.id as idCompany, pg.id as idPermissionGroup, pg.name as permissionGroup, " +
                     "u.name as unitName, u.id as idUnit, sec.id as idSector, sec.name as sectorName ";
 
+    /**
+     * Parte do from, com as juncoes, que acompanha o SELECT_FIELDS na busca por cpf e na busca de login
+     * As juncoes sao left join pra nao sumir um funcionario que esteja com algum vinculo vazio
+     */
     private static final String FROM_EMPLOYEES =
             "from employees e " +
                     "left join companies c on e.company_id = c.id " +
@@ -37,10 +41,18 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                     "left join units u on u.id = e.unit_id " +
                     "left join sectors sec on sec.id = e.sector_id ";
 
+    /**
+     * Comando de insert do funcionario, usado no cadastro simples e no cadastro em lote
+     * O status entra como ultimo parametro (convertido para o tipo status_employee do banco)
+     */
     private static final String INSERT_EMPLOYEE =
             "insert into employees (company_id, permission_group_id, unit_id, sector_id, cpf, name, email, phone, password_hash, status) " +
                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::status_employee)";
 
+    /**
+     * Comeco do update do funcionario, sem o where (quem usa acrescenta a condicao)
+     * Nao mexe na senha nem no status: para isso existem os metodos proprios
+     */
     private static final String UPDATE_EMPLOYEE =
             "update employees set company_id = ?, " +
                     "permission_group_id = ?, " +

@@ -30,34 +30,46 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet da tela de funcionarios (/funcionarios)
+ * Mostra o formulario com as unidades e os setores da empresa e cadastra novos funcionarios
+ */
 @WebServlet("/funcionarios")
 public class EmployeeRegisterServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(EmployeeRegisterServlet.class.getName());
 
+    /**
+     * Pagina da tela de funcionarios
+     */
     private static final String CADASTRO = "/Employee.jsp";
 
-    /*
-     * GRUPO DE PERMISSÃO DO FUNCIONÁRIO
-     *
-     * Nome do grupo do funcionário comum e ids das permissões
-     * (tabela permissions) que ele recebe:
-     *
-     * 3 - inventory:register
+    /**
+     * Nome do grupo de permissao do funcionario comum
      */
-
     private static final String GRUPO_FUNCIONARIO = "Funcionário da empresa";
 
+    /**
+     * Ids das permissoes (tabela permissions) que o funcionario comum recebe:
+     * 3 - inventory:register
+     */
     private static final List<Integer> PERMISSOES_FUNCIONARIO =
             List.of(3);
 
-    /*
-     * CARREGAMENTO DO FORMULÁRIO
-     *
-     * Busca a empresa da sessão e carrega suas unidades e setores.
+    /**
+     * metodo que mostra o formulario de cadastro de funcionarios
+     * Se nao houver sessao valida, redireciona para o login
+     * Busca a empresa da sessao e carrega as unidades e os setores dela
+     * Se vier o parametro sucesso=true, mostra a mensagem de dados carregados
+     * @param request A requisicao (a empresa vem da sessao)
+     * @param response A resposta que encaminha para o formulario ou redireciona para o login
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -123,10 +135,19 @@ public class EmployeeRegisterServlet extends HttpServlet {
         }
     }
 
-    /*
-     * PROCESSAMENTO DO CADASTRO
+    /**
+     * metodo que cadastra um novo funcionario na empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Confere os campos obrigatorios, e-mail, CPF, celular, senhas, unidade, setor e status
+     * Confere se a unidade e o setor sao da empresa e se ja nao existe funcionario com o mesmo CPF
+     * Procura o grupo "Funcionário da empresa" (se nao existir, cria com as permissoes do funcionario) e cadastra o funcionario nele
+     * Se algo estiver errado, volta para o formulario com a mensagem de erro (mantendo o que foi digitado)
+     * Se der certo, redireciona para /funcionarios com o aviso de sucesso
+     * @param request A requisicao com os dados do funcionario (campoNomeFuncionario, campoEmail, campoTelefone, campoCPF, unitId, sectorId, campoSenha, campoConfirmarSenha e status)
+     * @param response A resposta que redireciona ou volta para o formulario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -357,14 +378,11 @@ public class EmployeeRegisterServlet extends HttpServlet {
             String senhaHash = PasswordHasher.hash(senha);
 
 
-            /*
-             * GRUPO DE PERMISSÃO DO FUNCIONÁRIO
-             *
-             * Procura o grupo "Funcionário da empresa" da empresa da sessão.
-             * Se ainda não existir, cria o grupo já com as permissões
-             * (a busca por nome do DAO é parcial, por isso o nome é
-             * conferido aqui para achar o grupo exato).
-             */
+            // grupo de permissão do funcionário
+            // procura o grupo "Funcionário da empresa" da empresa da sessão
+            // se ainda não existir, cria o grupo já com as permissões
+            // (a busca por nome do DAO é parcial, por isso o nome é
+            // conferido aqui para achar o grupo exato)
 
             PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
 
@@ -445,10 +463,14 @@ public class EmployeeRegisterServlet extends HttpServlet {
         }
     }
 
-    /*
-     * CARREGA AS UNIDADES ATIVAS DA EMPRESA.
-     */
+    //    ------------- Metodos auxiliares (privados) --------------
 
+    /**
+     * Carrega as unidades ativas da empresa
+     * Guarda a lista no atributo "unidades"
+     * @param request A requisicao onde a lista sera guardada
+     * @param companyId O id da empresa do usuario logado
+     */
     private void carregarUnidades(
             HttpServletRequest request,
             int companyId
@@ -462,16 +484,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
         request.setAttribute("unidades", unidades);
     }
 
-    /*
-     * CARREGAMENTO DOS SETORES
-     *
-     * Consulta os setores disponíveis e disponibiliza a lista
-     * ao JSP pelo atributo "setores".
-     *
-     * Caso a consulta falhe, a exceção é propagada para o método
-     * responsável por tratar a falha.
+    /**
+     * Carrega os setores da empresa
+     * Guarda a lista no atributo "setores"
+     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
+     * @param request A requisicao onde a lista sera guardada
+     * @param companyId O id da empresa do usuario logado
      */
-
     private void carregarSetores(
             HttpServletRequest request,
             int companyId
@@ -485,16 +504,18 @@ public class EmployeeRegisterServlet extends HttpServlet {
         request.setAttribute("setores", setores);
     }
 
-    /*
-     * EXIBIÇÃO DE ERROS
-     *
-     * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro".
-     *
-     * O forward encaminha a requisição atual ao JSP, permitindo
-     * que a mensagem seja exibida na mesma página do formulário.
+    /**
+     * Mostra uma mensagem de erro no formulario de funcionarios
+     * Guarda a mensagem no atributo "erro", recarrega a empresa, as unidades e os setores
+     * e encaminha a mesma requisicao de volta para a pagina, assim o que o usuario digitou continua preenchido
+     * Se nao for possivel recarregar os dados, as listas de unidades e setores ficam vazias
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para o formulario
+     * @param companyId O id da empresa do usuario logado
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
