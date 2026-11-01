@@ -16,6 +16,7 @@
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Crud.css">
     <link rel="stylesheet" href="${ctx}/Dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
 </head>
 <body>
 
@@ -76,6 +77,8 @@
         <span class="linha"></span>
     </a>
 </div>
+
+<script src="NavBar.js"></script>
 
 </body>
 </html>

@@ -14,6 +14,7 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Crud.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
 </head>
 <body>
 
@@ -325,6 +326,8 @@
         <div class="modal-rodape"></div>
     </div>
 </div>
+
+<script src="NavBar.js"></script>
 
 <script src="${ctx}/Crud.js"></script>
 </body>
