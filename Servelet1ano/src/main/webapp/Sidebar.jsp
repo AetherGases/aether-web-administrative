@@ -10,6 +10,9 @@
     <p class="sidebar-admin">ADMIN</p>
 
     <nav aria-label="Menu principal">
+
+        <div class="navIndicador"></div>
+
         <ul class="sidebar-menu">
             <li>
                 <a href="${ctx}/Dashboard.jsp" class="${ativo eq 'dashboard' ? 'ativo' : ''}">

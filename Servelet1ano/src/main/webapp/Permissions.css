@@ -1,7 +1,5 @@
 /* =====================================================================
-   Permissions.css — telas de permissões (PermissionsOne.jsp e PermissionsTwo.jsp)
-   Figma: TELA CRUDV2 - PERMISSOES (nó 4956:5965) e TELA CRUDV2 - AETHER (nó 4956:6389).
-   Canvas fixo de 1440 x 1024; todas as posições são as do Figma.
+   Permissions.css
    ===================================================================== */
 
 *,
@@ -38,7 +36,6 @@ select {
     overflow: hidden;
 }
 
-/* Barra lateral: ver o final deste arquivo */
 
 /* ------------------------------ CABEÇALHO ------------------------------ */
 .perm-titulo {
@@ -53,7 +50,6 @@ select {
     white-space: nowrap;
 }
 
-/* Na tela "Permissões Aether" o título do Figma usa peso médio */
 .perm-titulo.medio {
     font-weight: 500;
 }
@@ -70,7 +66,6 @@ select {
     white-space: nowrap;
 }
 
-/* Frame 2049760436: seletor "Permissões de:" — 356 x 45 em (335, 152) */
 .perm-seletor {
     position: absolute;
     left: 335px;
@@ -111,7 +106,6 @@ select {
     text-overflow: ellipsis;
 }
 
-/* BARRA DE PESQUISA: 455 x 45 em (706, 152) */
 .perm-pesquisa {
     position: absolute;
     left: 706px;
@@ -151,7 +145,6 @@ select {
 }
 
 /* ------------------------------ CARTÕES DE PERMISSÃO ------------------------------ */
-/* Instância PERMISSÕES (1058 x 662 em 335, 259): grade 2 x 2 de cartões 514 x 262 */
 .perm-lista {
     position: absolute;
     left: 336px;
@@ -178,7 +171,6 @@ select {
     display: none;
 }
 
-/* Glass Effect: caixa branca do ícone com sombra suave */
 .perm-icone {
     position: absolute;
     left: 20px;
@@ -209,6 +201,8 @@ select {
     font-weight: 600;
     line-height: 30px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .perm-cartao p {
@@ -223,7 +217,6 @@ select {
     line-height: 24px;
 }
 
-/* Chave liga/desliga: trilho 59 x 24 em (417, 224), botão 31 x 31 em (445, 220) */
 .perm-chave {
     position: absolute;
     left: 417px;
@@ -297,20 +290,33 @@ select {
     white-space: nowrap;
 }
 
-/* Na página 2 (só 3 cartões) o texto fica à direita, na altura da 2ª linha */
 .perm-contagem.perm-contagem-meio {
     top: 559px;
 }
 
 .perm-paginacao {
     position: absolute;
-    left: 753px;
+    left: 0;
     top: 879px;
+    width: 1440px;
+    padding: 0 49px 0 335px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    pointer-events: none;
+}
+
+.perm-paginacao > * {
+    pointer-events: auto;
+}
+
+.perm-numeros {
     display: flex;
     gap: 16px;
 }
 
-.perm-paginacao > * {
+.perm-seta,
+.perm-pagina {
     width: 43px;
     height: 43px;
     display: flex;
@@ -321,12 +327,18 @@ select {
     font-size: 24px;
     font-weight: 600;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .perm-seta {
     border: 0;
     background: radial-gradient(84.96% 84.96% at 74.42% 0%, #B4A1FF 0%, #7C3AED 100%);
-    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.perm-seta:disabled {
+    opacity: .35;
+    cursor: not-allowed;
 }
 
 .perm-seta svg {
@@ -338,12 +350,25 @@ select {
     border: 1.4px solid #D8DAE3;
     background: #FFF;
     color: #7E8294;
+    transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.perm-pagina:hover:not(.atual) {
+    border-color: #5AD9A2;
+    color: #359270;
 }
 
 .perm-pagina.atual {
     border-color: #5AD9A2;
     background: #5AD9A2;
     color: #FFF;
+    cursor: default;
+}
+
+.perm-seta:focus-visible,
+.perm-pagina:focus-visible {
+    outline: 2px solid #7C3AED;
+    outline-offset: 3px;
 }
 
 .visually-hidden {
@@ -356,123 +381,4 @@ select {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-}
-
-/* ===================== BARRA LATERAL (WEB-INF/includes/Sidebar.jsp) ===================== */
-.sidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 284px;
-    height: 1024px;
-    background: #FFF;
-    border-radius: 0 30px 30px 0;
-}
-.sidebar-logo {
-    position: absolute;
-    left: 48px;
-    top: 28px;
-    width: 186px;
-    height: 71px;
-}
-.sidebar-mascote {
-    position: absolute;
-    left: 38px;
-    top: 198px;
-    width: 264px;
-    height: auto;
-}
-.sidebar-maleta {
-    position: absolute;
-    left: 172.86px;
-    top: 304.4px;
-    width: 75.6px;
-    height: 64.4px;
-}
-.sidebar-admin {
-    position: absolute;
-    left: 0;
-    top: 396px;
-    width: 284px;
-    margin: 0;
-    color: #2DBD7E;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 24px;
-    letter-spacing: 0.5px;
-    text-align: center;
-}
-.sidebar-menu {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.sidebar-menu li {
-    position: absolute;
-    left: 39px;
-    width: 206px;
-    height: 41.2px;
-}
-.sidebar-menu li:nth-child(1) { top: 472px; }
-.sidebar-menu li:nth-child(2) { top: 534px; }
-.sidebar-menu li:nth-child(3) { top: 596px; }
-.sidebar-menu li:nth-child(4) { top: 658px; }
-.sidebar-menu li:nth-child(5) { top: 720px; }
-.sidebar-menu li:nth-child(6) { top: 782px; }
-.sidebar-menu li:nth-child(7) { top: 844px; }
-.sidebar-menu a {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    width: 100%;
-    height: 100%;
-    padding-left: 24px;
-    border-radius: 10px;
-    color: #1E6B56;
-    font-size: 18px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background-color .15s ease;
-}
-.sidebar-menu a:hover {
-    background: #D4FFEB;
-}
-.sidebar-menu a img {
-    width: 17px;
-    height: 18px;
-    object-fit: contain;
-    flex-shrink: 0;
-}
-.sidebar-menu a img.icone-largo {
-    width: 27px;
-    height: 17px;
-    margin-right: -6px;
-}
-.sidebar-menu a.ativo {
-    background: #2DBD7E;
-    color: #FFF;
-}
-.sidebar-menu a.ativo img {
-    filter: brightness(0) invert(1);
-}
-.sidebar-logout {
-    position: absolute;
-    left: 18px;
-    top: 964px;
-    width: 246px;
-    height: 51px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border-radius: 30px;
-    background: #FFF;
-    color: #FB324C;
-    font-size: 24px;
-    font-weight: 500;
-    text-decoration: none;
-}
-.sidebar-logout img {
-    width: 27.3px;
-    height: 23px;
 }

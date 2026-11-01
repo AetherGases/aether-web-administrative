@@ -1,203 +1,607 @@
-.quadradoAetherPulse{
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-width: 1440px;
+    background: #EDEEF8;
+    font-family: "Montserrat", sans-serif;
+    color: #4A435E;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+.tela {
+    position: relative;
+    width: 1440px;
+    height: 1024px;
+    margin: 0 auto;
+    overflow: hidden;
+    background: #EDEEF8;
+}
+
+.blur {
+    position: absolute;
+    width: 708.55px;
+    height: 708.55px;
+    border-radius: 50%;
+    filter: blur(226.9px);
+    pointer-events: none;
+}
+
+.blur-1 { left: 46px;  top: -155px; background: rgba(184, 255, 226, 0.75); }
+.blur-2 { left: 843px; top: -88px;  background: #D7CCFF; }
+.blur-3 { left: -28px; top: 413px;  background: #D7CCFF; }
+.blur-4 { left: 755px; top: 314px;  background: rgba(184, 255, 226, 0.75); }
+
+.voltar {
+    position: absolute;
+    left: 19px;
+    top: 28px;
+    width: 187px;
+    height: 57px;
     display: flex;
-    width: 484px;
-    height: 359px;
-    justify-content: center;
     align-items: center;
-    border-radius: 15px;
-    background: #FFF;
-}
-
-.quadradoAetherHorizon{
-    display: flex;
-    width: 484px;
-    height: 359px;
-    padding: 35px;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 10px;
-    border-radius: 15px;
-    background: #FFF;
-}
-
-.tituloPlanos{
-    color: #000;
-    font-family: "Montserrat", sans-serif;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-}
-
-.tituloPlanoVerde{
-    color: #2DBD7E;
-    font-family: "Montserrat", sans-serif;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-}
-
-.tituloPlanoRoxo{
-    color: #9A72F9;
-    font-family: "Montserrat", sans-serif;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-}
-
-.tipografiaValores{
-    color: #000;
-    font-family: "Montserrat", sans-serif;
-    font-size: 42px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 42px;
-}
-
-.tipografiaPorMes{
-    color: #000;
-    font-family: "Montserrat", sans-serif;
-    font-size: 30px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-}
-
-.linhaPlanoPulse{
-    width: 417px;
-    height: 1px;
-    background: rgba(0, 0, 0, 0.25);
-}
-
-.linhaPlanoHorizon{
-    width: 417px;
-    height: 1px;
-    background: rgba(0, 0, 0, 0.25);
-}
-
-.tipografiaPulse{
-    width: 388px;
-    color: #000;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-}
-
-.tipografiaHorizon{
-    width: 388px;
-    color: #000;
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-}
-
-.quadradoCadastro{
-    display: flex;
-    width: 546px;
-    padding: 35px 42px 42px 42px;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 18px;
-    border-radius: 30px;
-    border: 1px solid #7E8294;
+    gap: 14px;
+    padding-left: 4px;
+    border-radius: 40px;
     background: rgba(255, 255, 255, 0.75);
+    color: #4A435E;
+    font-size: 30px;
+    font-weight: 500;
+    text-decoration: none;
+    z-index: 2;
 }
 
-.cadastroEmpresarial{
-    display: inline-flex;
-    height: 41px;
-    padding: 2px 33px 2px 27px;
-    justify-content: center;
+.voltar span {
+    width: 50px;
+    height: 50px;
+    display: flex;
     align-items: center;
-    gap: 10px;
-    border-radius: 39px;
+    justify-content: center;
+    border-radius: 50%;
     background: #2DBD7E;
 }
 
-.tipografiaCadastroEmpresarial{
+.voltar.roxo span {
+    background: #9A72F9;
+}
+
+.voltar svg {
+    width: 22px;
+    height: 22px;
+}
+
+.logo-lateral {
+    position: absolute;
+    left: 110px;
+    top: 325px;
+    width: 433px;
+    z-index: 1;
+}
+
+.logo-lateral img {
+    display: block;
+    width: 433px;
+    height: 374px;
+}
+
+.logo-lateral p {
+    position: absolute;
+    left: 24px;
+    top: 362px;
+    width: 388px;
+    margin: 0;
+    color: #5B6473;
+    font-family: "Comfortaa", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 22px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.logo-lateral p span {
+    color: #2B8D76;
+}
+
+.cartao-form {
+    position: absolute;
+    left: 755px;
+    width: 546px;
+    border-radius: 30px;
+    border: 1px solid #7E8294;
+    background: rgba(255, 255, 255, 0.75);
+    z-index: 2;
+}
+
+.cartao-form > * {
+    position: absolute;
+}
+
+.cartao-form .mascote {
+    width: 160px;
+    height: 153px;
+}
+
+.pilula-titulo {
+    height: 41px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 39px;
+    background: #2DBD7E;
     color: #FFF;
-    font-family: "Montserrat", sans-serif;
     font-size: 30px;
-    font-style: normal;
     font-weight: 500;
-    line-height: normal;
+    line-height: 37px;
+    white-space: nowrap;
 }
 
-.campoEmpresaCE{
+.pilula-titulo.roxa {
+    background: #9A72F9;
+}
+
+.cartao-form form {
+    position: absolute;
+    inset: 0;
+}
+
+.cartao-form form > * {
+    position: absolute;
+    left: 42.5px;
     width: 461px;
-    height: 54px;
-    border-radius: 15px;
-    border: 1px solid #B3B7C9;
-    background: #FFF;
 }
 
-.campoTamanhoCE{
-    width: 461px;
+.entrada {
     height: 54px;
-    border-radius: 15px;
+    padding: 0 20px;
     border: 1px solid #B3B7C9;
+    border-radius: 15px;
     background: #FFF;
+    color: #161C2D;
+    font-size: 20px;
+    font-weight: 500;
+    outline: none;
 }
 
-.campoCNPJ{
-    width: 461px;
-    height: 54px;
-    border-radius: 15px;
-    border: 1px solid #B3B7C9;
-    background: #FFF;
+.entrada::placeholder {
+    color: #B3B7C9;
 }
 
-.campoEmailCE{
-    width: 461px;
-    height: 54px;
-    border-radius: 15px;
-    border: 1px solid #B3B7C9;
-    background: #FFF;
+select.entrada {
+    height: 64px;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 48px;
+    background: #FFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='8' viewBox='0 0 14 8'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%237E8294' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 22px center no-repeat;
 }
 
-.campoPlano{
+select.entrada:invalid {
+    color: #B3B7C9;
+}
+
+select.entrada.plano {
+    left: 42px;
     width: 462px;
     height: 48px;
     border-radius: 20px;
-    border: 1px solid #B3B7C9;
-    background: rgba(255, 255, 255, 0.47);
+    background-color: rgba(255, 255, 255, 0.47);
 }
 
-.tipografiaCamposCE{
-    overflow: hidden;
-    color: #B3B7C9;
-    text-overflow: ellipsis;
-    font-family: "Montserrat", sans-serif;
-    font-size: 20px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
+.entrada:focus {
+    border-color: #2DBD7E;
+    box-shadow: 0 0 0 3px rgba(45, 189, 126, 0.18);
 }
 
-.tipografiaPossuirConta{
+.cartao-form.roxo .entrada:focus {
+    border-color: #9A72F9;
+    box-shadow: 0 0 0 3px rgba(154, 114, 249, 0.2);
+}
+
+.rotulo-cpf {
+    height: 34px;
+    margin: 0;
     color: #4A435E;
-    font-family: "Montserrat", sans-serif;
-    font-size: 18px;
-    font-style: normal;
+    font-size: 28px;
     font-weight: 500;
-    line-height: normal;
-    opacity: 0.7;
+    line-height: 34px;
 }
 
-.cliqueAqui{
-    opacity: 0.7;
-    color: #2DBD7E;
-    font-family: "Montserrat", sans-serif;
+.entrada.cpf {
+    height: 48px;
+    border-radius: 20px;
+    border-color: #B3B6CA;
+}
+
+.botao-enviar {
+    left: 42px !important;
+    width: 462px !important;
+    height: 55px;
+    border: 0;
+    border-radius: 60px;
+    background: #2DBD7E;
+    color: #FFF;
+    font-size: 28px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.botao-enviar.roxo {
+    background: #9A72F9;
+}
+
+.link-conta {
+    left: 0 !important;
+    width: 100% !important;
+    margin: 0;
+    color: #4A435E;
     font-size: 18px;
-    font-style: normal;
     font-weight: 500;
-    line-height: normal;
+    line-height: 22px;
+    text-align: center;
+    opacity: .7;
+}
+
+.link-conta a {
+    color: #2DBD7E;
+    text-decoration: none;
+}
+
+.link-conta.roxo {
+    opacity: 1;
+}
+
+.link-conta.roxo a {
+    color: #9B73F9;
+}
+
+/* Mensagens do servlet */
+.mensagem {
+    position: absolute;
+    left: 755px;
+    width: 546px;
+    margin: 0;
+    padding: 10px 18px;
+    border-radius: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    z-index: 3;
+}
+
+.mensagem-erro {
+    background: #FFE3E7;
+    color: #C4122B;
+    border: 1px solid #FB324C;
+}
+
+.mensagem-sucesso {
+    background: #D4FFEB;
+    color: #1E6B56;
+    border: 1px solid #2DBD7E;
+}
+
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* --------------------- Dropdown personalizado (tamanho / plano) --------------------- */
+.dropdownPersonalizado {
+    height: 64px;
+}
+
+.dropdownPersonalizado.dropdownAberto {
+    z-index: 20;
+}
+
+.dropdownRotulo {
+    position: absolute;
+    top: 0;
+    left: 24px;
+    z-index: 2;
+    height: 20px;
+    padding: 0 6px;
+    line-height: 20px;
+    background: linear-gradient(to bottom, transparent 50%, #FFF 50%);
+    font-size: 15px;
+    font-weight: 500;
+    color: #B3B7C9;
+    pointer-events: none;
+}
+
+.dropdownCaixa {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    border: 1px solid #B3B7C9;
+    border-radius: 15px;
+    background-color: #FFF;
+}
+
+.dropdownPersonalizado.invalido .dropdownCaixa {
+    border-color: #FB324C;
+    box-shadow: 0 0 0 3px rgba(251, 50, 76, 0.15);
+}
+
+.dropdownBotao {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 52px;
+    padding: 0 22px 0 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 20px;
+    font-weight: 500;
+    color: #B3B7C9;
+}
+
+.dropdownBotao:focus-visible {
+    outline: 2px solid #2DBD7E;
+    outline-offset: -2px;
+    border-radius: 14px;
+}
+
+.dropdownSeta {
+    flex: none;
+    width: 20px;
+    height: 11px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='11' viewBox='0 0 20 11' fill='none'%3E%3Cpath d='M1 1l9 9 9-9' stroke='%237E8294' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+}
+
+.dropdownAberto .dropdownSeta {
+    transform: rotate(180deg);
+}
+
+.dropdownLista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: max-height 0.3s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0.3s;
+}
+
+.dropdownAberto .dropdownLista {
+    max-height: 200px;
+    opacity: 1;
+    visibility: visible;
+    transition: max-height 0.3s ease,
+    opacity 0.25s ease,
+    visibility 0s linear 0s;
+}
+
+.dropdownOpcao {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 20px;
+    border-top: 1px solid #B3B7C9;
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: 500;
+    color: #B3B7C9;
+    transform: translateY(-6px);
+    transition: transform 0.7s ease, background-color 0.15s ease;
+}
+
+.dropdownAberto .dropdownOpcao {
+    transform: translateY(0);
+}
+
+.dropdownOpcao[hidden] {
+    display: none;
+}
+
+.dropdownOpcao:hover,
+.dropdownOpcao:focus-visible {
+    background-color: rgba(45, 189, 126, 0.12);
+    outline: none;
+}
+
+.mensagem p {
+    margin: 0;
+}
+
+.mensagem p + p {
+    margin-top: 4px;
+}
+
+/* --------------------- Planos (PLANO PULSE / PLANO HORIZON) --------------------- */
+.plano-card {
+    --cor: #2DBD7E;
+    --t-titulo: 42.75px;
+    --t-preco: 89.44px;
+    --t-hr: 158px;
+    --t-lista: 175.34px;
+    --ul-left: 36px;
+    position: absolute;
+    left: 114px;
+    width: 484px;
+    height: 359px;
+    border-radius: 15px;
+    background: #FFF;
+    color: #000;
+    z-index: 1;
+    transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.plano-card > * {
+    position: absolute;
+    margin: 0;
+}
+
+.plano-pulse   { top: 128px; }
+
+.plano-horizon {
+    top: 536px;
+    --cor: #9A72F9;
+    --t-titulo: 30.75px;
+    --t-preco: 98.44px;
+    --t-hr: 178px;
+    --t-lista: 198.34px;
+    --ul-left: 35.5px;
+}
+
+.plano-card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px var(--cor);
+    z-index: 2;
+}
+
+.plano-card h2 {
+    left: 24px;
+    top: var(--t-titulo);
+    font-size: 30px;
+    font-weight: 500;
+    line-height: 37px;
+    white-space: nowrap;
+}
+
+.plano-card h2 .verde { color: #2DBD7E; }
+.plano-card h2 .roxo  { color: #9A72F9; }
+
+.plano-card .preco {
+    left: 24px;
+    top: var(--t-preco);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 51px;
+    white-space: nowrap;
+}
+
+.plano-card .preco strong {
+    font-size: 42px;
+    font-weight: 500;
+}
+
+.plano-card hr {
+    left: 24px;
+    top: var(--t-hr);
+    width: 417px;
+    height: 1px;
+    border: 0;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.plano-card ul {
+    left: var(--ul-left);
+    top: var(--t-lista);
+    width: 388px;
+    padding: 0;
+    list-style: none;
+}
+
+.plano-card li {
+    position: relative;
+    padding-left: 25px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.plano-card li + li { margin-top: 21px; }
+
+.plano-horizon li:nth-child(2) { margin-top: 25px; }
+
+.plano-card li::before,
+.plano-card li::after {
+    content: "";
+    position: absolute;
+    transition: background-color .25s ease;
+}
+
+.plano-card li::before {
+    left: 0;
+    top: 4.66px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #000;
+}
+
+.plano-card li::after {
+    left: 4.8px;
+    top: 10.06px;
+    width: 5.4px;
+    height: 3.6px;
+    background: var(--cor);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='61.8 224.35 5.4 3.6'%3E%3Cpath d='M67.1079 224.836L63.7858 227.867C63.7569 227.894 63.7225 227.915 63.6846 227.929C63.6468 227.943 63.6062 227.951 63.5652 227.951C63.5242 227.951 63.4836 227.943 63.4458 227.929C63.4079 227.915 63.3735 227.894 63.3446 227.867L61.8912 226.541C61.8622 226.515 61.8392 226.483 61.8236 226.449C61.8079 226.414 61.7998 226.377 61.7998 226.34C61.7998 226.302 61.8079 226.265 61.8236 226.231C61.8392 226.196 61.8622 226.165 61.8912 226.138C61.9202 226.112 61.9545 226.091 61.9924 226.077C62.0303 226.062 62.0708 226.055 62.1118 226.055C62.1528 226.055 62.1933 226.062 62.2312 226.077C62.269 226.091 62.3034 226.112 62.3324 226.138L63.5655 227.263L66.6672 224.434C66.7257 224.381 66.8051 224.351 66.8878 224.351C66.9706 224.351 67.0499 224.381 67.1084 224.434C67.1669 224.487 67.1998 224.56 67.1998 224.635C67.1998 224.711 67.1669 224.783 67.1084 224.837L67.1079 224.836Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='61.8 224.35 5.4 3.6'%3E%3Cpath d='M67.1079 224.836L63.7858 227.867C63.7569 227.894 63.7225 227.915 63.6846 227.929C63.6468 227.943 63.6062 227.951 63.5652 227.951C63.5242 227.951 63.4836 227.943 63.4458 227.929C63.4079 227.915 63.3735 227.894 63.3446 227.867L61.8912 226.541C61.8622 226.515 61.8392 226.483 61.8236 226.449C61.8079 226.414 61.7998 226.377 61.7998 226.34C61.7998 226.302 61.8079 226.265 61.8236 226.231C61.8392 226.196 61.8622 226.165 61.8912 226.138C61.9202 226.112 61.9545 226.091 61.9924 226.077C62.0303 226.062 62.0708 226.055 62.1118 226.055C62.1528 226.055 62.1933 226.062 62.2312 226.077C62.269 226.091 62.3034 226.112 62.3324 226.138L63.5655 227.263L66.6672 224.434C66.7257 224.381 66.8051 224.351 66.8878 224.351C66.9706 224.351 67.0499 224.381 67.1084 224.434C67.1669 224.487 67.1998 224.56 67.1998 224.635C67.1998 224.711 67.1669 224.783 67.1084 224.837L67.1079 224.836Z'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
+.plano-card:hover li::before { background: var(--cor); }
+.plano-card:hover li::after  { background: #000; }
+
+@media (prefers-reduced-motion: reduce) {
+    .plano-card,
+    .plano-card li::before,
+    .plano-card li::after { transition: none; }
+}
+
+/* --------------------- Verificação: código de 6 dígitos --------------------- */
+.codigo {
+    left: 42px !important;
+    width: 462px !important;
+    display: flex;
+    gap: 6px;
+}
+
+.codigo input {
+    width: 72px;
+    height: 81px;
+    padding: 0;
+    border: 1px solid #5B21B6;
+    border-radius: 8px;
+    background: #FFF;
+    color: #5B21B6;
+    font-size: 32px;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+}
+
+.codigo input:focus {
+    box-shadow: 0 0 0 3px rgba(154, 114, 249, 0.25);
+}
+
+.cartao-form .correio {
+    left: 335px;
+    top: 48px;
+    width: 54px;
+    height: 43px;
+    transform: rotate(-13.25deg);
 }

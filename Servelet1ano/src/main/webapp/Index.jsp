@@ -675,12 +675,27 @@
             </div>
 
             <div class="cardCadastroLogin">
-                <form id="formularioEmpresarial" class="formularioEmpresarial" action="${pageContext.request.contextPath}/ManagerRegister.jsp" method="post" accept-charset="UTF-8">
+                <form id="formularioEmpresarial" class="formularioEmpresarial" action="${pageContext.request.contextPath}/empresa" method="post" accept-charset="UTF-8">
 
                     <img class="aekoCadastro" src="Imagens/Aeko.svg" alt="" loading="lazy">
 
                     <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
+                    <!-- Empresa -->
+                    <div class="campoFormulario">
+                        <label class="rotuloCampoOculto" for="empresaNome">Nome da empresa</label>
+                        <input class="entradaEmpresarial" type="text" id="empresaNome" name="empresas"
+                               placeholder="Nome da empresa" autocomplete="organization"
+                               value="<c:out value='${requestScope.empresas}' />" required>
+                    </div>
+
+                    <!-- Razão social (o servlet exige o campo "razoes") -->
+                    <div class="campoFormulario">
+                        <label class="rotuloCampoOculto" for="empresaRazao">Razão social</label>
+                        <input class="entradaEmpresarial" type="text" id="empresaRazao" name="razoes"
+                               placeholder="Razão social"
+                               value="<c:out value='${requestScope.razoes}' />" required>
+                    </div>
 
                     <!-- Tamanho -->
                     <div class="dropdownPersonalizado">
@@ -688,30 +703,32 @@
                         <div class="dropdownCaixa">
                             <button class="dropdownBotao" type="button" aria-haspopup="listbox" aria-expanded="false"
                                     aria-labelledby="rotuloTamanho textoTamanho">
-                                <span class="dropdownTexto" id="textoTamanho">Selecionar</span>
+                                <span class="dropdownTexto" id="textoTamanho">${requestScope.tamanhos eq 'grande' ? 'Grande' : (requestScope.tamanhos eq 'media' ? 'Média' : (requestScope.tamanhos eq 'pequena' ? 'Pequena' : 'Selecionar'))}</span>
                                 <span class="dropdownSeta" aria-hidden="true"></span>
                             </button>
                             <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloTamanho">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>Grande</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">Média</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">Pequena</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" ${requestScope.tamanhos eq 'grande' ? 'data-selecionado' : ''}>Grande</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media" ${requestScope.tamanhos eq 'media' ? 'data-selecionado' : ''}>Média</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena" ${requestScope.tamanhos eq 'pequena' ? 'data-selecionado' : ''}>Pequena</li>
                             </ul>
-                            <input type="hidden" id="empresaTamanho" name="tamanhos" value="">
+                            <input type="hidden" id="empresaTamanho" name="tamanhos" value="<c:out value='${requestScope.tamanhos}' />">
                         </div>
                     </div>
 
                     <!-- CNPJ -->
                     <div class="campoFormulario">
                         <label class="rotuloCampoOculto" for="empresaCnpj">CNPJ</label>
-                        <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="cnpj"
-                               placeholder="00.000.000/0001-91" inputmode="numeric" autocomplete="off" required>
+                        <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="campoCNPJ"
+                               placeholder="00.000.000/0001-91" inputmode="numeric" autocomplete="off"
+                               value="<c:out value='${requestScope.campoCNPJ}' />" required>
                     </div>
 
                     <!-- E-mail -->
                     <div class="campoFormulario">
                         <label class="rotuloCampoOculto" for="empresaEmail">E-mail</label>
-                        <input class="entradaEmpresarial" type="email" id="empresaEmail" name="email"
-                               placeholder="e-mail" autocomplete="email" required>
+                        <input class="entradaEmpresarial" type="email" id="empresaEmail" name="campoEmail"
+                               placeholder="e-mail" autocomplete="email"
+                               value="<c:out value='${requestScope.campoEmail}' />" required>
                     </div>
 
                     <!-- Plano -->
@@ -720,14 +737,14 @@
                         <div class="dropdownCaixa">
                             <button class="dropdownBotao" type="button" aria-haspopup="listbox" aria-expanded="false"
                                     aria-labelledby="rotuloPlano textoPlano">
-                                <span class="dropdownTexto" id="textoPlano">Selecionar</span>
+                                <span class="dropdownTexto" id="textoPlano">${not empty requestScope.planos ? requestScope.planos : 'Selecionar'}</span>
                                 <span class="dropdownSeta" aria-hidden="true"></span>
                             </button>
                             <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloPlano">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pulse">Aether Pulse</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="horizon">Aether Horizon</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="Aether Pulse" ${requestScope.planos eq 'Aether Pulse' ? 'data-selecionado' : ''}>Aether Pulse</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="Aether Horizon" ${requestScope.planos eq 'Aether Horizon' ? 'data-selecionado' : ''}>Aether Horizon</li>
                             </ul>
-                            <input type="hidden" id="empresaPlano" name="plano" value="">
+                            <input type="hidden" id="empresaPlano" name="planos" value="<c:out value='${requestScope.planos}' />">
                         </div>
                     </div>
 

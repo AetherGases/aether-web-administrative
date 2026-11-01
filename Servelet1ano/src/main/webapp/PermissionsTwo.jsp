@@ -14,6 +14,7 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Permissions.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
 </head>
 <body>
 
@@ -171,6 +172,10 @@
         });
     })();
 </script>
+
+<script src="Crud.js"></script>
+
+<script src="NavBar.js"></script>
 
 </body>
 </html>
