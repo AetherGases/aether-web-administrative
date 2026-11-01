@@ -4,6 +4,7 @@ import com.example.servelet1ano.connection.ConnectionFactory;
 import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
+import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.util.SqlUtil;
 import com.example.servelet1ano.validation.Validators;
 
@@ -254,6 +255,38 @@ public class CompaniesDAO implements DAOI<Companies, CompaniesFilter> {
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar a empresa de id " + id + " no banco de dados.", e);
+        }
+    }
+
+    /**
+     * metodo para buscar o empregado pelo cpf (somente ativos)
+     * O cpf é unico no banco, entao devolve só um registro
+     * Nao traz a senha (hash)
+     * @param cpf O cpf do empregado (pode vir com ou sem pontuacao)
+     * @return Retorna o empregado encontrado ou null caso nao exista
+     */
+    public Companies searchByCnpj(String cpf) {
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "select * " + "from companies c " + "where c.cnpj = ? and c.is_active = true"
+                )
+        ) {
+
+            pstmt.setString(1, cleanCnpj(cpf));
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                if (rs.next()) {
+                    return mapCompany(rs);
+                }
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar a empresa pelo cnpj no banco de dados.", e);
         }
     }
 

@@ -8,26 +8,6 @@
     border-radius: 0 30px 30px 0;
 }
 
-/* ===== BARRINHA ANIMADA DO MENU ===== */
-
-.navIndicador {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 0;
-    height: 0;
-    border-radius: 10px;
-    background: #2DBD7E;
-    z-index: 0;
-    pointer-events: none;
-    transition: transform 0.5s cubic-bezier(0.34, 1.4, 0.64, 1),
-    width 0.5s cubic-bezier(0.34, 1.4, 0.64, 1),
-    height 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
-    will-change: transform;
-}
-
-/* ===== LOGO, MASCOTE E ADMIN ===== */
-
 .sidebar-logo {
     position: absolute;
     left: 48px;
@@ -66,8 +46,6 @@
     text-align: center;
 }
 
-/* ===== MENU ===== */
-
 .sidebar-menu {
     margin: 0;
     padding: 0;
@@ -76,7 +54,6 @@
 
 .sidebar-menu li {
     position: absolute;
-    z-index: 1; /* fica por cima da barrinha */
     left: 39px;
     width: 206px;
     height: 41.2px;
@@ -101,8 +78,7 @@
     font-size: 18px;
     font-weight: 500;
     text-decoration: none;
-    /* a cor só muda quando a barrinha já está chegando */
-    transition: background-color .15s ease, color .3s ease .15s;
+    transition: background-color .15s ease;
 }
 
 .sidebar-menu a:hover {
@@ -122,20 +98,14 @@
     margin-right: -6px;
 }
 
-/* item ativo: sem background, quem pinta de verde é o .navIndicador */
 .sidebar-menu a.ativo {
+    background: #2DBD7E;
     color: #FFF;
-}
-
-.sidebar-menu a.ativo:hover {
-    background: transparent; /* não deixa o hover claro cobrir o verde */
 }
 
 .sidebar-menu a.ativo img {
     filter: brightness(0) invert(1);
 }
-
-/* ===== LOGOUT ===== */
 
 .sidebar-logout {
     position: absolute;
@@ -143,33 +113,33 @@
     top: 964px;
     width: 246px;
     height: 51px;
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    border: 2px solid transparent;
     border-radius: 30px;
     background: #FFF;
     color: #FB324C;
     font-size: 24px;
     font-weight: 500;
     text-decoration: none;
-    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 .sidebar-logout img {
     width: 27.3px;
     height: 23px;
-    transition: filter 0.25s ease;
 }
 
-.sidebar-logout:hover {
-    background-color: #FB324C;
-    border-color: #FB324C;
-    color: #FFF;
+.sidebar-logout-form {
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
-.sidebar-logout:hover img {
-    filter: brightness(0) invert(1);
+.sidebar-logout-form .sidebar-logout {
+    font: inherit;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    width: 100%;
 }

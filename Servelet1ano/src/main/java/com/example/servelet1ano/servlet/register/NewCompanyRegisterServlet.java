@@ -2,7 +2,6 @@ package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.PlansDAO;
-import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
 import com.example.servelet1ano.model.Plans;
@@ -14,11 +13,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -65,14 +64,6 @@ public class NewCompanyRegisterServlet extends HttpServlet {
         String email = request.getParameter("campoEmail");
         String plano = request.getParameter("planos");
 
-        request.setAttribute("empresas", empresa);
-        request.setAttribute("razoes", razao);
-        request.setAttribute("tamanhos", tamanho);
-        request.setAttribute("campoCNPJ", cnpj);
-        request.setAttribute("campoEmail", email);
-        request.setAttribute("planos", plano);
-
-
         if (empresa == null || empresa.isBlank()
                 || razao == null || razao.isBlank()
                 || tamanho == null || tamanho.isBlank()
@@ -94,7 +85,6 @@ public class NewCompanyRegisterServlet extends HttpServlet {
         cnpj = cnpj.trim();
         email = email.trim();
         plano = plano.trim();
-
 
         CompanySize tamanhoEmpresa;
 
@@ -136,16 +126,10 @@ public class NewCompanyRegisterServlet extends HttpServlet {
 
 
             CompaniesDAO companiesDAO = new CompaniesDAO();
-            CompaniesFilter filter = new CompaniesFilter();
 
-            filter.setName(empresa);
-            filter.setCnpj(cnpj);
+            Companies empresaEncontrada = companiesDAO.searchByCnpj(cnpj);
 
-            List<Companies> empresasEncontradas =
-                    companiesDAO.searchAll(filter);
-
-            if (empresasEncontradas != null
-                    && !empresasEncontradas.isEmpty()) {
+            if (empresaEncontrada != null) {
 
                 exibirErro(
                         request,
@@ -175,8 +159,7 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             subscription.setInstallments(true);
 
 
-            CompanyRegistrationService service =
-                    new CompanyRegistrationService();
+            CompanyRegistrationService service = new CompanyRegistrationService();
 
             int empresaId = service.register(novaEmpresa, subscription);
 
@@ -192,10 +175,34 @@ public class NewCompanyRegisterServlet extends HttpServlet {
                 return;
             }
 
+            if (empresaId <= 0) {
+                exibirErro(
+                        request,
+                        response,
+                        "Não foi possível identificar a empresa cadastrada."
+                );
+                return;
+            }
+
+            HttpSession sessaoAnterior = request.getSession(false);
+
+            if (sessaoAnterior != null) {
+                sessaoAnterior.invalidate();
+            }
+
+            HttpSession sessao = request.getSession(true);
+
+            request.changeSessionId();
+
+            sessao.setAttribute("pendingCompanyId", empresaId);
+
+            sessao.setMaxInactiveInterval(20 * 60);
+
             response.sendRedirect(
-                    request.getContextPath() + "/gerente?sucesso=1"
+                    request.getContextPath() + "/gerente"
             );
             return;
+
         } catch (RuntimeException e) {
             LOGGER.log(
                     Level.SEVERE,
@@ -229,8 +236,16 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             HttpServletResponse response,
             String mensagem
     ) throws ServletException, IOException {
+
         request.setAttribute("erro", mensagem);
-        request.getRequestDispatcher(CADASTRO)
+
+        String origem = request.getParameter("origem");
+
+        String pagina = "index".equals(origem)
+                ? "/Index.jsp"
+                : "/CompanyRegister.jsp";
+
+        request.getRequestDispatcher(pagina)
                 .forward(request, response);
     }
 }

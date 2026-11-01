@@ -532,6 +532,74 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
         }
     }
 
+
+    /**
+     * Busca um funcionário ativo pelo e-mail e empresa.
+     * Retorna somente o registro correspondente.
+     *
+     * @param email E-mail do funcionário
+     * @param companyId Id da empresa
+     * @return Funcionário encontrado ou null
+     */
+    public Employees searchByEmailAndCompany(
+            String email,
+            int companyId
+    ) {
+
+        if (email == null || email.isBlank() || companyId <= 0) {
+            return null;
+        }
+
+        String sql = """
+            SELECT e.*,
+                   e.company_id AS companyId,
+                   e.permission_group_id AS permissionGroupId,
+                   e.unit_id AS unitId,
+                   e.sector_id AS sectorId,
+                   c.name AS companyName,
+                   c.id AS idCompany,
+                   pg.id AS idPermissionGroup,
+                   pg.name AS permissionGroup,
+                   u.name AS unitName,
+                   u.id AS idUnit,
+                   sec.id AS idSector,
+                   sec.name AS sectorName
+            FROM employees e
+            JOIN companies c ON c.id = e.company_id
+            LEFT JOIN permission_groups pg
+                ON pg.id = e.permission_group_id
+            LEFT JOIN units u ON u.id = e.unit_id
+            LEFT JOIN sectors sec ON sec.id = e.sector_id
+            WHERE e.email = ?
+              AND e.company_id = ?
+              AND e.is_active = TRUE
+            LIMIT 1
+            """;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setString(1, email);
+            pstmt.setInt(2, companyId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapEmployee(rs);
+                }
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar funcionário por e-mail e empresa.", e
+            );
+        }
+    }
+
+
     /**
      * metodo para buscar o empregado pelo cpf (somente ativos)
      * O cpf é unico no banco, entao devolve só um registro
@@ -569,21 +637,16 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
      * E o unico metodo de busca que traz a senha (hash), para o servlet conferir com o PasswordHasher
      * Procura pelo email (sem diferenciar maiusculas) dentro da empresa e, se o nome vier, pelo nome igual
      * @param email O email digitado no login
-     * @param companyId O id da empresa escolhida no login
-     * @param name O nome digitado no login (se for null ou vazio, nao entra na busca)
      * @return O empregado com o passwordHash preenchido, ou null se nao achou exatamente um
      */
-    public Employees searchForLogin(String email, int companyId, String name) {
+    public Employees searchForLogin(String email) {
 
         if (email == null || email.isBlank()) {
             return null;
         }
 
-        boolean withName = name != null && !name.isBlank();
-
         String sql = "select e.password_hash, " + SELECT_FIELDS + FROM_EMPLOYEES +
                 "where lower(e.email) = ? " +
-                (withName ? " and lower(e.name) = lower(?)" : "") +
                 " limit 2";
 
         try (
@@ -592,11 +655,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
         ) {
 
             pstmt.setString(1, cleanEmail(email));
-            pstmt.setInt(2, companyId);
 
-            if (withName) {
-                pstmt.setString(3, name.trim());
-            }
 
             try (ResultSet rs = pstmt.executeQuery()) {
 
@@ -728,6 +787,65 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                 id
         );
     }
+
+
+    /**
+     * Desativa somente funcionários do grupo comum.
+     *
+     * @param id Id do funcionário que será desativado
+     * @param companyId Id da empresa autenticada
+     * @param loggedEmployeeId Id do funcionário autenticado
+     * @return true se o funcionário foi desativado
+     */
+    public boolean deleteCommonEmployee(
+            int id,
+            int companyId,
+            int loggedEmployeeId
+    ) {
+
+        if (id <= 0
+                || companyId <= 0
+                || loggedEmployeeId <= 0
+                || id == loggedEmployeeId) {
+            return false;
+        }
+
+        String sql = """
+            UPDATE employees e
+            SET is_active = FALSE,
+                status = 'INACTIVE',
+                updated_at = CURRENT_TIMESTAMP
+            WHERE e.id = ?
+              AND e.company_id = ?
+              AND e.is_active = TRUE
+              AND EXISTS (
+                  SELECT 1
+                  FROM permission_groups pg
+                  WHERE pg.id = e.permission_group_id
+                    AND pg.company_id = e.company_id
+                    AND pg.is_active = TRUE
+              )
+            """;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setInt(1, id);
+            pstmt.setInt(2, companyId);
+
+            return pstmt.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao desativar funcionário.", e
+            );
+        }
+    }
+
+
+
 
     /**
      * metodo que desativa por id da empresa (para quando uma empresa for desativada)
@@ -870,6 +988,84 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
             return falseIfDuplicate(e, "Erro ao atualizar o funcionário de id " + id + " no banco de dados.");
         }
     }
+
+
+    /**
+     * Atualiza somente os dados permitidos de um funcionário comum.
+     * Não permite editar gerentes nem modificar informações sensíveis.
+     *
+     * @param id Id do funcionário selecionado
+     * @param companyId Id da empresa autenticada
+     * @param nome Novo nome
+     * @param email Novo e-mail
+     * @param status Novo status
+     * @return true se o funcionário foi atualizado
+     */
+    public boolean updateCommonEmployee(
+            int id,
+            int companyId,
+            String nome,
+            String email,
+            StatusEmployee status
+    ) {
+
+        if (id <= 0
+                || companyId <= 0
+                || nome == null
+                || nome.isBlank()
+                || nome.length() > 255
+                || email == null
+                || email.isBlank()
+                || email.length() > 255
+                || !Validators.isEmail(email)
+                || status == null) {
+            return false;
+        }
+
+        String sql = """
+            UPDATE employees e
+            SET name = ?,
+                email = ?,
+                status = ?::status_employee,
+                updated_at = CURRENT_TIMESTAMP
+            WHERE e.id = ?
+              AND e.company_id = ?
+              AND e.is_active = TRUE
+              AND EXISTS (
+                  SELECT 1
+                  FROM permission_groups pg
+                  WHERE pg.id = e.permission_group_id
+                    AND pg.company_id = e.company_id
+                    AND pg.is_active = TRUE
+              )
+            """;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setString(1, nome.trim());
+            pstmt.setString(
+                    2, email.trim().toLowerCase(Locale.ROOT)
+            );
+            pstmt.setString(3, status.getValor());
+            pstmt.setInt(4, id);
+            pstmt.setInt(5, companyId);
+
+            return pstmt.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            if ("23505".equals(e.getSQLState())) {
+                return false;
+            }
+
+            throw new RuntimeException(
+                    "Erro ao atualizar funcionário.", e
+            );
+        }
+    }
+
 
     /**
      * Metodo que muda os values do empregado selecionado pelo cpf
@@ -1234,7 +1430,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
     }
 
     /**
-     * Desfaz a transacao sem esconder o erro original
+     * Desfaz a transacao
      */
     private void rollbackQuietly(Connection conn, Exception cause) {
         try {

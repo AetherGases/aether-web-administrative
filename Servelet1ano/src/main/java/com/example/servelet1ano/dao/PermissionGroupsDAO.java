@@ -83,6 +83,57 @@ public class PermissionGroupsDAO implements DAOI<PermissionGroups, PermissionGro
         return permissionGroups;
     }
 
+
+    /**
+     * Busca um grupo ativo pelo nome exato e empresa.
+     *
+     * @param name Nome do grupo
+     * @param companyId Id da empresa
+     * @return Grupo encontrado ou null
+     */
+    public PermissionGroups searchByNameAndCompany(
+            String name,
+            int companyId
+    ) {
+
+        if (name == null || name.isBlank() || companyId <= 0) {
+            return null;
+        }
+
+        String sql = """
+            SELECT *
+            FROM permission_groups
+            WHERE name = ?
+              AND company_id = ?
+              AND is_active = TRUE
+            ORDER BY id
+            LIMIT 1
+            """;
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setString(1, name);
+            pstmt.setInt(2, companyId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapGroup(rs);
+                }
+            }
+
+            return null;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao buscar grupo de permissão da empresa.", e
+            );
+        }
+    }
+
+
     /**
      * Metodo que busca so os grupos de permissao globais ativos (os que nao pertencem a nenhuma empresa, da Aether)
      * @return List<PermissionGroups> com os grupos globais

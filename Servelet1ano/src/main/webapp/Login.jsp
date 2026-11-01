@@ -45,10 +45,6 @@
 
         <form action="${ctx}/login" method="post" accept-charset="UTF-8">
 
-            <label for="nome" class="visually-hidden">Nome</label>
-            <input class="entrada" style="top: 297px" type="text" id="nome" name="campoNome" placeholder="Nome"
-                   autocomplete="username" maxlength="255" value="<c:out value='${param.campoNome}'/>" required>
-
             <label for="email" class="visually-hidden">E-mail</label>
             <input class="entrada" style="top: 373px" type="email" id="email" name="campoEmail" placeholder="E-mail"
                    autocomplete="email" maxlength="255" value="<c:out value='${param.campoEmail}'/>" required>

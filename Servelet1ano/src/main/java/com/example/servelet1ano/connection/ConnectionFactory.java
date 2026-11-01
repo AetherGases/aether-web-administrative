@@ -55,8 +55,8 @@ public class ConnectionFactory {
         config.setMaximumPoolSize(5);
         config.setMinimumIdle(3);
         config.setConnectionTimeout(30000);
-        config.setIdleTimeout(60000);
-        config.setMaxLifetime(180000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
         config.setAutoCommit(true);
         config.setConnectionTestQuery("select 1");
         config.addDataSourceProperty("cachePrepStmts", "true");
