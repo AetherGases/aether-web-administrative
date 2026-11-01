@@ -3,7 +3,6 @@ package com.example.servelet1ano.servlet.register;
 import com.example.servelet1ano.connection.DatabaseConfig;
 import com.example.servelet1ano.dao.PasswordRecoveryDAO;
 import com.example.servelet1ano.util.PasswordHasher;
-import com.example.servelet1ano.util.service.AuthorizationService;
 import com.example.servelet1ano.util.service.PasswordRecoveryService;
 
 import jakarta.servlet.ServletException;
@@ -62,13 +61,6 @@ public class VerificationServlet extends HttpServlet{
 
             request.getRequestDispatcher("/RecoverPassword.jsp")
                     .forward(request, response);
-            return;
-        }
-
-        AuthorizationService authorization = new AuthorizationService();
-
-        if (!authorization.csrfTokenValido(request)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
 

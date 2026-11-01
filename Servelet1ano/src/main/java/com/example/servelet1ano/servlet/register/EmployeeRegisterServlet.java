@@ -16,6 +16,7 @@ import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
 import com.example.servelet1ano.util.service.AuthorizationService;
+import com.example.servelet1ano.filter.EmployeesFilter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -116,6 +117,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
             request.setAttribute("empresa", empresa);
 
             carregarUnidades(request, companyId);
+            carregarFuncionarios(request, companyId);
             carregarSetores(request, companyId);
 
             if ("true".equals(request.getParameter("sucesso"))) {
@@ -561,6 +563,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
 
             request.setAttribute("empresa", empresa);
             carregarUnidades(request, companyId);
+            carregarFuncionarios(request, companyId);
             carregarSetores(request, companyId);
 
         } catch (RuntimeException e) {
@@ -572,6 +575,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
 
             request.setAttribute("unidades", List.of());
             request.setAttribute("setores", List.of());
+            request.setAttribute("funcionarios", List.of());
         }
 
         request.getRequestDispatcher(CADASTRO)
@@ -790,5 +794,44 @@ public class EmployeeRegisterServlet extends HttpServlet {
             );
         }
     }
+
+    /**
+     * Busca os funcionarios da empresa autenticada.
+     *
+     * Usa o companyId da sessao para impedir que
+     * funcionarios de outras empresas sejam exibidos.
+     *
+     * @param request Requisicao HTTP
+     * @param companyId ID da empresa autenticada
+     */
+    private void carregarFuncionarios(
+            HttpServletRequest request,
+            int companyId
+    ) {
+
+        EmployeesFilter filtro = new EmployeesFilter();
+
+        filtro.setCompanyId(companyId);
+
+        EmployeesDAO employeesDAO = new EmployeesDAO();
+
+        List<Employees> funcionarios =
+                employeesDAO.searchAll(filtro);
+
+        request.setAttribute(
+                "funcionarios",
+                funcionarios
+        );
+
+        LOGGER.log(
+                Level.INFO,
+                "Funcionarios carregados para a empresa {0}: {1}",
+                new Object[]{
+                        companyId,
+                        funcionarios == null ? 0 : funcionarios.size()
+                }
+        );
+    }
+
 
 }

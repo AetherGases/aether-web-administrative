@@ -65,6 +65,8 @@
         <h1 class="pilula-titulo" style="left: 80.5px; top: 137px; width: 385px">Cadastro empresarial</h1>
 
         <form action="${ctx}/empresa" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="origem" value="empresa">
+
             <label for="empresa" class="visually-hidden">Nome da empresa</label>
             <input class="entrada" style="top: 196px" type="text" id="empresa" name="empresas"
                    placeholder="Nome da empresa" value="<c:out value='${requestScope.name}'/>" required>

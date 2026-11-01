@@ -236,8 +236,16 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             HttpServletResponse response,
             String mensagem
     ) throws ServletException, IOException {
+
         request.setAttribute("erro", mensagem);
-        request.getRequestDispatcher(CADASTRO)
+
+        String origem = request.getParameter("origem");
+
+        String pagina = "index".equals(origem)
+                ? "/Index.jsp"
+                : "/CompanyRegister.jsp";
+
+        request.getRequestDispatcher(pagina)
                 .forward(request, response);
     }
 }

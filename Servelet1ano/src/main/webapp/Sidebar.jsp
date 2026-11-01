@@ -32,15 +32,29 @@
                 </a>
             </li>
             <li>
-                <a href="${ctx}/permissoes]" class="${ativo eq 'permissoes' ? 'ativo' : ''}">
+                <a href="${ctx}/permissoes" class="${ativo eq 'permissoes' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/permissao1.svg" alt="">Permissões
                 </a>
             </li>
         </ul>
     </nav>
+    <form action="${ctx}/logout"
+          method="POST"
+          class="sidebar-logout-form">
 
-    <a class="sidebar-logout" href="${ctx}/login">
-        Logout
-        <img src="${ctx}/Imagens/logout.svg" alt="">
-    </a>
+        <input type="hidden"
+               name="csrfToken"
+               value="<c:out value='${sessionScope.adminCsrfToken}' />">
+
+        <button type="submit"
+                class="sidebar-logout">
+
+            Logout
+
+            <img src="${ctx}/Imagens/logout.svg"
+                 alt=""
+                 aria-hidden="true">
+
+        </button>
+    </form>
 </aside>

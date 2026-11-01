@@ -14,8 +14,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="${ctx}/Servelet1ano/src/main/webapp/Crud.css">
-    <link rel="stylesheet" href="${ctx}/Servelet1ano/src/main/webapp/Dashboard.css">
+    <link rel="stylesheet" href="${ctx}/Crud.css">
+    <link rel="stylesheet" href="${ctx}/Dashboard.css">
 </head>
 <body>
 
@@ -44,7 +44,7 @@
         <h2>Olá, <c:out value="${primeiroNome}"/>!</h2>
 
         <a class="botao-cartao botao-unidades" href="${ctx}/unidades">Ver unidades</a>
-        <a class="botao-cartao botao-funcionarios" href="${ctx}/funcionariosx">Ver funcionários</a>
+        <a class="botao-cartao botao-funcionarios" href="${ctx}/funcionarios">Ver funcionários</a>
     </section>
 
 

@@ -53,11 +53,6 @@ public class DashboardServlet extends HttpServlet {
         Integer employeeId = getSessionId(session, "employeeId");
         Integer companyId = getSessionId(session, "companyId");
 
-        if (!new AuthorizationService().isCompanyAdmin(request)) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
         if (employeeId == null || companyId == null) {
             session.invalidate();
 
@@ -82,6 +77,11 @@ public class DashboardServlet extends HttpServlet {
                 response.sendRedirect(
                         request.getContextPath() + LOGIN
                 );
+                return;
+            }
+
+            if (!new AuthorizationService().isCompanyAdmin(request)) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
 
@@ -112,6 +112,8 @@ public class DashboardServlet extends HttpServlet {
                     "totalUnits",
                     metrics.get("totalUnits")
             );
+
+            new AuthorizationService().CsrfToken(request);
 
             request.getRequestDispatcher(DASHBOARD)
                     .forward(request, response);

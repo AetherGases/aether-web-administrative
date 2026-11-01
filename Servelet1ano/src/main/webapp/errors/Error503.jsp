@@ -16,11 +16,13 @@
 <body>
 
 <div class="telaErro">
-    <h1 class="tituloErro">Erro 404</h1>
-    <p class="subTituloErro">Oops! Página não encontrada</p>
-    <p class="descricaoErro">Parece que você pegou um caminho errado... Por favor, volte ao início</p>
+    <h1 class="tituloErro">Erro 503</h1>
+    <p class="subTituloErro">Oops! Estamos realizando uma manutenção programada para deixar a sua experiência ainda mais sustentável e rápida..</p>
+    <p class="descricaoErro">Por favor, tente novamente mais tarde</p>
 
-    <a href="${pageContext.request.contextPath}/Servelet1ano/src/main/webapp/Index.jsp" class="botaoVoltarInicio tipografiaVoltarInicio">Volte ao início</a>
+    <a href="${pageContext.request.contextPath}/">
+        Volte ao início
+    </a>
 
     <img class="nuvemErro" src="${pageContext.request.contextPath}/Imagens/NuvemErro.svg" alt="Aeko indicando erro">
 </div>

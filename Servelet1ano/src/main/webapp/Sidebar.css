@@ -130,3 +130,16 @@
     height: 23px;
 }
 
+.sidebar-logout-form {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar-logout-form .sidebar-logout {
+    font: inherit;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
