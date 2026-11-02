@@ -279,7 +279,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
 
         bindData(pstmt, employee);
         pstmt.setString(9, employee.getPasswordHash());
-        pstmt.setString(10, StatusEmployee.ACTIVE.getValor());
+        pstmt.setString(10, employee.getStatus().getValor());
     }
 
     /**

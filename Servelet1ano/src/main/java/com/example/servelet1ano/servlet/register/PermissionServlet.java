@@ -34,6 +34,17 @@ public class PermissionServlet extends HttpServlet {
     private static final Set<Integer> IDS_PERMITIDOS = Set.of(1, 2, 3, 4, 5, 6, 7);
     private final AuthorizationService authorization = new AuthorizationService();
 
+
+    /**
+     * Exibe a tela de gerenciamento de permissões da empresa autenticada.
+     * Verifica a autorização antes de carregar os funcionários e suas permissões.
+     *
+     * @param request A requisição atual
+     * @param response A resposta encaminhada para a página
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -42,6 +53,18 @@ public class PermissionServlet extends HttpServlet {
         if (companyId == null) return;
         mostrarPagina(request, response, companyId);
     }
+
+
+    /**
+     * Processa a atualização das permissões de um funcionário.
+     * Valida autorização, token CSRF, parâmetros e identificadores recebidos.
+     * Persiste as permissões selecionadas e redireciona após o sucesso.
+     *
+     * @param request A requisição com o funcionário e as permissões escolhidas
+     * @param response A resposta que redireciona ou apresenta o erro
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -99,7 +122,16 @@ public class PermissionServlet extends HttpServlet {
         }
     }
 
-    /** Redireciona quem nao esta logado e nega acesso a quem nao e gerente. */
+    /**
+     * Verifica se a sessão pertence a um administrador autorizado.
+     * Redireciona usuários não autenticados e bloqueia acessos não permitidos.
+     *
+     * @param request A requisição atual
+     * @param response A resposta usada para redirecionamento ou bloqueio
+     * @return O identificador da empresa autorizada ou null se o acesso falhar
+     * @throws IOException Se ocorrer erro ao enviar a resposta
+     */
+
     private Integer autorizar(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         HttpSession session = request.getSession(false);
@@ -117,7 +149,17 @@ public class PermissionServlet extends HttpServlet {
         return companyId;
     }
 
-    /** Carrega os funcionarios e as permissoes reais do funcionario selecionado. */
+    /**
+     * Carrega os funcionários elegíveis e as permissões do funcionário selecionado.
+     * Disponibiliza os dados necessários para a renderização da página JSP.
+     *
+     * @param request A requisição que recebe os atributos da página
+     * @param response A resposta encaminhada para a JSP
+     * @param companyId O identificador da empresa autenticada
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
+
     private void mostrarPagina(HttpServletRequest request, HttpServletResponse response, int companyId)
             throws ServletException, IOException {
         authorization.CsrfToken(request);
@@ -157,13 +199,32 @@ public class PermissionServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Exibe uma mensagem de erro e recarrega os dados da tela de permissões.
+     *
+     * @param request A requisição que recebe a mensagem
+     * @param response A resposta encaminhada para a JSP
+     * @param companyId O identificador da empresa autenticada
+     * @param mensagem O erro apresentado ao usuário
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
+
     private void mostrarErro(HttpServletRequest request, HttpServletResponse response,
                              int companyId, String mensagem) throws ServletException, IOException {
         request.setAttribute("erro", mensagem);
         mostrarPagina(request, response, companyId);
     }
 
-    /** Lista apenas funcionarios ativos da empresa, excluindo os administradores. */
+    /**
+     * Busca funcionários ativos da empresa, excluindo os administradores.
+     *
+     * @param conn A conexão utilizada na consulta
+     * @param companyId O identificador da empresa
+     * @return A lista de funcionários elegíveis
+     * @throws SQLException Se ocorrer erro na consulta SQL
+     */
+
     private List<Employees> buscarFuncionarios(Connection conn, int companyId) throws SQLException {
         String sql = """
                 SELECT e.id, e.name, e.email
@@ -189,7 +250,17 @@ public class PermissionServlet extends HttpServlet {
         return funcionarios;
     }
 
-    /** Retorna os IDs das permissoes do grupo atual do funcionario. */
+    /**
+     * Consulta os identificadores das permissões ativas do grupo do funcionário.
+     * Restringe a busca ao funcionário e à empresa informados.
+     *
+     * @param conn A conexão utilizada na consulta
+     * @param companyId O identificador da empresa
+     * @param funcionarioId O identificador do funcionário
+     * @return O conjunto de identificadores das permissões encontradas
+     * @throws SQLException Se ocorrer erro na consulta SQL
+     */
+
     private Set<Integer> buscarPermissoes(Connection conn, int companyId, int funcionarioId)
             throws SQLException {
         String sql = """
@@ -213,7 +284,17 @@ public class PermissionServlet extends HttpServlet {
         return ids;
     }
 
-    /** Cria (se preciso) um grupo exclusivo e atualiza os vinculos numa unica transacao. */
+    /**
+     * Salva as permissões de um funcionário em uma transação.
+     * Reaproveita ou cria um grupo exclusivo e atualiza seus vínculos.
+     * Desfaz a transação quando a operação não pode ser concluída.
+     *
+     * @param companyId O identificador da empresa
+     * @param funcionarioId O identificador do funcionário
+     * @param escolhidas O conjunto de permissões selecionadas
+     * @throws SQLException Se ocorrer erro na persistência
+     */
+
     private void salvarPermissoes(int companyId, int funcionarioId, Set<Integer> escolhidas)
             throws SQLException {
         try (Connection conn = ConnectionFactory.connect()) {
@@ -303,6 +384,14 @@ public class PermissionServlet extends HttpServlet {
             }
         }
     }
+
+
+    /**
+     * Converte um identificador textual para inteiro positivo.
+     *
+     * @param valor O identificador recebido
+     * @return O número convertido ou null quando inválido
+     */
 
     private Integer lerId(String valor) {
         if (valor == null || !valor.matches("[1-9][0-9]{0,9}")) return null;

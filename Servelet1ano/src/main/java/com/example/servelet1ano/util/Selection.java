@@ -10,7 +10,21 @@ import java.util.Set;
 public final class Selection {
     private static final int LIMITE = 100;
 
+    /**
+     * Impede a instanciação da classe utilitária.
+     */
+
     private Selection() {}
+
+    /**
+     * Lê e valida os identificadores enviados para desativação em lote.
+     * Rejeita parâmetros inesperados, ações incorretas, IDs repetidos,
+     * valores inválidos e seleções superiores a 100 registros.
+     *
+     * @param request A requisição com os identificadores selecionados
+     * @return Uma lista imutável com os identificadores validados
+     * @throws IllegalArgumentException Se a seleção for inválida
+     */
 
     public static List<Integer> parse(HttpServletRequest request) {
         if (!request.getParameterMap().keySet().stream()

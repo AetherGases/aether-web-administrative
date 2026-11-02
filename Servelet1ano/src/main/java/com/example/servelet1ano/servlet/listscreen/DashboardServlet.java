@@ -28,6 +28,18 @@ public class DashboardServlet extends HttpServlet {
     private final EmployeesDAO employeesDAO = new EmployeesDAO();
     private final DashboardDAO dashboardDAO = new DashboardDAO();
 
+    /**
+     * Carrega a tela administrativa com os indicadores reais da empresa.
+     * Confere a sessão, os identificadores do funcionário e da empresa,
+     * verifica a permissão administrativa e consulta as métricas no banco.
+     * Redireciona sessões inválidas para o login e retorna 403 para acesso negado.
+     *
+     * @param request A requisição atual
+     * @param response A resposta que encaminha para o dashboard ou informa o erro
+     * @throws ServletException Se ocorrer erro no encaminhamento da página
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
+
 
     @Override
     protected void doGet(
@@ -129,6 +141,14 @@ public class DashboardServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Recupera um identificador numérico armazenado na sessão.
+     * Aceita apenas números inteiros positivos dentro do limite de Integer.
+     *
+     * @param session A sessão que contém o atributo
+     * @param attribute O nome do atributo a ser consultado
+     * @return O identificador válido ou null se estiver ausente ou inválido
+     */
 
     private Integer getSessionId(
             HttpSession session,

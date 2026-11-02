@@ -28,18 +28,20 @@ import java.util.logging.Logger;
 @WebServlet("/empresa")
 public class NewCompanyRegisterServlet extends HttpServlet {
 
-    /**
-     * Registro de logs usado para anotar os erros inesperados
-     */
     private static final Logger LOGGER =
             Logger.getLogger(NewCompanyRegisterServlet.class.getName());
 
-    /**
-     * Pagina do formulario de cadastro da empresa
-     */
+
     private static final String CADASTRO = "/CompanyRegister.jsp";
 
-    /** Apresenta o cadastro empresarial pela mesma rota usada nos redirecionamentos. */
+    /**
+     * Apresenta o formulário de cadastro de empresas pela rota /empresa.
+     *
+     * @param request A requisição atual
+     * @param response A resposta encaminhada para o formulário
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,

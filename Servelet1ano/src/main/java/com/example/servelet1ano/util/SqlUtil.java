@@ -4,7 +4,9 @@ package com.example.servelet1ano.util;
  * Utilitarios para montar consultas SQL com seguranca
  */
 public final class SqlUtil {
-
+    /**
+     * Impede a instanciação da classe utilitária.
+     */
     private SqlUtil() {
     }
 

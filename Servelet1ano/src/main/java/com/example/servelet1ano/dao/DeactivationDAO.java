@@ -8,10 +8,19 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.StringJoiner;
 
-/** Operações de desativação em lote, com transação e restrição por empresa. */
+
 public class DeactivationDAO {
 
-    /** Não desativa outras empresas, gerentes nem a própria conta. */
+    /**
+     * Desativa em lote os funcionários selecionados de uma empresa.
+     * Impede a desativação da própria conta e dos administradores.
+     *
+     * @param ids Os identificadores dos funcionários selecionados
+     * @param companyId O identificador da empresa
+     * @param loggedEmployeeId O identificador do funcionário autenticado
+     * @return true se todos os registros forem desativados
+     */
+
     public boolean employees(List<Integer> ids, int companyId, int loggedEmployeeId) {
         if (!valid(ids, companyId) || loggedEmployeeId <= 0) return false;
         String sql = "UPDATE employees e SET is_active=FALSE, status='INACTIVE', " +
@@ -23,7 +32,15 @@ public class DeactivationDAO {
         return updateAll(sql, ids, companyId, loggedEmployeeId);
     }
 
-    /** Setor deve ser ativo, pertencer à empresa e não ter empregados ativos. */
+    /**
+     * Desativa em lote setores ativos pertencentes à empresa.
+     * Impede a desativação de setores com funcionários ativos.
+     *
+     * @param ids Os identificadores dos setores selecionados
+     * @param companyId O identificador da empresa
+     * @return true se todos os setores forem desativados
+     */
+
     public boolean sectors(List<Integer> ids, int companyId) {
         if (!valid(ids, companyId)) return false;
         String sql = "UPDATE sectors s SET is_active=FALSE, updated_at=CURRENT_TIMESTAMP " +
@@ -32,10 +49,16 @@ public class DeactivationDAO {
         return updateAll(sql, ids, companyId, null);
     }
 
-    /** Unidades e seus setores são desativados na mesma transação
+    /**
+     * Desativa unidades e seus setores em uma única transação.
+     * Verifica se todas as unidades pertencem à empresa e se não possuem
+     * funcionários ativos antes de confirmar as alterações.
      *
-     * Nenhuma unidade com funcionário ativo pode ser aceita
-     * . */
+     * @param ids Os identificadores das unidades selecionadas
+     * @param companyId O identificador da empresa
+     * @return true se todas as unidades forem desativadas
+     */
+
     public boolean units(List<Integer> ids, int companyId) {
         if (!valid(ids, companyId)) return false;
         String in = placeholders(ids.size());
@@ -87,6 +110,18 @@ public class DeactivationDAO {
         }
     }
 
+
+    /**
+     * Executa uma atualização SQL em lote utilizando uma transação.
+     * Confirma a operação somente quando todos os registros são atualizados.
+     *
+     * @param sql A instrução SQL parametrizada
+     * @param ids Os identificadores dos registros selecionados
+     * @param companyId O identificador da empresa
+     * @param excludedId O identificador excluído da operação, quando aplicável
+     * @return true se a quantidade de registros atualizados for a esperada
+     */
+
     private boolean updateAll(String sql, List<Integer> ids, int companyId, Integer excludedId) {
         try (Connection conn = ConnectionFactory.connect()) {
             conn.setAutoCommit(false);
@@ -110,17 +145,44 @@ public class DeactivationDAO {
         }
     }
 
+
+    /**
+     * Verifica se a seleção de registros é válida para a operação em lote.
+     * Exige empresa válida e entre 1 e 100 identificadores positivos e únicos.
+     *
+     * @param ids Os identificadores selecionados
+     * @param companyId O identificador da empresa
+     * @return true se a seleção atender às regras
+     */
+
     private static boolean valid(List<Integer> ids, int companyId) {
         return companyId > 0 && ids != null && !ids.isEmpty() && ids.size() <= 100 &&
                 ids.stream().allMatch(id -> id != null && id > 0) &&
                 ids.stream().distinct().count() == ids.size();
     }
 
+    /**
+     * Monta a quantidade de marcadores de parâmetros necessária para uma consulta SQL.
+     *
+     * @param size A quantidade de identificadores
+     * @return Uma sequência de marcadores de interrogação separados por vírgulas
+     */
+
     private static String placeholders(int size) {
         StringJoiner sj = new StringJoiner(",");
         for (int i = 0; i < size; i++) sj.add("?");
         return sj.toString();
     }
+
+
+    /**
+     * Associa o identificador da empresa e os IDs selecionados ao PreparedStatement.
+     *
+     * @param ps O comando SQL preparado
+     * @param companyId O identificador da empresa
+     * @param ids Os identificadores que serão associados aos parâmetros
+     * @throws SQLException Se ocorrer erro ao configurar os parâmetros
+     */
 
     private static void bindCompanyIds(PreparedStatement ps, int companyId, List<Integer> ids)
             throws SQLException {
