@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
 
     /** Pagina de login e destino depois da autenticacao. */
     private static final String LOGIN_PAGE = "/Login.jsp";
-    private static final String DASHBOARD = "/dashboard";
+    private static final String DASHBOARD = "/admin";
 
     private static final int MAX_EMAIL = 255;
     private static final int MAX_SENHA = 1024;

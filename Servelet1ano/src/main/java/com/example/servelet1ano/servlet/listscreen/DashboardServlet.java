@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/dashboard")
+@WebServlet("/admin")
 public class DashboardServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(DashboardServlet.class.getName());
