@@ -45,7 +45,7 @@
         <h1 class="pilula-titulo roxa" style="left: 160.5px; top: 146px; width: 225px; height: 46px">Verificação</h1>
 
         <form action="${ctx}/verify-recovery" method="post" accept-charset="UTF-8">
-            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
+            <input type="hidden" name="csrfToken" value="<c:out value='${sessionScope.csrfToken}'/>">
             <div class="codigo" style="top: 221px">
                 <input type="text" id="codigo1" name="codigo1" maxlength="1" inputmode="numeric"
                        aria-label="Dígito 1 do código" required autofocus>

@@ -4,13 +4,18 @@ import com.example.servelet1ano.dao.EmployeesDAO;
 import com.example.servelet1ano.dao.PasswordRecoveryDAO;
 import com.example.servelet1ano.util.service.EmailService;
 import com.example.servelet1ano.util.service.PasswordRecoveryService;
+import com.example.servelet1ano.validation.Validators;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.IOException;
 
 /**
@@ -43,6 +48,12 @@ public class PasswordRecoveryServlet extends HttpServlet {
     private final EmailService emailService = new EmailService();
 
     /**
+     * Registro de logs utilizado para identificar falhas na recuperação de senha.
+     */
+    private static final Logger LOGGER =
+            Logger.getLogger(PasswordRecoveryServlet.class.getName());
+
+    /**
      * metodo que recebe o e-mail informado na tela de recuperacao
      * Solicita o envio do codigo e encaminha para a tela de verificacao
      * Sempre mostra a mesma mensagem, para nao revelar se o e-mail esta cadastrado
@@ -66,7 +77,8 @@ public class PasswordRecoveryServlet extends HttpServlet {
 
         if (email == null
                 || email.isBlank()
-                || email.length() > 255) {
+                || email.length() > 255
+                || !Validators.isEmail(email.trim())) {
 
             request.setAttribute(
                     "mensagem",
@@ -95,16 +107,27 @@ public class PasswordRecoveryServlet extends HttpServlet {
             }
 
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+
+        Thread.currentThread().interrupt();
+
+        LOGGER.log(
+                Level.WARNING,
+                "Envio de recuperação de senha interrompido.",
+                e
+        );
 
         } catch (RuntimeException e) {
-            getServletContext().log(
-                    "Falha na solicitação de recuperação de senha.", e
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Falha na solicitação de recuperação de senha.",
+                    e
             );
 
         } catch (IOException e) {
-            getServletContext().log(
-                    "Falha no envio do e-mail de recuperação.", e
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Falha no envio do e-mail de recuperação.",
+                    e
             );
         }
 
@@ -112,6 +135,15 @@ public class PasswordRecoveryServlet extends HttpServlet {
                 "mensagem",
                 "Se o e-mail estiver cadastrado, você receberá um código de verificação. Confira sua caixa de entrada."
         );
+
+        HttpSession session = request.getSession();
+
+        if (session.getAttribute("csrfToken") == null) {
+            session.setAttribute(
+                    "csrfToken",
+                    java.util.UUID.randomUUID().toString()
+            );
+        }
 
         request.getRequestDispatcher("/Verification.jsp")
                 .forward(request, response);

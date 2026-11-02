@@ -86,7 +86,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
                 || !(session.getAttribute("companyId") instanceof Integer)) {
 
             response.sendRedirect(
-                    request.getContextPath() + "/Login.jsp"
+                    request.getContextPath() + "/login"
             );
             return;
         }
@@ -126,10 +126,20 @@ public class EmployeeRegisterServlet extends HttpServlet {
 
             if ("true".equals(request.getParameter("sucesso"))) {
                 request.setAttribute("sucesso", "Funcionário cadastrado com sucesso.");
-            } else if ("true".equals(request.getParameter("editado"))) {
-                request.setAttribute("sucesso", "Funcionário atualizado com sucesso.");
             } else if ("true".equals(request.getParameter("excluido"))) {
                 request.setAttribute("sucesso", "Funcionário desativado com sucesso.");
+
+            } else if ("ok".equals(request.getParameter("lote"))) {
+                request.setAttribute(
+                        "sucesso",
+                        "Funcionários selecionados desativados com sucesso."
+                );
+
+            } else if ("falha".equals(request.getParameter("lote"))) {
+                request.setAttribute(
+                        "erro",
+                        "Não foi possível desativar os funcionários selecionados."
+                );
             }
 
             request.getRequestDispatcher(CADASTRO)
@@ -177,7 +187,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
                 || !(session.getAttribute("companyId") instanceof Integer)) {
 
             response.sendRedirect(
-                    request.getContextPath() + "/Login.jsp"
+                    request.getContextPath() + "/login"
             );
             return;
         }
@@ -427,9 +437,6 @@ public class EmployeeRegisterServlet extends HttpServlet {
             String senhaHash = PasswordHasher.hash(senha);
 
 
-            // grupo de permissão do funcionário
-            // procura o grupo "Funcionário da empresa" da empresa da sessão
-            // se ainda não existir, cria o grupo já com as permissões
             // Busca o grupo padrão de funcionários da empresa.
             PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
 
@@ -623,10 +630,10 @@ public class EmployeeRegisterServlet extends HttpServlet {
                 || request.getParameterMap().containsKey("unitId")
                 || request.getParameterMap().containsKey("sectorId")) {
 
-
-            response.sendRedirect(
-                    request.getContextPath() + "/funcionarios?editado=true"
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST
             );
+            return;
         }
 
             try {
@@ -735,8 +742,14 @@ public class EmployeeRegisterServlet extends HttpServlet {
 
 
     /**
-     * Impede desativar a própria conta e qualquer administrador,
-     * inclusive por POST manual.
+     * Desativa em lote os funcionários selecionados da empresa autenticada.
+     * Impede a desativação da própria conta e de funcionários administradores.
+     * Valida os identificadores recebidos e registra falhas inesperadas.
+     *
+     * @param request A requisição contendo os identificadores selecionados
+     * @param response A resposta que redireciona com o resultado da operação
+     * @param companyId O identificador da empresa autenticada
+     * @throws IOException Se ocorrer erro durante o redirecionamento
      */
     private void excluirLote(
             HttpServletRequest request,
@@ -756,9 +769,26 @@ public class EmployeeRegisterServlet extends HttpServlet {
             ok = new DeactivationDAO()
                     .employees(ids, companyId, loggedId);
 
-        } catch (IllegalArgumentException ex) {
-            ok = false;
-        }
+        } catch (IllegalArgumentException e) {
+
+        LOGGER.log(
+                Level.WARNING,
+                "Seleção inválida para desativação em lote.",
+                e
+        );
+
+        ok = false;
+
+    } catch (RuntimeException e) {
+
+        LOGGER.log(
+                Level.SEVERE,
+                "Erro ao desativar funcionários em lote.",
+                e
+        );
+
+        ok = false;
+    }
 
         response.sendRedirect(
                 request.getContextPath()
