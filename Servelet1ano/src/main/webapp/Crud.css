@@ -1,8 +1,3 @@
-/* =====================================================================
-   Crud.css — layout compartilhado das telas internas (Figma: TELA CRUDV2)
-   Todas as coordenadas abaixo vêm do frame de 1440 x 1024 do Figma.
-   ===================================================================== */
-
 *,
 *::before,
 *::after {
@@ -33,7 +28,6 @@ button {
     cursor: pointer;
 }
 
-/* Canvas fixo com as medidas do Figma; tudo dentro é posicionado em px. */
 .tela {
     position: relative;
     width: 1440px;
@@ -42,8 +36,6 @@ button {
     background: #EDEEF8;
     overflow: hidden;
 }
-
-/* Barra lateral: ver o final deste arquivo */
 
 /* ------------------------------ CABEÇALHO ----------------------------- */
 .titulo-pagina {
@@ -151,10 +143,28 @@ button {
     font-size: 16px;
     font-weight: 600;
     white-space: nowrap;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.botao-selecionar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #1C5F46;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.botao-selecionar:hover::before {
+    opacity: 1;
 }
 
 .botao-adicionar {
-    position: absolute;
     left: 1225px;
     top: 152px;
     width: 170px;
@@ -170,6 +180,10 @@ button {
     font-size: 16px;
     font-weight: 600;
     white-space: nowrap;
+
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
 }
 
 .botao-selecionar svg,
@@ -178,6 +192,20 @@ button {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
+}
+
+.botao-adicionar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #1C5F46;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.botao-adicionar:hover::before {
+    opacity: 1;
 }
 
 /* ------------------------------ MENSAGENS ---------------------------- */
@@ -207,7 +235,6 @@ button {
 }
 
 /* ------------------------------ TABELA ------------------------------- */
-/* Rectangle 23979: 1061 x 680 em (333.87, 209.76) */
 .cartao-tabela {
     position: absolute;
     left: 333.87px;
@@ -228,7 +255,6 @@ button {
     table-layout: fixed;
 }
 
-/* Rectangle 23980: faixa verde 1051 x 44 */
 .tabela thead th {
     height: 44px;
     padding: 0;
@@ -243,7 +269,6 @@ button {
 .tabela thead th:first-child { border-radius: 25px 0 0 5px; }
 .tabela thead th:last-child  { border-radius: 0 25px 5px 0; }
 
-/* Linhas a cada 62px; divisórias de 1013px começando em x=357.87 */
 .tabela tbody td {
     height: 62px;
     padding: 0;
@@ -258,7 +283,6 @@ button {
     background: linear-gradient(#F3F0FF, #F3F0FF) left bottom / 100% 2px no-repeat;
 }
 
-/* A divisória começa 19px depois da borda da faixa e termina 19px antes */
 .tabela tbody td:first-child {
     padding-left: 21px;
     background-position: right bottom;
@@ -273,13 +297,11 @@ button {
     background: none;
 }
 
-/* Recuos finos para alinhar textos que no Figma não começam na borda da coluna */
 .tabela .recuo-6  { padding-left: 6px; }
 .tabela .recuo-14 { padding-left: 14px; }
 .tabela .recuo-16 { padding-left: 16px; }
 .tabela .recuo-22 { padding-left: 22px; }
 
-/* Checkbox 20 x 20 do Figma (BOTÃO CHECK) */
 .check {
     appearance: none;
     -webkit-appearance: none;
@@ -326,7 +348,11 @@ button {
     display: block;
 }
 
-/* VER em x+0, EDITAR em x+54, LIXO em x+102 (relativos a 1238.87) */
+@keyframes acao-cor {
+    from { transform: scale(0.82); }
+    to   { transform: scale(1); }
+}
+
 .acao-ver    { width: 25.6px; height: 22px; }
 .acao-editar { width: 22px;   height: 22px; margin-left: 28.4px; }
 .acao-excluir{ width: 19.8px; height: 22px; margin-left: 26px; }
@@ -340,12 +366,25 @@ button {
     cursor: not-allowed;
 }
 
+.acao-ver:hover:not(:disabled) img {
+    filter: brightness(0) saturate(100%) invert(52%) sepia(97%) saturate(304%) hue-rotate(101deg) brightness(96%) contrast(98%);
+    animation: acao-cor 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.acao-editar:hover:not(:disabled) img {
+    filter: brightness(0) saturate(100%) invert(42%) sepia(50%) saturate(5372%) hue-rotate(235deg) brightness(100%) contrast(99%);
+    animation: acao-cor 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.acao-excluir:hover:not(:disabled) img {
+    filter: brightness(0) saturate(100%) invert(39%) sepia(61%) saturate(6080%) hue-rotate(334deg) brightness(99%) contrast(98%);
+    animation: acao-cor 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .texto-secundario {
     color: #7E8294;
 }
 
-/* Estado vazio — Figma: TELA CRUDV2 - SEM FUNCIONÁRIOS (nó 4938:8858).
-   Posições relativas ao cartão (Rectangle 24042 em 334, 210). */
 .vazio {
     position: absolute;
     inset: 0;
@@ -353,7 +392,6 @@ button {
     background: #FFF;
 }
 
-/* Group 2049760503 em (656, 306.16) → (322.13, 96.4) dentro do cartão */
 .vazio-mascote {
     position: absolute;
     left: 322.13px;
@@ -363,7 +401,6 @@ button {
     overflow: visible;
 }
 
-/* Texto em (651, 627.24), 426 x 90 → (317.13, 417.48) dentro do cartão */
 .vazio-texto {
     position: absolute;
     left: 317.13px;
@@ -453,7 +490,6 @@ button {
     display: flex;
 }
 
-/* Frame OVERLAY: 842px de largura, borda #1E0A4A */
 .modal {
     position: relative;
     width: 842px;
@@ -462,7 +498,6 @@ button {
     background: #FFF;
 }
 
-/* Rectangle 23991: 842 x 65, sombra inferior de 5px */
 .modal-topo {
     position: relative;
     height: 65px;
@@ -513,7 +548,6 @@ button {
     height: 28px;
 }
 
-/* Grade de campos: colunas em x=98 e x=456 (288px), linhas a cada 80px a partir de y=91 */
 .modal-corpo {
     display: grid;
     grid-template-columns: 288px 288px;
@@ -611,7 +645,6 @@ button {
     color: #4A435E;
 }
 
-/* Line 380: 306px centralizada; botão ADD (232 x 56) / ALT (187 x 56) */
 .modal-rodape {
     display: flex;
     flex-direction: column;
@@ -638,15 +671,33 @@ button {
 }
 
 .botao-roxo {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     min-width: 187px;
     height: 56px;
     padding: 0 41px;
     border: 0;
-    border-radius: 50px;
-    background: radial-gradient(circle, #B4A1FF 0%, #7C3AED 100%);
+    border-radius: 20px;
+    background: radial-gradient(ellipse 65% 75% at 61% 35%, #B4A1FF 0%, #7C3AED 100%);
+    box-shadow: 0 3.15px 15.75px rgba(0, 0, 0, 0.12);
     color: #FFF;
     font-size: 30px;
     font-weight: 600;
+}
+
+.botao-roxo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(ellipse 65% 75% at 61% 35%, #190079 0%, #774AC3 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.botao-roxo:hover:not(:disabled)::before {
+    opacity: 1;
 }
 
 .botao-roxo.adicionar {
@@ -665,56 +716,94 @@ button {
 }
 
 /* OVERLAY EXCLUIR */
+.modal.modal-excluir {
+    border-color: #FB324C;
+}
+
+.modal-excluir .modal-topo {
+    height: 68px;
+    margin: 0 2px;
+    background: #FB324C;
+    box-shadow: 0 5px 0 0 #B3B7C9;
+}
+
+.modal-excluir .modal-topo h2 {
+    left: 83px;
+}
+
+.modal-excluir .modal-fechar {
+    left: 770px;
+    top: 21px;
+}
+
 .modal-excluir .corpo-excluir {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 92px 0 35px;
+    padding: 92px 0 32px;
 }
 
 .modal-excluir .corpo-excluir img {
     width: 100px;
     height: 100px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 15px rgba(251, 50, 76, 0.2);
 }
 
 .modal-excluir .corpo-excluir p {
-    width: 628px;
+    width: 640px;
     margin: 32px 0 0;
-    color: #4A435E;
-    font-size: 24px;
+    color: #000;
+    font-size: 20px;
     font-weight: 500;
     line-height: 31px;
     text-align: center;
+}
+
+.aviso-excluir {
+    display: block;
+    color: #FB324C;
 }
 
 .botoes-excluir {
     display: flex;
     justify-content: center;
     gap: 72px;
-    padding: 0 0 20px;
+    padding: 0 0 19px;
 }
 
 .botoes-excluir button {
     width: 300px;
     height: 70px;
-    border-radius: 50px;
+    border: 0;
+    border-radius: 15px;
     font-size: 30px;
     font-weight: 600;
+    transition: box-shadow 0.3s ease;
 }
 
 .botao-cancelar {
-    border: 2px solid #B3B7C9;
-    background: #FFF;
-    color: #7E8294;
+    background: rgba(179, 183, 201, 0.2);
+    color: rgba(71, 73, 81, 0.8);
 }
 
-.botao-deletar {
-    border: 0;
+.botao-cancelar:hover {
+    box-shadow: 5px 5px 0 #474951;
+}
+
+.botao-deletar,
+.botao-desativar {
     background: #FB324C;
-    color: #FFF;
+    color: rgba(255, 255, 255, 0.8);
 }
 
-.botao-deletar:disabled {
+.botao-deletar:hover:not(:disabled),
+.botao-desativar:hover:not(:disabled) {
+    box-shadow: 5px 5px 0 #A42939;
+}
+
+.botao-deletar:disabled,
+.botao-desativar:disabled {
     opacity: .5;
     cursor: not-allowed;
 }
@@ -748,7 +837,6 @@ button {
     border: 0;
 }
 
-/* Mensagem de erro/aviso dentro do modal de adicionar */
 .erro-modal {
     margin: 16px 97px 0;
     padding: 10px 18px;
@@ -767,5 +855,3 @@ button {
     background: #EFE9FF;
     color: #4A3A8A;
 }
-
-

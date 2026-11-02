@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="${ctx}/Cadastro.css">
+    <link rel="stylesheet" href="${ctx}/Login.css">
 </head>
 <body>
 
@@ -39,27 +39,27 @@
         <p class="mensagem mensagem-erro" role="alert" style="top: 2px; padding: 6px 18px"><c:out value="${not empty requestScope.erro ? requestScope.erro : requestScope.mensagem}"/></p>
     </c:if>
 
-    <main class="cartao-form" style="top: 167px; height: 690px">
-        <img class="mascote" style="left: 193px; top: 23px" src="${ctx}/Imagens/AekoLogin.svg" alt="">
-        <h1 class="pilula-titulo" style="left: 109.5px; top: 146px; width: 327px">Login pessoal</h1>
+    <main class="cartao-form cartao-login">
+        <img class="mascote" src="${ctx}/Imagens/AekoLogin.svg" alt="">
+        <h1 class="pilula-titulo">Login pessoal</h1>
 
         <form action="${ctx}/login" method="post" accept-charset="UTF-8">
 
             <label for="email" class="visually-hidden">E-mail</label>
-            <input class="entrada" style="top: 373px" type="email" id="email" name="campoEmail" placeholder="E-mail"
+            <input class="entrada" type="email" id="email" name="campoEmail" placeholder="e-mail"
                    autocomplete="email" maxlength="255" value="<c:out value='${param.campoEmail}'/>" required>
 
             <label for="senha" class="visually-hidden">Senha</label>
-            <input class="entrada" style="top: 449px" type="password" id="senha" name="campoSenha" placeholder="Senha"
+            <input class="entrada" type="password" id="senha" name="campoSenha" placeholder="senha"
                    autocomplete="current-password" maxlength="1024" required>
 
-            <button class="botao-enviar " style="top: 535px" type="submit">Entrar</button>
+            <button class="botao-enviar " type="submit">Entrar</button>
 
-            <p class="link-conta roxo" style="top: 608px">
-                Esqueceu a senha? <a href="${ctx}/RecoverPassword.jsp">clique aqui</a>
-            </p>
-            <p class="link-conta roxo" style="top: 640px">
+            <p class="link-conta link-1 roxo">
                 Não possui uma conta? <a href="${ctx}/CompanyRegister.jsp">clique aqui</a>
+            </p>
+            <p class="link-conta link-2 roxo">
+                Esqueceu a senha? <a href="${ctx}/RecoverPassword.jsp">clique aqui</a>
             </p>
         </form>
     </main>

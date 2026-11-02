@@ -40,14 +40,19 @@
             <li><a href="#gasesPoluentes">GEE</a></li>
             <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
             <li><a href="#planos">PLANOS</a></li>
+            <li><a href="https://aethergases.org/dashboard">SITE</a></li>
             <li class="itemMenuMobile"><a class="linkMenuEntrar" href="Login.jsp">Entrar</a></li>
             <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="CompanyRegister.jsp">Cadastrar-se</a></li>
         </ul>
     </nav>
 
     <div class="acoesCabecalho">
-        <a href="${pageContext.request.contextPath}/login">Entrar</a>
-        <a href="${pageContext.request.contextPath}/empresa">Cadastrar-se</a>
+        <a class="botaoEntrar" href="${pageContext.request.contextPath}/login">
+            <span class="conteudoBotaoEntrar">Entrar</span>
+        </a>
+        <a class="botaoCadastrar" href="${pageContext.request.contextPath}/empresa">
+            <span class="conteudoBotaoCadastrar">Cadastrar-se</span>
+        </a>
     </div>
 </header>
 
@@ -684,9 +689,9 @@
 
                     <!-- Nome -->
                     <div class="campoFormulario">
-                    <label for="empresa" class="visually-hidden">Nome da empresa</label>
-                    <input class="entrada" style="top: 196px" type="text" id="empresa" name="empresas"
-                           placeholder="Nome da empresa" value="<c:out value='${requestScope.name}'/>" required>
+                        <label for="empresa" class="rotuloCampoOculto">Nome da empresa</label>
+                        <input class="entradaEmpresarial" type="text" id="empresa" name="empresas"
+                               placeholder="Nome da empresa" value="<c:out value='${requestScope.name}'/>" required>
                     </div>
 
                     <!-- Razão social -->
@@ -795,7 +800,7 @@
 
         <div class="rodapeAetherMarca">
             <a href="#inicio" aria-label="Aether, voltar ao início">
-                <img class="rodapeAetherLogo" src="Imagens/LogoFooter.svg" alt="Aether" loading="lazy">
+                <img class="rodapeAetherLogo" src="Imagens/LogoFooter.svg" alt="Aether" width="224" height="52" loading="lazy">
             </a>
             <p class="rodapeAetherDescricao">
                 A Aether é uma empresa dedicada a acelerar a transição energética global.

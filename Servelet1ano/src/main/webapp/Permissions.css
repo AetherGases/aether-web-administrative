@@ -1,5 +1,6 @@
 /* =====================================================================
-   Permissions.css ===================================================================== */
+   Permissions.css
+   ===================================================================== */
 
 *,
 *::before,
@@ -332,7 +333,7 @@ select {
 
 .perm-seta {
     border: 0;
-    background: radial-gradient(84.96% 84.96% at 74.42% 0%, #B4A1FF 0%, #7C3AED 100%);
+    background: radial-gradient(84.96% 84.96% at 74.42% 0%, #5DDBA5 0%, #2DBD7E 100%);
     transition: opacity .2s ease;
 }
 
@@ -342,8 +343,8 @@ select {
 }
 
 .perm-seta svg {
-    width: 22px;
-    height: 22px;
+    width: 19px;
+    height: 19px;
 }
 
 .perm-pagina {

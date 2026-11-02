@@ -100,14 +100,26 @@
 
 .botao-unidades {
     left: 74.5px;
-    background: #FFF;
-    color: #000;
+    background: rgba(255, 255, 255, 0.10);
+    color: #FFFFFF;
+    transition: 0.3s ease-in-out;
+}
+
+.botao-unidades:hover {
+    background: #FFFFFF;
+    color: #000000;
 }
 
 .botao-funcionarios {
     left: 338px;
     background: rgba(255, 255, 255, 0.10);
     color: #FFF;
+    transition: 0.3s ease-in-out;
+}
+
+.botao-funcionarios:hover {
+    background: #FFFFFF;
+    color: #000000;
 }
 
 .cartao-numero {
@@ -171,9 +183,11 @@ a.cartao-numero:hover {
 
 .cartao-numero .linha {
     position: absolute;
-    left: 32px;
+    left: 50%;
+    transform: translateX(-50%);
     top: 175px;
-    width: 149.5px;
+    width: 298.94px;
     height: 1.26px;
     background: #E5E5EA;
 }
+

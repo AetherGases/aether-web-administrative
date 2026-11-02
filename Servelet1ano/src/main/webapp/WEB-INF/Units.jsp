@@ -102,8 +102,8 @@
                             </button>
                             <button type="button"
                                     class="acao acao-excluir"
-                                    data-abrir="overlayExcluirUnidade"
-                                    aria-label="Excluir">
+                                    data-abrir="overlayDesativar"
+                                    aria-label="Desativar">
                                 <img src="${ctx}/Imagens/LIXO.svg" alt="">
                             </button>
                         </div>
@@ -254,36 +254,29 @@
 </div>
 
 
-<!-- Modal de confirmação da exclusão da unidade. -->
-<div class="overlay" id="overlayExcluirUnidade" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true"
-         aria-labelledby="tituloExcluirUnidade">
-
+<%-- ======================= OVERLAY DESATIVAR UNIDADE ======================= --%>
+<div class="overlay" id="overlayDesativar" aria-hidden="true">
+    <div class="modal modal-excluir" role="dialog" aria-modal="true" aria-labelledby="tituloDesativar">
         <div class="modal-topo">
-            <h2 id="tituloExcluirUnidade">Desativar unidade</h2>
-            <button type="button" class="modal-fechar"
-                    data-fechar aria-label="Fechar">
-                Cancelar
+            <img src="${ctx}/Imagens/IconeDesativar.svg" alt="">
+            <h2 id="tituloDesativar">Desativar</h2>
+            <button class="modal-fechar" type="button" id="fecharDesativar" data-fechar aria-label="Fechar">
+                <svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M3 3L25 25M25 3L3 25" stroke="#FFF" stroke-width="4" stroke-linecap="round"/></svg>
             </button>
         </div>
 
-        <form action="${ctx}/unidades" method="post">
+        <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
             <input type="hidden" name="acao" value="excluir">
             <input type="hidden" name="id" data-campo="id">
-            <input type="hidden" name="csrfToken"
-                   value="${csrfToken}">
+            <input type="hidden" name="csrfToken" value="${csrfToken}">
 
-            <div class="modal-corpo">
-                <p>
-                    Tem certeza de que deseja desativar esta unidade?
-                    A operação será recusada se houver funcionários ativos.
-                </p>
+            <div class="corpo-excluir">
+                <img src="${ctx}/Imagens/AlertaExcluir.svg" alt="">
+                <p>Tem certeza que deseja desativar a unidade selecionada? A operação será recusada se houver funcionários ativos.</p>
             </div>
-
-            <div class="modal-rodape">
-                <button type="submit" class="botao-deletar">
-                    Desativar
-                </button>
+            <div class="botoes-excluir">
+                <button class="botao-cancelar" type="button" id="cancelarDesativar" data-fechar>Cancelar</button>
+                <button class="botao-desativar" type="submit" id="confirmarDesativar">Desativar</button>
             </div>
         </form>
     </div>
@@ -327,8 +320,7 @@
     </div>
 </div>
 
-<script src="NavBar.js"></script>
-
 <script src="${ctx}/Crud.js"></script>
+
 </body>
 </html>

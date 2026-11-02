@@ -270,6 +270,7 @@
     </div>
 </div>
 
-<script src="${ctx}/NavBar.js"></script>
+<script src="${ctx}/Crud.js"></script>
+
 </body>
 </html>

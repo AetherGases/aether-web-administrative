@@ -47,7 +47,6 @@ select {
 .blur-3 { left: -28px; top: 413px;  background: #D7CCFF; }
 .blur-4 { left: 755px; top: 314px;  background: rgba(184, 255, 226, 0.75); }
 
-/* Botão "Voltar" (Group 2049761147: 187 x 57 em 19, 28) */
 .voltar {
     position: absolute;
     left: 19px;
@@ -86,7 +85,6 @@ select {
     height: 22px;
 }
 
-/* Logo à esquerda (Group 427320935: 433 x 384 em 110, 325) */
 .logo-lateral {
     position: absolute;
     left: 110px;
@@ -120,7 +118,6 @@ select {
     color: #2B8D76;
 }
 
-/* Cartão do formulário (Frame 2049760440 / 2049760443: 546px de largura em x=755) */
 .cartao-form {
     position: absolute;
     left: 755px;
@@ -135,8 +132,6 @@ select {
     position: absolute;
 }
 
-/* Group 4096 (122 x 82): o SVG tem 160 x 153 com margem de sombra,
-   por isso é deslocado -20px / -10px para o desenho cair no lugar do Figma. */
 .cartao-form .mascote {
     width: 160px;
     height: 153px;
@@ -200,7 +195,6 @@ select.entrada:invalid {
     color: #B3B7C9;
 }
 
-/* "BOTÃO ... DO PLANO": 462 x 48, raio 20, fundo translúcido */
 select.entrada.plano {
     left: 42px;
     width: 462px;
@@ -234,7 +228,6 @@ select.entrada.plano {
     border-color: #B3B6CA;
 }
 
-/* Group 4091 / 427320891: 462 x 55 */
 .botao-enviar {
     left: 42px !important;
     width: 462px !important;
@@ -277,7 +270,6 @@ select.entrada.plano {
     color: #9B73F9;
 }
 
-/* Mensagens do servlet — acima do cartão */
 .mensagem {
     position: absolute;
     left: 755px;

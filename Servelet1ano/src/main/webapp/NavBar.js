@@ -27,7 +27,6 @@
         const atual = medir();
         const salvo = sessionStorage.getItem('navTop');
 
-        // estado final já aplicado
         posicionar(atual);
 
         if (salvo !== null && parseFloat(salvo) !== atual.top) {

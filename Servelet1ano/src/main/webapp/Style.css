@@ -1,4 +1,34 @@
 @charset "UTF-8";
+/* ==========================================================================
+   AETHER — LANDING PAGE RESPONSIVA (abordagem MOBILE-FIRST)
+
+   Organização do arquivo:
+     0.  Tokens (cores, fontes, escalas fluidas)
+     1.  Reset
+     2.  Base e estrutura das seções
+     3.  Elementos decorativos (bolas desfocadas) e rótulos de seção
+     4.  Cabeçalho e menu
+     5.  Setor 1 — Hero
+     6.  Setor 2 — Quem somos
+     7.  Setor 3 — Gases de efeito estufa
+     8.  Setor 4 — Carrossel de gases
+     9.  Setor 5 — Nossa solução + análise de dados
+     10. Setor 6 — Planos
+     11. Setor 7 — Cadastro
+     12. Setor 8 — Rodapé
+     13. Utilitários e acessibilidade
+     14. MEDIA QUERIES
+           14.1 ≥ 481px  — smartphones grandes
+           14.2 ≥ 769px  — tablets
+           14.3 ≥ 1025px — desktop
+           14.4 Dispositivos sem hover (desktop touch)
+           14.5 Movimento reduzido
+           14.6 ≤ 768px  — ajuste mobile dos cards de escopo e de gases
+     15. Página de contato (legado + adaptação responsiva)
+
+   Os estilos-base (fora de @media) valem para telas de até 480px.
+   ========================================================================== */
+
 
 :root {
     --roxo: #7C3AED;
@@ -337,8 +367,7 @@ body {
     background-color: rgba(124, 58, 237, 0.08);
 }
 
-/* Atalhos Entrar / Cadastrar dentro do menu mobile */
-.itemMenuMobile:first-of-type {
+.itemMenuMobile:nth-last-child(2) {
     margin-top: 8px;
     padding-top: 12px;
     border-top: 1px solid var(--cinza-borda);
@@ -377,14 +406,17 @@ body {
 
 .botaoEntrar,
 .botaoCadastrar {
+    flex-shrink: 0;
+    width: 149px;
     height: 37px;
-    padding-inline: 20px;
     border: 2px solid var(--branco);
     border-radius: 106px;
-    display: inline-flex;
+    box-sizing: border-box;
+    display: flex;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
+    z-index: 5;
     cursor: pointer;
     transition: all 0.3s ease-out;
 }
@@ -393,7 +425,7 @@ body {
 .botaoCadastrar { background-color: var(--verde); }
 
 .conteudoBotaoEntrar,
-.conteudoBotaoCadastar {
+.conteudoBotaoCadastrar {
     color: var(--branco);
     font-size: 20px;
     font-family: var(--fonte-marca);
@@ -412,6 +444,9 @@ body {
     color: var(--verde);
     background-color: var(--branco);
 }
+
+.botaoEntrar:hover .conteudoBotaoEntrar       { color: var(--roxo); }
+.botaoCadastrar:hover .conteudoBotaoCadastrar { color: var(--verde); }
 
 
 /* ==========================================================================
@@ -2228,6 +2263,7 @@ body {
     display: none;
 }
 
+.mensagemSucesso,
 .mensagemFormularioSucesso {
     color: #1A5C41;
 }
@@ -2269,6 +2305,12 @@ body {
     color: var(--verde);
     text-decoration: none;
     cursor: pointer;
+}
+
+.linkTrocaAba:hover,
+.linkTrocaAba:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 
@@ -2393,6 +2435,10 @@ body {
     outline-offset: 2px;
 }
 
+
+/* ==========================================================================
+   14.1 @media (min-width: 481px) — SMARTPHONES GRANDES
+   ========================================================================== */
 @media (min-width: 481px) {
 
     /* Carrossel de gases: card um pouco mais baixo (mais largura disponível) */
@@ -2526,7 +2572,7 @@ body {
     /* ----- Cabeçalho: pílula fixa original + botões de acesso ----- */
     .cabecalho {
         padding-left: max(clamp(24px, 5vw, 72px), calc((100% - 1440px) / 2 + 72px));
-        padding-right: max(11px, calc((100% - 1440px) / 2 + 11px));
+        padding-right: max(16px, calc((100% - 1440px) / 2 + 16px));
     }
 
     .botaoMenuMobile,
@@ -2613,23 +2659,21 @@ body {
         background-color: transparent;
     }
 
+    /* ----- Botões Entrar / Cadastrar-se ----- */
     .acoesCabecalho {
         display: flex;
-        gap: clamp(10px, 1.25vw, 18px);
+        gap: clamp(12px, 1.8vw, 26px);
         margin-top: 26px;
     }
 
     .botaoEntrar,
     .botaoCadastrar {
-        padding-inline: 16px;
+        width: clamp(110px, 10.35vw, 149px);
     }
 
-    .botaoEntrar    { min-width: clamp(110px, 10.35vw, 149px); }
-    .botaoCadastrar { min-width: clamp(125px, 11.25vw, 162px); }
-
     .conteudoBotaoEntrar,
-    .conteudoBotaoCadastar {
-        font-size: clamp(16px, 1.4vw, 20px);
+    .conteudoBotaoCadastrar {
+        font-size: clamp(14px, 1.4vw, 20px);
     }
 
     /* ----- Hero: duas colunas ----- */
@@ -2771,6 +2815,96 @@ body {
     .cardEscopo2,
     .cardEscopo3 {
         animation: none;
+    }
+}
+
+
+/* ==========================================================================
+   14.6 @media (max-width: 768px) — AJUSTE MOBILE DOS CARDS
+   ========================================================================== */
+
+/* ---------- Escopos: altura acompanha o conteúdo (até tablet) ---------- */
+@media (max-width: 768px) {
+    .gradeEscopos {
+        gap: 28px;
+    }
+
+    .cardEscopo1,
+    .cardEscopo2,
+    .cardEscopo3 {
+        min-height: 0;
+        width: 100%;
+        max-width: 440px;
+        margin-inline: auto;
+        padding-bottom: 16px;
+    }
+}
+
+/* ---------- Escopos: compactação extra em celulares ---------- */
+@media (max-width: 480px) {
+    .gradeEscopos {
+        padding-inline: 12px;
+    }
+
+    .cardEscopo1,
+    .cardEscopo2,
+    .cardEscopo3 {
+        grid-template-columns: 72px minmax(0, 1fr);
+        padding: 0 12px 14px 10px;
+    }
+
+    .escopo1Texto,
+    .escopo2Texto,
+    .escopo3Texto {
+        padding-top: 14px;
+        font-size: 1.0625rem;
+    }
+
+    .emissoesDiretastexto,
+    .energiaAdequadatexto,
+    .cadeiaDeValortexto {
+        font-size: 0.8125rem;
+    }
+
+    .cardEscopo1 ul,
+    .cardEscopo2 ul,
+    .cardEscopo3 ul {
+        gap: 4px;
+        margin-top: 6px;
+        padding-left: 24px;
+    }
+
+    .cardEscopo1 li,
+    .cardEscopo2 li,
+    .cardEscopo3 li {
+        font-size: 0.875rem;
+        line-height: 1.3;
+    }
+}
+
+/* ---------- Gases: altura = a do card mais alto (sem vazio embaixo) ---------- */
+@media (max-width: 768px) {
+    .carrosselGases {
+        display: grid;
+        justify-items: center;
+        align-items: stretch;
+        height: auto;
+        padding-bottom: calc(var(--tam-seta) + 36px);
+    }
+
+    .cardGas {
+        position: relative;
+        top: auto;
+        left: auto;
+        grid-area: 1 / 1;
+        height: auto;
+        padding-bottom: 20px;
+        transform: translateX(var(--x)) scale(var(--s));
+    }
+
+    .carrosselGasesSeta {
+        top: auto;
+        bottom: 8px;
     }
 }
 

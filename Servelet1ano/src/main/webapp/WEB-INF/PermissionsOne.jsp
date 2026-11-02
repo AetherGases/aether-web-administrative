@@ -167,11 +167,15 @@
 
     <nav class="perm-paginacao" id="paginacaoPermissoes" aria-label="Paginação">
         <button type="button" class="perm-seta" id="paginaAnterior" aria-label="Página anterior">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15 3v14L3.5 10z" fill="none" stroke="#FFF" stroke-width="2.6" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 19 19" aria-hidden="true">
+                <path d="M13 2.5L5 9.5l8 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
         </button>
         <span id="paginasNumeros" class="perm-numeros"></span>
         <button type="button" class="perm-seta" id="paginaProxima" aria-label="Próxima página">
-            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3v14l11.5-7z" fill="none" stroke="#FFF" stroke-width="2.6" stroke-linejoin="round"/></svg>
+            <svg viewBox="0 0 19 19" aria-hidden="true">
+                <path d="M6 2.5l8 7-8 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
         </button>
     </nav>
 </div>
@@ -255,6 +259,8 @@
         renderizar();
     })();
 </script>
+
+<script src="${ctx}/Crud.js"></script>
 
 </body>
 </html>

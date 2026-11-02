@@ -61,3 +61,5 @@
         </button>
     </form>
 </aside>
+
+<script src="${ctx}/NavBar.js" defer></script>

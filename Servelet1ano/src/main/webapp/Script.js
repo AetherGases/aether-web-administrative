@@ -206,7 +206,7 @@ function carrosselGases() {
 
     botaoAnterior.addEventListener("click", function () { mover(-1); });
     botaoProximo.addEventListener("click", function () { mover(1); });
-   
+
     cards.forEach(function (card) {
         card.addEventListener("click", function () {
             if (card.dataset.pos === "esq") mover(-1);
@@ -592,54 +592,65 @@ function validarFormularios() {
     }
     formulario.dataset.iniciado = "true";
 
-    const mensagem = document.getElementById("mensagemEmpresarial");
-
-    function escrever(texto, sucesso) {
-        if (!mensagem) {
-            return;
-        }
-        mensagem.textContent = texto;
-        mensagem.classList.toggle("mensagemFormularioSucesso", Boolean(sucesso));
-    }
-
     formulario.addEventListener("submit", function (evento) {
-        evento.preventDefault();
+        const empresa = formulario.querySelector('[name="empresas"]');
+        const razao = formulario.querySelector('[name="razoes"]');
+        const tamanho = formulario.querySelector('[name="tamanhos"]');
+        const cnpj = formulario.querySelector('[name="campoCNPJ"]');
+        const email = formulario.querySelector('[name="campoEmail"]');
+        const plano = formulario.querySelector('[name="planos"]');
 
-        const empresa = document.getElementById("empresaTipo");
-        const tamanho = document.getElementById("empresaTamanho");
-        const cnpj = document.getElementById("empresaCnpj");
-        const email = document.getElementById("empresaEmail");
-        const plano = document.getElementById("empresaPlano");
+        function mostrarErro(mensagem, campo) {
+            evento.preventDefault();
 
-        if (!empresa.value) {
-            escrever("Selecione a empresa.", false);
+            let elemento = document.getElementById("mensagemEmpresarial");
+
+            if (!elemento) {
+                elemento = document.createElement("p");
+                elemento.id = "mensagemEmpresarial";
+                elemento.className = "mensagemFormulario mensagemErro";
+                elemento.setAttribute("role", "alert");
+
+                formulario.querySelector(".botaoEnviarFormulario").before(elemento);
+            }
+
+            elemento.textContent = mensagem;
+
+            if (campo && campo.type !== "hidden") {
+                campo.focus();
+            }
+        }
+
+        if (!empresa || !empresa.value.trim()) {
+            mostrarErro("Informe o nome da empresa.", empresa);
             return;
         }
 
-        if (!tamanho.value) {
-            escrever("Selecione o tamanho da empresa.", false);
+        if (!razao || !razao.value.trim()) {
+            mostrarErro("Informe a razão social.", razao);
             return;
         }
 
-        const cnpjNumeros = cnpj.value.replace(/\D/g, "");
-        if (cnpjNumeros.length !== 14) {
-            escrever("Informe um CNPJ válido (14 dígitos).", false);
-            cnpj.focus();
+        if (!tamanho || !tamanho.value) {
+            mostrarErro("Selecione o tamanho da empresa.");
             return;
         }
 
-        if (!email.value.trim() || !email.checkValidity()) {
-            escrever("Informe um e-mail válido.", false);
-            email.focus();
+        if (!cnpj || cnpj.value.replace(/\D/g, "").length !== 14) {
+            mostrarErro("Informe um CNPJ com 14 dígitos.", cnpj);
             return;
         }
 
-        if (!plano.value) {
-            escrever("Selecione um plano.", false);
+        if (!email || !email.value.trim() || !email.checkValidity()) {
+            mostrarErro("Informe um e-mail válido.", email);
             return;
         }
 
-        escrever("Cadastro validado. Falta conectar o envio ao servidor.", true);
+        if (!plano || !plano.value) {
+            mostrarErro("Selecione um plano.");
+            return;
+        }
+
     });
 }
 

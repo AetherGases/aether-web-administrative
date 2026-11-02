@@ -78,7 +78,7 @@
     </a>
 </div>
 
-<script src="NavBar.js"></script>
+<script src="${ctx}/Crud.js"></script>
 
 </body>
 </html>
