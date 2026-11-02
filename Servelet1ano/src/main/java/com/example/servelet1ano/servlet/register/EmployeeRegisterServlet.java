@@ -2,9 +2,9 @@ package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.EmployeesDAO;
+import com.example.servelet1ano.dao.PermissionGroupsDAO;
 import com.example.servelet1ano.dao.SectorsDAO;
 import com.example.servelet1ano.dao.UnitsDAO;
-import com.example.servelet1ano.filter.EmployeesFilter;
 import com.example.servelet1ano.filter.SectorsFilter;
 import com.example.servelet1ano.filter.UnitsFilter;
 import com.example.servelet1ano.model.Companies;
@@ -15,6 +15,8 @@ import com.example.servelet1ano.model.PermissionGroups;
 import com.example.servelet1ano.model.Employees;
 import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
+import com.example.servelet1ano.util.service.AuthorizationService;
+import com.example.servelet1ano.filter.EmployeesFilter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -28,20 +30,46 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet da tela de funcionarios (/funcionarios)
+ * Mostra o formulario com as unidades e os setores da empresa e cadastra novos funcionarios
+ */
 @WebServlet("/funcionarios")
 public class EmployeeRegisterServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(EmployeeRegisterServlet.class.getName());
 
-    private static final String CADASTRO = "/Employee.jsp";
-
-    /*
-     * CARREGAMENTO DO FORMULÁRIO
-     *
-     * Busca a empresa da sessão e carrega suas unidades e setores.
+    /**
+     * Pagina da tela de funcionarios
      */
+    private static final String CADASTRO = "/WEB-INF/Employee.jsp";
 
+    /**
+     * Nome do grupo de permissao do funcionario comum
+     */
+    private static final String GRUPO_FUNCIONARIO = "Funcionário da empresa";
+
+    /**
+     * Ids das permissoes (tabela permissions) que o funcionario comum recebe:
+     * 3 - inventory:register
+     */
+    private static final List<Integer> PERMISSOES_FUNCIONARIO =
+            List.of(3);
+
+    /**
+     * metodo que mostra o formulario de cadastro de funcionarios
+     * Se nao houver sessao valida, redireciona para o login
+     * Busca a empresa da sessao e carrega as unidades e os setores dela
+     * Se vier o parametro sucesso=true, mostra a mensagem de dados carregados
+     * @param request A requisicao (a empresa vem da sessao)
+     * @param response A resposta que encaminha para o formulario ou redireciona para o login
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -59,8 +87,18 @@ public class EmployeeRegisterServlet extends HttpServlet {
             );
             return;
         }
+        // Confere se o funcionário possui acesso administrativo.
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        authorization.CsrfToken(request);
 
         int companyId = (Integer) session.getAttribute("companyId");
+
 
         try {
             CompaniesDAO companiesDAO = new CompaniesDAO();
@@ -79,6 +117,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
             request.setAttribute("empresa", empresa);
 
             carregarUnidades(request, companyId);
+            carregarFuncionarios(request, companyId);
             carregarSetores(request, companyId);
 
             if ("true".equals(request.getParameter("sucesso"))) {
@@ -107,10 +146,19 @@ public class EmployeeRegisterServlet extends HttpServlet {
         }
     }
 
-    /*
-     * PROCESSAMENTO DO CADASTRO
+    /**
+     * metodo que cadastra um novo funcionario na empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Confere os campos obrigatorios, e-mail, CPF, celular, senhas, unidade, setor e status
+     * Confere se a unidade e o setor sao da empresa e se ja nao existe funcionario com o mesmo CPF
+     * Procura o grupo "Funcionário da empresa" (se nao existir, cria com as permissoes do funcionario) e cadastra o funcionario nele
+     * Se algo estiver errado, volta para o formulario com a mensagem de erro (mantendo o que foi digitado)
+     * Se der certo, redireciona para /funcionarios com o aviso de sucesso
+     * @param request A requisicao com os dados do funcionario (campoNomeFuncionario, campoEmail, campoTelefone, campoCPF, unitId, sectorId, campoSenha, campoConfirmarSenha e status)
+     * @param response A resposta que redireciona ou volta para o formulario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -129,8 +177,41 @@ public class EmployeeRegisterServlet extends HttpServlet {
             return;
         }
 
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        if (!authorization.csrfTokenValido(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         int companyId = (Integer) session.getAttribute("companyId");
+
+
+        // Identifica a operação solicitada.
+        String acao = request.getParameter("acao");
+
+        if ("editar".equals(acao)) {
+            editarFuncionario(request, response, companyId);
+            return;
+        }
+
+        if ("excluir".equals(acao)) {
+            excluirFuncionario(request, response, companyId);
+            return;
+        }
+
+        if (acao != null && !"cadastrar".equals(acao)) {
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST
+            );
+            return;
+        }
+
 
         String nome = request.getParameter("campoNomeFuncionario");
         String email = request.getParameter("campoEmail");
@@ -319,20 +400,14 @@ public class EmployeeRegisterServlet extends HttpServlet {
 
             EmployeesDAO employeesDAO = new EmployeesDAO();
 
-            EmployeesFilter employeesFilter = new EmployeesFilter();
-            employeesFilter.setCompanyId(companyId);
-            employeesFilter.setCpf(cpf);
+            Employees funcionarioExistente = employeesDAO.searchByCpf(cpf);
 
-            List<Employees> existingEmployees =
-                    employeesDAO.searchAll(employeesFilter);
-
-            if (existingEmployees != null
-                    && !existingEmployees.isEmpty()) {
+            if (funcionarioExistente != null) {
                 exibirErro(
                         request,
                         response,
                         companyId,
-                        "Já existe um funcionário com esse CPF na empresa."
+                        "Já existe um funcionário cadastrado com esse CPF."
                 );
                 return;
             }
@@ -341,17 +416,42 @@ public class EmployeeRegisterServlet extends HttpServlet {
             String senhaHash = PasswordHasher.hash(senha);
 
 
-            PermissionGroups permissionGroups =
-                    new PermissionGroups(
-                            2,
-                            "Funcionário da empresa",
+            // grupo de permissão do funcionário
+            // procura o grupo "Funcionário da empresa" da empresa da sessão
+            // se ainda não existir, cria o grupo já com as permissões
+            // Busca o grupo padrão de funcionários da empresa.
+            PermissionGroupsDAO permissionGroupsDAO = new PermissionGroupsDAO();
+
+            PermissionGroups grupo =
+                    permissionGroupsDAO.searchByNameAndCompany(
+                            GRUPO_FUNCIONARIO,
                             companyId
                     );
 
+            int permissionGroupId =
+                    grupo == null ? -1 : grupo.getId();
+
+            if (permissionGroupId <= 0) {
+                permissionGroupId = permissionGroupsDAO.registerWithPermissions(
+                        new PermissionGroups(GRUPO_FUNCIONARIO, companyId),
+                        PERMISSOES_FUNCIONARIO
+                );
+
+                if (permissionGroupId <= 0) {
+                    exibirErro(
+                            request,
+                            response,
+                            companyId,
+                            "Não foi possível criar o grupo de permissão do funcionário."
+                    );
+                    return;
+                }
+            }
+
             Employees employee = new Employees(
                     companyId,
-                    permissionGroups.getId(),
-                    sectors.getFirst().getId(),
+                    permissionGroupId,
+                    sectorId,
                     cpf,
                     nome,
                     email,
@@ -360,7 +460,19 @@ public class EmployeeRegisterServlet extends HttpServlet {
                     statusEmployee
             );
 
-            employeesDAO.register(employee);
+            employee.setUnitId(unitId);
+
+            boolean cadastro = employeesDAO.register(employee);
+
+            if (!cadastro) {
+                exibirErro(
+                        request,
+                        response,
+                        companyId,
+                        "Não foi possível cadastrar o funcionário. Verifique se o CPF ou o e-mail já estão cadastrados."
+                );
+                return;
+            }
 
             response.sendRedirect(
                     request.getContextPath() + "/funcionarios?sucesso=true"
@@ -383,10 +495,14 @@ public class EmployeeRegisterServlet extends HttpServlet {
         }
     }
 
-    /*
-     * CARREGA AS UNIDADES ATIVAS DA EMPRESA.
-     */
+    //    ------------- Metodos auxiliares (privados) --------------
 
+    /**
+     * Carrega as unidades ativas da empresa
+     * Guarda a lista no atributo "unidades"
+     * @param request A requisicao onde a lista sera guardada
+     * @param companyId O id da empresa do usuario logado
+     */
     private void carregarUnidades(
             HttpServletRequest request,
             int companyId
@@ -400,10 +516,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
         request.setAttribute("unidades", unidades);
     }
 
-    /*
-     * CARREGA OS SETORES ATIVOS DA EMPRESA.
+    /**
+     * Carrega os setores da empresa
+     * Guarda a lista no atributo "setores"
+     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
+     * @param request A requisicao onde a lista sera guardada
+     * @param companyId O id da empresa do usuario logado
      */
-
     private void carregarSetores(
             HttpServletRequest request,
             int companyId
@@ -417,10 +536,18 @@ public class EmployeeRegisterServlet extends HttpServlet {
         request.setAttribute("setores", setores);
     }
 
-    /*
-     * EXIBE UMA MENSAGEM E RECARREGA OS DADOS DO FORMULÁRIO.
+    /**
+     * Mostra uma mensagem de erro no formulario de funcionarios
+     * Guarda a mensagem no atributo "erro", recarrega a empresa, as unidades e os setores
+     * e encaminha a mesma requisicao de volta para a pagina, assim o que o usuario digitou continua preenchido
+     * Se nao for possivel recarregar os dados, as listas de unidades e setores ficam vazias
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para o formulario
+     * @param companyId O id da empresa do usuario logado
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
      */
-
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -436,6 +563,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
 
             request.setAttribute("empresa", empresa);
             carregarUnidades(request, companyId);
+            carregarFuncionarios(request, companyId);
             carregarSetores(request, companyId);
 
         } catch (RuntimeException e) {
@@ -447,9 +575,263 @@ public class EmployeeRegisterServlet extends HttpServlet {
 
             request.setAttribute("unidades", List.of());
             request.setAttribute("setores", List.of());
+            request.setAttribute("funcionarios", List.of());
         }
 
         request.getRequestDispatcher(CADASTRO)
                 .forward(request, response);
     }
+
+    /**
+     * Edita os dados permitidos de um funcionário comum.
+     * Não permite alterar o id, a senha ou o grupo de permissões.
+     *
+     * @param request Requisição com os dados do funcionário
+     * @param response Resposta para o formulário
+     * @param companyId Empresa autenticada
+     * @throws ServletException se ocorrer erro no encaminhamento
+     * @throws IOException se ocorrer erro de entrada ou saída
+     */
+    private void editarFuncionario(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws ServletException, IOException {
+
+        String idParam = request.getParameter("id");
+        String nome = request.getParameter("campoNomeFuncionario");
+        String email = request.getParameter("campoEmail");
+        String statusParam = request.getParameter("status");
+
+        // A edição nunca recebe campos de senha ou alteração de identidade.
+        if (request.getParameterMap().containsKey("campoSenha")
+                || request.getParameterMap().containsKey("campoConfirmarSenha")
+                || request.getParameterMap().containsKey("companyId")
+                || request.getParameterMap().containsKey("permissionGroupId")
+                || request.getParameterMap().containsKey("cpf")
+                || request.getParameterMap().containsKey("unitId")
+                || request.getParameterMap().containsKey("sectorId")) {
+
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        try {
+            int id = Integer.parseInt(idParam);
+
+            if (id <= 0
+                    || nome == null
+                    || nome.isBlank()
+                    || nome.length() > 255
+                    || email == null
+                    || email.isBlank()
+                    || email.length() > 255) {
+
+                exibirErro(
+                        request, response, companyId,
+                        "Informe um nome e um e-mail válidos."
+                );
+                return;
+            }
+
+            nome = nome.trim();
+            email = email.trim().toLowerCase(java.util.Locale.ROOT);
+
+            if (!Validators.isEmail(email)
+                    || nome.matches(".*[\\p{Cc}\\p{Cf}].*")
+                    || email.matches(".*[\\p{Cc}\\p{Cf}].*")) {
+
+                exibirErro(
+                        request, response, companyId,
+                        "Os dados informados não são válidos."
+                );
+                return;
+            }
+
+            StatusEmployee status = switch (statusParam == null
+                    ? "" : statusParam) {
+                case "Ativo" -> StatusEmployee.ACTIVE;
+                case "Inativo" -> StatusEmployee.INACTIVE;
+                case "Em recesso" -> StatusEmployee.IN_VACATION;
+                default -> null;
+            };
+
+            if (status == null) {
+                exibirErro(
+                        request, response, companyId,
+                        "O status informado não é válido."
+                );
+                return;
+            }
+
+            HttpSession session = request.getSession(false);
+
+            if (session == null
+                    || !(session.getAttribute("employeeId")
+                    instanceof Integer loggedEmployeeId)) {
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            // Impede alterações da própria conta por essa tela.
+            if (id == loggedEmployeeId) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            EmployeesDAO employeesDAO = new EmployeesDAO();
+
+            boolean atualizado = employeesDAO.updateCommonEmployee(
+                    id, companyId, nome, email, status
+            );
+
+            if (!atualizado) {
+                exibirErro(
+                        request, response, companyId,
+                        "Não foi possível editar o funcionário. "
+                                + "Gerentes e funcionários de outras empresas "
+                                + "não podem ser alterados por essa tela."
+                );
+                return;
+            }
+
+            response.sendRedirect(
+                    request.getContextPath() + "/funcionarios?sucesso=true"
+            );
+
+        } catch (NumberFormatException e) {
+
+            exibirErro(
+                    request, response, companyId,
+                    "O funcionário selecionado não é válido."
+            );
+
+        } catch (RuntimeException e) {
+
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao editar funcionário.", e
+            );
+
+            exibirErro(
+                    request, response, companyId,
+                    "Não foi possível editar o funcionário."
+            );
+        }
+    }
+
+
+    /**
+     * Desativa um funcionário comum da empresa.
+     * Não permite desativar gerentes ou a própria conta.
+     *
+     * @param request Requisição contendo o id do funcionário
+     * @param response Resposta HTTP
+     * @param companyId Empresa autenticada
+     * @throws ServletException se ocorrer erro no encaminhamento
+     * @throws IOException se ocorrer erro de entrada ou saída
+     */
+    private void excluirFuncionario(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws ServletException, IOException {
+
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            HttpSession session = request.getSession(false);
+
+            if (session == null
+                    || !(session.getAttribute("employeeId")
+                    instanceof Integer loggedEmployeeId)) {
+
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                return;
+            }
+
+            if (id <= 0 || id == loggedEmployeeId) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                return;
+            }
+
+            EmployeesDAO employeesDAO = new EmployeesDAO();
+
+            boolean excluido = employeesDAO.deleteCommonEmployee(
+                    id, companyId, loggedEmployeeId
+            );
+
+            if (!excluido) {
+                exibirErro(
+                        request, response, companyId,
+                        "Não é possível excluir esse funcionário. "
+                                + "Contas administrativas são protegidas."
+                );
+                return;
+            }
+
+            response.sendRedirect(
+                    request.getContextPath() + "/funcionarios?excluido=true"
+            );
+
+        } catch (NumberFormatException e) {
+
+            exibirErro(
+                    request, response, companyId,
+                    "O funcionário selecionado não é válido."
+            );
+
+        } catch (RuntimeException e) {
+
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao excluir funcionário.", e
+            );
+
+            exibirErro(
+                    request, response, companyId,
+                    "Não foi possível excluir o funcionário."
+            );
+        }
+    }
+
+    /**
+     * Busca os funcionarios da empresa autenticada.
+     *
+     * Usa o companyId da sessao para impedir que
+     * funcionarios de outras empresas sejam exibidos.
+     *
+     * @param request Requisicao HTTP
+     * @param companyId ID da empresa autenticada
+     */
+    private void carregarFuncionarios(
+            HttpServletRequest request,
+            int companyId
+    ) {
+
+        EmployeesFilter filtro = new EmployeesFilter();
+
+        filtro.setCompanyId(companyId);
+
+        EmployeesDAO employeesDAO = new EmployeesDAO();
+
+        List<Employees> funcionarios =
+                employeesDAO.searchAll(filtro);
+
+        request.setAttribute(
+                "funcionarios",
+                funcionarios
+        );
+
+        LOGGER.log(
+                Level.INFO,
+                "Funcionarios carregados para a empresa {0}: {1}",
+                new Object[]{
+                        companyId,
+                        funcionarios == null ? 0 : funcionarios.size()
+                }
+        );
+    }
+
+
 }

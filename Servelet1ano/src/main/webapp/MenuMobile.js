@@ -1,6 +1,3 @@
-/* ==========================================================================
-   MENU MOBILE (hambúrguer) — Aether
-   ========================================================================== */
 (() => {
     const cabecalho = document.querySelector('.cabecalho');
     const botao = document.getElementById('botaoMenuMobile');

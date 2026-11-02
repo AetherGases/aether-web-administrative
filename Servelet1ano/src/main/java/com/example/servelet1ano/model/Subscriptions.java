@@ -6,7 +6,8 @@ public class Subscriptions {
     private int companyId;
     private int planId;
     private boolean isActive;
-    private boolean installments;
+    // parcelado por padrao, igual ao default da coluna installments no banco
+    private boolean installments = true;
     private Date deactivatedAt;
     private Date createdAt;
     private Date updatedAt;

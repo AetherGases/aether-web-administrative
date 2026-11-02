@@ -1,55 +1,90 @@
 package com.example.servelet1ano.connection;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Classe que cria e entrega as conexoes com o banco usando um pool de conexoes (HikariCP)
+ * O pool precisa ser iniciado com start() quando a aplicacao sobe e fechado com shutdown() quando ela para
+ */
 public class ConnectionFactory {
 
     /**
-     * Abre a conexao com o banco usando os dados do .env
-     * @return A conexao aberta ou null se nao foi possivel conectar
+     * Pool de conexoes com o banco, criado no start() e fechado no shutdown()
      */
-    public static Connection connect(){
+    private static HikariDataSource dataSource;
 
+    /**
+     * metodo que inicia o pool de conexoes usando os dados do .env
+     * Deve ser chamado uma vez, quando a aplicacao inicia (feito pelo CustomLifecycleListener)
+     * @throws IllegalStateException se DB_URL, DB_USER ou DB_PASSWORD estiverem ausentes no .env
+     * @throws RuntimeException se o driver do PostgreSQL nao for encontrado
+     */
+    public static void start(){
         String url = DatabaseConfig.getUrl();
         String user = DatabaseConfig.getUser();
         String password = DatabaseConfig.getPassword();
 
         if (url == null || url.isBlank() || user == null || user.isBlank() || password == null) {
-            System.out.println("Error: the database settings are missing. Fill DB_URL, DB_USER and DB_PASSWORD in the .env file.");
-            return null;
+            throw new IllegalStateException(
+                    "As configurações do banco de dados não foram encontradas. "
+                            + "Preencha DB_URL, DB_USER e DB_PASSWORD no arquivo .env."
+            );
         }
 
         try {
             Class.forName("org.postgresql.Driver");
-            Connection conn = DriverManager.getConnection(url, user, password);
-            return conn;
         }
         catch (ClassNotFoundException e){
-            System.out.println("Error: the PostgreSQL driver was not found. Check if the postgresql dependency is declared in the pom.xml file.");
-            e.printStackTrace();
-            return null;
+            throw new RuntimeException(
+                    "O driver do PostgreSQL não foi encontrado. "
+                            + "Verifique se a dependência do postgresql está declarada no pom.xml.",
+                    e
+            );
         }
-        catch (SQLException e){
-            System.out.println("Error: could not connect to the database. Check if the server is running and if the user and the password in the .env file are correct.");
-            e.printStackTrace();
-            return null;
-        }
+
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(user);
+        config.setPassword(password);
+
+        config.setMaximumPoolSize(5);
+        config.setMinimumIdle(3);
+        config.setConnectionTimeout(30000);
+        config.setIdleTimeout(600000);
+        config.setMaxLifetime(1800000);
+        config.setAutoCommit(true);
+        config.setConnectionTestQuery("select 1");
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        dataSource = new HikariDataSource(config);
     }
 
     /**
-     * Fecha a conexao com o banco
-     * @param conn A conexao que sera fechada
+     * metodo que entrega uma conexao do pool
+     * Quem pedir a conexao precisa fechar (de preferencia com try-with-resources), o que a devolve ao pool
+     * Antes de usar, o pool precisa ter sido iniciado com start()
+     * @return A conexao aberta com o banco
+     * @throws SQLException se nao for possivel obter a conexao do pool
      */
-    public static void disconnect(Connection conn){
-        try {
-            if (conn != null && !conn.isClosed()){
-                conn.close();
-            }
-        }catch (SQLException e){
-            System.out.println("Error: could not close the database connection.");
-            e.printStackTrace();
+    public static Connection connect() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+    /**
+     * metodo que fecha o pool de conexoes
+     * Deve ser chamado quando a aplicacao para (feito pelo CustomLifecycleListener)
+     * Se o pool nao foi iniciado ou ja esta fechado, nao faz nada
+     */
+    public static void shutdown() {
+        if(dataSource != null && !dataSource.isClosed()){
+            dataSource.close();
         }
     }
 }

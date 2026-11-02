@@ -1,9 +1,7 @@
-
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.PlansDAO;
-import com.example.servelet1ano.filter.CompaniesFilter;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.CompanySize;
 import com.example.servelet1ano.model.Plans;
@@ -15,22 +13,42 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet do cadastro de uma nova empresa (/empresa)
+ * Cadastra a empresa e a assinatura do plano escolhido
+ */
 @WebServlet("/empresa")
 public class NewCompanyRegisterServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(NewCompanyRegisterServlet.class.getName());
 
+    /**
+     * Pagina do formulario de cadastro da empresa
+     */
     private static final String CADASTRO = "/CompanyRegister.jsp";
 
+    /**
+     * metodo que recebe os dados do formulario e cadastra a empresa com a assinatura do plano
+     * Confere se todos os campos vieram preenchidos, se o tamanho e o plano existem e se a empresa ainda nao esta cadastrada
+     * Se algo estiver errado, volta para o formulario com a mensagem de erro (mantendo o que foi digitado)
+     * Se der certo, redireciona para /gerente com o aviso de sucesso
+     * @param request A requisicao com os dados da empresa (empresas, razoes, tamanhos, campoCNPJ, campoEmail e planos)
+     * @param response A resposta que redireciona ou volta para o formulario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -45,14 +63,6 @@ public class NewCompanyRegisterServlet extends HttpServlet {
         String cnpj = request.getParameter("campoCNPJ");
         String email = request.getParameter("campoEmail");
         String plano = request.getParameter("planos");
-
-        request.setAttribute("empresas", empresa);
-        request.setAttribute("razoes", razao);
-        request.setAttribute("tamanhos", tamanho);
-        request.setAttribute("campoCNPJ", cnpj);
-        request.setAttribute("campoEmail", email);
-        request.setAttribute("planos", plano);
-
 
         if (empresa == null || empresa.isBlank()
                 || razao == null || razao.isBlank()
@@ -75,7 +85,6 @@ public class NewCompanyRegisterServlet extends HttpServlet {
         cnpj = cnpj.trim();
         email = email.trim();
         plano = plano.trim();
-
 
         CompanySize tamanhoEmpresa;
 
@@ -117,16 +126,10 @@ public class NewCompanyRegisterServlet extends HttpServlet {
 
 
             CompaniesDAO companiesDAO = new CompaniesDAO();
-            CompaniesFilter filter = new CompaniesFilter();
 
-            filter.setName(empresa);
-            filter.setCnpj(cnpj);
+            Companies empresaEncontrada = companiesDAO.searchByCnpj(cnpj);
 
-            List<Companies> empresasEncontradas =
-                    companiesDAO.searchAll(filter);
-
-            if (empresasEncontradas != null
-                    && !empresasEncontradas.isEmpty()) {
+            if (empresaEncontrada != null) {
 
                 exibirErro(
                         request,
@@ -156,17 +159,49 @@ public class NewCompanyRegisterServlet extends HttpServlet {
             subscription.setInstallments(true);
 
 
-            CompanyRegistrationService service =
-                    new CompanyRegistrationService();
+            CompanyRegistrationService service = new CompanyRegistrationService();
 
-            service.register(novaEmpresa, subscription);
+            int empresaId = service.register(novaEmpresa, subscription);
 
-            request.setAttribute(
-                    "sucesso",
-                    "Cadastro realizado com sucesso!"
+            // o service devolve -1 quando o CNPJ já existe (mesmo que o nome
+            // seja diferente, o que a busca acima não pega)
+            if (empresaId == -1) {
+                exibirErro(
+                        request,
+                        response,
+                        "Este CNPJ já está cadastrado. "
+                                + "Verifique os dados ou faça login."
+                );
+                return;
+            }
+
+            if (empresaId <= 0) {
+                exibirErro(
+                        request,
+                        response,
+                        "Não foi possível identificar a empresa cadastrada."
+                );
+                return;
+            }
+
+            HttpSession sessaoAnterior = request.getSession(false);
+
+            if (sessaoAnterior != null) {
+                sessaoAnterior.invalidate();
+            }
+
+            HttpSession sessao = request.getSession(true);
+
+            request.changeSessionId();
+
+            sessao.setAttribute("pendingCompanyId", empresaId);
+
+            sessao.setMaxInactiveInterval(20 * 60);
+
+            response.sendRedirect(
+                    request.getContextPath() + "/gerente"
             );
-            request.getRequestDispatcher(CADASTRO)
-                    .forward(request, response);
+            return;
 
         } catch (RuntimeException e) {
             LOGGER.log(
@@ -184,23 +219,33 @@ public class NewCompanyRegisterServlet extends HttpServlet {
         }
     }
 
-    /*
-     * EXIBIÇÃO DE ERROS
-     *
-     * Recebe a mensagem que deverá ser apresentada ao usuário,
-     * disponibiliza-a pelo atributo "erro".
-     *
-     * O forward encaminha a requisição atual ao JSP, permitindo
-     * que a mensagem seja exibida na mesma página do formulário.
-     */
+    //    ------------- Metodos auxiliares (privados) --------------
 
+    /**
+     * Mostra uma mensagem de erro no formulario de cadastro
+     * Guarda a mensagem no atributo "erro" e encaminha a mesma requisicao de volta para a pagina,
+     * assim o que o usuario digitou continua preenchido
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para o formulario
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
             String mensagem
     ) throws ServletException, IOException {
+
         request.setAttribute("erro", mensagem);
-        request.getRequestDispatcher(CADASTRO)
+
+        String origem = request.getParameter("origem");
+
+        String pagina = "index".equals(origem)
+                ? "/Index.jsp"
+                : "/CompanyRegister.jsp";
+
+        request.getRequestDispatcher(pagina)
                 .forward(request, response);
     }
 }

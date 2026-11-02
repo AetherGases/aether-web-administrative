@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.dao;
 
 import com.example.servelet1ano.connection.ConnectionFactory;
@@ -9,16 +8,26 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 
+/**
+ * Classe que cuida das solicitacoes de recuperacao de senha no banco (tabela password_recoveries)
+ * Guarda so o hash do codigo enviado por e-mail, nunca o codigo em si
+ */
 public class PasswordRecoveryDAO {
 
+    /**
+     * Quantidade maxima de tentativas de validar o codigo de uma solicitacao
+     * Depois disso a solicitacao deixa de aceitar o codigo
+     */
     private static final int MAX_ATTEMPTS = 5;
 
     /**
-     * Cria uma solicitação e invalida as anteriores
-     * do mesmo funcionário na mesma transação.
+     * metodo que registra uma nova solicitacao de recuperacao de senha
+     * Invalida as solicitacoes anteriores do funcionario e cadastra o novo codigo somente se a conta estiver ativa
+     * As duas operacoes acontecem na mesma transacao: ou as duas dao certo, ou nada muda
+     * @param recovery A solicitacao que sera cadastrada (o id gerado e preenchido nela)
+     * @return true se foi registrada e false se os dados forem invalidos (ex: hash fora do formato) ou a conta do funcionario nao estiver ativa
      */
     public boolean register(PasswordRecovery recovery) {
 
@@ -30,13 +39,7 @@ public class PasswordRecoveryDAO {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (conn) {
+        try (Connection conn = ConnectionFactory.connect()) {
 
             conn.setAutoCommit(false);
 
@@ -60,24 +63,19 @@ public class PasswordRecoveryDAO {
                                 "WHERE EXISTS (" +
                                 "SELECT 1 FROM employees " +
                                 "WHERE id = ? AND is_active = TRUE" +
-                                ")";
+                                ") " +
+                                "RETURNING id";
 
-                try (PreparedStatement pstmt = conn.prepareStatement(
-                        insertSql, Statement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
 
                     pstmt.setInt(1, recovery.getEmployeeId());
                     pstmt.setString(2, recovery.getCodeHash());
                     pstmt.setTimestamp(3, recovery.getExpiresAt());
                     pstmt.setInt(4, recovery.getEmployeeId());
 
-                    if (pstmt.executeUpdate() != 1) {
-                        conn.rollback();
-                        return false;
-                    }
-
-                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                    try (ResultSet rs = pstmt.executeQuery()) {
                         if (rs.next()) {
-                            recovery.setId(rs.getLong(1));
+                            recovery.setId(rs.getLong("id"));
                         } else {
                             conn.rollback();
                             return false;
@@ -88,8 +86,8 @@ public class PasswordRecoveryDAO {
                 conn.commit();
                 return true;
 
-            } catch (SQLException e) {
-                conn.rollback();
+            } catch (SQLException | RuntimeException e) {
+                rollbackQuietly(conn, e);
                 throw e;
             }
 
@@ -100,17 +98,13 @@ public class PasswordRecoveryDAO {
     }
 
     /**
-     * Busca uma solicitação pelo seu ID.
+     * metodo para buscar uma solicitacao de recuperacao pelo id
+     * @param id Numero unico da solicitacao
+     * @return A solicitacao encontrada, ou null se o id for invalido ou ela nao existir
      */
     public PasswordRecovery searchById(long id) {
 
         if (id <= 0) {
-            return null;
-        }
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
             return null;
         }
 
@@ -120,7 +114,7 @@ public class PasswordRecoveryDAO {
                         "FROM password_recoveries WHERE id = ?";
 
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -150,17 +144,14 @@ public class PasswordRecoveryDAO {
     }
 
     /**
-     * Registra uma tentativa incorreta, respeitando o limite.
+     * metodo que soma uma tentativa de validacao na solicitacao
+     * So soma se o codigo ainda nao foi usado, nao expirou e nao atingiu o limite de tentativas
+     * @param id Numero unico da solicitacao
+     * @return true se a tentativa foi registrada e false se o id for invalido ou a solicitacao ja foi usada, expirou ou atingiu o limite
      */
     public boolean incrementAttempts(long id) {
 
         if (id <= 0) {
-            return false;
-        }
-
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
             return false;
         }
 
@@ -173,7 +164,7 @@ public class PasswordRecoveryDAO {
                         "AND attempts < ?";
 
         try (
-                conn;
+                Connection conn = ConnectionFactory.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)
         ) {
 
@@ -189,8 +180,14 @@ public class PasswordRecoveryDAO {
     }
 
     /**
-     * Valida o código e atualiza a senha na mesma transação.
-     * O código recebido deve estar convertido em HMAC-SHA-256.
+     * metodo que valida o codigo informado e troca a senha do funcionario
+     * Tudo acontece na mesma transacao: ou o codigo e conferido, a senha e trocada e o codigo e invalidado, ou nada muda
+     * Recusa solicitacoes expiradas, ja usadas ou que atingiram o limite de tentativas
+     * Se o codigo estiver errado, soma uma tentativa (e a soma fica salva)
+     * @param recoveryId Numero unico da solicitacao
+     * @param submittedCodeHash O HMAC-SHA-256 do codigo digitado pelo usuario (64 caracteres hexadecimais)
+     * @param newPasswordHash O hash da nova senha (gerado pelo PasswordHasher)
+     * @return true se a senha foi trocada e false se os dados forem invalidos, a solicitacao nao existir, estiver expirada, usada ou sem tentativas, ou o codigo estiver errado
      */
     public boolean completeRecovery(
             long recoveryId,
@@ -205,13 +202,7 @@ public class PasswordRecoveryDAO {
             return false;
         }
 
-        Connection conn = ConnectionFactory.connect();
-
-        if (conn == null) {
-            return false;
-        }
-
-        try (conn) {
+        try (Connection conn = ConnectionFactory.connect()) {
 
             conn.setAutoCommit(false);
 
@@ -317,14 +308,60 @@ public class PasswordRecoveryDAO {
                 conn.commit();
                 return true;
 
-            } catch (SQLException e) {
-                conn.rollback();
+            } catch (SQLException | RuntimeException e) {
+                rollbackQuietly(conn, e);
                 throw e;
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(
                     "Erro ao concluir a recuperação de senha.", e);
+        }
+    }
+
+    /**
+     * metodo que invalida uma solicitacao de recuperacao de senha (marca como usada)
+     * Util quando o envio do e-mail com o codigo falha
+     * @param id Numero unico da solicitacao
+     * @return true se foi invalidada e false se o id for invalido ou a solicitacao nao existe ou ja estava usada
+     */
+    public boolean invalidate(long id) {
+
+        if (id <= 0) {
+            return false;
+        }
+
+        String sql =
+                "UPDATE password_recoveries " +
+                        "SET used_at = CURRENT_TIMESTAMP " +
+                        "WHERE id = ? AND used_at IS NULL";
+
+        try (
+                Connection conn = ConnectionFactory.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
+
+            pstmt.setLong(1, id);
+
+            return pstmt.executeUpdate() == 1;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(
+                    "Erro ao invalidar a recuperação de senha.", e
+            );
+        }
+    }
+
+    //    ------------- Metodos auxiliares (privados) --------------
+
+    /**
+     * Desfaz a transacao sem esconder o erro original
+     */
+    private void rollbackQuietly(Connection conn, Exception cause) {
+        try {
+            conn.rollback();
+        } catch (SQLException rollbackError) {
+            cause.addSuppressed(rollbackError);
         }
     }
 }

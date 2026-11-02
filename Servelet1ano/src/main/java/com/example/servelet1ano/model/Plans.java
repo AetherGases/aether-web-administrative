@@ -1,11 +1,13 @@
 package com.example.servelet1ano.model;
-import java.sql.Date;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 public class Plans {
     private int id;
     private String name;
     private String description;
-    private double price;
+    private BigDecimal price;
     private int durationDays;
     private String currency;
     private boolean isActive;
@@ -13,11 +15,19 @@ public class Plans {
     private Date updatedAt;
 
     public Plans(){}
-    public Plans(int id, String name, double price, int durationDays) {
+
+    public Plans(int id, String name, BigDecimal price, int durationDays) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.durationDays = durationDays;
+    }
+
+    /**
+     * Mantido para quem ainda cria o plano com double; o valor e convertido para BigDecimal
+     */
+    public Plans(int id, String name, double price, int durationDays) {
+        this(id, name, BigDecimal.valueOf(price), durationDays);
     }
 
     public int getId() {
@@ -44,11 +54,11 @@ public class Plans {
         this.description = description;
     }
 
-    public double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

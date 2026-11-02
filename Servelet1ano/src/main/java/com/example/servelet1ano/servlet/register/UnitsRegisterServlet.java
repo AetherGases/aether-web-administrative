@@ -1,4 +1,3 @@
-
 package com.example.servelet1ano.servlet.register;
 
 import com.example.servelet1ano.dao.AddressesDAO;
@@ -9,6 +8,7 @@ import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
 import com.example.servelet1ano.model.Units;
 import com.example.servelet1ano.validation.Validators;
+import com.example.servelet1ano.util.service.AuthorizationService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -22,14 +22,33 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Servlet da tela de unidades (/unidades)
+ * Lista as unidades da empresa do usuario logado e cadastra novas unidades junto com o endereco
+ */
 @WebServlet("/unidades")
 public class UnitsRegisterServlet extends HttpServlet {
 
+    /**
+     * Registro de logs usado para anotar os erros inesperados
+     */
     private static final Logger LOGGER =
             Logger.getLogger(UnitsRegisterServlet.class.getName());
 
-    private static final String CADASTRO = "/Units.jsp";
+    /**
+     * Pagina da tela de unidades
+     */
+    private static final String CADASTRO = "/WEB-INF/Units.jsp";
 
+    /**
+     * metodo que mostra a tela de unidades da empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Se vier o parametro sucesso=true, mostra a mensagem de unidade cadastrada
+     * @param request A requisicao (a empresa vem da sessao)
+     * @param response A resposta que encaminha para a tela de unidades ou redireciona para o login
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doGet(
             HttpServletRequest request,
@@ -47,6 +66,16 @@ public class UnitsRegisterServlet extends HttpServlet {
             );
             return;
         }
+        // Confere se o funcionário possui acesso administrativo.
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        authorization.CsrfToken(request);
+
 
         int companyId = (Integer) session.getAttribute("companyId");
 
@@ -79,6 +108,17 @@ public class UnitsRegisterServlet extends HttpServlet {
         }
     }
 
+    /**
+     * metodo que cadastra uma nova unidade (com o endereco) na empresa do usuario logado
+     * Se nao houver sessao valida, redireciona para o login
+     * Confere os campos obrigatorios, o tamanho do nome, o CNPJ e o CEP, e se a unidade ja nao foi cadastrada
+     * Se algo estiver errado, volta para a tela com a mensagem de erro (mantendo o que foi digitado)
+     * Se der certo, redireciona para /unidades com o aviso de sucesso
+     * @param request A requisicao com os dados da unidade e do endereco (campos que comecam com "campo")
+     * @param response A resposta que redireciona ou volta para a tela de unidades
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     @Override
     protected void doPost(
             HttpServletRequest request,
@@ -97,7 +137,36 @@ public class UnitsRegisterServlet extends HttpServlet {
             return;
         }
 
+        if (!new AuthorizationService().isCompanyAdmin(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+        AuthorizationService authorization = new AuthorizationService();
+
+        if (!authorization.csrfTokenValido(request)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         int companyId = (Integer) session.getAttribute("companyId");
+
+        String acao = request.getParameter("acao");
+
+        if ("editar".equals(acao)) {
+            editarUnidade(request, response, companyId);
+            return;
+        }
+
+        if ("excluir".equals(acao)) {
+            excluirUnidade(request, response, companyId);
+            return;
+        }
+
+        if (acao != null && !"cadastrar".equals(acao)) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
         String nome = request.getParameter("campoNomeUnidade");
         String cnpj = request.getParameter("campoCNPJ");
@@ -278,6 +347,16 @@ public class UnitsRegisterServlet extends HttpServlet {
         }
     }
 
+    //    ------------- Metodos auxiliares (privados) --------------
+
+    /**
+     * Carrega os dados que a tela de unidades precisa
+     * Busca a empresa do usuario e guarda no atributo "empresa"
+     * Busca as unidades dessa empresa e guarda no atributo "unidades"
+     * Se a consulta falhar, a excecao e repassada para quem chamou tratar o erro
+     * @param request A requisicao onde os atributos serao guardados
+     * @param companyId O id da empresa do usuario logado
+     */
     private void carregarDados(
             HttpServletRequest request,
             int companyId
@@ -294,6 +373,18 @@ public class UnitsRegisterServlet extends HttpServlet {
         request.setAttribute("unidades", unidades);
     }
 
+    /**
+     * Mostra uma mensagem de erro na tela de unidades
+     * Guarda a mensagem no atributo "erro", recarrega os dados da tela
+     * e encaminha a mesma requisicao de volta para a pagina, assim o que o usuario digitou continua preenchido
+     * Se nao for possivel recarregar os dados, a lista de unidades fica vazia
+     * @param request A requisicao atual
+     * @param response A resposta que encaminha para a tela de unidades
+     * @param companyId O id da empresa do usuario logado
+     * @param mensagem O texto do erro que sera mostrado ao usuario
+     * @throws ServletException se der erro no encaminhamento para a pagina
+     * @throws IOException se der erro de entrada ou saida
+     */
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -319,4 +410,124 @@ public class UnitsRegisterServlet extends HttpServlet {
         request.getRequestDispatcher(CADASTRO)
                 .forward(request, response);
     }
+
+
+    /**
+     * Edita somente os dados básicos de uma unidade.
+     * Não permite alterar id, empresa ou endereço.
+     */
+    private void editarUnidade(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws ServletException, IOException {
+
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            String nome = request.getParameter("campoNomeUnidade");
+            String cnpj = request.getParameter("campoCNPJ");
+            String cnae = request.getParameter("campoCNAE");
+
+            if (id <= 0
+                    || nome == null || nome.isBlank()
+                    || cnpj == null || cnpj.isBlank()
+                    || cnae == null || cnae.isBlank()) {
+
+                exibirErro(
+                        request, response, companyId,
+                        "Informe os dados obrigatórios da unidade."
+                );
+                return;
+            }
+
+            boolean atualizado = new UnitsDAO().updateBasicData(
+                    id, companyId, nome, cnpj, cnae
+            );
+
+            if (!atualizado) {
+                exibirErro(
+                        request, response, companyId,
+                        "Não foi possível editar a unidade. "
+                                + "Verifique os dados informados."
+                );
+                return;
+            }
+
+            response.sendRedirect(
+                    request.getContextPath() + "/unidades?sucesso=true"
+            );
+
+        } catch (NumberFormatException e) {
+
+            exibirErro(
+                    request, response, companyId,
+                    "A unidade selecionada não é válida."
+            );
+
+        } catch (RuntimeException e) {
+
+            LOGGER.log(Level.SEVERE, "Erro ao editar unidade.", e);
+
+            exibirErro(
+                    request, response, companyId,
+                    "Não foi possível editar a unidade."
+            );
+        }
+    }
+
+
+    /**
+     * Desativa uma unidade sem funcionários ativos.
+     * Não altera ids nem dados de outras empresas.
+     */
+    private void excluirUnidade(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws ServletException, IOException {
+
+        try {
+            int id = Integer.parseInt(request.getParameter("id"));
+
+            if (id <= 0) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
+
+            boolean excluida = new UnitsDAO()
+                    .deleteEmptyUnit(id, companyId);
+
+            if (!excluida) {
+                exibirErro(
+                        request, response, companyId,
+                        "Não foi possível desativar a unidade. "
+                                + "Verifique se existem funcionários ativos."
+                );
+                return;
+            }
+
+            response.sendRedirect(
+                    request.getContextPath() + "/unidades?excluido=true"
+            );
+
+        } catch (NumberFormatException e) {
+
+            exibirErro(
+                    request, response, companyId,
+                    "A unidade selecionada não é válida."
+            );
+
+        } catch (RuntimeException e) {
+
+            LOGGER.log(Level.SEVERE, "Erro ao excluir unidade.", e);
+
+            exibirErro(
+                    request, response, companyId,
+                    "Não foi possível desativar a unidade."
+            );
+        }
+    }
+
+
 }
