@@ -350,7 +350,14 @@ public class SectorRegisterServlet extends HttpServlet {
         return true;
     }
 
-    /** Converte um identificador positivo sem permitir outros formatos. */
+    /**
+     * Converte uma representação textual em um identificador inteiro positivo.
+     * Rejeita valores vazios, formatos inválidos e números fora do limite.
+     *
+     * @param valor O identificador recebido como texto
+     * @return O identificador convertido ou null se for inválido
+     */
+
     private Integer lerId(String valor) {
         if (valor == null || !valor.matches("[1-9][0-9]{0,9}")) {
             return null;
@@ -362,12 +369,26 @@ public class SectorRegisterServlet extends HttpServlet {
         }
     }
 
-    /** Normaliza os textos para evitar diferencas de representacao Unicode. */
+    /**
+     * Normaliza o texto recebido para manter uma representação Unicode consistente.
+     *
+     * @param valor O texto original
+     * @return O texto normalizado
+     */
+
     private String normalizar(String valor) {
         return valor == null ? null : Normalizer.normalize(valor.trim(), Normalizer.Form.NFC);
     }
 
-    /** Confere obrigatoriedade, tamanho e caracteres permitidos no banco. */
+    /**
+     * Valida os dados de cadastro ou edição de um setor.
+     * Confere obrigatoriedade, tamanho e caracteres não permitidos.
+     *
+     * @param nome O nome do setor
+     * @param descricao A descrição do setor
+     * @return true se os dados atenderem às regras de validação
+     */
+
     private boolean dadosValidos(String nome, String descricao) {
         return nome != null && !nome.isBlank()
                 && nome.length() <= MAX_NOME
@@ -418,9 +439,16 @@ public class SectorRegisterServlet extends HttpServlet {
         request.getRequestDispatcher(CADASTRO).forward(request, response);
     }
 
-    /** Apenas os IDs recebidos são processados
-     * De forma transacional.
-     * */
+    /**
+     * Processa a desativação em lote dos setores selecionados.
+     * Restringe a operação aos registros autorizados da empresa.
+     *
+     * @param request A requisição com os identificadores selecionados
+     * @param response A resposta que redireciona após a operação
+     * @param companyId O identificador da empresa autenticada
+     * @throws IOException Se ocorrer erro no redirecionamento
+     */
+
     private void excluirLote(
             HttpServletRequest request,
             HttpServletResponse response,

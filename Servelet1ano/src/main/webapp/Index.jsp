@@ -41,8 +41,8 @@
             <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
             <li><a href="#planos">PLANOS</a></li>
             <li><a href="https://aethergases.org/dashboard">SITE</a></li>
-            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="Login.jsp">Entrar</a></li>
-            <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="CompanyRegister.jsp">Cadastrar-se</a></li>
+            <li class="itemMenuMobile"><a class="linkMenuEntrar" href="${pageContext.request.contextPath}/login">Entrar</a></li>
+            <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="${pageContext.request.contextPath}/empresa">Cadastrar-se</a></li>
         </ul>
     </nav>
 

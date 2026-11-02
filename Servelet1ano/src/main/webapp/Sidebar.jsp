@@ -18,7 +18,7 @@
 
         <ul class="sidebar-menu">
             <li>
-                <a href="${ctx}/dashboard" class="${ativo eq 'dashboard' ? 'ativo' : ''}">
+                <a href="${ctx}/admin" class="${ativo eq 'dashboard' ? 'ativo' : ''}">
                     <img src="${ctx}/Imagens/dashboard.svg" alt="">Dashboards
                 </a>
             </li>

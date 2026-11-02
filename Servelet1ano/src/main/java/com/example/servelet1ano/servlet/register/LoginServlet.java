@@ -33,7 +33,7 @@ public class LoginServlet extends HttpServlet {
 
     /** Pagina de login e destino depois da autenticacao. */
     private static final String LOGIN_PAGE = "/Login.jsp";
-    private static final String DASHBOARD = "/dashboard";
+    private static final String DASHBOARD = "/admin";
 
     private static final int MAX_EMAIL = 255;
     private static final int MAX_SENHA = 1024;
@@ -226,12 +226,26 @@ public class LoginServlet extends HttpServlet {
         return true;
     }
 
-    // Confere caracteres de controle e formatacao invisiveis.
+    /**
+     * Verifica se o texto contém caracteres de controle ou formatação invisíveis.
+     *
+     * @param valor O texto que será verificado
+     * @return true se forem encontrados caracteres não permitidos
+     */
+
     private boolean contemCaracteresControle(String valor) {
         return valor != null && CARACTERES_CONTROLE.matcher(valor).find();
     }
 
-    // Mostra mensagem generica para credenciais incorretas.
+    /**
+     * Trata uma tentativa de autenticação com credenciais inválidas.
+     * Apresenta a mensagem de erro sem revelar qual credencial falhou.
+     *
+     * @param request A requisição atual
+     * @param response A resposta enviada ao usuário
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
     private void credenciaisInvalidas(
             HttpServletRequest request,
             HttpServletResponse response
@@ -239,7 +253,15 @@ public class LoginServlet extends HttpServlet {
         exibirErro(request, response, "E-mail ou senha inválidos.");
     }
 
-    // Encaminha a mensagem ao JSP
+    /**
+     * Apresenta uma mensagem de erro no formulário de login.
+     *
+     * @param request A requisição que recebe a mensagem
+     * @param response A resposta encaminhada ao formulário
+     * @param mensagem O texto do erro apresentado ao usuário
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
+     */
     private void exibirErro(
             HttpServletRequest request,
             HttpServletResponse response,

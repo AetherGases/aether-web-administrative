@@ -40,6 +40,11 @@
         <p class="mensagem mensagem-erro" role="alert" style="top: 2px; padding: 6px 18px"><c:out value="${not empty requestScope.erro ? requestScope.erro : requestScope.mensagem}"/></p>
     </c:if>
 
+    <c:if test="${not empty sessionScope.mensagemLogin}">
+        <p class="mensagem" role="status"><c:out value="${sessionScope.mensagemLogin}"/></p>
+        <c:remove var="mensagemLogin" scope="session"/>
+    </c:if>
+
     <main class="cartao-form cartao-login">
         <img class="mascote" src="${ctx}/Imagens/AekoLogin.svg" alt="">
         <h1 class="pilula-titulo">Login pessoal</h1>
@@ -57,7 +62,7 @@
             <button class="botao-enviar " type="submit">Entrar</button>
 
             <p class="link-conta link-1 roxo">
-                Não possui uma conta? <a href="${ctx}/CompanyRegister.jsp">clique aqui</a>
+                Não possui uma conta? <a href="${ctx}/empresa">clique aqui</a>
             </p>
             <p class="link-conta link-2 roxo">
                 Esqueceu a senha? <a href="${ctx}/RecoverPassword.jsp">clique aqui</a>

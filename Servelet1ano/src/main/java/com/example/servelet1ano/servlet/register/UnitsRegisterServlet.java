@@ -64,7 +64,7 @@ public class UnitsRegisterServlet extends HttpServlet {
                 || !(session.getAttribute("companyId") instanceof Integer)) {
 
             response.sendRedirect(
-                    request.getContextPath() + "/Login.jsp"
+                    request.getContextPath() + "/login"
             );
             return;
         }
@@ -143,7 +143,7 @@ public class UnitsRegisterServlet extends HttpServlet {
                 || !(session.getAttribute("companyId") instanceof Integer)) {
 
             response.sendRedirect(
-                    request.getContextPath() + "/Login.jsp"
+                    request.getContextPath() + "/login"
             );
             return;
         }
@@ -217,7 +217,8 @@ public class UnitsRegisterServlet extends HttpServlet {
                 || bairro == null || bairro.isBlank()
                 || cidade == null || cidade.isBlank()
                 || estado == null || estado.isBlank()
-                || pais == null || pais.isBlank()) {
+                || pais == null || pais.isBlank()
+                || cep == null || cep.isBlank()) {
 
             exibirErro(
                     request,
@@ -289,15 +290,6 @@ public class UnitsRegisterServlet extends HttpServlet {
             endereco.setState(estado);
             endereco.setCountry(pais);
 
-            int addressId = new AddressesDAO().registerReturningId(endereco);
-
-            if (addressId <= 0) {
-                exibirErro(
-                        request, response, companyId,
-                        "Não foi possível cadastrar o endereço. Confira o CEP."
-                );
-                return;
-            }
             UnitsFilter filter = new UnitsFilter();
             filter.setName(nome);
             filter.setCompanyId(companyId);
@@ -315,13 +307,24 @@ public class UnitsRegisterServlet extends HttpServlet {
             } catch (RuntimeException e) {
                 LOGGER.log(
                         Level.SEVERE,
-                        "Erro ao conectar com o banco"
+                        "Erro ao conectar com o banco",
+                        e
                 );
                 exibirErro(
                         request,
                         response,
                         companyId,
                         "Não foi possível concluir o cadastro. Tente novamente mais tarde."
+                );
+                return;
+            }
+
+            int addressId = new AddressesDAO().registerReturningId(endereco);
+
+            if (addressId <= 0) {
+                exibirErro(
+                        request, response, companyId,
+                        "Não foi possível cadastrar o endereço. Confira o CEP."
                 );
                 return;
             }
@@ -430,8 +433,14 @@ public class UnitsRegisterServlet extends HttpServlet {
 
 
     /**
-     * Edita somente os dados básicos de uma unidade.
-     * Não permite alterar id, empresa ou endereço.
+     * Edita os dados básicos de uma unidade pertencente à empresa autenticada.
+     * Permite alterar nome, CNPJ e CNAE, sem modificar o endereço ou a empresa.
+     *
+     * @param request A requisição contendo os dados da unidade
+     * @param response A resposta que redireciona ou exibe o erro
+     * @param companyId O identificador da empresa autenticada
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
      */
     private void editarUnidade(
             HttpServletRequest request,
@@ -498,8 +507,14 @@ public class UnitsRegisterServlet extends HttpServlet {
 
 
     /**
-     * Desativa uma unidade sem funcionários ativos.
-     * Não altera ids nem dados de outras empresas.
+     * Desativa uma unidade pertencente à empresa autenticada.
+     * Impede a operação quando existem funcionários ativos vinculados.
+     *
+     * @param request A requisição contendo o identificador da unidade
+     * @param response A resposta que redireciona ou apresenta o erro
+     * @param companyId O identificador da empresa autenticada
+     * @throws ServletException Se ocorrer erro no encaminhamento
+     * @throws IOException Se ocorrer erro de entrada ou saída
      */
     private void excluirUnidade(
             HttpServletRequest request,

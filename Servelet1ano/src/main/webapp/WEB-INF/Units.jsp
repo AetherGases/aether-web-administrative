@@ -230,6 +230,7 @@
         </div>
 
         <form action="${ctx}/unidades" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
             <input type="hidden" name="acao" value="editar">
             <input type="hidden" name="id" data-campo="id">
             <div class="modal-corpo">

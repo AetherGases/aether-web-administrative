@@ -206,7 +206,7 @@ public class ManagerRegisterServlet extends HttpServlet {
          * Depois valida tamanho e caracteres de cada campo, nome, e-mail, telefone, CPF, senha e empresa
          * Procura o grupo "Admin da empresa" da empresa escolhida (se nao existir, cria com as 7 permissoes) e cadastra o gerente nele
          * Se algo estiver errado, volta para o formulario com a mensagem de erro (mantendo o que foi digitado)
-         * Se der certo, troca o id da sessao, guarda employeeId e companyId nela e redireciona para /dashboard
+         * Se der certo, troca o id da sessao, guarda employeeId e companyId nela e redireciona para /admin
          * @param request A requisicao com os dados do gerente (campoNome, campoEmail, campoTelefone, campoSenha, campoConfirmarSenha, campoCPF, empresaSelecionada e csrfToken)
          * @param response A resposta que redireciona para o dashboard ou volta para o formulario
          * @throws ServletException se der erro no encaminhamento para a pagina
@@ -545,7 +545,7 @@ public class ManagerRegisterServlet extends HttpServlet {
             sessaoAutenticada.setMaxInactiveInterval(3600);
 
             response.sendRedirect(
-                    request.getContextPath() + "/dashboard"
+                    request.getContextPath() + "/admin"
             );
 
         } catch (RuntimeException e) {
