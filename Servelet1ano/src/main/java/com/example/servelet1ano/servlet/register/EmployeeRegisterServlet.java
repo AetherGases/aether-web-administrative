@@ -709,7 +709,7 @@ public class EmployeeRegisterServlet extends HttpServlet {
             }
 
             response.sendRedirect(
-                    request.getContextPath() + "/funcionarios?sucesso=true"
+                    request.getContextPath() + "/funcionarios?editado=true"
             );
 
         } catch (NumberFormatException e) {

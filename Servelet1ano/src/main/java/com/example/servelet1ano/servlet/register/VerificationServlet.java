@@ -64,6 +64,24 @@ public class VerificationServlet extends HttpServlet{
             return;
         }
 
+        String tokenSessao =
+                (String) session.getAttribute("csrfToken");
+
+        String tokenRecebido =
+                request.getParameter("csrfToken");
+
+        if (tokenSessao == null
+                || tokenRecebido == null
+                || !java.security.MessageDigest.isEqual(
+                tokenSessao.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                tokenRecebido.getBytes(java.nio.charset.StandardCharsets.UTF_8)
+        )) {
+
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
+
         Object recoveryIdAttribute =
                 session.getAttribute("passwordRecoveryId");
 
