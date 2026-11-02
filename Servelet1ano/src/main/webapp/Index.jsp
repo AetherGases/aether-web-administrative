@@ -40,14 +40,19 @@
             <li><a href="#gasesPoluentes">GEE</a></li>
             <li><a href="#nossaSolucao">NOSSA SOLUÇÃO</a></li>
             <li><a href="#planos">PLANOS</a></li>
+            <li><a href="https://aethergases.org/dashboard">SITE</a></li>
             <li class="itemMenuMobile"><a class="linkMenuEntrar" href="Login.jsp">Entrar</a></li>
             <li class="itemMenuMobile"><a class="linkMenuCadastrar" href="CompanyRegister.jsp">Cadastrar-se</a></li>
         </ul>
     </nav>
 
     <div class="acoesCabecalho">
-        <a class="botaoEntrar conteudoBotaoEntrar" href="Login.jsp">Entrar</a>
-        <a class="botaoCadastrar conteudoBotaoCadastar" href="CompanyRegister.jsp">Cadastrar-se</a>
+        <a class="botaoEntrar" href="${pageContext.request.contextPath}/login">
+            <span class="conteudoBotaoEntrar">Entrar</span>
+        </a>
+        <a class="botaoCadastrar" href="${pageContext.request.contextPath}/empresa">
+            <span class="conteudoBotaoCadastrar">Cadastrar-se</span>
+        </a>
     </div>
 </header>
 
@@ -675,18 +680,35 @@
             </div>
 
             <div class="cardCadastroLogin">
-                <form id="formularioEmpresarial" class="formularioEmpresarial" action="${pageContext.request.contextPath}/empresas" method="post" accept-charset="UTF-8">
+                <form id="formularioEmpresarial" class="formularioEmpresarial" action="${pageContext.request.contextPath}/empresa" method="post" accept-charset="UTF-8">
+                    <input type="hidden" name="origem" value="index">
 
                     <img class="aekoCadastro" src="Imagens/Aeko.svg" alt="" loading="lazy">
 
                     <h2 class="tituloCadastro">Cadastro empresarial</h2>
 
-                    <!-- Empresa -->
+                    <!-- Nome -->
                     <div class="campoFormulario">
-                        <label class="rotuloCampoOculto" for="empresaNome">Nome da empresa</label>
-                        <input class="entradaEmpresarial" type="text" id="empresaNome" name="empresas"
-                               placeholder="Nome da empresa" autocomplete="organization"
-                               value="<c:out value='${requestScope.empresas}' />" required>
+                        <label for="empresa" class="rotuloCampoOculto">Nome da empresa</label>
+                        <input class="entradaEmpresarial" type="text" id="empresa" name="empresas"
+                               placeholder="Nome da empresa" value="<c:out value='${requestScope.name}'/>" required>
+                    </div>
+
+                    <!-- Razão social -->
+                    <div class="campoFormulario">
+                        <label for="empresaRazao" class="rotuloCampoOculto">
+                            Razão social
+                        </label>
+
+                        <input
+                                class="entradaEmpresarial"
+                                type="text"
+                                id="empresaRazao"
+                                name="razoes"
+                                placeholder="Razão social"
+                                maxlength="150"
+                                value="<c:out value='${requestScope.razoes}'/>"
+                                required>
                     </div>
 
                     <!-- Tamanho -->
@@ -699,7 +721,7 @@
                                 <span class="dropdownSeta" aria-hidden="true"></span>
                             </button>
                             <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloTamanho">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande" data-selecionado>Grande</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="grande">Grande</li>
                                 <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="media">Média</li>
                                 <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pequena">Pequena</li>
                             </ul>
@@ -710,15 +732,13 @@
                     <!-- CNPJ -->
                     <div class="campoFormulario">
                         <label class="rotuloCampoOculto" for="empresaCnpj">CNPJ</label>
-                        <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="cnpj"
-                               placeholder="00.000.000/0001-91" inputmode="numeric" autocomplete="off" required>
+                        <input class="entradaEmpresarial" type="text" id="empresaCnpj" name="campoCNPJ" placeholder="00.000.000/0001-91" value="<c:out value='${requestScope.campoCNPJ}'/>" required>
                     </div>
 
                     <!-- E-mail -->
                     <div class="campoFormulario">
                         <label class="rotuloCampoOculto" for="empresaEmail">E-mail</label>
-                        <input class="entradaEmpresarial" type="email" id="empresaEmail" name="email"
-                               placeholder="e-mail" autocomplete="email" required>
+                        <input class="entradaEmpresarial" type="email" id="empresaEmail" name="campoEmail" placeholder="e-mail" value="<c:out value='${requestScope.campoEmail}'/>" required>
                     </div>
 
                     <!-- Plano -->
@@ -731,10 +751,10 @@
                                 <span class="dropdownSeta" aria-hidden="true"></span>
                             </button>
                             <ul class="dropdownLista" role="listbox" aria-labelledby="rotuloPlano">
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="pulse">Aether Pulse</li>
-                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="horizon">Aether Horizon</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="Aether Pulse">Aether Pulse</li>
+                                <li class="dropdownOpcao" role="option" tabindex="-1" data-valor="Aether Horizon">Aether Horizon</li>
                             </ul>
-                            <input type="hidden" id="empresaPlano" name="plano" value="">
+                            <input type="hidden" id="empresaPlano" name="planos" value="">
                         </div>
                     </div>
 
@@ -762,7 +782,7 @@
                     <button class="botaoEnviarFormulario" type="submit">Cadastrar</button>
 
                     <p class="rodapeFormulario">Já possui uma conta?
-                        <a href="Login.jsp" class="linkTrocaAba" data-destino="l">clique aqui</a>
+                        <a href="${pageContext.request.contextPath}/login" class="linkTrocaAba" data-destino="l">clique aqui</a>
                     </p>
                 </form>
             </div>
@@ -780,7 +800,7 @@
 
         <div class="rodapeAetherMarca">
             <a href="#inicio" aria-label="Aether, voltar ao início">
-                <img class="rodapeAetherLogo" src="Imagens/LogoFooter.svg" alt="Aether" loading="lazy">
+                <img class="rodapeAetherLogo" src="Imagens/LogoFooter.svg" alt="Aether" width="224" height="52" loading="lazy">
             </a>
             <p class="rodapeAetherDescricao">
                 A Aether é uma empresa dedicada a acelerar a transição energética global.
