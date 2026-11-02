@@ -1,12 +1,39 @@
-.tela-dashboard .titulo-pagina    { left: 340px; top: 32px; }
-.tela-dashboard .subtitulo-pagina { left: 340px; top: 90px; }
+/* ---------- LAYOUT ---------- */
+.tela-dashboard {
+    display: grid;
+    grid-template-columns: 445px minmax(0, 1fr);
+    row-gap: 25px;
+    align-content: start;
+    padding: 32px 59px calc(74px - 62px * var(--k, 0)) 330px;
+}
 
+.tela-dashboard > .titulo-pagina,
+.tela-dashboard > .subtitulo-pagina,
+.tela-dashboard > .cartao-boas-vindas {
+    grid-column: 1 / -1;
+}
+
+.tela-dashboard .titulo-pagina,
+.tela-dashboard .subtitulo-pagina {
+    padding-left: 10px;
+    margin-bottom: -25px;
+}
+
+.tela-dashboard .subtitulo-pagina {
+    margin-top: -3px;
+    margin-bottom: 0;
+}
+
+/* ---------- CARTÃO DE BOAS-VINDAS ---------- */
 .cartao-boas-vindas {
-    position: absolute;
-    left: 330px;
-    top: 128px;
-    width: 1051px;
-    height: 348px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+    gap: 24px 51px;
+    min-height: calc(348px - 140px * var(--k, 0));
+    margin: -11px 0 12px;
+    padding: 36px 56px calc(72px - 40px * var(--k, 0));
     border-radius: 16px;
     background: linear-gradient(126.7deg, #7C3AED 26.19%, #C4B5FD 134.3%);
     box-shadow: 0 59px 35px 0 rgba(167, 151, 231, 0.05),
@@ -55,23 +82,19 @@
 }
 
 .cartao-boas-vindas h2 {
-    position: absolute;
-    left: 56px;
-    top: 36px;
+    flex: 1 1 100%;
     margin: 0;
-    font-size: 54px;
+    font-size: clamp(32px, 5vw, 54px);
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -1.08px;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
     z-index: 1;
 }
 
 .cartao-boas-vindas p {
-    position: absolute;
-    left: 56px;
-    top: 134px;
     width: 649px;
+    max-width: 100%;
     margin: 0;
     font-size: 26px;
     font-weight: 500;
@@ -81,12 +104,11 @@
 }
 
 .botao-cartao {
-    position: absolute;
-    top: 224px;
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 30px;
+    padding: 11px 30px;
     border: 1px solid #FFF;
     border-radius: 40px;
     font-size: 22px;
@@ -99,7 +121,7 @@
 }
 
 .botao-unidades {
-    left: 74.5px;
+    margin-left: 18.5px;
     background: rgba(255, 255, 255, 0.10);
     color: #FFFFFF;
     transition: 0.3s ease-in-out;
@@ -111,7 +133,6 @@
 }
 
 .botao-funcionarios {
-    left: 338px;
     background: rgba(255, 255, 255, 0.10);
     color: #FFF;
     transition: 0.3s ease-in-out;
@@ -122,10 +143,12 @@
     color: #000000;
 }
 
+/* ---------- CARTÕES NUMÉRICOS ---------- */
 .cartao-numero {
-    position: absolute;
+    position: relative;
     width: 343px;
-    height: 206px;
+    max-width: 100%;
+    height: calc(206px - 34px * var(--k, 0));
     border-radius: 20.1px;
     background: #FFF;
     color: #070416;
@@ -141,15 +164,10 @@ a.cartao-numero:hover {
     0 12.6px 13.2px 0 rgba(167, 151, 231, 0.16);
 }
 
-.cartao-numero.n1 { left: 330px; top: 513px; }
-.cartao-numero.n2 { left: 775px; top: 513px; }
-.cartao-numero.n3 { left: 330px; top: 744px; }
-.cartao-numero.n4 { left: 775px; top: 744px; }
-
 .cartao-numero .rotulo {
     position: absolute;
     left: 30.15px;
-    top: 30.15px;
+    top: calc(30.15px - 8px * var(--k, 0));
     margin: 0;
     font-size: 36px;
     font-weight: 500;
@@ -158,12 +176,12 @@ a.cartao-numero:hover {
     white-space: nowrap;
 }
 
-.cartao-numero.n1 .rotulo { top: 26.81px; }
+.cartao-numero.n1 .rotulo { top: calc(26.81px - 8px * var(--k, 0)); }
 
 .cartao-numero .valor {
     position: absolute;
     left: 30.15px;
-    top: 61.55px;
+    top: calc(61.55px - 10px * var(--k, 0));
     margin: 0;
     font-size: 80.39px;
     font-weight: 700;
@@ -171,23 +189,94 @@ a.cartao-numero:hover {
     white-space: nowrap;
 }
 
-.cartao-numero.n1 .valor { top: 69.81px; }
+.cartao-numero.n1 .valor { top: calc(69.81px - 10px * var(--k, 0)); }
 
 .cartao-numero img {
     position: absolute;
     left: 181px;
-    top: 84px;
+    top: calc(84px - 22px * var(--k, 0));
     width: 67px;
     height: 67px;
 }
 
 .cartao-numero .linha {
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 175px;
-    width: 298.94px;
+    left: 22px;
+    right: 22px;
+    top: calc(175px - 32px * var(--k, 0));
     height: 1.26px;
     background: #E5E5EA;
 }
 
+/* ---------- RESPONSIVO: ATÉ 1279PX ---------- */
+@media (max-width: 1279px) {
+    .tela-dashboard {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 16px;
+        row-gap: 16px;
+        padding: 0 24px 40px;
+    }
+
+    .tela-dashboard > .sidebar {
+        grid-column: 1 / -1;
+    }
+
+    .cartao-numero {
+        width: auto;
+    }
+
+    .tela-dashboard .titulo-pagina,
+    .tela-dashboard .subtitulo-pagina {
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+
+    .tela-dashboard .subtitulo-pagina {
+        margin-top: 2px;
+    }
+
+    .cartao-boas-vindas {
+        min-height: 300px;
+        margin: 0;
+        padding: 32px 36px 48px;
+    }
+
+    .decoracao-grande {
+        left: auto;
+        right: -140px;
+    }
+}
+
+/* ---------- RESPONSIVO: ATÉ 768PX ---------- */
+@media (max-width: 768px) {
+    .tela-dashboard {
+        padding: 0 16px 32px;
+    }
+}
+
+/* ---------- RESPONSIVO: ATÉ 680PX ---------- */
+@media (max-width: 680px) {
+    .tela-dashboard {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cartao-boas-vindas {
+        min-height: 0;
+        gap: 20px 16px;
+        padding: 28px 24px 32px;
+    }
+
+    .botao-unidades {
+        margin-left: 0;
+    }
+
+    .botao-cartao {
+        font-size: 18px;
+        padding: 10px 22px;
+    }
+
+    .cartao-numero img {
+        left: auto;
+        right: 28px;
+    }
+}

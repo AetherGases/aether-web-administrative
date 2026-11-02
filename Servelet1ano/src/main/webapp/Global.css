@@ -32,7 +32,7 @@ body{
 .divLoginPrincipal form select,
 .divLoginPrincipal form button,
 .divLoginPrincipal form a {
-    margin-bottom: 18px; /* Altere este valor para mais ou menos espaço conforme preferir */
+    margin-bottom: 18px;
 }
 
 .montserrat{

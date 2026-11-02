@@ -5,7 +5,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Unidades | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,8 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Crud.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
+    <link rel="stylesheet" href="${ctx}/Paginacao.css">
+    <link rel="stylesheet" href="${ctx}/Sidebar.css">
 </head>
 <body>
 
@@ -34,42 +35,42 @@
         <p class="mensagem mensagem-sucesso" role="status"><c:out value="${sucesso}"/></p>
     </c:if>
 
+    <%-- ---------- BARRA DE AÇÕES ---------- --%>
     <jsp:include page="/Acoes.jsp">
         <jsp:param name="rota" value="unidades"/>
         <jsp:param name="modal" value="overlayAdicionarUnidade"/>
         <jsp:param name="selecionar" value="${not empty unidades}"/>
     </jsp:include>
 
-
     <form id="formExcluirLote" action="${ctx}/unidades" method="post">
         <input type="hidden" name="acao" value="excluirLote">
         <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}' />">
     </form>
 
-
+    <%-- ---------- TABELA ---------- --%>
     <section class="cartao-tabela">
         <table class="tabela">
             <colgroup>
-                <col style="width: 64px">
-                <col style="width: 102.13px">
-                <col style="width: 75px">
-                <col style="width: 236px">
-                <col style="width: 42px">
-                <col style="width: 162px">
-                <col style="width: 78px">
-                <col style="width: 112px">
-                <col style="width: 179.87px">
+                <col style="width: 6.09%">
+                <col style="width: 9.72%">
+                <col style="width: 7.14%">
+                <col style="width: 22.45%">
+                <col style="width: 4.0%">
+                <col style="width: 15.41%">
+                <col style="width: 7.42%">
+                <col style="width: 10.66%">
+                <col style="width: 17.11%">
             </colgroup>
             <thead>
             <tr>
                 <th><span class="visually-hidden">Selecionar</span></th>
                 <th>Nome</th>
-                <th style="text-align: center">ID</th>
-                <th style="text-align: center">Endereço</th>
-                <th style="text-align: center">Status</th>
-                <th style="text-align: center">CNPJ</th>
-                <th style="text-align: center">CNAE</th>
-                <th style="text-align: center">Empresa</th>
+                <th class="centro">ID</th>
+                <th class="centro">Endereço</th>
+                <th class="centro">Status</th>
+                <th class="centro">CNPJ</th>
+                <th class="centro">CNAE</th>
+                <th class="centro">Empresa</th>
                 <th><span class="visually-hidden">Ações</span></th>
             </tr>
             </thead>
@@ -90,17 +91,17 @@
                     data-status="${unidade.active ? 'Ativa' : 'Inativa'}">
                     <td><input type="checkbox" class="check" aria-label="Selecionar unidade ${unidade.id}"></td>
                     <td title="<c:out value='${unidade.name}'/>"><c:out value="${unidade.name}"/></td>
-                    <td style="text-align: center"><c:out value="${unidade.id}"/></td>
-                    <td style="text-align: center; padding: 0 8px" title="${enderecoCompleto}">${endereco}</td>
-                    <td>
-                        <img class="status-icone" style="margin: 0 auto"
+                    <td class="centro" data-label="ID"><c:out value="${unidade.id}"/></td>
+                    <td class="centro celula-endereco" data-label="Endereço" title="${enderecoCompleto}">${endereco}</td>
+                    <td data-label="Status">
+                        <img class="status-icone"
                              src="${ctx}/Imagens/${unidade.active ? 'STATUSCerto' : 'STATUSErrado'}.svg"
                              alt="${unidade.active ? 'Ativa' : 'Inativa'}" title="${unidade.active ? 'Ativa' : 'Inativa'}">
                     </td>
-                    <td style="text-align: center"><c:out value="${unidade.cnpj}"/></td>
-                    <td style="text-align: center"><c:out value="${unidade.cnae}"/></td>
-                    <td style="text-align: center; padding: 0 6px" title="<c:out value='${unidade.company.name}'/>"><c:out value="${unidade.company.name}"/></td>
-                    <td style="padding-left: 28.87px">
+                    <td class="centro" data-label="CNPJ"><c:out value="${unidade.cnpj}"/></td>
+                    <td class="centro" data-label="CNAE"><c:out value="${unidade.cnae}"/></td>
+                    <td class="centro celula-empresa" data-label="Empresa" title="<c:out value='${unidade.company.name}'/>"><c:out value="${unidade.company.name}"/></td>
+                    <td class="celula-acoes">
                         <div class="acoes">
                             <button type="button" class="acao acao-ver" data-abrir="overlayVerUnidade" aria-label="Visualizar">
                                 <img src="${ctx}/Imagens/VER.svg" alt="">
@@ -128,11 +129,13 @@
         </c:if>
     </section>
 
+    <%-- ---------- PAGINAÇÃO ---------- --%>
     <c:if test="${not empty unidades}">
         <jsp:include page="/Paginacao.jsp"/>
     </c:if>
 </div>
 
+<%-- ---------- OVERLAY ADICIONAR UNIDADE ---------- --%>
 <div class="overlay" id="overlayAdicionarUnidade" aria-hidden="true"
      data-abrir-ao-carregar="${not empty erro}">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloAdicionarUnidade">
@@ -215,7 +218,7 @@
     </div>
 </div>
 
-<%-- ======================= OVERLAY ALTERAR UNIDADE ======================= --%>
+<%-- ---------- OVERLAY ALTERAR UNIDADE ---------- --%>
 <div class="overlay" id="overlayEditarUnidade" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloEditarUnidade">
         <div class="modal-topo">
@@ -261,8 +264,7 @@
     </div>
 </div>
 
-
-<%-- ======================= OVERLAY DESATIVAR UNIDADE ======================= --%>
+<%-- ---------- OVERLAY DESATIVAR UNIDADE ---------- --%>
 <div class="overlay" id="overlayDesativar" aria-hidden="true">
     <div class="modal modal-excluir" role="dialog" aria-modal="true" aria-labelledby="tituloDesativar">
         <div class="modal-topo">
@@ -290,8 +292,7 @@
     </div>
 </div>
 
-
-<%-- ======================= OVERLAY VER UNIDADE ======================= --%>
+<%-- ---------- OVERLAY VER UNIDADE ---------- --%>
 <div class="overlay" id="overlayVerUnidade" aria-hidden="true">
     <div class="modal modo-ver" role="dialog" aria-modal="true" aria-labelledby="tituloVerUnidade">
         <div class="modal-topo">
@@ -327,6 +328,8 @@
         <div class="modal-rodape"></div>
     </div>
 </div>
+
+<jsp:include page="/DesativarSelecionados.jsp"/>
 
 <script src="${ctx}/Crud.js"></script>
 

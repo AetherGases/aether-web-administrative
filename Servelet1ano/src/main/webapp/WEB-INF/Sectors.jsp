@@ -5,7 +5,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Setores | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,8 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Crud.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
+    <link rel="stylesheet" href="${ctx}/Paginacao.css">
+    <link rel="stylesheet" href="${ctx}/Sidebar.css">
 </head>
 <body>
 
@@ -34,38 +35,38 @@
         <p class="mensagem mensagem-sucesso" role="status"><c:out value="${sucesso}"/></p>
     </c:if>
 
+    <%-- ---------- BARRA DE AÇÕES ---------- --%>
     <jsp:include page="/Acoes.jsp">
         <jsp:param name="rota" value="setores"/>
         <jsp:param name="modal" value="overlayAdicionarSetor"/>
         <jsp:param name="selecionar" value="${not empty setores}"/>
     </jsp:include>
 
-
     <form id="formExcluirLote" action="${ctx}/setores" method="post">
         <input type="hidden" name="acao" value="excluirLote">
         <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}' />">
     </form>
 
-
+    <%-- ---------- TABELA ---------- --%>
     <section class="cartao-tabela">
         <table class="tabela">
             <colgroup>
-                <col style="width: 64px">
-                <col style="width: 102.13px">
-                <col style="width: 75px">
-                <col style="width: 236px">
-                <col style="width: 42px">
-                <col style="width: 380.87px">
-                <col style="width: 151px">
+                <col style="width: 6.09%">
+                <col style="width: 9.72%">
+                <col style="width: 7.14%">
+                <col style="width: 22.45%">
+                <col style="width: 4.0%">
+                <col style="width: 36.24%">
+                <col style="width: 14.37%">
             </colgroup>
             <thead>
             <tr>
                 <th><span class="visually-hidden">Selecionar</span></th>
                 <th>Setor</th>
-                <th style="text-align: center">ID</th>
-                <th style="text-align: center">Unidade</th>
-                <th style="text-align: center">Status</th>
-                <th style="padding-left: 46.87px">Descrição</th>
+                <th class="centro">ID</th>
+                <th class="centro">Unidade</th>
+                <th class="centro">Status</th>
+                <th class="col-descricao">Descrição</th>
                 <th><span class="visually-hidden">Ações</span></th>
             </tr>
             </thead>
@@ -79,14 +80,14 @@
                     data-status="${setor.active ? 'Ativo' : 'Inativo'}">
                     <td><input type="checkbox" class="check" aria-label="Selecionar setor ${setor.id}"></td>
                     <td title="<c:out value='${setor.name}'/>"><c:out value="${setor.name}"/></td>
-                    <td style="text-align: center"><c:out value="${setor.id}"/></td>
-                    <td style="text-align: center" title="<c:out value='${setor.unit.name}'/>"><c:out value="${setor.unit.name}"/></td>
-                    <td>
-                        <img class="status-icone" style="margin: 0 auto"
+                    <td class="centro" data-label="ID"><c:out value="${setor.id}"/></td>
+                    <td class="centro" data-label="Unidade" title="<c:out value='${setor.unit.name}'/>"><c:out value="${setor.unit.name}"/></td>
+                    <td data-label="Status">
+                        <img class="status-icone"
                              src="${ctx}/Imagens/${setor.active ? 'STATUSCerto' : 'STATUSErrado'}.svg"
                              alt="${setor.active ? 'Ativo' : 'Inativo'}" title="${setor.active ? 'Ativo' : 'Inativo'}">
                     </td>
-                    <td style="padding-left: 46px; padding-right: 34px" title="<c:out value='${setor.description}'/>"><c:out value="${setor.description}"/></td>
+                    <td class="col-descricao" data-label="Descrição" title="<c:out value='${setor.description}'/>"><c:out value="${setor.description}"/></td>
                     <td>
                         <div class="acoes">
                             <button type="button" class="acao acao-ver" data-abrir="overlayVerSetor" aria-label="Visualizar">
@@ -113,12 +114,13 @@
         </c:if>
     </section>
 
+    <%-- ---------- PAGINAÇÃO ---------- --%>
     <c:if test="${not empty setores}">
         <jsp:include page="/Paginacao.jsp"/>
     </c:if>
 </div>
 
-<%-- ======================= OVERLAY ADICIONAR SETOR ======================= --%>
+<%-- ---------- OVERLAY ADICIONAR SETOR ---------- --%>
 <div class="overlay" id="overlayAdicionarSetor" aria-hidden="true"
      data-abrir-ao-carregar="${not empty erro}">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloAdicionarSetor">
@@ -172,7 +174,7 @@
     </div>
 </div>
 
-<%-- ======================= OVERLAY ALTERAR SETOR ======================= --%>
+<%-- ---------- OVERLAY ALTERAR SETOR ---------- --%>
 <div class="overlay" id="overlayEditarSetor" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloEditarSetor">
         <div class="modal-topo">
@@ -216,7 +218,7 @@
     </div>
 </div>
 
-<%-- ======================= OVERLAY VER SETOR ======================= --%>
+<%-- ---------- OVERLAY VER SETOR ---------- --%>
 <div class="overlay" id="overlayVerSetor" aria-hidden="true">
     <div class="modal modo-ver" role="dialog" aria-modal="true" aria-labelledby="tituloVerSetor">
         <div class="modal-topo">
@@ -249,7 +251,7 @@
     </div>
 </div>
 
-<%-- ======================= OVERLAY EXCLUIR SETOR ======================= --%>
+<%-- ---------- OVERLAY EXCLUIR SETOR ---------- --%>
 <div class="overlay" id="overlayExcluirSetor" aria-hidden="true">
     <div class="modal modal-excluir" role="dialog" aria-modal="true" aria-labelledby="tituloExcluirSetor">
         <div class="modal-topo">
@@ -277,6 +279,8 @@
         </form>
     </div>
 </div>
+
+<jsp:include page="/DesativarSelecionados.jsp"/>
 
 <script src="${ctx}/Crud.js"></script>
 

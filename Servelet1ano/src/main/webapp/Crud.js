@@ -1,6 +1,45 @@
 (function () {
     "use strict";
 
+    // ---------- ESCALA DA TELA ----------
+    const LARGURA_BASE = 1440;
+    const ALTURA_BASE = 1024;
+    const ALTURA_MINIMA = 760;
+    const LARGURA_MINIMA = 1280;
+
+    function ajustarEscala() {
+        const palcos = document.querySelectorAll(".tela, .perm-tela");
+        const modais = document.querySelectorAll(".modal");
+        const desktop = window.innerWidth >= LARGURA_MINIMA;
+        let escala = 1;
+        let compressao = 0;
+        let altura = 0;
+
+        if (desktop) {
+            escala = Math.min(window.innerWidth / LARGURA_BASE, window.innerHeight / ALTURA_MINIMA);
+            altura = window.innerHeight / escala;
+            compressao = Math.min(1, Math.max(0, (ALTURA_BASE - altura) / (ALTURA_BASE - ALTURA_MINIMA)));
+        }
+
+        palcos.forEach(function (palco) {
+            palco.style.zoom = desktop ? escala : "";
+            palco.style.minHeight = desktop ? Math.floor(altura) + "px" : "";
+            if (desktop) {
+                palco.style.setProperty("--k", compressao);
+            } else {
+                palco.style.removeProperty("--k");
+            }
+        });
+
+        modais.forEach(function (modal) {
+            modal.style.zoom = desktop ? escala : "";
+        });
+    }
+
+    ajustarEscala();
+    window.addEventListener("resize", ajustarEscala);
+
+    // ---------- OVERLAYS ----------
     function abrir(overlay) {
         if (!overlay) return;
         overlay.classList.add("ativo");
@@ -55,10 +94,9 @@
         }
     });
 
-    // Reabre o formulário quando o servlet devolve erro de validação.
     document.querySelectorAll(".overlay[data-abrir-ao-carregar='true']").forEach(abrir);
 
-    // Pesquisa local nas linhas carregadas.
+    // ---------- PESQUISA ----------
     const pesquisa = document.getElementById("pesquisa");
     const linhas = Array.prototype.slice.call(document.querySelectorAll(".tabela tbody tr[data-id]"));
 
@@ -72,11 +110,13 @@
         });
     }
 
-
-    // Exclusão em lote
+    // ---------- DESATIVAÇÃO EM LOTE ----------
     const formLote = document.getElementById("formExcluirLote");
     const botaoLote = document.getElementById("botaoExcluirLote");
     const quantidade = document.getElementById("quantidadeSelecionada");
+    const overlayLote = document.getElementById("overlayDesativarSelecionados");
+    const resumoLote = document.getElementById("resumoSelecionados");
+    const confirmarLote = document.getElementById("confirmarDesativarSelecionados");
 
     function caixasSelecionadas() {
         return Array.from(
@@ -109,20 +149,33 @@
 
     if (formLote) {
         formLote.addEventListener("submit", function (evento) {
+            evento.preventDefault();
+
+            const selecionadas = caixasSelecionadas();
+
+            if (selecionadas.length === 0 ||
+                selecionadas.length > 100 ||
+                !overlayLote) {
+                return;
+            }
+
+            if (resumoLote) {
+                resumoLote.textContent = selecionadas.length === 1
+                    ? "o registro selecionado"
+                    : "os " + selecionadas.length + " registros selecionados";
+            }
+
+            abrir(overlayLote);
+        });
+    }
+
+    if (formLote && confirmarLote) {
+        confirmarLote.addEventListener("click", function () {
             const selecionadas = caixasSelecionadas();
 
             if (selecionadas.length === 0 ||
                 selecionadas.length > 100) {
-                evento.preventDefault();
-                return;
-            }
-
-            if (!window.confirm(
-                "Desativar os " + selecionadas.length +
-                " registros selecionados? Esta ação pode ser " +
-                "recusada se houver vínculos ou registros protegidos."
-            )) {
-                evento.preventDefault();
+                fechar(overlayLote);
                 return;
             }
 
@@ -141,12 +194,14 @@
 
                 formLote.appendChild(input);
             });
+
+            formLote.submit();
         });
     }
 
     atualizarSelecao();
 
-    // Selecionar todos.
+    // ---------- SELECIONAR TODOS ----------
     const selecionarTodos = document.getElementById("botaoSelecionarTodos");
     if (selecionarTodos) {
         selecionarTodos.addEventListener("click", function () {

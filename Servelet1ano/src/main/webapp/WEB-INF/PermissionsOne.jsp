@@ -5,7 +5,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Permissões | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,8 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Permissions.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
+    <link rel="stylesheet" href="${ctx}/Paginacao.css">
+    <link rel="stylesheet" href="${ctx}/Sidebar.css">
 </head>
 <body>
 
@@ -62,16 +63,10 @@
             <img src="${ctx}/Imagens/pesquisar.svg" alt="">
         </div>
 
-        <%--
-            Permissões da tabela "permissions" (id, name, description, pattern).
-            Cada cartão carrega o id e o name do banco em data-*; o checkbox envia o id.
-            Ordem = ordem dos IDs. Página 1: ids 1-4 | Página 2: ids 5-7 (4 por página).
-            Se o controller enviar o atributo "permissoesAtivas" (coleção de ids que o
-            funcionário já possui), os switches vêm marcados conforme essa coleção.
-        --%>
+        <%-- ---------- LISTA DE PERMISSÕES ---------- --%>
         <ul class="perm-lista" id="listaPermissoes">
 
-            <%-- ============================ PÁGINA 1 ============================ --%>
+            <%-- ---------- PÁGINA 1 ---------- --%>
             <li class="perm-cartao" data-id="1" data-nome="user:analytics:visibility:high">
                 <span class="perm-icone"><img src="${ctx}/Imagens/SimboloInventarios.svg" alt=""></span>
                 <h2>Alta visibilidade</h2>
@@ -120,7 +115,7 @@
                 </label>
             </li>
 
-            <%-- ============================ PÁGINA 2 ============================ --%>
+            <%-- ---------- PÁGINA 2 ---------- --%>
             <li class="perm-cartao" data-id="5" data-nome="calculator:gases">
                 <span class="perm-icone"><img src="${ctx}/Imagens/SimboloAnalise.svg" alt=""></span>
                 <h2>Calculadora de gases</h2>
@@ -163,21 +158,24 @@
         </button>
     </form>
 
-    <p class="perm-contagem">Mostrando 4 por página</p>
+    <%-- ---------- PAGINAÇÃO ---------- --%>
+    <div class="paginacao">
+        <p class="contagem">Mostrando 4 por página</p>
 
-    <nav class="perm-paginacao" id="paginacaoPermissoes" aria-label="Paginação">
-        <button type="button" class="perm-seta" id="paginaAnterior" aria-label="Página anterior">
-            <svg viewBox="0 0 19 19" aria-hidden="true">
-                <path d="M13 2.5L5 9.5l8 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-        <span id="paginasNumeros" class="perm-numeros"></span>
-        <button type="button" class="perm-seta" id="paginaProxima" aria-label="Próxima página">
-            <svg viewBox="0 0 19 19" aria-hidden="true">
-                <path d="M6 2.5l8 7-8 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </button>
-    </nav>
+        <nav class="paginacao-botoes" id="paginacaoPermissoes" aria-label="Paginação">
+            <button type="button" class="pagina-seta" id="paginaAnterior" aria-label="Página anterior">
+                <svg viewBox="0 0 19 19" aria-hidden="true">
+                    <path d="M13 2.5L5 9.5l8 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <span id="paginasNumeros" class="perm-numeros"></span>
+            <button type="button" class="pagina-seta" id="paginaProxima" aria-label="Próxima página">
+                <svg viewBox="0 0 19 19" aria-hidden="true">
+                    <path d="M6 2.5l8 7-8 7" fill="none" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </nav>
+    </div>
 </div>
 
 <script>
@@ -189,7 +187,6 @@
         const numeros = document.getElementById("paginasNumeros");
         const anterior = document.getElementById("paginaAnterior");
         const proxima = document.getElementById("paginaProxima");
-        const contagem = document.querySelector(".perm-contagem");
 
         let paginaAtual = 1;
 
@@ -214,7 +211,6 @@
                 cartao.hidden = daPagina.indexOf(cartao) === -1;
             });
 
-            // botões numerados
             numeros.innerHTML = "";
             for (let i = 1; i <= totalPaginas; i++) {
                 const botao = document.createElement("button");
@@ -232,9 +228,6 @@
 
             anterior.disabled = paginaAtual === 1;
             proxima.disabled = paginaAtual === totalPaginas;
-
-
-            contagem.classList.toggle("perm-contagem-meio", daPagina.length <= 2);
         }
 
         anterior.addEventListener("click", function () {

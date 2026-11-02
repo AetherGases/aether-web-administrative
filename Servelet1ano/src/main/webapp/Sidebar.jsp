@@ -5,11 +5,14 @@
 
 <aside class="sidebar">
     <img class="sidebar-logo" src="${ctx}/Imagens/Logo.svg" alt="Logo Aether">
+    <button type="button" class="sidebar-toggle" aria-expanded="false" aria-controls="menuLateral" aria-label="Abrir menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="#1E0A4A" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </button>
     <img class="sidebar-mascote" src="${ctx}/Imagens/Aeko.svg" alt="">
     <img class="sidebar-maleta" src="${ctx}/Imagens/Maleta.svg" alt="">
     <p class="sidebar-admin">ADMIN</p>
 
-    <nav aria-label="Menu principal">
+    <nav id="menuLateral" aria-label="Menu principal">
 
         <div class="navIndicador"></div>
 

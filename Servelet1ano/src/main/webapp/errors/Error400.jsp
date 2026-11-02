@@ -3,7 +3,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Erro 404 | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,16 +16,20 @@
 <body>
 
 <div class="telaErro">
-    <h1 class="tituloErro">Erro 400</h1>
-    <p class="subTituloErro">Oops! A requisição que chegou até a nossa nuvem veio com um formato inesperado. Verifique os dados digitados e tente novamente.</p>
-    <p class="descricaoErro">Parece que você pegou um caminho errado... Por favor, volte ao início</p>
+    <div class="textoErro">
+        <h1 class="tituloErro">Erro 400</h1>
+        <p class="subTituloErro longo">Oops! A requisição que chegou até a nossa nuvem veio com um formato inesperado. Verifique os dados digitados e tente novamente.</p>
+        <p class="descricaoErro">Parece que você pegou um caminho errado... Por favor, volte ao início</p>
 
-    <a href="${pageContext.request.contextPath}/">
-        Volte ao início
-    </a>
+        <a class="botaoVoltarInicio" href="${pageContext.request.contextPath}/">
+            <span class="tipografiaVoltarInicio">Volte ao início</span>
+        </a>
+    </div>
 
     <img class="nuvemErro" src="${pageContext.request.contextPath}/Imagens/NuvemErro.svg" alt="Aeko indicando erro">
 </div>
+
+<script src="${pageContext.request.contextPath}/Escala.js"></script>
 
 </body>
 </html>

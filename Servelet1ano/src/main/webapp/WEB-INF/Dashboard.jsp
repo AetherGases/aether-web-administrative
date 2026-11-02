@@ -6,7 +6,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dashboard | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,7 @@
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Crud.css">
     <link rel="stylesheet" href="${ctx}/Dashboard.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
+    <link rel="stylesheet" href="${ctx}/Sidebar.css">
 </head>
 <body>
 
@@ -35,6 +35,7 @@
     <h1 class="titulo-pagina">Área restrita</h1>
     <p class="subtitulo-pagina">Dashboard</p>
 
+    <%-- ---------- BOAS-VINDAS ---------- --%>
     <section class="cartao-boas-vindas">
         <span class="decoracao decoracao-grande" aria-hidden="true"></span>
         <span class="decoracao decoracao-pequena" aria-hidden="true"></span>
@@ -48,7 +49,7 @@
         <a class="botao-cartao botao-funcionarios" href="${ctx}/funcionarios">Ver funcionários</a>
     </section>
 
-
+    <%-- ---------- CARTÕES NUMÉRICOS ---------- --%>
     <a class="cartao-numero n1" href="${ctx}/setores">
         <p class="rotulo">Setores</p>
         <p class="valor">${totalSectors}</p>

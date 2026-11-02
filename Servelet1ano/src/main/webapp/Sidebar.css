@@ -1,9 +1,11 @@
+/* ---------- BARRA LATERAL ---------- */
 .sidebar {
     position: absolute;
     left: 0;
     top: 0;
+    bottom: 0;
     width: 284px;
-    height: 1024px;
+    min-height: calc(1024px - 264px * var(--k, 0));
     background: #FFF;
     border-radius: 0 30px 30px 0;
 }
@@ -27,7 +29,7 @@
 .sidebar-logo {
     position: absolute;
     left: 48px;
-    top: 28px;
+    top: 32px;
     width: 186px;
     height: 71px;
 }
@@ -35,7 +37,7 @@
 .sidebar-mascote {
     position: absolute;
     left: 38px;
-    top: 198px;
+    top: calc(203px - 110px * var(--k, 0));
     width: 264px;
     height: auto;
 }
@@ -43,7 +45,7 @@
 .sidebar-maleta {
     position: absolute;
     left: 172.86px;
-    top: 304.4px;
+    top: calc(304.4px - 110px * var(--k, 0));
     width: 75.6px;
     height: 64.4px;
 }
@@ -51,7 +53,7 @@
 .sidebar-admin {
     position: absolute;
     left: 0;
-    top: 396px;
+    top: calc(396px - 122px * var(--k, 0));
     width: 284px;
     margin: 0;
     color: #2DBD7E;
@@ -62,6 +64,11 @@
     text-align: center;
 }
 
+.sidebar-toggle {
+    display: none;
+}
+
+/* ---------- MENU ---------- */
 .sidebar-menu {
     margin: 0;
     padding: 0;
@@ -76,12 +83,12 @@
     height: 41.2px;
 }
 
-.sidebar-menu li:nth-child(1) { top: 472px; }
-.sidebar-menu li:nth-child(2) { top: 534px; }
-.sidebar-menu li:nth-child(3) { top: 596px; }
-.sidebar-menu li:nth-child(4) { top: 658px; }
-.sidebar-menu li:nth-child(5) { top: 721px; }
-.sidebar-menu li:nth-child(6) { top: 782px; }
+.sidebar-menu li:nth-child(1) { top: calc(472px - 150px * var(--k, 0)); }
+.sidebar-menu li:nth-child(2) { top: calc(534px - 164px * var(--k, 0)); }
+.sidebar-menu li:nth-child(3) { top: calc(596px - 178px * var(--k, 0)); }
+.sidebar-menu li:nth-child(4) { top: calc(658px - 192px * var(--k, 0)); }
+.sidebar-menu li:nth-child(5) { top: calc(721px - 206px * var(--k, 0)); }
+.sidebar-menu li:nth-child(6) { top: calc(782px - 220px * var(--k, 0)); }
 
 .sidebar-menu a {
     display: flex;
@@ -127,10 +134,11 @@
     filter: brightness(0) invert(1);
 }
 
+/* ---------- LOGOUT ---------- */
 .sidebar-logout {
     position: absolute;
-    left: 18px;
-    top: 964px;
+    left: 13px;
+    bottom: 11px;
     width: 246px;
     height: 51px;
     box-sizing: border-box;
@@ -174,4 +182,103 @@
     font-family: inherit;
     cursor: pointer;
     width: 246px;
+}
+
+/* ---------- RESPONSIVO: ATÉ 1279PX (CABEÇALHO COM MENU RECOLHIDO) ---------- */
+@media (max-width: 1279px) {
+    .sidebar {
+        position: relative;
+        width: auto;
+        min-height: 0;
+        margin: 0 -24px 24px;
+        padding: 12px 24px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 0 0 24px 24px;
+        box-shadow: 0 8px 24px rgba(30, 10, 74, 0.06);
+    }
+
+    .sidebar-logo {
+        position: static;
+        width: 130px;
+        height: auto;
+    }
+
+    .sidebar-mascote,
+    .sidebar-maleta,
+    .sidebar-admin,
+    .navIndicador {
+        display: none;
+    }
+
+    .sidebar-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border: 0;
+        border-radius: 12px;
+        background: #F3F0FF;
+    }
+
+    .sidebar-toggle:focus-visible {
+        outline: 2px solid #7C3AED;
+        outline-offset: 2px;
+    }
+
+    .sidebar-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .sidebar nav,
+    .sidebar-logout-form {
+        display: none;
+        flex: 1 1 100%;
+    }
+
+    .sidebar.menu-aberto nav,
+    .sidebar.menu-aberto .sidebar-logout-form {
+        display: block;
+    }
+
+    .sidebar nav {
+        margin-top: 12px;
+    }
+
+    .sidebar-menu li {
+        position: static;
+        width: auto;
+        height: 46px;
+        margin-bottom: 6px;
+    }
+
+    .sidebar-menu a.ativo {
+        background: #2DBD7E;
+    }
+
+    .sidebar-logout-form {
+        margin-top: 6px;
+    }
+
+    .sidebar-logout,
+    .sidebar-logout-form .sidebar-logout {
+        position: static;
+        width: 100%;
+        height: 46px;
+        font-size: 18px;
+        border-color: #FFE3E7;
+    }
+}
+
+/* ---------- RESPONSIVO: ATÉ 768PX ---------- */
+@media (max-width: 768px) {
+    .sidebar {
+        margin: 0 -16px 20px;
+        padding: 12px 16px;
+    }
 }

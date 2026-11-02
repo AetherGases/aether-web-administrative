@@ -1,7 +1,4 @@
-/* =====================================================================
-   Permissions.css
-   ===================================================================== */
-
+/* ---------- BASE ---------- */
 *,
 *::before,
 *::after {
@@ -15,7 +12,6 @@ body {
 }
 
 body {
-    min-width: 1440px;
     background: #EDEEF8;
     font-family: "Montserrat", sans-serif;
     color: #1E0A4A;
@@ -29,19 +25,14 @@ select {
 
 .perm-tela {
     position: relative;
-    width: 1440px;
-    height: 1024px;
-    margin: 0 auto;
+    min-height: max(100vh, 1024px);
+    padding: 50px 45px calc(67px - 60px * var(--k, 0)) 335px;
     background: #EDEEF8;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
-/* ------------------------------ CABEÇALHO ------------------------------ */
-
+/* ---------- CABEÇALHO ---------- */
 .perm-titulo {
-    position: absolute;
-    left: 334.73px;
-    top: 50.71px;
     margin: 0;
     color: #1E0A4A;
     font-size: 50px;
@@ -55,10 +46,7 @@ select {
 }
 
 .perm-subtitulo {
-    position: absolute;
-    left: 334.73px;
-    top: 113.71px;
-    margin: 0;
+    margin: 2px 0 0;
     color: #7E8294;
     font-size: 20px;
     font-weight: 600;
@@ -66,11 +54,48 @@ select {
     white-space: nowrap;
 }
 
-.perm-seletor {
+/* ---------- MENSAGENS ---------- */
+.mensagem-erro,
+.mensagem-sucesso {
     position: absolute;
-    left: 335px;
-    top: 152px;
-    width: 356px;
+    right: 45px;
+    top: 50px;
+    max-width: min(715px, calc(100% - 740px));
+    margin: 0;
+    padding: 12px 20px;
+    border-radius: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    z-index: 5;
+}
+
+.mensagem-erro {
+    background: #FFE3E7;
+    color: #C4122B;
+    border: 1px solid #FB324C;
+}
+
+.mensagem-sucesso {
+    background: #D4FFEB;
+    color: #1E6B56;
+    border: 1px solid #2DBD7E;
+}
+
+/* ---------- BARRA DE CONTROLES ---------- */
+.perm-tela > form {
+    display: grid;
+    grid-template-columns: minmax(0, 355px) minmax(0, 453px) minmax(0, 1fr);
+    grid-template-areas:
+        "seletor pesquisa salvar"
+        "lista   lista    lista";
+    column-gap: 17px;
+    row-gap: calc(63px - 20px * var(--k, 0));
+    align-items: start;
+    margin-top: 14px;
+}
+
+.perm-seletor {
+    grid-area: seletor;
     height: 45px;
     display: flex;
     align-items: center;
@@ -85,7 +110,7 @@ select {
 .perm-seletor label {
     color: #B9BAC5;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 400;
     white-space: nowrap;
 }
 
@@ -107,10 +132,8 @@ select {
 }
 
 .perm-pesquisa {
-    position: absolute;
-    left: 706px;
-    top: 152px;
-    width: 455px;
+    grid-area: pesquisa;
+    position: relative;
     height: 45px;
     border: 2px solid #D8DAE3;
     border-radius: 15px;
@@ -144,25 +167,73 @@ select {
     pointer-events: none;
 }
 
-/* ------------------------------ CARTÕES DE PERMISSÃO ------------------------------ */
+.perm-salvar {
+    grid-area: salvar;
+    justify-self: end;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    width: 216px;
+    height: 45px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    border: none;
+    border-radius: 15px;
+    background: linear-gradient(246deg, #3EBC85 8%, #2DBD7E 50%);
+    box-shadow: 0 4px 12px rgba(45, 189, 126, 0.18);
+    color: #FFF;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+}
 
-.perm-lista {
+.perm-salvar::before {
+    content: "";
     position: absolute;
-    left: 336px;
-    top: 262px;
-    width: 1055px;
+    inset: 0;
+    z-index: -1;
+    background: #239B68;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.perm-salvar:hover:not(:disabled)::before {
+    opacity: 1;
+}
+
+.perm-salvar:hover:not(:disabled) {
+    box-shadow: 0 6px 16px rgba(45, 189, 126, 0.25);
+}
+
+.perm-salvar:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ---------- CARTÕES DE PERMISSÃO ---------- */
+.perm-lista {
+    grid-area: lista;
     margin: 0;
     padding: 0;
     list-style: none;
     display: grid;
-    grid-template-columns: 514px 514px;
-    grid-auto-rows: 262px;
-    column-gap: 27px;
-    row-gap: 29px;
+    grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr));
+    grid-auto-rows: minmax(calc(265px - 50px * var(--k, 0)), auto);
+    column-gap: 24px;
+    row-gap: 27px;
 }
 
 .perm-cartao {
-    position: relative;
+    display: grid;
+    grid-template-columns: 66px minmax(0, 1fr);
+    grid-template-rows: 66px 1fr auto;
+    column-gap: 9px;
+    padding: 14px 24px 11px 14px;
     border-radius: 20px;
     background: #FFF;
     box-shadow: 0 50px 50px 0 rgba(156, 156, 156, 0.06), 0 12px 27px 0 rgba(156, 156, 156, 0.10);
@@ -173,57 +244,56 @@ select {
 }
 
 .perm-icone {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    width: 58px;
-    height: 58px;
+    grid-column: 1;
+    grid-row: 1;
+    width: 66px;
+    height: 66px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
+    border-radius: 16px;
     background: #FFF;
     box-shadow: 0 6px 16px 0 rgba(30, 10, 74, 0.08), 0 1px 3px 0 rgba(30, 10, 74, 0.06);
 }
 
 .perm-icone img {
-    width: 43px;
-    height: 43px;
+    width: 46px;
+    height: 46px;
 }
 
 .perm-cartao h2 {
-    position: absolute;
-    left: 88px;
-    top: 30px;
-    right: 24px;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
     margin: 0;
     color: #1E0A4A;
-    font-size: 24px;
+    font-size: 27px;
     font-weight: 600;
-    line-height: 30px;
+    line-height: 33px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .perm-cartao p {
-    position: absolute;
-    left: 88px;
-    top: 78px;
-    width: 362px;
+    grid-column: 2;
+    grid-row: 2;
     margin: 0;
+    padding-right: 40px;
     color: #1E0A4A;
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 500;
     line-height: 24px;
 }
 
 .perm-chave {
-    position: absolute;
-    left: 417px;
-    top: 220px;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: end;
+    position: relative;
     width: 59px;
     height: 31px;
+    margin: 12px 14px 0 0;
     cursor: pointer;
 }
 
@@ -276,39 +346,15 @@ select {
     outline-offset: 3px;
 }
 
-/* ------------------------------ PAGINAÇÃO ------------------------------ */
-.perm-contagem {
-    position: absolute;
-    left: 1191px;
-    top: 828px;
-    width: 200px;
-    margin: 0;
-    color: #6C667E;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 18px;
-    text-align: right;
-    white-space: nowrap;
-}
+/* ---------- PAGINAÇÃO ---------- */
+@media (min-width: 1280px) {
+    .perm-lista {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 
-.perm-contagem.perm-contagem-meio {
-    top: 559px;
-}
-
-.perm-paginacao {
-    position: absolute;
-    left: 0;
-    top: 879px;
-    width: 1440px;
-    padding: 0 49px 0 335px;
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    pointer-events: none;
-}
-
-.perm-paginacao > * {
-    pointer-events: auto;
+    .perm-tela .paginacao-botoes {
+        margin-top: calc(49px - 49px * var(--k, 0));
+    }
 }
 
 .perm-numeros {
@@ -316,7 +362,6 @@ select {
     gap: 16px;
 }
 
-.perm-seta,
 .perm-pagina {
     width: 43px;
     height: 43px;
@@ -324,33 +369,13 @@ select {
     align-items: center;
     justify-content: center;
     padding: 0;
-    border-radius: 10px;
-    font-size: 24px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.perm-seta {
-    border: 0;
-    background: radial-gradient(84.96% 84.96% at 74.42% 0%, #5DDBA5 0%, #2DBD7E 100%);
-    transition: opacity .2s ease;
-}
-
-.perm-seta:disabled {
-    opacity: .35;
-    cursor: not-allowed;
-}
-
-.perm-seta svg {
-    width: 19px;
-    height: 19px;
-}
-
-.perm-pagina {
     border: 1.4px solid #D8DAE3;
+    border-radius: 10px;
     background: #FFF;
     color: #7E8294;
+    font-size: 24px;
+    font-weight: 600;
+    cursor: pointer;
     transition: background-color .2s ease, border-color .2s ease, color .2s ease;
 }
 
@@ -366,7 +391,6 @@ select {
     cursor: default;
 }
 
-.perm-seta:focus-visible,
 .perm-pagina:focus-visible {
     outline: 2px solid #7C3AED;
     outline-offset: 3px;
@@ -384,53 +408,72 @@ select {
     border: 0;
 }
 
+/* ---------- RESPONSIVO: ATÉ 1279PX ---------- */
+@media (max-width: 1279px) {
+    .perm-tela {
+        min-height: 100vh;
+        padding: 0 24px 40px;
+    }
 
-.perm-salvar {
-    position: absolute;
+    .perm-titulo {
+        font-size: clamp(32px, 6vw, 50px);
+        line-height: 1.22;
+    }
 
-    left: 1175px;
-    top: 152px;
-
-    width: 216px;
-    height: 45px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 12px;
-
-    border: none;
-    border-radius: 15px;
-
-    background: linear-gradient(
-            246deg,
-            #3EBC85 8%,
-            #2DBD7E 50%
-    );
-
-    color: #FFFFFF;
-    font-family: "Montserrat", sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-
-    white-space: nowrap;
-    cursor: pointer;
-    z-index: 10;
-
-    box-shadow: 0 4px 12px rgba(45, 189, 126, 0.18);
-
-    transition:
-            background 0.2s ease,
-            box-shadow 0.2s ease;
+    .mensagem-erro,
+    .mensagem-sucesso {
+        position: static;
+        max-width: none;
+        margin-top: 14px;
+    }
 }
 
-.perm-salvar:hover:not(:disabled) {
-    background: #239B68;
-    box-shadow: 0 6px 16px rgba(45, 189, 126, 0.25);
+/* ---------- RESPONSIVO: ATÉ 1023PX ---------- */
+@media (max-width: 1023px) {
+    .perm-tela > form {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "seletor salvar"
+            "pesquisa pesquisa"
+            "lista   lista";
+        row-gap: 14px;
+    }
+
+    .perm-lista {
+        margin-top: 18px;
+    }
 }
 
-.perm-salvar:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
+/* ---------- RESPONSIVO: ATÉ 768PX ---------- */
+@media (max-width: 768px) {
+    .perm-tela {
+        padding: 0 16px 32px;
+    }
+}
+
+/* ---------- RESPONSIVO: ATÉ 600PX ---------- */
+@media (max-width: 600px) {
+    .perm-tela > form {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+            "seletor"
+            "pesquisa"
+            "salvar"
+            "lista";
+    }
+
+    .perm-salvar {
+        justify-self: stretch;
+        width: 100%;
+        height: 48px;
+    }
+
+    .perm-cartao h2 {
+        font-size: 21px;
+    }
+
+    .perm-cartao p {
+        padding-right: 0;
+        font-size: 16px;
+    }
 }

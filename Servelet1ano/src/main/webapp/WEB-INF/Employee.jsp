@@ -6,7 +6,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Funcionários | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,8 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Crud.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Sidebar.css">
+    <link rel="stylesheet" href="${ctx}/Paginacao.css">
+    <link rel="stylesheet" href="${ctx}/Sidebar.css">
 </head>
 <body>
 
@@ -35,37 +36,38 @@
         <p class="mensagem mensagem-sucesso" role="status"><c:out value="${sucesso}"/></p>
     </c:if>
 
+    <%-- ---------- BARRA DE AÇÕES ---------- --%>
     <jsp:include page="/Acoes.jsp">
         <jsp:param name="rota" value="funcionarios"/>
         <jsp:param name="modal" value="overlayAdicionarFuncionario"/>
         <jsp:param name="selecionar" value="${not empty funcionarios}"/>
     </jsp:include>
 
-
     <form id="formExcluirLote" action="${ctx}/funcionarios" method="post">
         <input type="hidden" name="acao" value="excluirLote">
         <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}' />">
     </form>
 
+    <%-- ---------- TABELA ---------- --%>
     <section class="cartao-tabela">
-        <table class="tabela">
+        <table class="tabela tabela-funcionarios">
             <colgroup>
-                <col style="width: 64px">
-                <col style="width: 196.13px">
-                <col style="width: 196px">
-                <col style="width: 55px">
-                <col style="width: 93px">
-                <col style="width: 135px">
-                <col style="width: 179.87px">
+                <col style="width: 6.09%">
+                <col style="width: 18.65%">
+                <col style="width: 18.17%">
+                <col style="width: 17.89%">
+                <col style="width: 9.51%">
+                <col style="width: 12.56%">
+                <col style="width: 17.13%">
             </colgroup>
             <thead>
             <tr>
                 <th><span class="visually-hidden">Selecionar</span></th>
                 <th>Nome</th>
                 <th>E-mail</th>
-                <th style="text-align: center">Status</th>
-                <th style="text-align: center">Setor</th>
-                <th style="text-align: center">Data de admissão</th>
+                <th class="centro">Status</th>
+                <th class="centro">Setor</th>
+                <th class="centro">Data de admissão</th>
                 <th><span class="visually-hidden">Ações</span></th>
             </tr>
             </thead>
@@ -83,20 +85,20 @@
                     data-status="${statusTexto}">
                     <td>
                         <input type="checkbox" class="check" aria-label="Selecionar funcionário ${funcionario.id}"${funcionario.permissionGroup.name eq 'Admin da empresa'
-                        ? 'disabled title="Contas administrativas não podem ser desativadas em lote"' : ''}>
+                                ? 'disabled title="Contas administrativas não podem ser desativadas em lote"' : ''}>
                     </td>
 
-                    <td style="padding-right: 30px" title="<c:out value='${funcionario.name}'/>"><c:out value="${funcionario.name}"/></td>
-                    <td style="padding-right: 20px" title="<c:out value='${funcionario.email}'/>"><c:out value="${funcionario.email}"/></td>
-                    <td>
-                        <img class="status-icone" style="margin: 0 auto"
+                    <td class="celula-nome" title="<c:out value='${funcionario.name}'/>"><c:out value="${funcionario.name}"/></td>
+                    <td class="celula-email" data-label="E-mail" title="<c:out value='${funcionario.email}'/>"><c:out value="${funcionario.email}"/></td>
+                    <td data-label="Status">
+                        <img class="status-icone"
                              src="${ctx}/Imagens/${ativo ? 'STATUSCerto' : 'STATUSErrado'}.svg"
                              alt="${statusTexto}" title="${statusTexto}">
                     </td>
 
-                    <td style="text-align: center; padding: 0 4px" title="<c:out value='${funcionario.sector.name}'/>"><c:out value="${funcionario.sector.name}"/></td>
-                    <td style="text-align: center">${admissao}</td>
-                    <td style="padding-left: 28.87px">
+                    <td class="centro celula-setor" data-label="Setor" title="<c:out value='${funcionario.sector.name}'/>"><c:out value="${funcionario.sector.name}"/></td>
+                    <td class="centro" data-label="Data de admissão">${admissao}</td>
+                    <td class="celula-acoes">
 
                         <c:set var="manager"
                                value="${funcionario.permissionGroup.name eq 'Admin da empresa'}"/>
@@ -134,12 +136,13 @@
         </c:if>
     </section>
 
+    <%-- ---------- PAGINAÇÃO ---------- --%>
     <c:if test="${not empty funcionarios}">
         <jsp:include page="/Paginacao.jsp"/>
     </c:if>
 </div>
 
-<%-- ======================= OVERLAY ADICIONAR FUNCIONÁRIO =======================--%>
+<%-- ---------- OVERLAY ADICIONAR FUNCIONÁRIO ---------- --%>
 <div class="overlay" id="overlayAdicionarFuncionario" aria-hidden="true"
      data-abrir-ao-carregar="${not empty erro}">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloAdicionarFuncionario">
@@ -231,7 +234,7 @@
     </div>
 </div>
 
-<%-- ======================= OVERLAY ALTERAR FUNCIONÁRIO ======================= --%>
+<%-- ---------- OVERLAY ALTERAR FUNCIONÁRIO ---------- --%>
 <div class="overlay" id="overlayEditarFuncionario" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="tituloEditarFuncionario">
         <div class="modal-topo">
@@ -281,7 +284,7 @@
     </div>
 </div>
 
-<%-- ======================= OVERLAY VER FUNCIONÁRIO ======================= --%>
+<%-- ---------- OVERLAY VER FUNCIONÁRIO ---------- --%>
 <div class="overlay" id="overlayVerFuncionario" aria-hidden="true">
     <div class="modal modo-ver" role="dialog" aria-modal="true" aria-labelledby="tituloVerFuncionario">
         <div class="modal-topo">
@@ -318,7 +321,7 @@
     </div>
 </div>
 
-<%-- ======================= OVERLAY EXCLUIR FUNCIONÁRIO ======================= --%>
+<%-- ---------- OVERLAY EXCLUIR FUNCIONÁRIO ---------- --%>
 <div class="overlay" id="overlayExcluirFuncionario" aria-hidden="true">
     <div class="modal modal-excluir" role="dialog" aria-modal="true" aria-labelledby="tituloExcluirFuncionario">
         <div class="modal-topo">
@@ -348,10 +351,9 @@
     </div>
 </div>
 
+<jsp:include page="/DesativarSelecionados.jsp"/>
+
 <script src="${ctx}/Crud.js"></script>
 
 </body>
 </html>
-
-
-

@@ -1,0 +1,221 @@
+/* ---------- DESKTOP: PALCO PREENCHE A TELA E CENTRALIZA O CONTEÚDO ---------- */
+@media (min-width: 1024px) {
+    html,
+    body {
+        min-height: 100vh;
+        overflow: hidden;
+    }
+
+    body {
+        min-width: 0;
+        display: block;
+    }
+
+    .tela {
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .tela > * {
+        margin-left: var(--dx, 0);
+        margin-top: var(--dy, 0);
+    }
+
+    .tela > .voltar {
+        margin-left: 0;
+        margin-top: 0;
+    }
+}
+
+/* ---------- TABLET E CELULAR: CONTEÚDO EM COLUNA ---------- */
+@media (max-width: 1023px) {
+    body {
+        min-width: 0;
+        overflow-x: hidden;
+    }
+
+    .tela {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding: 16px 16px 40px;
+        overflow: hidden;
+    }
+
+    .blur {
+        width: 420px;
+        height: 420px;
+    }
+
+    .voltar {
+        position: relative;
+        left: auto;
+        top: auto;
+        align-self: flex-start;
+        width: auto;
+        height: 48px;
+        padding-right: 20px;
+        font-size: 20px;
+    }
+
+    .voltar span {
+        width: 40px;
+        height: 40px;
+    }
+
+    .logo-lateral {
+        position: relative;
+        left: auto;
+        top: auto;
+        width: min(200px, 50%);
+    }
+
+    .logo-lateral img {
+        width: 100%;
+        height: auto;
+    }
+
+    .logo-lateral p {
+        position: static;
+        width: auto;
+        margin-top: 8px;
+        font-size: 16px;
+        line-height: 22px;
+        white-space: normal;
+    }
+
+    .mensagem {
+        position: relative;
+        left: auto;
+        top: auto !important;
+        width: min(546px, 100%);
+        padding: 10px 18px !important;
+        z-index: 3;
+    }
+
+    .cartao-form {
+        position: relative;
+        left: auto;
+        top: auto !important;
+        width: min(546px, 100%);
+        height: auto !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        padding: 24px 20px 28px;
+    }
+
+    .cartao-form > *,
+    .cartao-form form > * {
+        position: static;
+        left: auto !important;
+        top: auto !important;
+    }
+
+    .cartao-form .mascote {
+        width: 120px;
+        height: auto;
+    }
+
+    .cartao-form .correio {
+        position: absolute;
+        left: auto !important;
+        top: 24px !important;
+        right: calc(50% - 110px);
+        width: 44px;
+        height: auto;
+    }
+
+    .cartao-form form {
+        position: static;
+        inset: auto;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .pilula-titulo {
+        width: auto !important;
+        max-width: 100%;
+        height: auto !important;
+        min-height: 41px;
+        padding: 2px 28px;
+        font-size: 24px;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .entrada,
+    select.entrada.plano,
+    .botao-enviar {
+        width: 100% !important;
+    }
+
+    .botao-enviar {
+        max-width: none;
+    }
+
+    .rotulo-cpf {
+        align-self: flex-start;
+        font-size: 22px;
+    }
+
+    .link-conta {
+        width: 100% !important;
+        font-size: 16px;
+    }
+
+    .codigo {
+        width: 100% !important;
+        justify-content: center;
+    }
+
+    .codigo input {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 72px;
+        height: 64px;
+        font-size: 26px;
+    }
+
+    .plano-card {
+        position: relative;
+        left: auto;
+        top: auto;
+        order: 3;
+        width: min(546px, 100%);
+        height: auto;
+        padding: 24px 20px;
+    }
+
+    .plano-card h2 {
+        font-size: 24px;
+        line-height: 30px;
+    }
+
+    .plano-card .preco {
+        font-size: 20px;
+        line-height: 30px;
+    }
+
+    .plano-card .preco strong {
+        font-size: 32px;
+    }
+
+    .plano-card hr,
+    .plano-card ul {
+        width: 100%;
+    }
+
+    .plano-card ul {
+        font-size: 15px;
+        line-height: 24px;
+    }
+}

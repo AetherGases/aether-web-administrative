@@ -5,7 +5,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Cadastro empresarial | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,7 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Cadastro.css">
+    <link rel="stylesheet" href="${ctx}/AuthResponsivo.css">
 </head>
 <body>
 
@@ -30,7 +31,7 @@
         Voltar
     </a>
 
-    <%-- Planos (Figma: PLANO PULSE em 114,128 e PLANO HORIZON em 114,536) --%>
+    <%-- ---------- PLANOS ---------- --%>
     <section class="plano-card plano-pulse">
         <h2>Aether <span class="verde">Pulse</span></h2>
         <p class="preco"><strong>R$3.300</strong>/por mês</p>
@@ -106,6 +107,8 @@
         </form>
     </main>
 </div>
+
+<script src="${ctx}/Escala.js"></script>
 
 </body>
 </html>

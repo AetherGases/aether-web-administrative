@@ -5,7 +5,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1440">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login | Aether</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,7 @@
 
     <link rel="icon" href="${ctx}/Imagens/LogoAether.svg" type="image/svg+xml">
     <link rel="stylesheet" href="${ctx}/Login.css">
+    <link rel="stylesheet" href="${ctx}/AuthResponsivo.css">
 </head>
 <body>
 
@@ -64,6 +65,8 @@
         </form>
     </main>
 </div>
+
+<script src="${ctx}/Escala.js"></script>
 
 </body>
 </html>

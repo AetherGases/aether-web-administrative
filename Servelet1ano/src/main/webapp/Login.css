@@ -306,7 +306,7 @@ select.entrada.plano {
     border: 0;
 }
 
-/* --------------------- Planos (PLANO PULSE / PLANO HORIZON) --------------------- */
+/* ---------- PLANOS ---------- */
 .plano-card {
     position: absolute;
     left: 114px;
@@ -366,7 +366,7 @@ select.entrada.plano {
     line-height: 26px;
 }
 
-/* --------------------- Verificação: código de 6 dígitos --------------------- */
+/* ---------- VERIFICAÇÃO ---------- */
 .codigo {
     left: 42px !important;
     width: 462px !important;
@@ -400,7 +400,7 @@ select.entrada.plano {
     transform: rotate(-13.25deg);
 }
 
-/* --------------------- Login pessoal (Login.jsp) --------------------- */
+/* ---------- LOGIN PESSOAL ---------- */
 .cartao-form.cartao-login {
     top: 253px;
     height: 518px;

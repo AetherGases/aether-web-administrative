@@ -1,3 +1,4 @@
+/* ---------- BASE ---------- */
 *,
 *::before,
 *::after {
@@ -11,26 +12,32 @@ body {
 }
 
 body {
-    min-width: 1440px;
     min-height: 100vh;
     background: linear-gradient(180deg, #EDEEF8 0.02%, #B3A2FB 100%) fixed;
     font-family: "Montserrat", sans-serif;
 }
 
+/* ---------- PALCO ---------- */
 .telaErro {
     position: relative;
     width: 1440px;
     height: 1024px;
     margin: 0 auto;
-    overflow: hidden;
-    background: linear-gradient(180deg, #EDEEF8 0.02%, #B3A2FB 100%);
 }
 
-.tituloErro {
+.textoErro {
     position: absolute;
-    left: 73px;
+    left: 80px;
     top: 234px;
-    margin: 0;
+    width: 660px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* ---------- TEXTOS ---------- */
+.tituloErro {
+    margin: 0 0 73px -7px;
     color: #7C3AED;
     -webkit-text-stroke: 1.32px #7C3AED;
     font-size: 160px;
@@ -39,11 +46,15 @@ body {
     white-space: nowrap;
 }
 
+.tituloErro.longo {
+    margin-bottom: 40px;
+    font-size: 96px;
+    line-height: 1.05;
+    white-space: normal;
+}
+
 .subTituloErro {
-    position: absolute;
-    left: 80px;
-    top: 467px;
-    margin: 0;
+    margin: 0 0 65px;
     color: #000;
     font-size: 45px;
     font-weight: 600;
@@ -51,24 +62,28 @@ body {
     white-space: nowrap;
 }
 
+.subTituloErro.longo {
+    margin-bottom: 40px;
+    font-size: 32px;
+    line-height: 40px;
+    white-space: normal;
+}
+
 .descricaoErro {
-    position: absolute;
-    left: 80px;
-    top: 587px;
-    width: 560.335px;
-    margin: 0;
+    width: 560px;
+    margin: 0 0 42px;
     color: #767676;
     font-size: 32.884px;
     font-weight: 400;
     line-height: 39.5px;
 }
 
+/* ---------- BOTÃO ---------- */
 .botaoVoltarInicio {
-    position: absolute;
-    left: 82px;
-    top: 748px;
     width: 443.607px;
+    max-width: 100%;
     height: 69.713px;
+    margin-left: 2px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -76,6 +91,12 @@ body {
     border: 1.315px solid #7C3AED;
     background: #7C3AED;
     text-decoration: none;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.botaoVoltarInicio:hover {
+    background: #5B21B6;
+    border-color: #5B21B6;
 }
 
 .tipografiaVoltarInicio {
@@ -85,11 +106,101 @@ body {
     line-height: 1.2;
 }
 
-
+/* ---------- NUVEM ---------- */
 .nuvemErro {
     position: absolute;
     left: 736px;
     top: 259px;
     width: 705px;
     height: 487px;
+}
+
+/* ---------- DESKTOP ---------- */
+@media (min-width: 1024px) {
+    html,
+    body {
+        overflow: hidden;
+    }
+
+    body {
+        display: block;
+    }
+
+    .telaErro {
+        margin: 0;
+        overflow: hidden;
+    }
+
+    .telaErro > * {
+        margin-left: var(--dx, 0);
+        margin-top: var(--dy, 0);
+    }
+}
+
+/* ---------- TABLET E CELULAR ---------- */
+@media (max-width: 1023px) {
+    .telaErro {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+        padding: 32px 24px;
+    }
+
+    .textoErro {
+        position: static;
+        width: 100%;
+        max-width: 640px;
+        margin: 0 auto;
+        align-items: stretch;
+    }
+
+    .tituloErro,
+    .tituloErro.longo {
+        margin: 0 0 20px;
+        font-size: clamp(56px, 17vw, 120px);
+        line-height: 1.05;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .tituloErro.longo {
+        font-size: clamp(40px, 11vw, 80px);
+    }
+
+    .subTituloErro,
+    .subTituloErro.longo {
+        margin: 0 0 16px;
+        font-size: clamp(22px, 5.2vw, 34px);
+        line-height: 1.25;
+        white-space: normal;
+    }
+
+    .descricaoErro {
+        width: auto;
+        margin: 0 0 28px;
+        font-size: clamp(17px, 4vw, 24px);
+        line-height: 1.35;
+    }
+
+    .botaoVoltarInicio {
+        width: 100%;
+        max-width: 443px;
+        height: 60px;
+        margin: 0;
+    }
+
+    .tipografiaVoltarInicio {
+        font-size: 22px;
+    }
+
+    .nuvemErro {
+        position: static;
+        align-self: center;
+        width: min(100%, 460px);
+        height: auto;
+    }
 }
