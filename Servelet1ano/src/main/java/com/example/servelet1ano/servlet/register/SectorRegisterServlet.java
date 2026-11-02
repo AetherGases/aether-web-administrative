@@ -7,6 +7,9 @@ import com.example.servelet1ano.filter.UnitsFilter;
 import com.example.servelet1ano.model.Sectors;
 import com.example.servelet1ano.model.Units;
 import com.example.servelet1ano.util.service.AuthorizationService;
+import com.example.servelet1ano.dao.DeactivationDAO;
+import com.example.servelet1ano.util.Selection;
+
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -95,7 +98,11 @@ public class SectorRegisterServlet extends HttpServlet {
             authorization.CsrfToken(request);
             carregarDados(request, companyId);
 
-            if ("true".equals(request.getParameter("sucesso"))) {
+            if ("ok".equals(request.getParameter("lote"))) {
+                request.setAttribute("sucesso", "Setores selecionados desativados com sucesso.");
+            } else if ("falha".equals(request.getParameter("lote"))) {
+                request.setAttribute("erro", "Não foi possível desativar todos os setores. Verifique vínculos e registros ativos.");
+            } else if ("true".equals(request.getParameter("sucesso"))) {
                 request.setAttribute("sucesso", "Setor cadastrado com sucesso.");
             } else if ("true".equals(request.getParameter("editado"))) {
                 request.setAttribute("sucesso", "Setor editado com sucesso.");
@@ -143,7 +150,7 @@ public class SectorRegisterServlet extends HttpServlet {
             }
 
             String acao = request.getParameter("acao");
-            // O formulario de cadastro original nao envia "acao".
+
             if (acao == null) {
                 acao = "cadastrar";
             }
@@ -152,10 +159,11 @@ public class SectorRegisterServlet extends HttpServlet {
                 case "cadastrar" -> CAMPOS_CADASTRO;
                 case "editar" -> CAMPOS_EDICAO;
                 case "excluir" -> CAMPOS_EXCLUSAO;
+                case "excluirLote" -> Set.of("acao", "csrfToken", "ids");
                 default -> null;
             };
 
-            if (campos == null || !parametrosValidos(request, campos)) {
+            if (campos == null || (!"excluirLote".equals(acao) && !parametrosValidos(request, campos))) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
@@ -170,6 +178,7 @@ public class SectorRegisterServlet extends HttpServlet {
                 case "editar" -> editarSetor(request, response, companyId);
                 case "excluir" -> excluirSetor(request, response, companyId);
                 case "cadastrar" -> cadastrarSetor(request, response, companyId);
+                case "excluirLote" -> excluirLote(request, response, companyId);
                 default -> response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             }
 
@@ -243,6 +252,7 @@ public class SectorRegisterServlet extends HttpServlet {
             HttpServletResponse response,
             int companyId
     ) throws ServletException, IOException {
+        request.setAttribute("modalErro", "overlayEditarSetor");
 
         Integer id = lerId(request.getParameter("id"));
         String nome = normalizar(request.getParameter("campoNomeSetor"));
@@ -407,4 +417,32 @@ public class SectorRegisterServlet extends HttpServlet {
         }
         request.getRequestDispatcher(CADASTRO).forward(request, response);
     }
+
+    /** Apenas os IDs recebidos são processados
+     * De forma transacional.
+     * */
+    private void excluirLote(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws IOException {
+
+        boolean ok;
+
+        try {
+            List<Integer> ids = Selection.parse(request);
+
+            ok = new DeactivationDAO().sectors(ids, companyId);
+
+        } catch (IllegalArgumentException ex) {
+            ok = false;
+        }
+
+        response.sendRedirect(
+                request.getContextPath()
+                        + "/setores?lote="
+                        + (ok ? "ok" : "falha")
+        );
+    }
+
 }

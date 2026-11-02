@@ -39,6 +39,19 @@ public class NewCompanyRegisterServlet extends HttpServlet {
      */
     private static final String CADASTRO = "/CompanyRegister.jsp";
 
+    /** Apresenta o cadastro empresarial pela mesma rota usada nos redirecionamentos. */
+    @Override
+    protected void doGet(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws ServletException, IOException {
+
+        response.setHeader("Cache-Control", "no-store");
+
+        request.getRequestDispatcher(CADASTRO)
+                .forward(request, response);
+    }
+
     /**
      * metodo que recebe os dados do formulario e cadastra a empresa com a assinatura do plano
      * Confere se todos os campos vieram preenchidos, se o tamanho e o plano existem e se a empresa ainda nao esta cadastrada

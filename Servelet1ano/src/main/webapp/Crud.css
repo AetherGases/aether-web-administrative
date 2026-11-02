@@ -855,3 +855,30 @@ button {
     background: #EFE9FF;
     color: #4A3A8A;
 }
+
+
+/* Botão de desativação em lote */
+
+.botao-excluir-lote {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 11px 18px;
+    border: 1px solid #C75D63;
+    border-radius: 12px;
+    background: #A73743;
+    color: #fff;
+    font: 600 13px Montserrat, sans-serif;
+    cursor: pointer;
+}
+
+.botao-excluir-lote:hover:not(:disabled) {
+    background: #892A35;
+}
+
+.botao-excluir-lote:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+

@@ -824,6 +824,7 @@ public class EmployeesDAO implements DAOI<Employees, EmployeesFilter> {
                   WHERE pg.id = e.permission_group_id
                     AND pg.company_id = e.company_id
                     AND pg.is_active = TRUE
+                    AND pg.name <> 'Admin da empresa'
               )
             """;
 

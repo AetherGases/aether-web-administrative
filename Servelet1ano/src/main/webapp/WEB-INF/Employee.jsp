@@ -36,10 +36,16 @@
     </c:if>
 
     <jsp:include page="/Acoes.jsp">
+        <jsp:param name="rota" value="funcionarios"/>
         <jsp:param name="modal" value="overlayAdicionarFuncionario"/>
         <jsp:param name="selecionar" value="${not empty funcionarios}"/>
     </jsp:include>
 
+
+    <form id="formExcluirLote" action="${ctx}/funcionarios" method="post">
+        <input type="hidden" name="acao" value="excluirLote">
+        <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}' />">
+    </form>
 
     <section class="cartao-tabela">
         <table class="tabela">
@@ -75,7 +81,11 @@
                     data-setor="<c:out value='${funcionario.sector.name}'/>"
                     data-admissao="${admissao}"
                     data-status="${statusTexto}">
-                    <td><input type="checkbox" class="check" aria-label="Selecionar funcionário ${funcionario.id}"></td>
+                    <td>
+                        <input type="checkbox" class="check" aria-label="Selecionar funcionário ${funcionario.id}"${funcionario.permissionGroup.name eq 'Admin da empresa'
+                        ? 'disabled title="Contas administrativas não podem ser desativadas em lote"' : ''}>
+                    </td>
+
                     <td style="padding-right: 30px" title="<c:out value='${funcionario.name}'/>"><c:out value="${funcionario.name}"/></td>
                     <td style="padding-right: 20px" title="<c:out value='${funcionario.email}'/>"><c:out value="${funcionario.email}"/></td>
                     <td>

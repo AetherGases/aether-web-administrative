@@ -35,9 +35,17 @@
     </c:if>
 
     <jsp:include page="/Acoes.jsp">
+        <jsp:param name="rota" value="unidades"/>
         <jsp:param name="modal" value="overlayAdicionarUnidade"/>
         <jsp:param name="selecionar" value="${not empty unidades}"/>
     </jsp:include>
+
+
+    <form id="formExcluirLote" action="${ctx}/unidades" method="post">
+        <input type="hidden" name="acao" value="excluirLote">
+        <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}' />">
+    </form>
+
 
     <section class="cartao-tabela">
         <table class="tabela">

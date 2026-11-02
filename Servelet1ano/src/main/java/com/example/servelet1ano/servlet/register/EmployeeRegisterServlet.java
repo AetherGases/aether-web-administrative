@@ -17,6 +17,9 @@ import com.example.servelet1ano.util.PasswordHasher;
 import com.example.servelet1ano.validation.Validators;
 import com.example.servelet1ano.util.service.AuthorizationService;
 import com.example.servelet1ano.filter.EmployeesFilter;
+import com.example.servelet1ano.dao.DeactivationDAO;
+import com.example.servelet1ano.util.Selection;
+
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -120,11 +123,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
             carregarFuncionarios(request, companyId);
             carregarSetores(request, companyId);
 
+
             if ("true".equals(request.getParameter("sucesso"))) {
-                request.setAttribute(
-                        "sucesso",
-                        "Dados carregados com sucesso."
-                );
+                request.setAttribute("sucesso", "Funcionário cadastrado com sucesso.");
+            } else if ("true".equals(request.getParameter("editado"))) {
+                request.setAttribute("sucesso", "Funcionário atualizado com sucesso.");
+            } else if ("true".equals(request.getParameter("excluido"))) {
+                request.setAttribute("sucesso", "Funcionário desativado com sucesso.");
             }
 
             request.getRequestDispatcher(CADASTRO)
@@ -192,8 +197,14 @@ public class EmployeeRegisterServlet extends HttpServlet {
         int companyId = (Integer) session.getAttribute("companyId");
 
 
-        // Identifica a operação solicitada.
+
         String acao = request.getParameter("acao");
+
+        if ("excluirLote".equals(acao)) {
+            excluirLote(request, response, companyId);
+            return;
+        }
+
 
         if ("editar".equals(acao)) {
             editarFuncionario(request, response, companyId);
@@ -597,13 +608,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
             HttpServletResponse response,
             int companyId
     ) throws ServletException, IOException {
+        request.setAttribute("modalErro", "overlayEditarFuncionario");
 
         String idParam = request.getParameter("id");
         String nome = request.getParameter("campoNomeFuncionario");
         String email = request.getParameter("campoEmail");
         String statusParam = request.getParameter("status");
 
-        // A edição nunca recebe campos de senha ou alteração de identidade.
         if (request.getParameterMap().containsKey("campoSenha")
                 || request.getParameterMap().containsKey("campoConfirmarSenha")
                 || request.getParameterMap().containsKey("companyId")
@@ -612,11 +623,13 @@ public class EmployeeRegisterServlet extends HttpServlet {
                 || request.getParameterMap().containsKey("unitId")
                 || request.getParameterMap().containsKey("sectorId")) {
 
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+
+            response.sendRedirect(
+                    request.getContextPath() + "/funcionarios?editado=true"
+            );
         }
 
-        try {
+            try {
             int id = Integer.parseInt(idParam);
 
             if (id <= 0
@@ -719,6 +732,41 @@ public class EmployeeRegisterServlet extends HttpServlet {
             );
         }
     }
+
+
+    /**
+     * Impede desativar a própria conta e qualquer administrador,
+     * inclusive por POST manual.
+     */
+    private void excluirLote(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws IOException {
+
+        boolean ok;
+
+        try {
+            HttpSession session = request.getSession(false);
+
+            int loggedId = (Integer) session.getAttribute("employeeId");
+
+            List<Integer> ids = Selection.parse(request);
+
+            ok = new DeactivationDAO()
+                    .employees(ids, companyId, loggedId);
+
+        } catch (IllegalArgumentException ex) {
+            ok = false;
+        }
+
+        response.sendRedirect(
+                request.getContextPath()
+                        + "/funcionarios?lote="
+                        + (ok ? "ok" : "falha")
+        );
+    }
+
 
 
     /**

@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="icon" href="${pageContext.request.contextPath}/Imagens/LogoAether.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/Servelet1ano/src/main/webapp/Error.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/Error.css">
 </head>
 <body>
 

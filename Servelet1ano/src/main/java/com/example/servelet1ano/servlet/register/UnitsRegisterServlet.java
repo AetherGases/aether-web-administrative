@@ -3,6 +3,8 @@ package com.example.servelet1ano.servlet.register;
 import com.example.servelet1ano.dao.AddressesDAO;
 import com.example.servelet1ano.dao.CompaniesDAO;
 import com.example.servelet1ano.dao.UnitsDAO;
+import com.example.servelet1ano.dao.DeactivationDAO;
+import com.example.servelet1ano.util.Selection;
 import com.example.servelet1ano.filter.UnitsFilter;
 import com.example.servelet1ano.model.Addresses;
 import com.example.servelet1ano.model.Companies;
@@ -83,10 +85,19 @@ public class UnitsRegisterServlet extends HttpServlet {
             carregarDados(request, companyId);
 
             if ("true".equals(request.getParameter("sucesso"))) {
-                request.setAttribute(
-                        "sucesso",
-                        "Unidade cadastrada com sucesso."
-                );
+                request.setAttribute("sucesso", "Unidade cadastrada com sucesso.");
+
+            } else if ("true".equals(request.getParameter("editado"))) {
+                request.setAttribute("sucesso", "Unidade atualizada com sucesso.");
+
+            } else if ("true".equals(request.getParameter("excluido"))) {
+                request.setAttribute("sucesso", "Unidade desativada com sucesso.");
+
+            } else if ("ok".equals(request.getParameter("lote"))) {
+                request.setAttribute("sucesso", "Unidades selecionadas desativadas com sucesso.");
+
+            } else if ("falha".equals(request.getParameter("lote"))) {
+                request.setAttribute("erro", "Não foi possível desativar as unidades selecionadas.");
             }
 
             request.getRequestDispatcher(CADASTRO)
@@ -153,6 +164,11 @@ public class UnitsRegisterServlet extends HttpServlet {
 
         String acao = request.getParameter("acao");
 
+        if ("excluirLote".equals(acao)) {
+            excluirLote(request, response, companyId);
+            return;
+        }
+
         if ("editar".equals(acao)) {
             editarUnidade(request, response, companyId);
             return;
@@ -215,10 +231,10 @@ public class UnitsRegisterServlet extends HttpServlet {
         nome = nome.trim();
         cnpj = cnpj.trim();
         cnae = cnae.trim();
-        cep = cep.trim();
+        cep = cep == null ? "" : cep.trim();
         rua = rua.trim();
         numero = numero.trim();
-        complemento = complemento.trim();
+        complemento = complemento == null ? "" : complemento.trim();
         bairro = bairro.trim();
         cidade = cidade.trim();
         estado = estado.trim();
@@ -307,6 +323,7 @@ public class UnitsRegisterServlet extends HttpServlet {
                         companyId,
                         "Não foi possível concluir o cadastro. Tente novamente mais tarde."
                 );
+                return;
             }
 
             Units unidade = new Units(nome, cnpj, cnae, true);
@@ -422,6 +439,9 @@ public class UnitsRegisterServlet extends HttpServlet {
             int companyId
     ) throws ServletException, IOException {
 
+        request.setAttribute("modalErro", "overlayEditarUnidade"
+        );
+
         try {
             int id = Integer.parseInt(request.getParameter("id"));
 
@@ -455,7 +475,7 @@ public class UnitsRegisterServlet extends HttpServlet {
             }
 
             response.sendRedirect(
-                    request.getContextPath() + "/unidades?sucesso=true"
+                    request.getContextPath() + "/unidades?editado=true"
             );
 
         } catch (NumberFormatException e) {
@@ -529,5 +549,58 @@ public class UnitsRegisterServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Desativa em lote as unidades selecionadas.
+     * A operação é limitada à empresa autenticada.
+     * A validação dos IDs é realizada antes do acesso ao DAO.
+     *
+     * @param request Requisição contendo os IDs selecionados.
+     * @param response Resposta HTTP.
+     * @param companyId ID da empresa autenticada.
+     * @throws IOException Se ocorrer erro no redirecionamento.
+     */
+    private void excluirLote(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            int companyId
+    ) throws IOException {
 
+        try {
+            List<Integer> ids = Selection.parse(request);
+
+            boolean sucesso = new DeactivationDAO()
+                    .units(ids, companyId);
+
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/unidades?lote="
+                            + (sucesso ? "ok" : "falha")
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            LOGGER.log(
+                    Level.WARNING,
+                    "Seleção inválida para desativação em lote.",
+                    e
+            );
+
+            response.sendError(
+                    HttpServletResponse.SC_BAD_REQUEST,
+                    "A seleção de unidades é inválida."
+            );
+
+        } catch (RuntimeException e) {
+
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Erro ao desativar unidades em lote.",
+                    e
+            );
+
+            response.sendRedirect(
+                    request.getContextPath() + "/unidades?lote=falha"
+            );
+        }
+    }
 }

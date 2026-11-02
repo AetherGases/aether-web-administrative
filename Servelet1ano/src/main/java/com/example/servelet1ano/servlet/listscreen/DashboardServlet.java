@@ -125,14 +125,7 @@ public class DashboardServlet extends HttpServlet {
                     "Erro ao carregar o dashboard do funcionário.",
                     e
             );
-
-            request.setAttribute(
-                    "erroDashboard",
-                    "Não foi possível carregar os dados do dashboard."
-            );
-
-            request.getRequestDispatcher(DASHBOARD)
-                    .forward(request, response);
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -11,13 +11,6 @@
     </svg>
 </div>
 
-<button type="button" class="botao-filtros">
-    Filtros
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-        <path d="M8 11l6 6 6-6" fill="none" stroke="#7E8294" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-</button>
-
 <c:if test="${param.selecionar ne 'false'}">
     <button type="button" class="botao-selecionar" id="botaoSelecionarTodos">
         <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -32,3 +25,16 @@
     <img src="${ctx}/Imagens/adicionarNovo.svg" alt="Adicionar Novo">
     Adicionar novo
 </button>
+
+<c:if test="${not empty param.rota and param.selecionar ne 'false'}">
+    <button
+            type="submit"
+            form="formExcluirLote"
+            class="botao-excluir-lote"
+            id="botaoExcluirLote"
+            disabled>
+        Desativar selecionados
+        (<span id="quantidadeSelecionada">0</span>)
+    </button>
+</c:if>
+
