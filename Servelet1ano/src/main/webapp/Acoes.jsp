@@ -11,30 +11,28 @@
     </svg>
 </div>
 
-<c:if test="${param.selecionar ne 'false'}">
-    <button type="button" class="botao-selecionar" id="botaoSelecionarTodos">
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-            <rect x="1" y="1" width="18" height="18" rx="4" fill="none" stroke="#FFF" stroke-width="2" stroke-dasharray="3 2.4"/>
-            <path d="M8 7l7 4.2-3.1.8-1.3 3z" fill="#FFF" stroke="#FFF" stroke-width="1.2" stroke-linejoin="round"/>
-        </svg>
-        Selecionar todos
+
+<div class="barra-acoes-botoes">
+    <c:if test="${not empty param.rota and param.selecionar ne 'false'}">
+        <button type="submit" form="formExcluirLote" class="botao-excluir-lote" id="botaoExcluirLote"
+                disabled>
+            Desativar selecionados
+            (<span id="quantidadeSelecionada">0</span>)
+        </button>
+    </c:if>
+
+    <c:if test="${param.selecionar ne 'false'}">
+        <button type="button" class="botao-selecionar" id="botaoSelecionarTodos">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+                <rect x="1" y="1" width="18" height="18" rx="4" fill="none" stroke="#FFF" stroke-width="2" stroke-dasharray="3 2.4"/>
+                <path d="M8 7l7 4.2-3.1.8-1.3 3z" fill="#FFF" stroke="#FFF" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+            Selecionar todos
+        </button>
+    </c:if>
+
+    <button type="button" class="botao-adicionar" data-abrir="${param.modal}">
+        <img src="${ctx}/Imagens/adicionarNovo.svg" alt="">
+        Adicionar novo
     </button>
-</c:if>
-
-<button type="button" class="botao-adicionar" data-abrir="${param.modal}">
-    <img src="${ctx}/Imagens/adicionarNovo.svg" alt="Adicionar Novo">
-    Adicionar novo
-</button>
-
-<c:if test="${not empty param.rota and param.selecionar ne 'false'}">
-    <button
-            type="submit"
-            form="formExcluirLote"
-            class="botao-excluir-lote"
-            id="botaoExcluirLote"
-            disabled>
-        Desativar selecionados
-        (<span id="quantidadeSelecionada">0</span>)
-    </button>
-</c:if>
-
+</div>

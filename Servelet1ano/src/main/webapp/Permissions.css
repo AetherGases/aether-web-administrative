@@ -383,3 +383,54 @@ select {
     white-space: nowrap;
     border: 0;
 }
+
+
+.perm-salvar {
+    position: absolute;
+
+    left: 1175px;
+    top: 152px;
+
+    width: 216px;
+    height: 45px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 12px;
+
+    border: none;
+    border-radius: 15px;
+
+    background: linear-gradient(
+            246deg,
+            #3EBC85 8%,
+            #2DBD7E 50%
+    );
+
+    color: #FFFFFF;
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    cursor: pointer;
+    z-index: 10;
+
+    box-shadow: 0 4px 12px rgba(45, 189, 126, 0.18);
+
+    transition:
+            background 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+.perm-salvar:hover:not(:disabled) {
+    background: #239B68;
+    box-shadow: 0 6px 16px rgba(45, 189, 126, 0.25);
+}
+
+.perm-salvar:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}

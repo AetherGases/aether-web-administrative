@@ -131,12 +131,22 @@ public class PermissionServlet extends HttpServlet {
             if (selecionado != null && funcionarios.stream().noneMatch(f -> f.getId() == idSelecionado)) {
                 selecionado = funcionarios.isEmpty() ? null : funcionarios.getFirst().getId();
             }
+
             Set<Integer> ativas = selecionado == null
-                    ? Set.of() : buscarPermissoes(conn, companyId, selecionado);
+                    ? Set.of()
+                    : buscarPermissoes(conn, companyId, selecionado);
 
             request.setAttribute("funcionarios", funcionarios);
             request.setAttribute("funcionarioSelecionado", selecionado);
             request.setAttribute("permissoesAtivas", ativas);
+
+            for (int id = 1; id <= 7; id++) {
+                request.setAttribute(
+                        "permissao" + id + "Ativa",
+                        ativas.contains(id)
+                );
+            }
+
             if ("1".equals(request.getParameter("sucesso"))) {
                 request.setAttribute("sucesso", "Permissões salvas com sucesso.");
             }

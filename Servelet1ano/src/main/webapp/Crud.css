@@ -856,21 +856,25 @@ button {
     color: #4A3A8A;
 }
 
-
-/* Botão de desativação em lote */
-
 .botao-excluir-lote {
+    position: absolute;
+    left: 805px;
+    top: 152px;
+    width: 215px;
+    height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 11px 18px;
+    padding: 0 12px;
     border: 1px solid #C75D63;
-    border-radius: 12px;
+    border-radius: 15px;
     background: #A73743;
-    color: #fff;
+    color: #FFF;
     font: 600 13px Montserrat, sans-serif;
+    white-space: nowrap;
     cursor: pointer;
+    z-index: 2;
 }
 
 .botao-excluir-lote:hover:not(:disabled) {
@@ -881,4 +885,50 @@ button {
     opacity: .45;
     cursor: not-allowed;
 }
+
+
+
+.barra-acoes-botoes {
+    position: absolute;
+    left: 804px;
+    top: 152px;
+
+    width: 591px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+
+    z-index: 10;
+}
+
+
+.barra-acoes-botoes .botao-excluir-lote,
+.barra-acoes-botoes .botao-selecionar,
+.barra-acoes-botoes .botao-adicionar {
+    position: relative;
+    left: auto;
+    top: auto;
+
+    height: 44px;
+    margin: 0;
+
+    flex-shrink: 0;
+}
+
+
+.barra-acoes-botoes .botao-excluir-lote {
+    width: 215px;
+}
+
+.barra-acoes-botoes .botao-selecionar {
+    width: 189px;
+}
+
+.barra-acoes-botoes .botao-adicionar {
+    width: 170px;
+}
+
 

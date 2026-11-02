@@ -78,7 +78,7 @@
                 <p>Habilitar esta permissão concede ao funcionário visibilidade da análise de dados em toda a hierarquia da empresa.</p>
                 <label class="perm-chave">
                     <input type="checkbox" name="permissoes" value="1" aria-label="Alta visibilidade"
-                    ${permissoesAtivas.contains(1) ? 'checked' : ''}>
+                    ${permissao1Ativa ? 'checked' : ''}>
                     <span class="trilho"></span>
                     <span class="botao"></span>
                 </label>
@@ -90,7 +90,7 @@
                 <p>Habilitar esta permissão concede ao funcionário acesso à análise de inventário.</p>
                 <label class="perm-chave">
                     <input type="checkbox" name="permissoes" value="2" aria-label="Análise de inventário"
-                    ${permissoesAtivas.contains(2) ? 'checked' : ''}>
+                    ${permissao2Ativa ? 'checked' : ''}>
                     <span class="trilho"></span>
                     <span class="botao"></span>
                 </label>
@@ -102,7 +102,7 @@
                 <p>Habilitar esta permissão concede ao funcionário a habilidade de criar e editar inventários.</p>
                 <label class="perm-chave">
                     <input type="checkbox" name="permissoes" value="3" aria-label="Criar e editar inventários"
-                    ${permissoesAtivas.contains(3) ? 'checked' : ''}>
+                    ${permissao3Ativa ? 'checked' : ''}>
                     <span class="trilho"></span>
                     <span class="botao"></span>
                 </label>
@@ -114,7 +114,7 @@
                 <p>Habilitar esta permissão concede ao funcionário a habilidade de gerar um relatório de saída.</p>
                 <label class="perm-chave">
                     <input type="checkbox" name="permissoes" value="4" aria-label="Gerar relatório de saída"
-                    ${permissoesAtivas.contains(4) ? 'checked' : ''}>
+                    ${permissao4Ativa ? 'checked' : ''}>
                     <span class="trilho"></span>
                     <span class="botao"></span>
                 </label>
@@ -127,7 +127,7 @@
                 <p>Habilitar esta permissão concede ao funcionário acesso à calculadora de previsão de gases.</p>
                 <label class="perm-chave">
                     <input type="checkbox" name="permissoes" value="5" aria-label="Calculadora de gases"
-                    ${permissoesAtivas.contains(5) ? 'checked' : ''}>
+                    ${permissao5Ativa ? 'checked' : ''}>
                     <span class="trilho"></span>
                     <span class="botao"></span>
                 </label>
@@ -139,7 +139,7 @@
                 <p>Habilitar esta permissão concede ao funcionário acesso à calculadora de previsão de investimento.</p>
                 <label class="perm-chave">
                     <input type="checkbox" name="permissoes" value="6" aria-label="Calculadora de ROI"
-                    ${permissoesAtivas.contains(6) ? 'checked' : ''}>
+                    ${permissao6Ativa ? 'checked' : ''}>
                     <span class="trilho"></span>
                     <span class="botao"></span>
                 </label>
@@ -151,7 +151,7 @@
                 <p>Habilitar esta permissão concede ao funcionário acesso ao chatbot.</p>
                 <label class="perm-chave">
                     <input type="checkbox" name="permissoes" value="7" aria-label="Chatbot"
-                    ${permissoesAtivas.contains(7) ? 'checked' : ''}>
+                    ${permissao7Ativa ? 'checked' : ''}>
                     <span class="trilho"></span>
                     <span class="botao"></span>
                 </label>
