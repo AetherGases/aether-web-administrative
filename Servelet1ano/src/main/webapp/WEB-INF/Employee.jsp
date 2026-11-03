@@ -278,7 +278,6 @@
 
             <div class="modal-rodape">
                 <button type="submit" class="botao-roxo">Alterar</button>
-                <p class="aviso-modal">Edição ainda não disponível no servidor.</p>
             </div>
         </form>
     </div>
